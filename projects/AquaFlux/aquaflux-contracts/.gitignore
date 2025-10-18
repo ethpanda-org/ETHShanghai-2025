@@ -1,0 +1,140 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Hardhat
+cache/
+artifacts/
+typechain-types/
+typechain/
+
+# Coverage
+coverage/
+coverage.json
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# next.js build output
+.next
+
+# nuxt.js build output
+.nuxt
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# Hardhat specific
+cache/
+artifacts/
+typechain-types/
+typechain/
+
+# Coverage
+coverage/
+coverage.json
+
+# Gas reports
+gas-report.txt
+
+# Deployment artifacts
+deployments/
+
+# Local hardhat config
+hardhat.config.local.js
+
+# Solidity coverage
+coverage/
+
+# Foundry (if used)
+out/
+cache/
+broadcast/
+
+# Slither
+slither.db.json
+
+# Mythril
+mythril_report.txt
+
+# Echidna
+echidna-test-*
+
+# Certora
+certora/
+
+# Documentation build
+docs/build/
+
+# Temporary files
+*.tmp
+*.temp 

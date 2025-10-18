@@ -1,0 +1,26 @@
+{
+  "name": "aquaflux-contract",
+  "version": "1.0.0",
+  "description": "AquaFlux - Structured DeFi Protocol for RWA Assets",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.11.0",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.10",
+    "dayjs": "^1.11.18",
+    "dotenv": "^16.4.5"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "5.4.0",
+    "@openzeppelin/contracts-upgradeable": "5.4.0",
+    "@openzeppelin/hardhat-upgrades": "^3.9.1",
+    "hardhat": "^2.22.2"
+  }
+}
