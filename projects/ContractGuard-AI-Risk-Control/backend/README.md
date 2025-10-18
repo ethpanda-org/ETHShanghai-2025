@@ -169,12 +169,13 @@ controller/
 🎯 共注册 2 个AI策略
 ```
 
-访问: http://localhost:8082/ai/strategies/info 查看策略状态
+访问: http://localhost:8080/ai/strategies/info 查看策略状态
 
 ## 🎯 核心优势
 
 相比传统工厂模式:
 - ❌ 传统: 手动new,手动注册,维护Map
 - ✅ 注解: 自动扫描,自动注册,零维护
+
 
 **只需加个注解,其他交给Spring!** 🚀
