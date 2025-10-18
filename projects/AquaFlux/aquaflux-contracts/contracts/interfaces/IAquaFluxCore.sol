@@ -2,10 +2,10 @@
 pragma solidity ^0.8.20;
 
 /**
- * @title IAquaFluxRegistry
+ * @title IAquaFluxCore
  * @dev Interface for the main AquaFlux Registry contract
  */
-interface IAquaFluxRegistry {
+interface IAquaFluxCore {
     /**
      * @dev Asset information structure
      */
@@ -93,6 +93,13 @@ interface IAquaFluxRegistry {
         address indexed user,
         uint256 amount
     );
+    
+    /**
+     * @dev Emitted when the token factory is changed
+     * @param oldFactory The address of the previous factory
+     * @param newFactory The address of the new factory
+     */
+    event FactoryChanged(address indexed oldFactory, address indexed newFactory);
 
     /**
      * @dev Registers a new asset

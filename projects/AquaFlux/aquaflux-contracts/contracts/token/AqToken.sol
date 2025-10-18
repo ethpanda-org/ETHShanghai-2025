@@ -26,7 +26,7 @@ contract AqToken is BaseToken {
         string memory symbol_,
         bytes32 assetId_,
         address registry
-    ) public initializer {
+    ) public {
         super.initialize(name_, symbol_, assetId_, "AQ", registry);
     }
 

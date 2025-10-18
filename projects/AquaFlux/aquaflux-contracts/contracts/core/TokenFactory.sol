@@ -3,19 +3,18 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "../interfaces/ICloneFactory.sol";
+import "../interfaces/ITokenFactory.sol";
 import "../token/AqToken.sol";
 import "../token/PToken.sol";
 import "../token/CToken.sol";
 import "../token/SToken.sol";
 
 /**
- * @title CloneFactory
+ * @title TokenFactory
  * @dev Factory contract for deploying token clones using EIP-1167 minimal proxy pattern
  * Manages the deployment of AqToken, PToken, CToken, and SToken instances
  */
-contract CloneFactory is ICloneFactory, AccessControl {
+contract TokenFactory is ITokenFactory, AccessControl {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant DEPLOYER_ROLE = keccak256("DEPLOYER_ROLE");
 
@@ -79,8 +78,11 @@ contract CloneFactory is ICloneFactory, AccessControl {
         // Check if token already deployed
         require(!isTokenDeployed(tokenType, assetId), "Token already deployed");
 
-        // Deploy clone
-        address clone = Clones.clone(implementation);
+        // Create a deterministic salt based on assetId
+        bytes32 salt = keccak256(abi.encodePacked(tokenType, assetId));
+        
+        // Deploy clone using deterministic method to ensure address matches prediction
+        address clone = Clones.cloneDeterministic(implementation, salt);
         
         // Initialize the clone
         if (keccak256(abi.encodePacked(tokenType)) == keccak256(abi.encodePacked("AQ"))) {

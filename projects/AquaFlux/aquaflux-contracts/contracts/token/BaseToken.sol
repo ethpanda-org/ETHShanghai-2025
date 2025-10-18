@@ -6,7 +6,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20Burnable
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "../interfaces/IBaseToken.sol";
 
 /**
@@ -20,13 +19,11 @@ contract BaseToken is
     ERC20BurnableUpgradeable,
     PausableUpgradeable,
     AccessControlUpgradeable,
-    UUPSUpgradeable,
     IBaseToken
 {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
 
     bytes32 private _assetId;
     string private _tokenType;
@@ -55,7 +52,6 @@ contract BaseToken is
         __ERC20Burnable_init();
         __Pausable_init();
         __AccessControl_init();
-        __UUPSUpgradeable_init();
 
         _assetId = assetId_;
         _tokenType = tokenType_;
@@ -64,7 +60,6 @@ contract BaseToken is
         _grantRole(MINTER_ROLE, registry);
         _grantRole(BURNER_ROLE, registry);
         _grantRole(PAUSER_ROLE, registry);
-        _grantRole(UPGRADER_ROLE, registry);
 
         // Grant DEFAULT_ADMIN_ROLE to registry
         _grantRole(DEFAULT_ADMIN_ROLE, registry);
@@ -117,11 +112,6 @@ contract BaseToken is
     function unpause() public override onlyRole(PAUSER_ROLE) {
         _unpause();
     }
-
-    /**
-     * @dev Required by the OZ UUPS module
-     */
-    function _authorizeUpgrade(address newImplementation) internal override onlyRole(UPGRADER_ROLE) {}
 
     /**
      * @dev Hook that is called before any transfer of tokens (OpenZeppelin 5.x 用 _update)

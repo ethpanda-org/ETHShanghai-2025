@@ -2,10 +2,10 @@
 pragma solidity ^0.8.20;
 
 /**
- * @title ICloneFactory
+ * @title ITokenFactory
  * @dev Interface for the token clone factory contract
  */
-interface ICloneFactory {
+interface ITokenFactory {
     /**
      * @dev Emitted when a new token is deployed
      * @param tokenType The type of token (AQ, P, C, S)

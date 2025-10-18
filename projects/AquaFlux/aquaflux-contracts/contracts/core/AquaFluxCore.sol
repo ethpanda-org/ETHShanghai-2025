@@ -9,17 +9,17 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "../interfaces/IAquaFluxRegistry.sol";
+import "../interfaces/IAquaFluxCore.sol";
 import "../interfaces/IBaseToken.sol";
-import "../interfaces/ICloneFactory.sol";
+import "../interfaces/ITokenFactory.sol";
 
 /**
- * @title AquaFluxRegistry
+ * @title AquaFluxCore
  * @dev Main registry contract for AquaFlux protocol
  * Manages asset registration, verification, and token operations (wrap/split/merge/unwrap)
  */
-contract AquaFluxRegistry is 
-    IAquaFluxRegistry,
+contract AquaFluxCore is 
+    IAquaFluxCore,
     Initializable,
     AccessControlUpgradeable,
     ReentrancyGuardUpgradeable,
@@ -33,7 +33,7 @@ contract AquaFluxRegistry is
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
     // Factory contract for deploying tokens
-    ICloneFactory public factory;
+    ITokenFactory public factory;
     
     // Asset registry
     mapping(bytes32 => AssetInfo) public assets;
@@ -57,7 +57,7 @@ contract AquaFluxRegistry is
         __Pausable_init();
         __UUPSUpgradeable_init();
 
-        factory = ICloneFactory(_factory);
+        factory = ITokenFactory(_factory);
         
         // Grant roles
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
@@ -65,9 +65,24 @@ contract AquaFluxRegistry is
         _grantRole(VERIFIER_ROLE, admin);
         _grantRole(OPERATOR_ROLE, admin);
     }
+    
+    /**
+     * @dev Changes the token factory address
+     * @param newFactory The address of the new factory contract
+     */
+    function setFactory(address newFactory) external onlyRole(ADMIN_ROLE) {
+        require(newFactory != address(0), "Invalid factory address");
+        // Basic compatibility check - ensure it has the required interface
+        require(ITokenFactory(newFactory).deployToken.selector != bytes4(0), "Invalid factory interface");
+        
+        address oldFactory = address(factory);
+        factory = ITokenFactory(newFactory);
+        
+        emit FactoryChanged(oldFactory, newFactory);
+    }
 
     /**
-     * @dev Registers a new asset
+     * @dev Registers a new asset, token will not be deployed until wrap is called
      * @param underlying The underlying RWA token address
      * @param maturity The maturity timestamp
      * @param couponRate The coupon rate in basis points
