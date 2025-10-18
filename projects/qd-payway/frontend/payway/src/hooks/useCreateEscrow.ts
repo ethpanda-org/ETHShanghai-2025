@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi'
 import { parseUnits } from 'viem'
 import { CONTRACTS, ESCROW_ABI } from '@/lib/contracts'
 import usdtAbi from '@/lib/usdt-abi.json'
@@ -19,6 +19,7 @@ interface CreateEscrowParams {
 
 export function useCreateEscrow() {
   const router = useRouter()
+  const { address: userAddress } = useAccount() // 获取当前用户钱包地址
   const [currentStep, setCurrentStep] = useState<TransactionStep>(TransactionStep.IDLE)
   const [error, setError] = useState<string>()
   const [transactionHash, setTransactionHash] = useState<string>()
@@ -98,10 +99,16 @@ export function useCreateEscrow() {
 
       // 步骤3: 保存到数据库
       console.log('Saving to database...')
+      
+      // 确保有用户地址
+      if (!userAddress) {
+        throw new Error('用户地址未找到，请确保钱包已连接')
+      }
+      
       await saveContract({
         orderId,
-        senderAddress: receiver, // 这里应该是当前用户地址，需要从useAccount获取
-        receiverAddress: receiver,
+        senderAddress: userAddress, // ✅ 修复：使用当前用户地址作为付款方
+        receiverAddress: receiver,   // ✅ 收款方地址
         amount,
         tokenAddress: CONTRACTS.USDT_SEPOLIA,
         status: 'PENDING',
