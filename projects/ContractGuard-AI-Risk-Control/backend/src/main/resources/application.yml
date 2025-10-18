@@ -1,0 +1,61 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: contract-security
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/contract_guard?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
+#    username: root
+#    password: 123456
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+
+ai:
+  # 默认使用的策略: agentrouter, anyrouter, claude, chatgpt, deepseek
+  strategy: qwen  # 默认用通义千问
+
+  qwen:
+    api-key: ${QWEN_API_KEY}
+    model: qwen-plus
+  gemini:
+    # API Key (从环境变量读取)
+    api-key: ${GEMINI_API_KEY:}
+
+    # 模型选择
+    # gemini-1.5-flash-latest: 速度快，适合实时分析（推荐）
+    # gemini-1.5-pro-latest: 分析更深入，但较慢
+    model: gemini-1.5-flash-latest
+  # AgentRouter配置 (推荐 - 免费,无需邀请码)
+  agentrouter:
+    api-key: ${AGENTROUTER_API_KEY:}
+    api-url: https://agentrouter.org/v1/chat/completions
+
+  # AnyRouter配置 (主力)
+  anyrouter:
+    api-key: ${ANYROUTER_API_KEY:sk-}
+    api-url: https://api.anyrouter.ai/v1/chat/completions
+    # 推荐模型:
+    # - claude-3-5-sonnet (最强代码分析)
+    # - gpt-4 (备选)
+    # - deepseek (最便宜)
+    model: claude-3-5-sonnet
+
+  # Claude配置
+  claude:
+    api-key: ${CLAUDE_API_KEY:your-claude-api-key-here}
+    api-url: https://api.anthropic.com/v1/messages
+    model: claude-3-5-sonnet-20241022
+
+  # OpenAI配置
+  openai:
+    api-key: ${OPENAI_API_KEY:your-openai-api-key-here}
+    api-url: https://api.openai.com/v1/chat/completions
+    model: gpt-4
+
+logging:
+  level:
+    com.contractguard: DEBUG
