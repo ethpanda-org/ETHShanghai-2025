@@ -84,7 +84,7 @@ ContractGuard AI 是一个基于人工智能的智能合约风险预防系统，
 #### 后端技术栈
 - **框架**: Spring Boot 3.2.0
 - **语言**: Java 17
-- **构建工具**: Maven 3.6+
+- **构建工具**: Maven 3.9.11
 - **微服务**: Spring Cloud 2023.0.0
 - **Web框架**: Spring Web
 - **远程调用**: OpenFeign
@@ -98,7 +98,12 @@ ContractGuard AI 是一个基于人工智能的智能合约风险预防系统，
 
 ### 环境要求
 - **前端**: Node.js >= 18.0.0, pnpm >= 8.0.0
-- **后端**: Java 17+, Maven 3.6+
+- **后端**: Java 17+, Maven 3.9.11
+- **AI配置**: 在backend文件夹中添加 .env 文件，并添加通义千问的apiKEy(重点) 
+
+```
+QWEN_API_KEY=sk-XXX
+```
 
 ### 一键启动
 
