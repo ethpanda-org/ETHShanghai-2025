@@ -1,0 +1,247 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ======================
+// User Authentication Models
+// ======================
+
+// 用户模型 - 认证和权限管理
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // bcrypt 加密密码
+  role      Role     @default(USER)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  // 与 AquaFlux DeFi 模型的关系
+  portfolioPositions PortfolioPosition[]
+  swapTransactions SwapTransaction[]
+  structureOperations StructureOperation[]
+  
+  @@map("users")
+}
+
+// 角色枚举
+enum Role {
+  USER
+  ADMIN
+}
+
+// ======================
+// AquaFlux DeFi Models
+// ======================
+
+// RWA资产模型 - P/C/S三层结构的核心
+model Asset {
+  id           String   @id // 资产唯一标识
+  name         String   // 资产名称
+  issuer       String   // 发行方
+  type         String   // 资产类型 (Treasury Bond, Corporate Bond, etc.)
+  rating       String?  // 信用评级
+  chain        String   @default("Pharos") // 区块链网络
+  maturity     DateTime? // 到期日
+  duration     Decimal?  @db.Decimal(10, 2) @default(0) // 持续时间（年）
+  
+  // 市场数据
+  tvl          Decimal   @db.Decimal(18, 8) @default(0) // Total Value Locked
+  vol24h       Decimal   @db.Decimal(18, 8) @default(0) // 24小时交易量
+  
+  // P/C/S 三层收益率
+  pApy         Decimal   @db.Decimal(8, 4) @default(0) @map("p_apy") // Principal层APY
+  cApr         Decimal   @db.Decimal(8, 4) @default(0) @map("c_apr") // Coupon层APR  
+  sApyRange    Json      @default("[0, 0]") @map("s_apy_range") // Shield层APY范围 [min, max]
+  
+  // 价格和风险指标
+  lcr          Decimal   @db.Decimal(8, 4) @default(1) // 流动性覆盖率
+  nav          Decimal   @db.Decimal(10, 2) @default(100) // 净资产价值
+  discountP    Decimal   @db.Decimal(8, 4) @default(0) @map("discount_p") // 折价百分比
+  
+  // 激励和状态
+  rewards      Json      @default("[]") // 可获得的奖励
+  isNew        Boolean   @default(false) @map("is_new") // 是否为新上市
+  isActive     Boolean   @default(true) @map("is_active") // 是否活跃
+  
+  // 时间戳
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  
+  // 关联关系
+  priceHistory PriceHistory[]
+  portfolioPositions PortfolioPosition[]
+  swapTransactions SwapTransaction[]
+  structureOperations StructureOperation[]
+  
+  // 索引优化
+  @@index([type])
+  @@index([rating])
+  @@index([chain])
+  @@index([maturity])
+  @@index([isActive])
+  @@index([createdAt])
+  @@map("assets")
+}
+
+// 价格历史记录模型 - 追踪所有资产层的价格变化
+model PriceHistory {
+  id        String   @id @default(cuid())
+  assetId   String   @map("asset_id")
+  asset     Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  
+  // P/C/S各层价格
+  nav       Decimal  @db.Decimal(10, 2) // 净资产价值
+  discountP Decimal  @db.Decimal(8, 4) @map("discount_p") // 折价百分比
+  pPrice    Decimal? @db.Decimal(10, 6) @map("p_price") // Principal层价格
+  cPrice    Decimal? @db.Decimal(10, 6) @map("c_price") // Coupon层价格  
+  sPrice    Decimal? @db.Decimal(10, 6) @map("s_price") // Shield层价格
+  
+  // 市场数据快照
+  tvl       Decimal? @db.Decimal(18, 8) // 当时的TVL
+  volume24h Decimal? @db.Decimal(18, 8) @map("volume_24h") // 当时的24h交易量
+  
+  timestamp DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  // 索引优化 - 价格查询通常按资产和时间排序
+  @@index([assetId, timestamp])
+  @@index([timestamp])
+  @@map("price_history")
+}
+
+// 用户投资组合持仓模型 - 追踪用户在各个资产层的持仓
+model PortfolioPosition {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assetId   String   @map("asset_id")
+  asset     Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  
+  // P/C/S各层持仓数量
+  pAmount   Decimal  @db.Decimal(18, 8) @default(0) @map("p_amount") // Principal层持仓
+  cAmount   Decimal  @db.Decimal(18, 8) @default(0) @map("c_amount") // Coupon层持仓
+  sAmount   Decimal  @db.Decimal(18, 8) @default(0) @map("s_amount") // Shield层持仓
+  
+  // 成本基础（用于盈亏计算）
+  pCostBasis Decimal @db.Decimal(18, 8) @default(0) @map("p_cost_basis") // P层成本
+  cCostBasis Decimal @db.Decimal(18, 8) @default(0) @map("c_cost_basis") // C层成本
+  sCostBasis Decimal @db.Decimal(18, 8) @default(0) @map("s_cost_basis") // S层成本
+  
+  // 首次购买和最后更新时间
+  firstPurchaseAt DateTime? @map("first_purchase_at")
+  lastUpdatedAt   DateTime  @updatedAt @map("last_updated_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  
+  // 确保用户在每个资产上只有一条记录
+  @@unique([userId, assetId])
+  @@index([userId])
+  @@index([assetId])
+  @@map("portfolio_positions")
+}
+
+// 代币交换交易记录模型 - 追踪P/C/S层之间的交换
+model SwapTransaction {
+  id           String         @id @default(cuid())
+  userId       String         @map("user_id")
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assetId      String         @map("asset_id")
+  asset        Asset          @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  
+  // 交换信息
+  fromLayer    TokenLayer     @map("from_layer") // 源代币层（P/C/S）
+  toLayer      TokenLayer     @map("to_layer")   // 目标代币层（P/C/S）
+  fromAmount   Decimal        @db.Decimal(18, 8) @map("from_amount") // 输入数量
+  toAmount     Decimal        @db.Decimal(18, 8) @map("to_amount")   // 输出数量
+  
+  // 价格信息
+  exchangeRate Decimal        @db.Decimal(18, 8) @map("exchange_rate") // 汇率
+  slippage     Decimal?       @db.Decimal(8, 4)  // 滑点百分比
+  fees         Decimal?       @db.Decimal(18, 8) // 交易手续费
+  
+  // 交易状态
+  status       TransactionStatus @default(COMPLETED)
+  txHash       String?        @map("tx_hash") // 区块链交易哈希（如果有）
+  
+  // 时间戳
+  executedAt   DateTime       @default(now()) @map("executed_at")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  
+  @@index([userId])
+  @@index([assetId])
+  @@index([userId, assetId])
+  @@index([executedAt])
+  @@map("swap_transactions")
+}
+
+// 结构化操作记录模型 - 追踪Split/Merge操作（1P + 1C + 1S ⇌ 1RWA）
+model StructureOperation {
+  id           String            @id @default(cuid())
+  userId       String            @map("user_id")
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assetId      String            @map("asset_id")
+  asset        Asset             @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  
+  // 操作类型和数量
+  operationType OperationType    @map("operation_type") // SPLIT 或 MERGE
+  amount       Decimal           @db.Decimal(18, 8) // 操作数量
+  
+  // 操作前后的持仓快照（用于审计）
+  beforeP      Decimal?          @db.Decimal(18, 8) @map("before_p") // 操作前P层持仓
+  beforeC      Decimal?          @db.Decimal(18, 8) @map("before_c") // 操作前C层持仓  
+  beforeS      Decimal?          @db.Decimal(18, 8) @map("before_s") // 操作前S层持仓
+  beforeRWA    Decimal?          @db.Decimal(18, 8) @map("before_rwa") // 操作前RWA持仓
+  
+  afterP       Decimal?          @db.Decimal(18, 8) @map("after_p") // 操作后P层持仓
+  afterC       Decimal?          @db.Decimal(18, 8) @map("after_c") // 操作后C层持仓
+  afterS       Decimal?          @db.Decimal(18, 8) @map("after_s") // 操作后S层持仓
+  afterRWA     Decimal?          @db.Decimal(18, 8) @map("after_rwa") // 操作后RWA持仓
+  
+  // 费用和状态
+  fees         Decimal?          @db.Decimal(18, 8) // 操作费用
+  status       TransactionStatus @default(COMPLETED)
+  txHash       String?           @map("tx_hash") // 区块链交易哈希（如果有）
+  
+  // 时间戳
+  executedAt   DateTime          @default(now()) @map("executed_at")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  
+  @@index([userId])
+  @@index([assetId])
+  @@index([userId, assetId])
+  @@index([operationType])
+  @@index([executedAt])
+  @@map("structure_operations")
+}
+
+// ======================
+// Enums
+// ======================
+
+// 代币层枚举
+enum TokenLayer {
+  P // Principal 层
+  C // Coupon 层  
+  S // Shield 层
+}
+
+// 交易状态枚举
+enum TransactionStatus {
+  PENDING    // 待处理
+  COMPLETED  // 已完成
+  FAILED     // 失败
+  CANCELLED  // 已取消
+}
+
+// 操作类型枚举
+enum OperationType {
+  SPLIT  // 分割：1 RWA → 1P + 1C + 1S
+  MERGE  // 合并：1P + 1C + 1S → 1 RWA
+}
