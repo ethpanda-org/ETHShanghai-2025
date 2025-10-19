@@ -58,7 +58,7 @@ export function useCreateEscrow() {
       setCurrentStep(TransactionStep.APPROVED)
       
       // 等待一小段时间确保交易确认
-      await new Promise(resolve => setTimeout(resolve, 3000))
+      await new Promise(resolve => setTimeout(resolve, 6000))
 
       // 步骤2: 创建托管（advancePay）
       console.log('Step 2: Creating escrow...')
@@ -74,6 +74,7 @@ export function useCreateEscrow() {
           CONTRACTS.USDT_SEPOLIA as `0x${string}`, // _stableCoin
           amountInWei, // amount
         ],
+        gas: BigInt(500000), // 显式设置合理的 gas limit，避免超过网络限制
       })
 
       setTransactionHash(depositHash)

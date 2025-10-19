@@ -21,7 +21,7 @@ export function HeroSection() {
           <h1 className="mb-6 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
             PayWay
             <span className="block bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-              无需技术背景的智能托管支付
+              基于稳定币的付款与结算系统
             </span>
           </h1>
 
