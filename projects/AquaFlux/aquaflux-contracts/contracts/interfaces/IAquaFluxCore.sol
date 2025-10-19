@@ -6,6 +6,7 @@ pragma solidity ^0.8.20;
 // === Admin Function Errors ===
 error InvalidFactoryAddress();
 error InvalidFactoryInterface();
+error InvalidAdminAddress();
 error InvalidTimelockAddress();
 error AssetNotRegistered();
 error AssetAlreadyVerified();
@@ -94,9 +95,11 @@ interface IAquaFluxCore {
      * @param issuer The asset issuer
      * @param underlying The underlying token address
      * @param maturity The maturity timestamp
+     * @param operationDeadline The deadline for all operations
      * @param couponRate The coupon rate
      * @param couponAllocationC The coupon allocation to C token
      * @param couponAllocationS The coupon allocation to S token
+     * @param sTokenFeeAllocation The fee allocation to S token holders
      * @param name The asset name in standard format
      * @param metadataURI The metadata URI
      */
@@ -105,9 +108,11 @@ interface IAquaFluxCore {
         address indexed issuer,
         address underlying,
         uint256 maturity,
+        uint256 operationDeadline,
         uint256 couponRate,
         uint256 couponAllocationC,
         uint256 couponAllocationS,
+        uint256 sTokenFeeAllocation,
         string name,
         string metadataURI
     );
@@ -122,48 +127,64 @@ interface IAquaFluxCore {
      * @dev Emitted when assets are wrapped into AqTokens
      * @param assetId The asset identifier
      * @param user The user performing the wrap
-     * @param amount The amount wrapped
+     * @param inputAmount The original amount from user
+     * @param feeAmount The fee amount deducted
+     * @param netAmount The net amount after fee deduction (actual tokens minted)
      */
     event AssetWrapped(
         bytes32 indexed assetId,
         address indexed user,
-        uint256 amount
+        uint256 inputAmount,
+        uint256 feeAmount,
+        uint256 netAmount
     );
 
     /**
      * @dev Emitted when AqTokens are split into P/C/S tokens
      * @param assetId The asset identifier
      * @param user The user performing the split
-     * @param amount The amount split
+     * @param inputAmount The original amount from user
+     * @param feeAmount The fee amount deducted
+     * @param netAmount The net amount after fee deduction (actual tokens minted)
      */
     event AssetSplit(
         bytes32 indexed assetId,
         address indexed user,
-        uint256 amount
+        uint256 inputAmount,
+        uint256 feeAmount,
+        uint256 netAmount
     );
 
     /**
      * @dev Emitted when P/C/S tokens are merged back to AqTokens
      * @param assetId The asset identifier
      * @param user The user performing the merge
-     * @param amount The amount merged
+     * @param inputAmount The original amount from user
+     * @param feeAmount The fee amount deducted
+     * @param netAmount The net amount after fee deduction (actual tokens minted)
      */
     event AssetMerged(
         bytes32 indexed assetId,
         address indexed user,
-        uint256 amount
+        uint256 inputAmount,
+        uint256 feeAmount,
+        uint256 netAmount
     );
 
     /**
      * @dev Emitted when AqTokens are unwrapped to underlying assets
      * @param assetId The asset identifier
      * @param user The user performing the unwrap
-     * @param amount The amount unwrapped
+     * @param inputAmount The original amount from user
+     * @param feeAmount The fee amount deducted
+     * @param netAmount The net amount after fee deduction (actual tokens transferred)
      */
     event AssetUnwrapped(
         bytes32 indexed assetId,
         address indexed user,
-        uint256 amount
+        uint256 inputAmount,
+        uint256 feeAmount,
+        uint256 netAmount
     );
     
     /**
@@ -634,11 +655,4 @@ interface IAquaFluxCore {
         bytes32[] calldata assetIds,
         address to
     ) external;
-
-    /**
-     * @dev Gets the total withdrawable fees across all assets for a specific underlying token
-     * @param underlyingToken The underlying token address
-     * @return totalFees The total fees available for withdrawal
-     */
-    function getTotalWithdrawableFeesForToken(address underlyingToken) external view returns (uint256 totalFees);
 }

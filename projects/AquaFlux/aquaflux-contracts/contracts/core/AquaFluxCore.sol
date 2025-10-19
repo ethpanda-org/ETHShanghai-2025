@@ -31,7 +31,6 @@ contract AquaFluxCore is
     using SafeERC20 for IERC20;
     using DateUtils for uint256;
 
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant VERIFIER_ROLE = keccak256("VERIFIER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant TIMELOCK_ROLE = keccak256("TIMELOCK_ROLE");
@@ -116,28 +115,37 @@ contract AquaFluxCore is
      * @dev Initializes the registry
      * @param _factory The clone factory contract address
      * @param admin The admin address
+     * @param _timelock The timelock contract address (required)
      */
-    function initialize(address _factory, address admin) public initializer {
+    function initialize(address _factory, address admin, address _timelock) public initializer {
         __AccessControl_init();
         __ReentrancyGuard_init();
         __Pausable_init();
         __UUPSUpgradeable_init();
 
+        // Validate all required parameters
+        if (_factory == address(0)) revert InvalidFactoryAddress();
+        if (admin == address(0)) revert InvalidAdminAddress();
+        if (_timelock == address(0)) revert InvalidTimelockAddress();
+
         factory = ITokenFactory(_factory);
 
         // Grant roles
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
-        _grantRole(ADMIN_ROLE, admin);
         _grantRole(VERIFIER_ROLE, admin);
         _grantRole(OPERATOR_ROLE, admin);
-        // TIMELOCK_ROLE will be granted to timelock contract after deployment
+        
+        // Configure timelock (required for governance functionality)
+        timelock = _timelock;
+        _grantRole(TIMELOCK_ROLE, _timelock);
+        emit TimelockUpdated(address(0), _timelock);
     }
 
     /**
      * @dev Changes the token factory address
      * @param newFactory The address of the new factory contract
      */
-    function setFactory(address newFactory) external onlyRole(ADMIN_ROLE) {
+    function setFactory(address newFactory) external onlyRole(TIMELOCK_ROLE) {
         if (newFactory == address(0)) revert InvalidFactoryAddress();
         // Basic compatibility check - ensure it has the required interface
         if (ITokenFactory(newFactory).deployToken.selector == bytes4(0)) revert InvalidFactoryInterface();
@@ -149,10 +157,11 @@ contract AquaFluxCore is
     }
 
     /**
-     * @dev Sets the timelock contract address (admin only)
-     * @param newTimelock The address of the timelock contract
+     * @dev Sets the timelock contract address (governance controlled)
+     * Can only be called through the existing timelock governance process
+     * @param newTimelock The address of the new timelock contract
      */
-    function setTimelock(address newTimelock) external onlyRole(ADMIN_ROLE) {
+    function setTimelock(address newTimelock) external onlyRole(TIMELOCK_ROLE) {
         if (newTimelock == address(0)) revert InvalidTimelockAddress();
 
         address oldTimelock = timelock;
@@ -222,21 +231,7 @@ contract AquaFluxCore is
         if (bytes(metadataURI).length == 0) revert MetadataURIRequired();
 
         // Generate unique asset ID
-        assetId = keccak256(
-            abi.encodePacked(
-                underlying,
-                maturity,
-                operationDeadline,
-                couponRate,
-                couponAllocationC,
-                couponAllocationS,
-                sTokenFeeAllocation,
-                name,
-                metadataURI,
-                msg.sender,
-                _assetIdCounter++
-            )
-        );
+        assetId = keccak256(abi.encodePacked(address(this), _assetIdCounter++));
 
         if (isAssetRegistered(assetId)) revert AssetAlreadyRegistered();
 
@@ -270,9 +265,11 @@ contract AquaFluxCore is
             msg.sender,
             underlying,
             maturity,
+            operationDeadline,
             couponRate,
             couponAllocationC,
             couponAllocationS,
+            sTokenFeeAllocation,
             name,
             metadataURI
         );
@@ -306,9 +303,9 @@ contract AquaFluxCore is
         whenAssetNotPaused(assetId)
         whenAssetOperationsAllowed(assetId)
     {
+        if (amount == 0) revert AmountMustBeGreaterThanZero();
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (!assets[assetId].verified) revert AssetNotVerified();
-        if (amount == 0) revert AmountMustBeGreaterThanZero();
 
         AssetInfo storage asset = assets[assetId];
         IERC20 underlying = IERC20(asset.underlying);
@@ -344,7 +341,7 @@ contract AquaFluxCore is
         // Mint AqTokens to user (net amount after fee)
         IBaseToken(asset.aqToken).mint(msg.sender, netAmount);
 
-        emit AssetWrapped(assetId, msg.sender, amount);
+        emit AssetWrapped(assetId, msg.sender, amount, feeAmount, netAmount);
     }
 
     /**
@@ -363,9 +360,9 @@ contract AquaFluxCore is
         whenAssetNotPaused(assetId)
         whenAssetOperationsAllowed(assetId)
     {
+        if (amount == 0) revert AmountMustBeGreaterThanZero();
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (!assets[assetId].verified) revert AssetNotVerified();
-        if (amount == 0) revert AmountMustBeGreaterThanZero();
 
         AssetInfo storage asset = assets[assetId];
         if (asset.aqToken == address(0)) revert AqTokenNotDeployed();
@@ -425,7 +422,7 @@ contract AquaFluxCore is
         IBaseToken(asset.cToken).mint(msg.sender, netAmount);
         IBaseToken(asset.sToken).mint(msg.sender, netAmount);
 
-        emit AssetSplit(assetId, msg.sender, amount);
+        emit AssetSplit(assetId, msg.sender, amount, feeAmount, netAmount);
     }
 
     /**
@@ -444,9 +441,9 @@ contract AquaFluxCore is
         whenAssetNotPaused(assetId)
         whenAssetOperationsAllowed(assetId)
     {
+        if (amount == 0) revert AmountMustBeGreaterThanZero();
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (!assets[assetId].verified) revert AssetNotVerified();
-        if (amount == 0) revert AmountMustBeGreaterThanZero();
 
         AssetInfo storage asset = assets[assetId];
         if (asset.aqToken == address(0)) revert AqTokenNotDeployed();
@@ -466,7 +463,7 @@ contract AquaFluxCore is
         // Mint AqTokens to user (net amount after fee)
         IBaseToken(asset.aqToken).mint(msg.sender, netAmount);
 
-        emit AssetMerged(assetId, msg.sender, amount);
+        emit AssetMerged(assetId, msg.sender, amount, feeAmount, netAmount);
     }
 
     /**
@@ -485,9 +482,9 @@ contract AquaFluxCore is
         whenAssetNotPaused(assetId)
         whenAssetOperationsAllowed(assetId)
     {
+        if (amount == 0) revert AmountMustBeGreaterThanZero();
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (!assets[assetId].verified) revert AssetNotVerified();
-        if (amount == 0) revert AmountMustBeGreaterThanZero();
 
         AssetInfo storage asset = assets[assetId];
         if (asset.aqToken == address(0)) revert AqTokenNotDeployed();
@@ -502,7 +499,7 @@ contract AquaFluxCore is
         // Transfer underlying tokens to user (net amount after fee)
         IERC20(asset.underlying).safeTransfer(msg.sender, netAmount);
 
-        emit AssetUnwrapped(assetId, msg.sender, amount);
+        emit AssetUnwrapped(assetId, msg.sender, amount, feeAmount, netAmount);
     }
 
     /**
@@ -541,14 +538,14 @@ contract AquaFluxCore is
     /**
      * @dev Pauses all operations
      */
-    function pause() external onlyRole(ADMIN_ROLE) {
+    function pause() external onlyRole(OPERATOR_ROLE) {
         _pause();
     }
 
     /**
      * @dev Unpauses all operations
      */
-    function unpause() external onlyRole(ADMIN_ROLE) {
+    function unpause() external onlyRole(TIMELOCK_ROLE) {
         _unpause();
     }
 
@@ -576,7 +573,7 @@ contract AquaFluxCore is
         bytes32 assetId,
         uint256 newCouponAllocationC,
         uint256 newCouponAllocationS
-    ) external override onlyRole(ADMIN_ROLE) {
+    ) external override onlyRole(TIMELOCK_ROLE) {
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (newCouponAllocationC > 10000) revert InvalidAllocationPercentage();
         if (newCouponAllocationS > 10000) revert InvalidAllocationPercentage();
@@ -610,7 +607,7 @@ contract AquaFluxCore is
     function updateMetadataURI(
         bytes32 assetId,
         string calldata newMetadataURI
-    ) external override onlyRole(ADMIN_ROLE) {
+    ) external override onlyRole(TIMELOCK_ROLE) {
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (bytes(newMetadataURI).length == 0) revert EmptyMetadataURI();
 
@@ -638,7 +635,7 @@ contract AquaFluxCore is
     function updateSTokenFeeAllocation(
         bytes32 assetId,
         uint256 newSTokenFeeAllocation
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(TIMELOCK_ROLE) {
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (newSTokenFeeAllocation > 10000) revert STokenFeeAllocationTooHigh();
 
@@ -666,7 +663,7 @@ contract AquaFluxCore is
     function updateOperationDeadline(
         bytes32 assetId,
         uint256 newOperationDeadline
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(TIMELOCK_ROLE) {
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (newOperationDeadline <= block.timestamp) revert OperationDeadlineMustBeInFuture();
         if (newOperationDeadline >= assets[assetId].maturity) revert OperationDeadlineMustBeBeforeMaturity();
@@ -695,7 +692,7 @@ contract AquaFluxCore is
     function setGlobalFeeRate(
         string calldata operation,
         uint256 feeRate
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(TIMELOCK_ROLE) {
         if (!_isValidOperation(operation)) revert InvalidOperation();
         if (feeRate > 10000) revert FeeRateTooHigh();
 
@@ -793,7 +790,7 @@ contract AquaFluxCore is
      * @dev Pauses all operations for a specific asset (admin only)
      * @param assetId The asset identifier to pause
      */
-    function pauseAsset(bytes32 assetId) external onlyRole(ADMIN_ROLE) {
+    function pauseAsset(bytes32 assetId) external onlyRole(OPERATOR_ROLE) {
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (assets[assetId].paused) revert AssetAlreadyPaused();
 
@@ -805,7 +802,7 @@ contract AquaFluxCore is
      * @dev Unpauses all operations for a specific asset (admin only)
      * @param assetId The asset identifier to unpause
      */
-    function unpauseAsset(bytes32 assetId) external onlyRole(ADMIN_ROLE) {
+    function unpauseAsset(bytes32 assetId) external onlyRole(TIMELOCK_ROLE) {
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (!assets[assetId].paused) revert AssetNotPaused();
 
@@ -905,7 +902,7 @@ contract AquaFluxCore is
      */
     function stopAssetOperations(
         bytes32 assetId
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(TIMELOCK_ROLE) {
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (maturityManagement[assetId].operationsStopped) revert OperationsAlreadyStopped();
 
@@ -1018,7 +1015,7 @@ contract AquaFluxCore is
         uint256 cAllocation,
         uint256 sAllocation,
         uint256 protocolFeeReward
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(TIMELOCK_ROLE) {
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (!maturityManagement[assetId].revenueInjected) revert RevenueNotInjectedYet();
         if (maturityManagement[assetId].distributionSet) revert DistributionAlreadySet();
@@ -1142,9 +1139,11 @@ contract AquaFluxCore is
             if (userBalance > 0) {
                 uint256 totalSupply = IERC20(asset.pToken).totalSupply();
                 if (totalSupply > 0) {
-                    userReward =
-                        (plan.pTokenAllocation * userBalance) /
-                        totalSupply;
+                    userReward = Math.mulDiv(
+                        plan.pTokenAllocation,
+                        userBalance,
+                        totalSupply
+                    );
                     if (userReward > 0) {
                         userClaimed[assetId][msg.sender][asset.pToken] = true;
                         totalReward += userReward;
@@ -1169,9 +1168,11 @@ contract AquaFluxCore is
             if (userBalance > 0) {
                 uint256 totalSupply = IERC20(asset.cToken).totalSupply();
                 if (totalSupply > 0) {
-                    userReward =
-                        (plan.cTokenAllocation * userBalance) /
-                        totalSupply;
+                    userReward = Math.mulDiv(
+                        plan.cTokenAllocation,
+                        userBalance,
+                        totalSupply
+                    );
                     if (userReward > 0) {
                         userClaimed[assetId][msg.sender][asset.cToken] = true;
                         totalReward += userReward;
@@ -1196,10 +1197,11 @@ contract AquaFluxCore is
             if (userBalance > 0) {
                 uint256 totalSupply = IERC20(asset.sToken).totalSupply();
                 if (totalSupply > 0) {
-                    userReward =
-                        ((plan.sTokenAllocation + plan.protocolFeeReward) *
-                            userBalance) /
-                        totalSupply;
+                    userReward = Math.mulDiv(
+                        plan.sTokenAllocation + plan.protocolFeeReward,
+                        userBalance,
+                        totalSupply
+                    );
                     if (userReward > 0) {
                         userClaimed[assetId][msg.sender][asset.sToken] = true;
                         totalReward += userReward;
@@ -1312,11 +1314,14 @@ contract AquaFluxCore is
         uint256 contractBalance = underlying.balanceOf(address(this));
         if (contractBalance < amount) revert InsufficientContractBalance();
 
-        // Reduce the tracked fee balance
-        assetFeeBalances[assetId] -= amount;
+        // Check tracked fee balance
+        if (assetFeeBalances[assetId] < amount) revert InsufficientFeeBalance();
 
-        // Transfer fees to recipient
+        // Transfer fees to recipient first
         underlying.safeTransfer(to, amount);
+
+        // Only reduce the tracked fee balance after successful transfer
+        assetFeeBalances[assetId] -= amount;
 
         emit ProtocolFeesWithdrawn(assetId, to, amount, msg.sender);
     }
@@ -1358,12 +1363,12 @@ contract AquaFluxCore is
                 // Check contract has sufficient balance
                 uint256 contractBalance = underlying.balanceOf(address(this));
                 if (contractBalance >= feeBalance) {
-                    // Reduce the tracked fee balance
+                    // Transfer fees to recipient first
+                    underlying.safeTransfer(to, feeBalance);
+                    
+                    // Only reduce the tracked fee balance after successful transfer
                     assetFeeBalances[assetId] = 0;
                     totalWithdrawn += feeBalance;
-
-                    // Transfer fees to recipient
-                    underlying.safeTransfer(to, feeBalance);
 
                     emit ProtocolFeesWithdrawn(
                         assetId,
@@ -1376,18 +1381,5 @@ contract AquaFluxCore is
         }
 
         if (totalWithdrawn == 0) revert InsufficientFeeBalance();
-    }
-
-    /**
-     * @dev Gets the total withdrawable fees across all assets for a specific underlying token
-     * @return totalFees The total fees available for withdrawal
-     */
-    function getTotalWithdrawableFeesForToken(
-        address /* underlyingToken */
-    ) external pure returns (uint256 totalFees) {
-        // Note: This function would need to iterate through all assets
-        // In a production environment, consider maintaining a separate mapping for efficiency
-        // For now, this function provides the interface but would require asset enumeration
-        return 0; // Placeholder - would need asset enumeration to implement fully
     }
 }

@@ -103,8 +103,7 @@ contract AquaFluxTimelock is TimelockController {
      * @dev Configure default business and emergency operations
      */
     function _configureDefaults() internal {
-        // Business operations
-        _setOperationDelay(bytes4(keccak256("upgradeTo(address)")), 3 days);
+        // Business operations - UUPS upgrade (OpenZeppelin 5.x only has upgradeToAndCall)
         _setOperationDelay(
             bytes4(keccak256("upgradeToAndCall(address,bytes)")),
             3 days
@@ -126,18 +125,45 @@ contract AquaFluxTimelock is TimelockController {
             12 hours
         );
 
-        // Emergency functions
-        bytes4[5] memory emergencyFunctions = [
-            bytes4(keccak256("pause()")),
-            bytes4(keccak256("unpause()")),
-            bytes4(keccak256("pauseAsset(bytes32)")),
-            bytes4(keccak256("unpauseAsset(bytes32)")),
-            bytes4(keccak256("stopAssetOperations(bytes32)"))
-        ];
-        for (uint256 i = 0; i < emergencyFunctions.length; i++) {
-            _setEmergencyWhitelist(emergencyFunctions[i], true);
-            _setOperationDelay(emergencyFunctions[i], EMERGENCY_DELAY);
-        }
+        // High-risk governance functions (longer delays)
+        _setOperationDelay(bytes4(keccak256("setFactory(address)")), 3 days);
+        _setOperationDelay(bytes4(keccak256("setTimelock(address)")), 7 days);
+        _setOperationDelay(
+            bytes4(keccak256("setGlobalFeeRate(string,uint256)")),
+            2 days
+        );
+
+        // Medium-risk asset management functions (1 day delay)
+        _setOperationDelay(
+            bytes4(keccak256("updateCouponAllocation(bytes32,uint256,uint256)")),
+            1 days
+        );
+        _setOperationDelay(
+            bytes4(keccak256("updateSTokenFeeAllocation(bytes32,uint256)")),
+            1 days
+        );
+        _setOperationDelay(
+            bytes4(keccak256("updateOperationDeadline(bytes32,uint256)")),
+            1 days
+        );
+        _setOperationDelay(
+            bytes4(keccak256("setDistributionPlan(bytes32,uint256,uint256,uint256,uint256)")),
+            1 days
+        );
+
+        // Low-risk metadata function (12 hours delay)
+        _setOperationDelay(
+            bytes4(keccak256("updateMetadataURI(bytes32,string)")),
+            12 hours
+        );
+
+        // Governance functions for safety measure removal (1 day delay)
+        _setOperationDelay(bytes4(keccak256("unpause()")), 1 days);
+        _setOperationDelay(bytes4(keccak256("unpauseAsset(bytes32)")), 1 days);
+        _setOperationDelay(bytes4(keccak256("stopAssetOperations(bytes32)")), 1 days);
+
+        // Note: pause() and pauseAsset() now use OPERATOR_ROLE and don't require timelock
+        // They are removed from emergency functions as they can be executed directly
     }
 
     /**
