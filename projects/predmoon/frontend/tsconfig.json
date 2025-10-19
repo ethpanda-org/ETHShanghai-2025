@@ -1,0 +1,29 @@
+{
+  // https://nuxt.com/docs/guide/conc
+  // epts/typescript
+  "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+  },
+  "vueCompilerOptions": {
+    "plugins": [
+      "@vue-macros/volar/dist/jsx",
+      "@vue-macros/volar/dist/define-options"
+    ]
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./.nuxt/tsconfig.app.json"
+    },
+    {
+      "path": "./.nuxt/tsconfig.server.json"
+    },
+    {
+      "path": "./.nuxt/tsconfig.shared.json"
+    },
+    {
+      "path": "./.nuxt/tsconfig.node.json"
+    }
+  ]
+}

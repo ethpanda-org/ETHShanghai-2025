@@ -1,0 +1,52 @@
+@import "tailwindcss" theme(static);
+
+@theme static {
+  --font-sans: "Public Sans", sans-serif;
+  --font-dmsans: DM Sans, DM Sans;
+  --font-roboto: Roboto, Roboto;
+  --font-dinpro: DINPro, DINPro;
+  --font-alexandria: Alexandria, Alexandria;
+  --font-anek: Anek Gujarati, Anek Gujarati;
+
+  /* theme colors */
+  --ui-primary: #5105ea;
+}
+
+@font-face {
+  font-family: "Alexandria";
+  src: url("~/assets/font/Aa厚底黑.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Alexandria";
+  src: url("~/assets/font/AlibabaPuHuiTi-2-105-Heavy.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+html,
+body {
+  overflow: hidden;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+:root {
+  --turing-purple-color: #7000ff;
+  --turing-green-color: #51f7a6;
+  --user-selected-yes-color: rgba(82, 196, 26, 0.7);
+  --user-selected-no-color: rgba(255, 77, 79, 0.7);
+  --user-selected-next-color: rgba(173, 173, 173, 0.7);
+}
+
+/* vant components theme colors */
+:root:root {
+    --van-primary-color: var(--ui-primary);
+}
