@@ -2,15 +2,29 @@
 
 import { useAccount } from 'wagmi'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { CreateContractForm } from '@/components/contract/CreateContractForm'
+import { CreateContractForm, FormValues } from '@/components/contract/CreateContractForm'
+import { TransactionStatusPanel } from '@/components/contract/TransactionStatusPanel'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useCreateEscrow } from '@/hooks/useCreateEscrow'
+import { generateOrderId } from '@/lib/contracts'
 
 export default function CreateContractPage() {
   const { isConnected } = useAccount()
   const router = useRouter()
+  const [orderId, setOrderId] = useState(generateOrderId())
+  const [amount, setAmount] = useState('')
+
+  const {
+    createEscrow,
+    isCreating,
+    currentStep,
+    error,
+    transactionHash,
+    isSuccess,
+  } = useCreateEscrow()
 
   useEffect(() => {
     if (!isConnected) {
@@ -22,77 +36,81 @@ export default function CreateContractPage() {
     return null // 重定向中...
   }
 
+  // 处理表单提交
+  const handleSubmit = async (values: FormValues) => {
+    console.log('Form values:', values)
+    setOrderId(values.orderId) // 更新orderId状态
+    setAmount(values.amount) // 更新支付金额状态
+    await createEscrow({
+      orderId: values.orderId,
+      receiver: values.receiver as `0x${string}`,
+      amount: values.amount,
+      email: values.email,
+    })
+  }
+
+  // 查看合约详情
+  const handleViewContract = () => {
+    router.push(`/dashboard/contracts/${orderId}`)
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       <main className="flex-1 py-8">
-        <div className="container mx-auto px-4 max-w-3xl">
+        <div className="container mx-auto px-4 max-w-7xl">
           {/* Page Header */}
           <div className="mb-8">
-            <h1 className="mb-2 text-3xl font-bold text-gray-900">创建托管合约</h1>
+            <h1 className="mb-2 text-3xl font-bold text-gray-900">创建托管订单</h1>
             <p className="text-gray-600">
-              填写以下信息创建一个新的资金托管合约。资金将被安全地锁定在智能合约中，直到满足放款条件。
+              填写以下信息创建一个新的资金托管订单
             </p>
           </div>
 
-          {/* Info Card */}
-          <Card className="mb-6 border-blue-200 bg-blue-50">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <svg
-                  className="h-5 w-5 text-blue-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          {/* Grid Layout: Form (Left) + Transaction Status (Right) */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
+            {/* Left: Form */}
+            <div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>订单信息</CardTitle>
+                  <CardDescription>请仔细填写以下信息，确保准确无误</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <CreateContractForm 
+                    onSubmit={handleSubmit} 
+                    isCreating={isCreating}
+                    orderId={orderId}
+                    onOrderIdChange={setOrderId}
+                    onAmountChange={setAmount}
                   />
-                </svg>
-                工作流程
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ol className="space-y-2 text-sm text-gray-700">
-                <li className="flex items-start gap-2">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">
-                    1
-                  </span>
-                  <span>填写表单并点击"创建并支付"</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">
-                    2
-                  </span>
-                  <span>在钱包中授权（Approve）合约可以转移您的USDT</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">
-                    3
-                  </span>
-                  <span>确认第二笔交易，将USDT存入托管合约</span>
-                </li>
-              </ol>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </div>
 
-          {/* Form Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>合约信息</CardTitle>
-              <CardDescription>请仔细填写以下信息，确保准确无误</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CreateContractForm />
-            </CardContent>
-          </Card>
+            {/* Right: Transaction Status Panel */}
+            <div>
+              <TransactionStatusPanel
+                amount={amount}
+                currentStep={currentStep}
+                transactionHash={transactionHash}
+                error={error}
+                isCreating={isCreating}
+                isSuccess={isSuccess}
+                onSubmit={() => {
+                  // 触发表单提交
+                  const form = document.querySelector('form')
+                  if (form) {
+                    form.requestSubmit()
+                  }
+                }}
+                onViewContract={handleViewContract}
+              />
+            </div>
+          </div>
         </div>
       </main>
       <Footer />
     </div>
   )
 }
-

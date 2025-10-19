@@ -7,11 +7,10 @@ import { Footer } from '@/components/layout/Footer'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Badge } from '@/components/ui/badge'
 import { AlertCircle, Plus, Wallet, ArrowUpRight, Clock, CheckCircle2, XCircle } from 'lucide-react'
 import Link from 'next/link'
 import { getContractsByAddress, ContractWithCamelCase as Contract } from '@/lib/db'
-import { OrderStatus, OrderStatusText, OrderStatusColor } from '@/lib/contracts'
+import { OrderStatus, OrderStatusText } from '@/lib/contracts'
 
 export default function DashboardPage() {
   const { address, isConnected } = useAccount()
@@ -30,6 +29,40 @@ export default function DashboardPage() {
     totalAmount: contracts?.reduce((sum, c) => sum + parseFloat(c.amount), 0).toFixed(2) || '0.00',
   }
 
+  // 渲染状态标签
+  const renderStatusBadge = (status: string) => {
+    const statusEnum = status as unknown as OrderStatus
+    
+    if (status === 'PENDING') {
+      return (
+        <span className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold shadow-sm transition-colors bg-amber-500 text-white hover:bg-amber-600">
+          <Clock className="h-3.5 w-3.5" />
+          {OrderStatusText[statusEnum]}
+        </span>
+      )
+    }
+    
+    if (status === 'PAID') {
+      return (
+        <span className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold shadow-sm transition-colors bg-emerald-500 text-white hover:bg-emerald-600">
+          <CheckCircle2 className="h-3.5 w-3.5" />
+          {OrderStatusText[statusEnum]}
+        </span>
+      )
+    }
+    
+    if (status === 'CANCELLED') {
+      return (
+        <span className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold shadow-sm transition-colors bg-slate-500 text-white hover:bg-slate-600">
+          <XCircle className="h-3.5 w-3.5" />
+          {OrderStatusText[statusEnum]}
+        </span>
+      )
+    }
+    
+    return null
+  }
+
   // 未连接钱包状态
   if (!isConnected) {
     return (
@@ -38,8 +71,8 @@ export default function DashboardPage() {
         <main className="flex-1 flex items-center justify-center bg-gray-50">
           <Card className="max-w-md">
             <CardHeader className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-100">
-                <AlertCircle className="h-8 w-8 text-yellow-600" />
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-teal-50">
+                <AlertCircle className="h-8 w-8 text-teal-600" />
               </div>
               <CardTitle>需要连接钱包</CardTitle>
               <CardDescription>
@@ -48,7 +81,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="text-center">
               <p className="text-sm text-gray-600">
-                点击页面右上角的"连接钱包"按钮，使用 MetaMask 或其他支持的钱包登录。
+                点击页面右上角的&ldquo;连接钱包&rdquo;按钮，使用 MetaMask 或其他支持的钱包登录。
               </p>
             </CardContent>
           </Card>
@@ -63,53 +96,42 @@ export default function DashboardPage() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       <main className="flex-1 py-8">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-7xl">
           {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="mb-2 text-3xl font-bold text-gray-900">我的合约</h1>
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <Wallet className="h-4 w-4" />
-              <span>已连接: {address?.slice(0, 6)}...{address?.slice(-4)}</span>
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="mb-2 text-3xl font-bold text-gray-900">我的订单</h1>
+              <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <Wallet className="h-4 w-4" />
+                <span>已连接: {address?.slice(0, 6)}...{address?.slice(-4)}</span>
+              </div>
             </div>
+            <Button asChild className="gap-2 h-12">
+              <Link href="/dashboard/create">
+                <Plus className="h-4 w-4" />
+                创建订单
+              </Link>
+            </Button>
           </div>
 
-          {/* Welcome Card */}
-          <Card className="mb-8 border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
-            <CardHeader>
-              <CardTitle>欢迎使用 PayWay 👋</CardTitle>
-              <CardDescription>
-                您已成功连接钱包，可以开始创建和管理您的托管合约
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button asChild className="gap-2">
-                <Link href="/dashboard/create">
-                  <Plus className="h-4 w-4" />
-                  创建托管合约
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
-
           {/* Contracts List */}
-          <Card>
+          <Card className="mb-8">
             <CardHeader>
-              <CardTitle>合约列表</CardTitle>
+              <CardTitle>订单列表</CardTitle>
               <CardDescription>
-                您参与的所有托管合约将显示在这里
+                您参与的所有托管订单
               </CardDescription>
             </CardHeader>
             <CardContent>
               {isLoading ? (
                 // 加载状态
-                <div className="space-y-4">
+                <div className="space-y-2">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-2 flex-1">
-                        <Skeleton className="h-5 w-32" />
-                        <Skeleton className="h-4 w-48" />
-                      </div>
-                      <Skeleton className="h-6 w-20" />
+                    <div key={i} className="flex items-center gap-4 p-4 border-b last:border-b-0">
+                      <Skeleton className="h-5 w-32" />
+                      <Skeleton className="h-5 w-20" />
+                      <Skeleton className="h-5 w-32" />
+                      <Skeleton className="h-5 flex-1" />
                     </div>
                   ))}
                 </div>
@@ -122,7 +144,7 @@ export default function DashboardPage() {
                 </div>
               ) : !contracts || contracts.length === 0 ? (
                 // 空状态
-                <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="flex flex-col items-center justify-center py-16 text-center">
                   <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
                     <svg
                       className="h-10 w-10 text-gray-400"
@@ -139,71 +161,82 @@ export default function DashboardPage() {
                     </svg>
                   </div>
                   <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                    暂无合约
+                    暂无订单
                   </h3>
                   <p className="mb-6 text-sm text-gray-600">
-                    点击上方按钮创建您的第一个托管合约
+                    点击右上角按钮创建您的第一个托管订单
                   </p>
-                  <Button asChild variant="outline" className="gap-2">
-                    <Link href="/dashboard/create">
-                      <Plus className="h-4 w-4" />
-                      创建合约
-                    </Link>
-                  </Button>
                 </div>
               ) : (
-                // 合约列表
-                <div className="space-y-3">
-                  {contracts.map((contract) => (
-                    <Link 
-                      key={contract.id} 
-                      href={`/dashboard/contracts/${contract.orderId}`}
-                      className="block"
-                    >
-                      <div className="flex items-center justify-between rounded-lg border p-4 transition-all hover:border-blue-300 hover:bg-blue-50/50 hover:shadow-sm">
-                        <div className="flex-1 space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono text-sm font-medium text-gray-900">
-                              #{contract.orderId}
-                            </span>
-                            <Badge 
-                              variant="outline" 
-                              className={`text-white ${OrderStatusColor[contract.status as unknown as OrderStatus]}`}
+                // 表格样式合约列表
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="border-b">
+                      <tr className="text-left">
+                        <th className="pb-3 text-sm font-medium text-gray-600">订单号</th>
+                        <th className="pb-3 text-sm font-medium text-gray-600">状态</th>
+                        <th className="pb-3 text-sm font-medium text-gray-600">金额</th>
+                        <th className="pb-3 text-sm font-medium text-gray-600">交易对手</th>
+                        <th className="pb-3 text-sm font-medium text-gray-600">创建时间</th>
+                        <th className="pb-3 text-sm font-medium text-gray-600"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {contracts.map((contract) => (
+                        <tr 
+                          key={contract.id}
+                          className="border-b last:border-b-0 transition-colors hover:bg-teal-50/30"
+                        >
+                          <td className="py-4">
+                            <Link 
+                              href={`/dashboard/contracts/${contract.orderId}`}
+                              className="font-mono text-sm font-medium text-gray-900 hover:text-teal-600"
                             >
-                              {contract.status === 'PENDING' && <Clock className="mr-1 h-3 w-3" />}
-                              {contract.status === 'PAID' && <CheckCircle2 className="mr-1 h-3 w-3" />}
-                              {contract.status === 'CANCELLED' && <XCircle className="mr-1 h-3 w-3" />}
-                              {OrderStatusText[contract.status as unknown as OrderStatus]}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-gray-600">
+                              #{contract.orderId}
+                            </Link>
+                          </td>
+                          <td className="py-4">
+                            {renderStatusBadge(contract.status)}
+                          </td>
+                          <td className="py-4">
                             <span className="font-semibold text-gray-900">{contract.amount} USDT</span>
-                            <span>
+                          </td>
+                          <td className="py-4">
+                            <span className="text-sm text-gray-600">
                               {contract.senderAddress.toLowerCase() === address?.toLowerCase() 
                                 ? `付款给 ${contract.receiverAddress.slice(0, 6)}...${contract.receiverAddress.slice(-4)}`
                                 : `收款自 ${contract.senderAddress.slice(0, 6)}...${contract.senderAddress.slice(-4)}`
                               }
                             </span>
-                            <span className="text-gray-400">
+                          </td>
+                          <td className="py-4">
+                            <span className="text-sm text-gray-500">
                               {contract.createdAt && new Date(contract.createdAt).toLocaleDateString('zh-CN')}
                             </span>
-                          </div>
-                        </div>
-                        <ArrowUpRight className="h-5 w-5 text-gray-400" />
-                      </div>
-                    </Link>
-                  ))}
+                          </td>
+                          <td className="py-4 text-right">
+                            <Link 
+                              href={`/dashboard/contracts/${contract.orderId}`}
+                              className="inline-flex items-center text-sm text-gray-500 hover:text-teal-600"
+                            >
+                              <ArrowUpRight className="h-4 w-4" />
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </CardContent>
           </Card>
 
           {/* Quick Stats */}
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-3">
             <Card>
               <CardHeader className="pb-3">
                 <CardDescription>作为付款方</CardDescription>
-                <CardTitle className="text-3xl">
+                <CardTitle className="text-3xl text-teal-600">
                   {isLoading ? <Skeleton className="h-9 w-12" /> : stats.asSender}
                 </CardTitle>
               </CardHeader>
@@ -211,7 +244,7 @@ export default function DashboardPage() {
             <Card>
               <CardHeader className="pb-3">
                 <CardDescription>作为收款方</CardDescription>
-                <CardTitle className="text-3xl">
+                <CardTitle className="text-3xl text-teal-600">
                   {isLoading ? <Skeleton className="h-9 w-12" /> : stats.asReceiver}
                 </CardTitle>
               </CardHeader>
@@ -219,7 +252,7 @@ export default function DashboardPage() {
             <Card>
               <CardHeader className="pb-3">
                 <CardDescription>总交易金额</CardDescription>
-                <CardTitle className="text-3xl">
+                <CardTitle className="text-2xl text-teal-600">
                   {isLoading ? (
                     <Skeleton className="h-9 w-24" />
                   ) : (

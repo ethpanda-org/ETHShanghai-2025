@@ -16,19 +16,19 @@ export function Footer() {
               href="https://github.com/your-repo"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-sm text-gray-600 hover:text-teal-600 transition-colors"
             >
               GitHub
             </Link>
             <Link
               href="/docs"
-              className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-sm text-gray-600 hover:text-teal-600 transition-colors"
             >
               文档
             </Link>
             <Link
               href="/about"
-              className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-sm text-gray-600 hover:text-teal-600 transition-colors"
             >
               关于我们
             </Link>

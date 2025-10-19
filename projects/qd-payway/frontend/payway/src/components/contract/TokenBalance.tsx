@@ -10,9 +10,10 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 interface TokenBalanceProps {
   address: `0x${string}`
+  inline?: boolean
 }
 
-export function TokenBalance({ address }: TokenBalanceProps) {
+export function TokenBalance({ address, inline = false }: TokenBalanceProps) {
   const { data: balance, isLoading, isError } = useReadContract({
     address: CONTRACTS.USDT_SEPOLIA as `0x${string}`,
     abi: usdtAbi,
@@ -27,6 +28,29 @@ export function TokenBalance({ address }: TokenBalanceProps) {
 
   const balanceNumber = parseFloat(formattedBalance)
 
+  // Inline模式：只显示余额数字
+  if (inline) {
+    if (isLoading) {
+      return <Skeleton className="h-4 w-24 inline-block" />
+    }
+
+    if (isError) {
+      return <span className="text-sm text-red-600">加载失败</span>
+    }
+
+    return (
+      <span className="text-gray-600">
+        余额: <span className="font-medium text-teal-600">
+          {parseFloat(formattedBalance).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 6,
+          })} USDT
+        </span>
+      </span>
+    )
+  }
+
+  // 完整模式
   if (isLoading) {
     return (
       <div className="flex items-center justify-between">

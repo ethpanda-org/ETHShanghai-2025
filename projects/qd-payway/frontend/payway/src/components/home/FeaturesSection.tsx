@@ -24,7 +24,7 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="py-20 sm:py-32">
+    <section className="py-20 sm:py-32 bg-gray-50">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="mx-auto mb-16 max-w-2xl text-center">
@@ -41,10 +41,10 @@ export function FeaturesSection() {
           {features.map((feature) => (
             <Card
               key={feature.title}
-              className="border-2 transition-all hover:border-blue-200 hover:shadow-lg"
+              className="transition-all duration-200 hover:border-teal-300 hover:bg-teal-50/30"
             >
               <CardHeader>
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-500">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-cyan-500">
                   <feature.icon className="h-6 w-6 text-white" />
                 </div>
                 <CardTitle className="text-xl">{feature.title}</CardTitle>
@@ -61,22 +61,22 @@ export function FeaturesSection() {
 
         {/* How it works */}
         <div className="mt-20">
-          <h3 className="mb-8 text-center text-2xl font-bold text-gray-900">
+          <h3 className="mb-12 text-center text-2xl font-bold text-gray-900">
             工作流程
           </h3>
           <div className="mx-auto max-w-4xl">
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid gap-8 md:grid-cols-3">
               <div className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-lg font-bold text-blue-600">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-teal-50 text-lg font-bold text-teal-600">
                   1
                 </div>
-                <h4 className="mb-2 font-semibold text-gray-900">创建合约</h4>
+                <h4 className="mb-2 font-semibold text-gray-900">创建订单</h4>
                 <p className="text-sm text-gray-600">
                   填写收款信息和放款条件，资金锁定在智能合约中
                 </p>
               </div>
               <div className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 text-lg font-bold text-purple-600">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-cyan-50 text-lg font-bold text-cyan-600">
                   2
                 </div>
                 <h4 className="mb-2 font-semibold text-gray-900">等待履约</h4>
@@ -85,7 +85,7 @@ export function FeaturesSection() {
                 </p>
               </div>
               <div className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-lg font-bold text-green-600">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-lg font-bold text-emerald-600">
                   3
                 </div>
                 <h4 className="mb-2 font-semibold text-gray-900">自动放款</h4>

@@ -28,7 +28,7 @@ export default function ContractDetailPage() {
         setContract(data)
       } catch (err: any) {
         console.error('Error loading contract:', err)
-        setError(err.message || '加载合约信息失败')
+        setError(err.message || '加载订单信息失败')
       } finally {
         setIsLoading(false)
       }
@@ -71,14 +71,14 @@ export default function ContractDetailPage() {
           {!isLoading && !error && !contract && (
             <Alert>
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>未找到合约</AlertTitle>
+              <AlertTitle>未找到订单</AlertTitle>
               <AlertDescription>
-                订单号 {orderId} 对应的合约不存在
+                订单号 {orderId} 对应的订单不存在
               </AlertDescription>
             </Alert>
           )}
 
-          {/* 合约详情 */}
+          {/* 订单详情 */}
           {!isLoading && !error && contract && (
             <ContractDetails contract={contract} />
           )}

@@ -53,7 +53,7 @@ export function ReleaseInstructionsDialog({
     <Dialog>
       <DialogTrigger asChild>
         {children || (
-          <Button className="gap-2">
+          <Button className="gap-2 h-12">
             <Mail className="h-4 w-4" />
             申请放款
           </Button>
@@ -156,7 +156,7 @@ export function ReleaseInstructionsDialog({
           {/* 快捷操作按钮 */}
           <div className="flex gap-3 pt-2">
             <Button
-              className="flex-1"
+              className="flex-1 h-12"
               onClick={() => {
                 const mailtoLink = `mailto:${releaseEmail}?subject=${encodeURIComponent(emailSubject)}`
                 window.location.href = mailtoLink

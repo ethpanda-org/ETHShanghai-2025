@@ -101,19 +101,19 @@ export function ReleaseStatus({ orderId }: ReleaseStatusProps) {
   const statusConfig = {
     pending: {
       icon: <Clock className="h-5 w-5" />,
-      color: 'bg-blue-100 text-blue-800 border-blue-200',
+      color: 'bg-teal-100 text-teal-800 border-teal-200',
       label: '待处理',
       description: '已收到您的放款指令，正在进行验证...',
     },
     processing: {
       icon: <Loader2 className="h-5 w-5 animate-spin" />,
-      color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      color: 'bg-cyan-100 text-cyan-800 border-cyan-200',
       label: '处理中',
       description: '验证通过，正在执行链上交易...',
     },
     completed: {
       icon: <CheckCircle2 className="h-5 w-5" />,
-      color: 'bg-green-100 text-green-800 border-green-200',
+      color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
       label: '已完成',
       description: '放款成功！资金已转至收款方账户。',
     },
@@ -170,7 +170,7 @@ export function ReleaseStatus({ orderId }: ReleaseStatusProps) {
               href={getTransactionUrl(releaseRequest.transaction_hash)}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-mono break-all"
+              className="flex items-center gap-2 text-sm text-teal-600 hover:text-teal-700 font-mono break-all"
             >
               {releaseRequest.transaction_hash.slice(0, 10)}...
               {releaseRequest.transaction_hash.slice(-8)}
@@ -189,8 +189,8 @@ export function ReleaseStatus({ orderId }: ReleaseStatusProps) {
         {/* 处理中提示 */}
         {(releaseRequest.request_status === 'pending' || 
           releaseRequest.request_status === 'processing') && (
-          <div className="rounded-lg bg-blue-50 border border-blue-200 p-3">
-            <p className="text-sm text-blue-800">
+          <div className="rounded-lg bg-teal-50 border border-teal-200 p-3">
+            <p className="text-sm text-teal-800">
               ⏱️ 正在处理中，预计需要 5-10 分钟。页面将自动更新状态，请耐心等待。
             </p>
           </div>

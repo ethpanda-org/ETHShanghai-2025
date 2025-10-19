@@ -26,11 +26,11 @@ export const OrderStatusText: Record<OrderStatus, string> = {
   [OrderStatus.CANCELLED]: '已取消',
 }
 
-// 订单状态颜色
+// 订单状态颜色 - 优化后更鲜明醒目
 export const OrderStatusColor: Record<OrderStatus, string> = {
-  [OrderStatus.PENDING]: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  [OrderStatus.PAID]: 'bg-green-100 text-green-800 border-green-200',
-  [OrderStatus.CANCELLED]: 'bg-gray-100 text-gray-800 border-gray-200',
+  [OrderStatus.PENDING]: 'bg-amber-500 text-white hover:bg-amber-600',
+  [OrderStatus.PAID]: 'bg-emerald-500 text-white hover:bg-emerald-600',
+  [OrderStatus.CANCELLED]: 'bg-slate-500 text-white hover:bg-slate-600',
 }
 
 // 验证方式枚举
