@@ -6,28 +6,69 @@ import KPI from '../components/KPI'
 import AssetCards from '../components/AssetCards'
 import AssetTable from '../components/AssetTable'
 import { cx } from '../utils/helpers'
-import { assetsApi } from '../api'
+import { assetsApi, marketsApi } from '../api'
 
-function KPIBar({ apiAssets }) {
+function KPIBar({ apiAssets, tvlData, volumeData, loading }) {
+  // 格式化变化显示的辅助函数
+  const formatChangeDisplay = (changePercentage, changeDirection) => {
+    if (!changePercentage || changePercentage === "0.00") {
+      return "0%";
+    }
+    const sign = changeDirection === "up" ? "+" : changeDirection === "down" ? "-" : "";
+    return `${sign}${changePercentage}%`;
+  };
+
+  // 获取趋势方向
+  const getTrend = (changeDirection) => {
+    return changeDirection === "down" ? "down" : "up";
+  };
+
   // 计算资产数量
   const activeMarketsCount = apiAssets ? apiAssets.length : 0
-  
-  // 计算TVL总和并格式化
-  const totalTVL = apiAssets ? 
-    apiAssets.reduce((sum, asset) => sum + (asset.tvl || 0), 0) : 0
-  const formattedTVL = totalTVL >= 1 ? `$${totalTVL.toFixed(1)}` : `$${(totalTVL * 1000).toFixed(0)}k`
-  
+
+  // TVL数据：优先使用API数据，否则使用计算值
+  const tvlValue = loading ? "$0" : (tvlData?.totalTVLFormatted ? `$${tvlData.totalTVLFormatted}` : (() => {
+    const totalTVL = apiAssets ? apiAssets.reduce((sum, asset) => sum + (asset.tvl || 0), 0) : 0
+    return totalTVL >= 1 ? `$${totalTVL.toFixed(1)}` : `$${(totalTVL * 1000).toFixed(0)}k`
+  })())
+
+  const tvlTrendValue = loading ? "0%" : formatChangeDisplay(tvlData?.changePercentage, tvlData?.changeDirection)
+  const tvlTrend = getTrend(tvlData?.changeDirection || "up")
+
+  // Volume数据
+  const volumeValue = loading ? "$0" : (volumeData?.currentVolume24hFormatted ? `$${volumeData.currentVolume24hFormatted}` : "$0")
+  const volumeTrendValue = loading ? "0%" : formatChangeDisplay(volumeData?.changePercentage, volumeData?.changeDirection)
+  const volumeTrend = getTrend(volumeData?.changeDirection || "up")
+
+  // Active Markets数据
+  const newAssetsCount = apiAssets ? apiAssets.filter(asset => asset.isNew).length : 0
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
       <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-4 border border-blue-200/50">
-          <KPI label="TVL" value={formattedTVL} trend="up" trendValue="+2.3%" />
+          <KPI
+            label="TVL"
+            value={tvlValue}
+            trend={tvlTrend}
+            trendValue={tvlTrendValue}
+          />
         </div>
         <div className="bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl p-4 border border-emerald-200/50">
-          <KPI label="24h Volume" value="$4.5" trend="up" trendValue="+12.5%" />
+          <KPI
+            label="24h Volume"
+            value={volumeValue}
+            trend={volumeTrend}
+            trendValue={volumeTrendValue}
+          />
         </div>
         <div className="bg-gradient-to-br from-purple-50 to-violet-100 rounded-2xl p-4 border border-purple-200/50">
-          <KPI label="Active Markets" value={activeMarketsCount.toString()} trend="up" trendValue={apiAssets.filter(asset => asset.isNew).length} />
+          <KPI
+            label="Active Markets"
+            value={activeMarketsCount.toString()}
+            trend="up"
+            trendValue={newAssetsCount > 0 ? `+${newAssetsCount}` : "0"}
+          />
         </div>
       </div>
       <div className="flex flex-col gap-3">
@@ -102,49 +143,71 @@ export default function MarketsPage({ push }) {
   const [sort, setSort] = useState("trend")
   const [showExplainer, setShowExplainer] = useState(false)
   const [apiAssets, setApiAssets] = useState(null)
+  const [tvlData, setTvlData] = useState(null)
+  const [volumeData, setVolumeData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   
   const assets = useSortedFiltered(
-    Array.isArray(apiAssets) ? apiAssets : ASSETS, 
+    apiAssets || [],
     { sort, search, goal }
   )
 
   useEffect(() => {
-    const fetchAssets = async () => {
-      setLoading(true)
-      setError(null)
+    const fetchData = async () => {
       try {
-        const response = await assetsApi.getAll()
-        const rawAssets = response.data?.assets || []
-        
-        // 数据验证和转换
-        const validatedAssets = rawAssets.map(asset => ({
-          ...asset,
-          sApyRange: Array.isArray(asset.sApyRange) ? asset.sApyRange : [0, 0],
-          pApy: Number(asset.pApy) || 0,
-          cApr: Number(asset.cApr) || 0,
-          tvl: Number(asset.tvl) || 0,
-          vol24h: Number(asset.vol24h) || 0
-        }))
-        
-        setApiAssets(validatedAssets)
+        setLoading(true)
+        setError(null)
+
+        // 并行获取assets、TVL和Volume数据
+        const [assetsResponse, tvlResponse, volumeResponse] = await Promise.all([
+          assetsApi.getAll({
+            page: 1,
+            limit: 100,
+            isActive: true
+          }),
+          marketsApi.getTvlTotal().catch(err => {
+            console.warn('TVL API failed:', err)
+            return null
+          }),
+          marketsApi.getVolume24h('sepolia').catch(err => {
+            console.warn('Volume API failed:', err)
+            return null
+          })
+        ])
+
+        // 处理assets数据
+        if (assetsResponse.status === "success" && assetsResponse.data) {
+          console.log('assets response.data', assetsResponse.data)
+          setApiAssets(assetsResponse.data.assets)
+        } else {
+          throw new Error(assetsResponse.message || 'Failed to fetch assets')
+        }
+
+        // 处理TVL数据
+        if (tvlResponse && tvlResponse.success && tvlResponse.data) {
+          console.log('tvl response.data', tvlResponse.data)
+          setTvlData(tvlResponse.data)
+        }
+
+        // 处理Volume数据
+        if (volumeResponse && volumeResponse.success && volumeResponse.data) {
+          console.log('volume response.data', volumeResponse.data)
+          setVolumeData(volumeResponse.data)
+        }
+
       } catch (err) {
         setError(err.message)
-        console.error('Failed to fetch assets:', err)
+        console.error('Failed to fetch data:', err)
+        // 出错时设置为空数组，显示空数据状态
+        setApiAssets([])
       } finally {
         setLoading(false)
       }
     }
 
-    // fetchAssets()
+    fetchData()
   }, [])
-
-  useEffect(() => {
-    if (apiAssets) {
-      console.log('apiAssets更新了:', apiAssets)
-    }
-  }, [apiAssets])
 
   return (
     <div className="space-y-6">
@@ -170,7 +233,12 @@ export default function MarketsPage({ push }) {
         </header>
       </div>
 
-      <KPIBar apiAssets={ASSETS} />
+      <KPIBar
+        apiAssets={apiAssets || []}
+        tvlData={tvlData}
+        volumeData={volumeData}
+        loading={loading}
+      />
 
       <LegendBar open={showExplainer} setOpen={setShowExplainer} />
       <Explainer open={showExplainer} setOpen={setShowExplainer} />
@@ -240,16 +308,55 @@ export default function MarketsPage({ push }) {
       </div>
 
       {/* Content */}
-      {view === "cards" ? (
-        <AssetCards 
-          assets={assets} 
-          onSwap={(params) => push("swap", params)} 
-          onBuild={(params) => push("structure", params)} 
+      {loading ? (
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 p-8 shadow-sm">
+          <div className="flex items-center justify-center">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-slate-600">Loading assets...</span>
+            </div>
+          </div>
+        </div>
+      ) : error ? (
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-red-200/50 p-8 shadow-sm">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-4">
+              <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-slate-800 mb-2">Failed to load assets</h3>
+            <p className="text-slate-600 mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      ) : assets.length === 0 ? (
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 p-8 shadow-sm">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-slate-100 rounded-full mb-4">
+              <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8V4a1 1 0 00-1-1H7a1 1 0 00-1 1v1m8 0V4.5" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-slate-800 mb-2">No assets found</h3>
+            <p className="text-slate-600">There are no assets available at the moment.</p>
+          </div>
+        </div>
+      ) : view === "cards" ? (
+        <AssetCards
+          assets={assets}
+          onSwap={(params) => push("swap", params)}
+          onBuild={(params) => push("structure", params)}
         />
       ) : (
-        <AssetTable 
-          assets={assets} 
-          onSwap={(params) => push("swap", params)} 
+        <AssetTable
+          assets={assets}
+          onSwap={(params) => push("swap", params)}
         />
       )}
     </div>

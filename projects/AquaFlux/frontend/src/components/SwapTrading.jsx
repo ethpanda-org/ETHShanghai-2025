@@ -119,7 +119,6 @@ export default function SwapTrading({ universe, asset, push, params }) {
     try {
       showApprovalSubmittedToast(fromToken.symbol)
       await approve()
-      showApprovalSuccessToast(fromToken.symbol)
     } catch (error) {
       console.error('Approval failed:', error)
       showTransactionErrorToast(error, 'Approval')
@@ -204,7 +203,7 @@ export default function SwapTrading({ universe, asset, push, params }) {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">From Token</label>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <SwapTokenSelect
                 token={fromToken}
                 onTokenSelect={setFromToken}
@@ -222,7 +221,7 @@ export default function SwapTrading({ universe, asset, push, params }) {
                 />
               </div>
             </div>
-            <div className="flex items-center gap-2 mt-3">
+            {/* <div className="flex items-center gap-2 mt-3">
               <button
                 disabled={!isConnected || !isSepoliaNetwork}
                 className="px-3 py-1.5 rounded-xl border border-slate-300 hover:border-emerald-400 hover:bg-emerald-50 text-xs font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -247,7 +246,7 @@ export default function SwapTrading({ universe, asset, push, params }) {
               >
                 Max
               </button>
-            </div>
+            </div> */}
           </div>
 
           {/* Switch Button */}
@@ -266,7 +265,7 @@ export default function SwapTrading({ universe, asset, push, params }) {
           {/* To Token */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">To Token</label>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <SwapTokenSelect
                 token={toToken}
                 onTokenSelect={setToToken}
@@ -296,7 +295,7 @@ export default function SwapTrading({ universe, asset, push, params }) {
         </div>
 
         {/* Trading Details Toggle */}
-        <div className="pt-2">
+        {/* <div className="pt-2">
           <button 
             onClick={() => setShowTradingDetails(!showTradingDetails)} 
             className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors duration-200"
@@ -306,10 +305,10 @@ export default function SwapTrading({ universe, asset, push, params }) {
             </svg>
             {showTradingDetails ? "Hide Trading Details" : "Show Trading Details"}
           </button>
-        </div>
+        </div> */}
 
         {/* Trading Info */}
-        {showTradingDetails && quote && isQuoteSuccess && (
+        {/* {showTradingDetails && quote && isQuoteSuccess && (
           <div className="bg-gradient-to-br from-slate-50 to-gray-100 rounded-2xl border border-slate-200/50 p-4 shadow-sm">
             <div className="space-y-2 text-sm">
               <div className="flex justify-between items-center">
@@ -343,12 +342,13 @@ export default function SwapTrading({ universe, asset, push, params }) {
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
 
 
         {/* Actions */}
         <div className="pt-4 flex flex-col sm:flex-row items-center gap-3">
+          
           {/* Swap Button */}
           <button
             disabled={
@@ -356,9 +356,12 @@ export default function SwapTrading({ universe, asset, push, params }) {
               !isConnected ||
               !isSepoliaNetwork ||
               !isQuoteSuccess ||
-              swapState !== SwapCallbackState.VALID ||
               approvalState === ApprovalState.PENDING ||
-              (fromToken?.symbol !== 'ETH' && amt > 0 && approvalState !== ApprovalState.APPROVED)
+              // 如果需要授权，则不检查 swapState；如果不需要授权，则检查 swapState
+              (fromToken?.symbol !== 'ETH' && amt > 0 && approvalState !== ApprovalState.APPROVED
+                ? false // 需要授权时，不禁用按钮
+                : swapState !== SwapCallbackState.VALID // 不需要授权时，检查 swapState
+              )
             }
             className={cx(
               "w-full sm:flex-1 px-8 py-3 rounded-2xl text-base font-semibold transition-all duration-300 shadow-lg",
@@ -367,9 +370,12 @@ export default function SwapTrading({ universe, asset, push, params }) {
                 !isConnected ||
                 !isSepoliaNetwork ||
                 !isQuoteSuccess ||
-                swapState !== SwapCallbackState.VALID ||
                 approvalState === ApprovalState.PENDING ||
-                (fromToken?.symbol !== 'ETH' && amt > 0 && approvalState !== ApprovalState.APPROVED)
+                // 如果需要授权，则不检查 swapState；如果不需要授权，则检查 swapState
+                (fromToken?.symbol !== 'ETH' && amt > 0 && approvalState !== ApprovalState.APPROVED
+                  ? false // 需要授权时，不禁用按钮
+                  : swapState !== SwapCallbackState.VALID // 不需要授权时，检查 swapState
+                )
               )
                 ? "bg-slate-300 text-slate-500 cursor-not-allowed"
                 : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-emerald-200 hover:shadow-emerald-300 transform hover:scale-105"

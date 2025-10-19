@@ -49,48 +49,18 @@ export const SEPOLIA_TOKENS: SepoliaTokens = {
   // USDC on Sepolia (测试版本)
   USDC: {
     chainId: SEPOLIA_CHAIN_ID,
-    address: '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', // Sepolia USDC (示例地址)
+    address: '0xa06dfC8fF4A34192469b608b8342963e6FA7384e', // Sepolia USDC (示例地址)
     name: 'USD Coin',
     symbol: 'USDC',
-    decimals: 6,
+    decimals: 18,
     logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86a33E6417c6Da768DD4c2bca1E4a0A8D8a5a/logo.png'
-  },
-
-  // DAI on Sepolia (测试版本)
-  DAI: {
-    chainId: SEPOLIA_CHAIN_ID,
-    address: '0x3e622317f8C93f7328350cF0B56d9eD4C620C5d6', // Sepolia DAI (示例地址)
-    name: 'Dai Stablecoin',
-    symbol: 'DAI',
-    decimals: 18,
-    logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png'
-  },
-
-  // LINK on Sepolia
-  LINK: {
-    chainId: SEPOLIA_CHAIN_ID,
-    address: '0x779877A7B0D9E8603169DdbD7836e478b4624789', // Sepolia LINK
-    name: 'Chainlink Token',
-    symbol: 'LINK',
-    decimals: 18,
-    logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x514910771AF9Ca656af840dff83E8264EcF986CA/logo.png'
-  },
-
-  // UNI on Sepolia (测试版本)
-  UNI: {
-    chainId: SEPOLIA_CHAIN_ID,
-    address: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984', // 使用主网地址作为示例
-    name: 'Uniswap Token',
-    symbol: 'UNI',
-    decimals: 18,
-    logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984/logo.png'
   }
 }
 
 // 常用 token 列表（用于快速选择）- 只显示 ETH 和 USDC
 export const POPULAR_SEPOLIA_TOKENS: Token[] = [
-  SEPOLIA_TOKENS.ETH,
-  SEPOLIA_TOKENS.USDC
+  // SEPOLIA_TOKENS.ETH,
+  // SEPOLIA_TOKENS.USDC
 ]
 
 // 所有 token 列表 - 只显示 ETH 和 USDC

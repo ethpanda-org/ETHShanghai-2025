@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ASSETS, getAsset } from '../data/mockData'
+import { assetsApi } from '../api'
 import { cx } from '../utils/helpers'
 import SplitMerge from '../components/structure/SplitMerge'
 import WrapUnwrap from '../components/structure/WrapUnwrap'
@@ -8,8 +8,48 @@ import WrapUnwrap from '../components/structure/WrapUnwrap'
 
 export default function StructurePage({ params, push }) {
   const [tab, setTab] = useState(params.tab || "split-merge")
-  const [assetId, setAssetId] = useState(params.assetId || ASSETS[0].assetId)
-  const asset = getAsset(assetId)
+  const [assets, setAssets] = useState([])
+  const [assetId, setAssetId] = useState(params.assetId || null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  // 获取选中的asset
+  const asset = assets.find(a => (a.assetId || a.id) === assetId) || assets[0]
+
+  // 获取assets数据
+  useEffect(() => {
+    const fetchAssets = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const response = await assetsApi.getAll({
+          page: 1,
+          limit: 100,
+          isActive: true
+        })
+
+        if (response.status === 'success' && response.data) {
+          const assetsList = response.data.assets || []
+          setAssets(assetsList)
+
+          // 如果没有预设的assetId，设置为第一个asset
+          if (!params.assetId && assetsList.length > 0) {
+            setAssetId(assetsList[0].assetId || assetsList[0].id)
+          }
+        } else {
+          throw new Error(response.message || 'Failed to fetch assets')
+        }
+      } catch (err) {
+        setError(err.message)
+        console.error('Failed to fetch assets:', err)
+        setAssets([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchAssets()
+  }, [])
 
   return (
     <>
@@ -167,47 +207,114 @@ export default function StructurePage({ params, push }) {
           <div className="flex items-center gap-3">
             <span className="text-sm font-medium text-slate-600">Select Asset</span>
             <div className="relative">
-              <select 
-                value={assetId} 
-                onChange={(e) => setAssetId(e.target.value)} 
-                className="appearance-none bg-white hover:bg-slate-50 rounded-2xl border border-slate-200 hover:border-slate-300 px-4 py-2.5 pr-10 text-sm font-medium text-slate-700 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
-              >
-                {ASSETS.map(a => (
-                  <option key={a.assetId || a.id} value={a.assetId || a.id}>{a.name}</option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
+              {loading ? (
+                <div className="appearance-none bg-white rounded-2xl border border-slate-200 px-4 py-2.5 pr-10 text-sm font-medium text-slate-400 shadow-sm">
+                  Loading assets...
+                </div>
+              ) : error ? (
+                <div className="appearance-none bg-red-50 rounded-2xl border border-red-200 px-4 py-2.5 pr-10 text-sm font-medium text-red-600 shadow-sm">
+                  Error loading assets
+                </div>
+              ) : (
+                <>
+                  <select
+                    value={assetId || ''}
+                    onChange={(e) => setAssetId(e.target.value)}
+                    className="appearance-none bg-white hover:bg-slate-50 rounded-2xl border border-slate-200 hover:border-slate-300 px-4 py-2.5 pr-10 text-sm font-medium text-slate-700 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
+                    disabled={assets.length === 0}
+                  >
+                    {assets.length === 0 ? (
+                      <option value="">No assets available</option>
+                    ) : (
+                      assets.map(a => (
+                        <option key={a.assetId || a.id} value={a.assetId || a.id}>{a.name}</option>
+                      ))
+                    )}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          {tab === "split-merge" ? (
-            <motion.div
-              key="split-merge"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
+        {loading ? (
+          <motion.div
+            className="py-12 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="flex items-center justify-center gap-3">
+              <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-slate-600">Loading assets...</span>
+            </div>
+          </motion.div>
+        ) : error ? (
+          <motion.div
+            className="py-12 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-4">
+              <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-slate-800 mb-2">Failed to load assets</h3>
+            <p className="text-slate-600 mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-violet-500 text-white rounded-lg hover:bg-violet-600 transition-colors"
             >
-              <SplitMerge asset={asset} push={push} />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="wrap-unwrap"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-            >
-              <WrapUnwrap asset={asset} />
-            </motion.div>
-          )}
-        </AnimatePresence>
+              Retry
+            </button>
+          </motion.div>
+        ) : !asset ? (
+          <motion.div
+            className="py-12 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-slate-100 rounded-full mb-4">
+              <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8V4a1 1 0 00-1-1H7a1 1 0 00-1 1v1m8 0V4.5" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-slate-800 mb-2">No asset selected</h3>
+            <p className="text-slate-600">Please select an asset from the dropdown above.</p>
+          </motion.div>
+        ) : (
+          <AnimatePresence mode="wait">
+            {tab === "split-merge" ? (
+              <motion.div
+                key="split-merge"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <SplitMerge asset={asset} push={push} />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="wrap-unwrap"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <WrapUnwrap asset={asset} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
       </motion.div>
 
 

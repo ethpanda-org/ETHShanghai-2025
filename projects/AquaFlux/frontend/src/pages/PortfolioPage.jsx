@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect } from 'react'
-import { calculatePortfolioSummary, PORTFOLIO_HOLDINGS, getAsset, getPortfolioHolding, createFallbackAsset } from '../data/mockData'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { useAccount } from 'wagmi'
+import { portfolioApi } from '../api'
 import { cx } from '../utils/helpers'
 import AssetAvatar from '../components/AssetAvatar'
 import Badge from '../components/Badge'
+import { useClaimableRewards } from '../hooks/useClaimableReward'
 
 
 // P/C/S圆环组件
@@ -84,38 +86,36 @@ function PCSRing({ pPercent, cPercent, sPercent, size = 48, strokeWidth = 6, onC
 }
 
 // 甜甜圈图组件（更大的版本用于分布区块）
-function PCSDonutChart({ pPercent, cPercent, sPercent, size = 160, onHover }) {
+function PCSDonutChart({ pPercent, cPercent, sPercent, pValue, cValue, sValue, size = 160, onHover }) {
   const [hoveredSegment, setHoveredSegment] = useState(null)
-  
+
   const centerX = size / 2
   const centerY = size / 2
   const radius = size * 0.35
   const strokeWidth = size * 0.15
-  
+
   // 创建路径数据
   const createPath = (startAngle, endAngle) => {
     const start = (startAngle * Math.PI) / 180
     const end = (endAngle * Math.PI) / 180
-    
+
     const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1"
-    
+
     const x1 = centerX + radius * Math.cos(start)
     const y1 = centerY + radius * Math.sin(start)
     const x2 = centerX + radius * Math.cos(end)
     const y2 = centerY + radius * Math.sin(end)
-    
+
     return `M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`
   }
-  
+
   const pAngle = (pPercent / 100) * 360
   const cAngle = (cPercent / 100) * 360
   const sAngle = (sPercent / 100) * 360
-  
+
   const pPath = createPath(-90, -90 + pAngle)
   const cPath = createPath(-90 + pAngle, -90 + pAngle + cAngle)
   const sPath = createPath(-90 + pAngle + cAngle, -90 + pAngle + cAngle + sAngle)
-  
-  const summary = calculatePortfolioSummary()
   
   return (
     <div className="relative">
@@ -130,7 +130,7 @@ function PCSDonutChart({ pPercent, cPercent, sPercent, size = 160, onHover }) {
           className="transition-all duration-200 hover:brightness-110 cursor-pointer"
           onMouseEnter={() => {
             setHoveredSegment('P')
-            onHover?.('P', pPercent, summary.pValue)
+            onHover?.('P', pPercent, pValue)
           }}
           onMouseLeave={() => {
             setHoveredSegment(null)
@@ -148,7 +148,7 @@ function PCSDonutChart({ pPercent, cPercent, sPercent, size = 160, onHover }) {
           className="transition-all duration-200 hover:brightness-110 cursor-pointer"
           onMouseEnter={() => {
             setHoveredSegment('C')
-            onHover?.('C', cPercent, summary.cValue)
+            onHover?.('C', cPercent, cValue)
           }}
           onMouseLeave={() => {
             setHoveredSegment(null)
@@ -166,7 +166,7 @@ function PCSDonutChart({ pPercent, cPercent, sPercent, size = 160, onHover }) {
           className="transition-all duration-200 hover:brightness-110 cursor-pointer"
           onMouseEnter={() => {
             setHoveredSegment('S')
-            onHover?.('S', sPercent, summary.sValue)
+            onHover?.('S', sPercent, sValue)
           }}
           onMouseLeave={() => {
             setHoveredSegment(null)
@@ -264,10 +264,39 @@ function PageHeader() {
 }
 
 // Portfolio distribution block
-function PortfolioDistribution({ highlightDistribution }) {
+function PortfolioDistribution({ highlightDistribution, portfolioData, loading, error }) {
   const [hoverInfo, setHoverInfo] = useState(null)
-  const summary = calculatePortfolioSummary()
   const distributionRef = useRef(null)
+
+  // 计算portfolio汇总数据
+  const calculateSummary = () => {
+    if (loading || !portfolioData) {
+      return {
+        totalValue: 0,
+        pPercent: 0,
+        cPercent: 0,
+        sPercent: 0,
+        pValue: 0,
+        cValue: 0,
+        sValue: 0
+      }
+    }
+
+    const { summary } = portfolioData
+    const { totalValueUSD, totalPValueUSD, totalCValueUSD, totalSValueUSD } = summary
+
+    return {
+      totalValue: totalValueUSD,
+      pPercent: totalValueUSD > 0 ? (totalPValueUSD / totalValueUSD) * 100 : 0,
+      cPercent: totalValueUSD > 0 ? (totalCValueUSD / totalValueUSD) * 100 : 0,
+      sPercent: totalValueUSD > 0 ? (totalSValueUSD / totalValueUSD) * 100 : 0,
+      pValue: totalPValueUSD,
+      cValue: totalCValueUSD,
+      sValue: totalSValueUSD
+    }
+  }
+  
+  const summary = calculateSummary()
   
   useEffect(() => {
     if (highlightDistribution && distributionRef.current) {
@@ -281,7 +310,12 @@ function PortfolioDistribution({ highlightDistribution }) {
   
   const handleDonutHover = (segment, percent, value) => {
     if (segment) {
-      const assetCount = PORTFOLIO_HOLDINGS.filter(h => h.holdings[segment].amount > 0).length
+      // 计算该层有余额的资产数量
+      const assetCount = portfolioData?.balances.filter(balance => {
+        const layerKey = `${segment.toLowerCase()}Balance`
+        return balance.balances[layerKey] > 0
+      }).length || 0
+
       setHoverInfo({
         segment,
         percent: percent.toFixed(1),
@@ -293,8 +327,25 @@ function PortfolioDistribution({ highlightDistribution }) {
     }
   }
   
+  // Error状态
+  if (error) {
+    return (
+      <div className="bg-gradient-to-br from-white to-slate-50 rounded-3xl border border-red-200 shadow-lg shadow-red-200/20 p-6">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-4">
+            <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-slate-800 mb-2">Failed to load portfolio</h3>
+          <p className="text-slate-600">{error}</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div 
+    <div
       ref={distributionRef}
       className="bg-gradient-to-br from-white to-slate-50 rounded-3xl border border-slate-200 shadow-lg shadow-slate-200/20 transition-colors duration-1500 p-6"
     >
@@ -310,7 +361,7 @@ function PortfolioDistribution({ highlightDistribution }) {
               <div>
                 <div className="text-sm font-medium text-slate-600">Net Asset Value</div>
                 <div className="text-4xl font-bold font-mono text-slate-800">
-                  ${summary.totalValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                  {loading ? '$0' : `$${summary.totalValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
                 </div>
               </div>
             </div>
@@ -324,8 +375,8 @@ function PortfolioDistribution({ highlightDistribution }) {
                   </svg>
                 </div>
                 <div className="text-xs text-emerald-600 font-semibold mb-1">P Layer</div>
-                <div className="text-xl font-bold text-slate-800">{summary.pPercent.toFixed(0)}%</div>
-                <div className="text-xs text-slate-500">${(summary.pValue / 1000).toFixed(0)}k</div>
+                <div className="text-xl font-bold text-slate-800">{loading ? '0' : summary.pPercent.toFixed(0)}%</div>
+                <div className="text-xs text-slate-500">{loading ? '$0' : `$${(summary.pValue).toFixed(2)}`}</div>
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-blue-200/30 shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105">
                 <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white mx-auto mb-2">
@@ -334,8 +385,8 @@ function PortfolioDistribution({ highlightDistribution }) {
                   </svg>
                 </div>
                 <div className="text-xs text-blue-600 font-semibold mb-1">C Layer</div>
-                <div className="text-xl font-bold text-slate-800">{summary.cPercent.toFixed(0)}%</div>
-                <div className="text-xs text-slate-500">${(summary.cValue / 1000).toFixed(0)}k</div>
+                <div className="text-xl font-bold text-slate-800">{loading ? '0' : summary.cPercent.toFixed(0)}%</div>
+                <div className="text-xs text-slate-500">{loading ? '$0' : `$${(summary.cValue).toFixed(2)}`}</div>
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-amber-200/30 shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105">
                 <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-600 text-white mx-auto mb-2">
@@ -344,8 +395,8 @@ function PortfolioDistribution({ highlightDistribution }) {
                   </svg>
                 </div>
                 <div className="text-xs text-amber-600 font-semibold mb-1">S Layer</div>
-                <div className="text-xl font-bold text-slate-800">{summary.sPercent.toFixed(0)}%</div>
-                <div className="text-xs text-slate-500">${(summary.sValue / 1000).toFixed(0)}k</div>
+                <div className="text-xl font-bold text-slate-800">{loading ? '0' : summary.sPercent.toFixed(0)}%</div>
+                <div className="text-xs text-slate-500">{loading ? '$0' : `$${(summary.sValue).toFixed(2)}`}</div>
               </div>
             </div>
           </div>
@@ -361,6 +412,9 @@ function PortfolioDistribution({ highlightDistribution }) {
                 pPercent={summary.pPercent}
                 cPercent={summary.cPercent}
                 sPercent={summary.sPercent}
+                pValue={summary.pValue}
+                cValue={summary.cValue}
+                sValue={summary.sValue}
                 onHover={handleDonutHover}
               />
               
@@ -381,18 +435,31 @@ function PortfolioDistribution({ highlightDistribution }) {
   )
 }
 
-// Holdings table row component  
-function HoldingRow({ asset, holding, highlighted, push }) {
+// Holdings table row component
+function HoldingRow({ asset, holding, highlighted, push, refreshData }) {
   // Check if near maturity
   const maturityDate = new Date(asset.maturity)
   const today = new Date()
   const daysToMaturity = Math.ceil((maturityDate - today) / (1000 * 60 * 60 * 24))
   const isNearMaturity = daysToMaturity <= 90 && daysToMaturity > 0
-  
-  const totalValue = (
-    holding.holdings.P.amount * asset.nav +
-    holding.holdings.C.amount * asset.nav +
-    holding.holdings.S.amount * asset.nav
+
+  // 从API数据获取总价值
+  const totalValue = holding.totalValueUSD || 0
+
+  // 使用可领取奖励hook
+  const {
+    rewards,
+    isLoading: rewardsLoading,
+    claimReward,
+    isClaimingP,
+    isClaimingC,
+    isClaimingS,
+    isConfirming
+  } = useClaimableRewards(
+    holding.assetId,
+    asset.assetInfo,
+    true,
+    refreshData
   )
   
   return (
@@ -421,7 +488,17 @@ function HoldingRow({ asset, holding, highlighted, push }) {
       
       {/* Maturity */}
       <td className="py-4 px-4 text-center">
-        <div className="text-sm text-slate-700">{asset.maturity}</div>
+        <div className="text-sm text-slate-700">
+          {new Date(asset.maturity).toLocaleString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          })}
+        </div>
         {isNearMaturity && (
           <div className="text-xs text-amber-600 mt-1">
             {daysToMaturity} days left
@@ -431,31 +508,115 @@ function HoldingRow({ asset, holding, highlighted, push }) {
       
       {/* P Amount */}
       <td className="py-4 px-4 text-right">
-        <div className="flex items-center justify-end gap-1">
-          <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-          <span className="font-mono text-sm text-slate-800">
-            {holding.holdings.P.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span>
+        <div className="flex flex-col items-end">
+          <div className="flex items-center justify-end gap-1">
+            <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+            <span className="font-mono text-sm text-slate-800">
+              {holding.holdings.P.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+          </div>
+          {/* Claimable Reward - only show if amount > 0 */}
+          {!rewardsLoading && rewards.P.amount > 0 && (
+            <>
+              <div className="flex items-center justify-end gap-1 mt-1">
+                <svg className="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+                <span className="font-mono text-xs text-emerald-600">
+                  +{rewards.P.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                </span>
+              </div>
+              <button
+                className="mt-1 px-2 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 text-xs font-medium rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isClaimingP || isConfirming}
+                onClick={async () => {
+                  try {
+                    await claimReward('P')
+                  } catch (error) {
+                    console.error('Failed to claim P rewards:', error)
+                  }
+                }}
+              >
+                {isClaimingP ? 'Claiming...' : isConfirming ? 'Confirming...' : 'Claim'}
+              </button>
+            </>
+          )}
         </div>
       </td>
       
       {/* C Amount */}
       <td className="py-4 px-4 text-right">
-        <div className="flex items-center justify-end gap-1">
-          <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-          <span className="font-mono text-sm text-slate-800">
-            {holding.holdings.C.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span>
+        <div className="flex flex-col items-end">
+          <div className="flex items-center justify-end gap-1">
+            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+            <span className="font-mono text-sm text-slate-800">
+              {holding.holdings.C.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+          </div>
+          {/* Claimable Reward - only show if amount > 0 */}
+          {!rewardsLoading && rewards.C.amount > 0 && (
+            <>
+              <div className="flex items-center justify-end gap-1 mt-1">
+                <svg className="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+                <span className="font-mono text-xs text-blue-600">
+                  +{rewards.C.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                </span>
+              </div>
+              <button
+                className="mt-1 px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isClaimingC || isConfirming}
+                onClick={async () => {
+                  try {
+                    await claimReward('C')
+                  } catch (error) {
+                    console.error('Failed to claim C rewards:', error)
+                  }
+                }}
+              >
+                {isClaimingC ? 'Claiming...' : isConfirming ? 'Confirming...' : 'Claim'}
+              </button>
+            </>
+          )}
         </div>
       </td>
       
       {/* S Amount */}
       <td className="py-4 px-4 text-right">
-        <div className="flex items-center justify-end gap-1">
-          <div className="w-2 h-2 rounded-full bg-amber-500"></div>
-          <span className="font-mono text-sm text-slate-800">
-            {holding.holdings.S.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </span>
+        <div className="flex flex-col items-end">
+          <div className="flex items-center justify-end gap-1">
+            <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+            <span className="font-mono text-sm text-slate-800">
+              {holding.holdings.S.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+          </div>
+          {/* Claimable Reward - only show if amount > 0 */}
+          {!rewardsLoading && rewards.S.amount > 0 && (
+            <>
+              <div className="flex items-center justify-end gap-1 mt-1">
+                <svg className="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+                <span className="font-mono text-xs text-amber-600">
+                  +{rewards.S.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                </span>
+              </div>
+              <button
+                className="mt-1 px-2 py-1 bg-amber-100 hover:bg-amber-200 text-amber-700 text-xs font-medium rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isClaimingS || isConfirming}
+                onClick={async () => {
+                  try {
+                    await claimReward('S')
+                  } catch (error) {
+                    console.error('Failed to claim S rewards:', error)
+                  }
+                }}
+              >
+                {isClaimingS ? 'Claiming...' : isConfirming ? 'Confirming...' : 'Claim'}
+              </button>
+            </>
+          )}
         </div>
       </td>
       
@@ -470,35 +631,55 @@ function HoldingRow({ asset, holding, highlighted, push }) {
 }
 
 // Holdings table component
-function HoldingsTable({ highlightNearMaturity, clearFilter, push }) {
+function HoldingsTable({ highlightNearMaturity, clearFilter, push, portfolioData, loading, error, refreshData }) {
   const [searchTerm, setSearchTerm] = useState('')
-  
+
+  // 转换API数据为组件需要的格式
+  const convertApiDataToHoldings = () => {
+    if (!portfolioData?.balances) return []
+
+    return portfolioData.balances.map(balance => {
+      const asset = {
+        name: balance.assetInfo.name,
+        issuer: balance.assetInfo.issuer,
+        chain: balance.assetInfo.chain,
+        rating: balance.assetInfo.rating,
+        maturity: balance.assetInfo.maturity,
+        nav: 1, // API数据中的价格信息，这里简化处理
+        assetInfo: balance.assetInfo // 添加完整的assetInfo以便访问token地址
+      }
+
+      const holding = {
+        holdings: {
+          P: { amount: balance.balances.pBalance || 0 },
+          C: { amount: balance.balances.cBalance || 0 },
+          S: { amount: balance.balances.sBalance || 0 }
+        },
+        totalValueUSD: balance.balances.totalValueUSD
+      }
+
+      return {
+        assetId: balance.assetInfo.assetId,
+        asset,
+        ...holding
+      }
+    })
+  }
+
   // Filter and sort data
-  let filteredHoldings = PORTFOLIO_HOLDINGS.map(holding => {
-    let asset = getAsset(holding.assetId)
-
-    // Use fallback asset if not found
-    if (!asset) {
-      asset = createFallbackAsset(holding.assetId)
-    }
-
-    return {
-      ...holding,
-      asset: asset
-    }
-  }).filter(item => {
+  let filteredHoldings = convertApiDataToHoldings().filter(item => {
     if (!item.asset) return false
-    
+
     // Search filter
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase()
-      if (!item.asset.name.toLowerCase().includes(searchLower) && 
+      if (!item.asset.name.toLowerCase().includes(searchLower) &&
           !item.asset.issuer.toLowerCase().includes(searchLower) &&
           !item.assetId.toLowerCase().includes(searchLower)) {
         return false
       }
     }
-    
+
     // Near maturity filter
     if (highlightNearMaturity) {
       const maturityDate = new Date(item.asset.maturity)
@@ -506,13 +687,30 @@ function HoldingsTable({ highlightNearMaturity, clearFilter, push }) {
       const daysToMaturity = Math.ceil((maturityDate - today) / (1000 * 60 * 60 * 24))
       return daysToMaturity <= 90 && daysToMaturity > 0
     }
-    
+
     return true
   })
-  
+
   // Sort by maturity date
   filteredHoldings.sort((a, b) => new Date(a.asset.maturity) - new Date(b.asset.maturity))
-  
+
+  // Error状态
+  if (error) {
+    return (
+      <div className="bg-gradient-to-br from-white to-slate-50 rounded-3xl border border-red-200 shadow-lg shadow-red-200/20 p-8">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-4">
+            <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-slate-800 mb-2">Failed to load holdings</h3>
+          <p className="text-slate-600">{error}</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="bg-gradient-to-br from-white to-slate-50 rounded-3xl border border-slate-200 shadow-lg shadow-slate-200/20 overflow-hidden">
       {/* Enhanced Table header */}
@@ -572,22 +770,32 @@ function HoldingsTable({ highlightNearMaturity, clearFilter, push }) {
             </tr>
           </thead>
           <tbody>
-            {filteredHoldings.map(({ asset, holdings, assetId }) => (
+            {filteredHoldings.map((item) => (
               <HoldingRow
-                key={assetId}
-                asset={asset}
-                holding={{ holdings }}
+                key={item.assetId}
+                asset={item.asset}
+                holding={item}
                 highlighted={highlightNearMaturity}
                 push={push}
+                refreshData={refreshData}
               />
             ))}
           </tbody>
         </table>
       </div>
       
-      {filteredHoldings.length === 0 && (
+      {loading && (
+        <div className="py-8 text-center">
+          <div className="flex items-center justify-center gap-3">
+            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <span className="text-slate-600">Loading holdings...</span>
+          </div>
+        </div>
+      )}
+
+      {!loading && filteredHoldings.length === 0 && (
         <div className="py-8 text-center text-slate-500">
-          {searchTerm ? 'No matching assets found' : 'No holdings data'}
+          {searchTerm ? 'No matching assets found' : (portfolioData ? 'No holdings data' : 'No portfolio data available')}
         </div>
       )}
     </div>
@@ -598,24 +806,87 @@ function HoldingsTable({ highlightNearMaturity, clearFilter, push }) {
 export default function PortfolioPage({ push }) {
   const [highlightDistribution, setHighlightDistribution] = useState(false)
   const [highlightNearMaturity, setHighlightNearMaturity] = useState(false)
-  
+  const [portfolioData, setPortfolioData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const { address: walletAddress, isConnected } = useAccount()
+
+  // 获取portfolio数据的函数
+  const fetchPortfolioData = useCallback(async () => {
+    if (!isConnected || !walletAddress) {
+      setLoading(false)
+      return
+    }
+
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await portfolioApi.getAllBalances(walletAddress)
+
+      if (response.status === 'success') {
+        setPortfolioData(response.data)
+      } else {
+        throw new Error(response.message || 'Failed to fetch portfolio data')
+      }
+    } catch (err) {
+      setError(err.message)
+      console.error('Error fetching portfolio data:', err)
+      setPortfolioData(null)
+    } finally {
+      setLoading(false)
+    }
+  }, [isConnected, walletAddress])
+
+  useEffect(() => {
+    fetchPortfolioData()
+  }, [fetchPortfolioData])
+
   const clearFilter = () => {
     setHighlightNearMaturity(false)
   }
-  
+
+  // 如果钱包未连接，显示连接钱包提示
+  if (!isConnected) {
+    return (
+      <div className="space-y-6">
+        <PageHeader />
+        <div className="bg-gradient-to-br from-white to-slate-50 rounded-3xl border border-slate-200 shadow-lg shadow-slate-200/20 p-8">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full mb-4">
+              <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-slate-800 mb-2">Connect Your Wallet</h3>
+            <p className="text-slate-600 mb-4">Please connect your wallet to view your portfolio holdings</p>
+            <p className="text-sm text-slate-500">Click the "Connect Wallet" button in the header to get started</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader />
-      
-      <PortfolioDistribution 
+
+      <PortfolioDistribution
         highlightDistribution={highlightDistribution}
+        portfolioData={portfolioData}
+        loading={loading}
+        error={error}
       />
-      
+
       <div data-holdings-table>
-        <HoldingsTable 
+        <HoldingsTable
           highlightNearMaturity={highlightNearMaturity}
           clearFilter={clearFilter}
           push={push}
+          portfolioData={portfolioData}
+          loading={loading}
+          error={error}
+          refreshData={fetchPortfolioData}
         />
       </div>
     </div>

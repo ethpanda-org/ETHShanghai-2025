@@ -17,7 +17,7 @@ export interface ApiResponse<T = any> {
 }
 
 // Configuration
-const API_BASE_URL = 'http://localhost:3003/api/v1'
+const API_BASE_URL = '/api/v1'
 
 export const apiConfig: ApiConfig = {
   baseUrl: API_BASE_URL,
@@ -32,7 +32,7 @@ export const createApiUrl = (endpoint: string): string => {
 }
 
 export const apiRequest = async <T = any>(
-  endpoint: string, 
+  endpoint: string,
   options: RequestOptions = {}
 ): Promise<ApiResponse<T>> => {
   const url = createApiUrl(endpoint)
@@ -59,4 +59,43 @@ export const apiRequest = async <T = any>(
     console.error('API request error:', error)
     throw error
   }
+}
+
+// Convenience methods for different HTTP methods
+export const apiGet = async <T = any>(
+  endpoint: string,
+  options: Omit<RequestOptions, 'method'> = {}
+): Promise<ApiResponse<T>> => {
+  return apiRequest<T>(endpoint, { ...options, method: 'GET' })
+}
+
+export const apiPost = async <T = any>(
+  endpoint: string,
+  data?: any,
+  options: Omit<RequestOptions, 'method' | 'body'> = {}
+): Promise<ApiResponse<T>> => {
+  return apiRequest<T>(endpoint, {
+    ...options,
+    method: 'POST',
+    body: data ? JSON.stringify(data) : undefined,
+  })
+}
+
+export const apiPut = async <T = any>(
+  endpoint: string,
+  data?: any,
+  options: Omit<RequestOptions, 'method' | 'body'> = {}
+): Promise<ApiResponse<T>> => {
+  return apiRequest<T>(endpoint, {
+    ...options,
+    method: 'PUT',
+    body: data ? JSON.stringify(data) : undefined,
+  })
+}
+
+export const apiDelete = async <T = any>(
+  endpoint: string,
+  options: Omit<RequestOptions, 'method'> = {}
+): Promise<ApiResponse<T>> => {
+  return apiRequest<T>(endpoint, { ...options, method: 'DELETE' })
 }

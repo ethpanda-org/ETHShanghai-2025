@@ -6,7 +6,7 @@ export interface ContractAddresses {
 // 各网络的合约地址
 export const CONTRACT_ADDRESSES: Record<number, ContractAddresses> = {
   11155111: {
-    AquaFluxCore: '0x4709b7DA7af7Dd5043930B5Dce19D2ffA815F837',
+    AquaFluxCore: '0xa09722107D39540Eb39d8728942a9bDd335d34C8',
     TokenFactory: '0x60E31ED1C76bE2C69B6C4f1F22927A986fF24108'
   },
   // Sepolia Testnet (chainId: 11155111) - 需要部署合约后更新地址

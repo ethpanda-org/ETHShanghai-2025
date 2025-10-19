@@ -1,4 +1,4 @@
-import { apiRequest, ApiResponse } from './config'
+import { apiGet, ApiResponse } from './config'
 
 // Types
 export interface Asset {
@@ -38,11 +38,11 @@ export interface AssetDetailResponse {
 
 export const assetsApi = {
   getAll: async (): Promise<ApiResponse<AssetsListResponse>> => {
-    return await apiRequest<AssetsListResponse>('/assets')
+    return await apiGet<AssetsListResponse>('/assets')
   },
 
   getById: async (id: string): Promise<ApiResponse<AssetDetailResponse>> => {
-    return await apiRequest<AssetDetailResponse>(`/assets/${id}`)
+    return await apiGet<AssetDetailResponse>(`/assets/${id}`)
   },
 }
 
