@@ -1,0 +1,61 @@
+server:
+  port: "8080"
+  mode: "debug"  # debug, release, test
+
+database:
+  host: "localhost"
+  port: 5432
+  user: "timelocker"
+  password: "timelocker"
+  dbname: "timelocker_db"
+  sslmode: "disable"
+
+redis:
+  host: "localhost"
+  port: 6379
+  password: ""
+  db: 0
+
+jwt:
+  secret: "timelocker-jwt-secret-v1"
+  access_expiry: "24h"   # 24小时
+  refresh_expiry: "48h" # 2天
+
+# RPC配置
+rpc:
+  # RPC提供商配置
+  alchemy_api_key: "7JGar3dcq0bHQa9vMk9zSS15hdFCmVHa"
+  # 是否包含测试网
+  include_testnets: true
+
+# 邮件服务配置
+email:
+  smtp_host: "smtp.zoho.com"
+  smtp_port: 587
+  smtp_username: "zem@timelock.live"  # 发送邮件的邮箱地址
+  smtp_password: "iE4yPjtquwfY"     # 邮箱应用密码
+  from_name: "TimeLock Notification"   # 发件人名称
+  from_email: "zem@timelock.live"     # 发件人邮箱（通常与smtp_username相同）
+  
+  # 邮件通知功能配置
+  verification_code_expiry: "5m"        # 验证码过期时间
+  
+  # 邮件模板配置
+  email_url: "http://localhost:3000"      # 前端基础URL，用于生成邮件中的链接
+
+# 扫链系统配置
+scanner:
+  # RPC配置
+  rpc_timeout: "20s"                  # RPC请求超时时间
+  rpc_retry_max: 10                    # RPC最大重试次数
+  rpc_retry_delay: "10s"               # RPC重试延迟（出错时等待时间）
+  
+  # 扫块配置
+  scan_batch_size: 100                # 每批扫描的区块数量
+  scan_interval: "15s"                 # 快速扫描间隔
+  scan_interval_slow: "30s"           # 慢速扫描间隔（到达最新块后）
+  scan_confirmations: 3              # 区块确认数
+
+  # Timelock流刷新配置
+  flow_refresh_interval: "60s"        # 流刷新间隔
+  flow_refresh_batch_size: 100        # 流刷新批量大小
