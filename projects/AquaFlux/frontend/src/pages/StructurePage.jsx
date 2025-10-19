@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ASSETS, getAsset } from '../data/mockData'
 import AssetMiniCard from '../components/AssetMiniCard'
 import { cx } from '../utils/helpers'
@@ -60,7 +61,13 @@ function PreviewBox({ title, value, warn = false, subtle = false, tokenType = nu
   
   if (warn && tokenStyles) {
     return (
-      <div className="rounded-2xl border border-red-300 bg-gradient-to-br from-red-50 via-orange-50 to-amber-50 hover:shadow-red-100 p-4 transition-all duration-300 hover:shadow-md transform hover:scale-[1.02]"> 
+      <motion.div 
+        className="rounded-2xl border border-red-300 bg-gradient-to-br from-red-50 via-orange-50 to-amber-50 hover:shadow-red-100 p-4 transition-all duration-300 hover:shadow-md"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        whileHover={{ scale: 1.02 }}
+        transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
+      > 
         <div className="flex items-center justify-between mb-2">
           <div className="text-xs font-medium text-red-600 uppercase tracking-wide">
             {title}
@@ -76,38 +83,80 @@ function PreviewBox({ title, value, warn = false, subtle = false, tokenType = nu
           <div className={cx("p-1 rounded-lg bg-red-100 text-red-600")}>
             {tokenStyles.icon}
           </div>
-          <div className="text-sm font-semibold text-red-800">{value}</div>
+          <motion.div 
+            className="text-sm font-semibold text-red-800"
+            key={value}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            {value}
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     )
   }
 
   if (warn) {
     return (
-      <div className="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 hover:shadow-amber-100 p-4 transition-all duration-300 hover:shadow-md transform hover:scale-[1.02]"> 
+      <motion.div 
+        className="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 hover:shadow-amber-100 p-4 transition-all duration-300 hover:shadow-md"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        whileHover={{ scale: 1.02 }}
+        transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
+      > 
         <div className="text-xs font-medium text-amber-600 uppercase tracking-wide">{title}</div>
-        <div className="mt-2 text-sm font-semibold text-amber-800">{value}</div>
-      </div>
+        <motion.div 
+          className="mt-2 text-sm font-semibold text-amber-800"
+          key={value}
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          {value}
+        </motion.div>
+      </motion.div>
     )
   }
 
   if (subtle) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-gray-50 hover:shadow-slate-100 p-4 transition-all duration-300 hover:shadow-md"> 
+      <motion.div 
+        className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-gray-50 hover:shadow-slate-100 p-4 transition-all duration-300 hover:shadow-md"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        whileHover={{ scale: 1.02 }}
+        transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
+      > 
         <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">{title}</div>
-        <div className="mt-2 text-sm font-semibold text-slate-800">{value}</div>
-      </div>
+        <motion.div 
+          className="mt-2 text-sm font-semibold text-slate-800"
+          key={value}
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          {value}
+        </motion.div>
+      </motion.div>
     )
   }
 
   if (tokenStyles) {
     return (
-      <div className={cx(
-        "rounded-2xl border p-4 transition-all duration-300 hover:shadow-md transform hover:scale-[1.02]",
-        tokenStyles.bg,
-        tokenStyles.border,
-        tokenStyles.shadow
-      )}> 
+      <motion.div 
+        className={cx(
+          "rounded-2xl border p-4 transition-all duration-300 hover:shadow-md",
+          tokenStyles.bg,
+          tokenStyles.border,
+          tokenStyles.shadow
+        )}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        whileHover={{ scale: 1.02 }}
+        transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
+      > 
         <div className="flex items-center justify-between mb-2">
           <div className={cx("text-xs font-medium uppercase tracking-wide", tokenStyles.titleColor)}>
             {title}
@@ -118,18 +167,40 @@ function PreviewBox({ title, value, warn = false, subtle = false, tokenType = nu
           <div className={cx("p-1 rounded-lg", tokenStyles.bg, tokenStyles.titleColor)}>
             {tokenStyles.icon}
           </div>
-          <div className={cx("text-sm font-semibold", tokenStyles.textColor)}>{value}</div>
+          <motion.div 
+            className={cx("text-sm font-semibold", tokenStyles.textColor)}
+            key={value}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            {value}
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     )
   }
 
   // Default styling
   return (
-    <div className="rounded-2xl border bg-gradient-to-br from-white to-slate-50 border-slate-200 hover:shadow-slate-100 p-4 transition-all duration-300 hover:shadow-md"> 
+    <motion.div 
+      className="rounded-2xl border bg-gradient-to-br from-white to-slate-50 border-slate-200 hover:shadow-slate-100 p-4 transition-all duration-300 hover:shadow-md"
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
+    > 
       <div className="text-xs font-medium text-slate-500 uppercase tracking-wide">{title}</div>
-      <div className="mt-2 text-sm font-semibold text-slate-800">{value}</div>
-    </div>
+      <motion.div 
+        className="mt-2 text-sm font-semibold text-slate-800"
+        key={value}
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        {value}
+      </motion.div>
+    </motion.div>
   )
 }
 
@@ -153,7 +224,7 @@ function SplitMerge({ asset, push }) {
   return (
     <div className="mt-6 grid grid-cols-1 xl:grid-cols-3 gap-6">
       <div className="xl:col-span-2 space-y-6">
-        <div className="bg-gradient-to-br from-white to-slate-50 rounded-3xl border border-slate-200 p-6 shadow-lg shadow-slate-200/20">
+        <div className="bg-gradient-to-br from-blue-50 to-white-50 rounded-3xl border border-cyan-200/50 p-6 shadow-lg shadow-cyan-100/20">
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -205,50 +276,89 @@ function SplitMerge({ asset, push }) {
               </div>
             </div>
 
-          {mode === "split" ? (
-            <div className="mt-3 grid grid-cols-3 gap-3 text-sm">
-              <PreviewBox title="Will get P" value={`${outPCS.P} P`} tokenType="P" />
-              <PreviewBox title="Will get C" value={`${outPCS.C} C`} tokenType="C" />
-              <PreviewBox title="Will get S" value={`${outPCS.S} S`} tokenType="S" />
-              <div className="col-span-3 text-[11px] text-slate-500 text-center mt-2">Fees and gas subject to actual network (demo).</div>
-            </div>
-          ) : (
-            <div className="mt-3 grid grid-cols-3 gap-3 text-sm">
-              <PreviewBox title="Need P" value={`${need.P.toFixed(2)} P`} warn={need.P > 0} tokenType="P" />
-              <PreviewBox title="Need C" value={`${need.C.toFixed(2)} C`} warn={need.C > 0} tokenType="C" />
-              <PreviewBox title="Need S" value={`${need.S.toFixed(2)} S`} warn={need.S > 0} tokenType="S" />
-              {(need.P > 0 || need.C > 0 || need.S > 0) && (
-                <div className="col-span-3 text-[11px] text-amber-700">
-                  Three legs must be equal. Shortage can be 
-                  <button 
-                    className="underline" 
-                    onClick={() => push("swap", { 
-                      assetId: asset.id, 
-                      from: "USDC", 
-                      to: `${asset.id}:${need.P > 0 ? "P" : need.C > 0 ? "C" : "S"}`, 
-                      action: "buy" 
-                    })}
+          <AnimatePresence mode="wait">
+            {mode === "split" ? (
+              <motion.div 
+                key="split-mode"
+                className="mt-3 grid grid-cols-3 gap-3 text-sm"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <PreviewBox title="Will get P" value={`${outPCS.P} P`} tokenType="P" />
+                <PreviewBox title="Will get C" value={`${outPCS.C} C`} tokenType="C" />
+                <PreviewBox title="Will get S" value={`${outPCS.S} S`} tokenType="S" />
+                <motion.div 
+                  className="col-span-3 text-[11px] text-slate-500 text-center mt-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  Protocol Fees 0%, gas subject to actual network.
+                </motion.div>
+              </motion.div>
+            ) : (
+              <motion.div 
+                key="merge-mode"
+                className="mt-3 grid grid-cols-3 gap-3 text-sm"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <PreviewBox title="Need P" value={`${need.P.toFixed(2)} P`} warn={need.P > 0} tokenType="P" />
+                <PreviewBox title="Need C" value={`${need.C.toFixed(2)} C`} warn={need.C > 0} tokenType="C" />
+                <PreviewBox title="Need S" value={`${need.S.toFixed(2)} S`} warn={need.S > 0} tokenType="S" />
+                {(need.P > 0 || need.C > 0 || need.S > 0) && (
+                  <motion.div 
+                    className="col-span-3 text-[11px] text-amber-700"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2 }}
                   >
-                    filled via Swap
-                  </button>.
-                </div>
-              )}
-            </div>
-          )}
+                    Three legs must be equal. Shortage can be 
+                    <button 
+                      className="underline" 
+                      onClick={() => push("swap", { 
+                        assetId: asset.id, 
+                        from: "USDC", 
+                        to: `${asset.id}:${need.P > 0 ? "P" : need.C > 0 ? "C" : "S"}`, 
+                        action: "buy" 
+                      })}
+                    >
+                      filled via Swap
+                    </button>.
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-2">
-              <button 
+              <motion.button 
                 className={cx(
                   "px-8 py-3 rounded-2xl text-base font-semibold transition-all duration-300 shadow-lg", 
                   amt > 0 
                     ? mode === "split" 
-                      ? "bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-emerald-200 hover:shadow-emerald-300 transform hover:scale-105" 
-                      : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-200 hover:shadow-blue-300 transform hover:scale-105"
+                      ? "bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-emerald-200 hover:shadow-emerald-300" 
+                      : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-200 hover:shadow-blue-300"
                     : "bg-slate-300 text-slate-500 cursor-not-allowed"
                 )} 
                 disabled={amt <= 0}
+                whileHover={amt > 0 ? { scale: 1.05 } : {}}
+                whileTap={amt > 0 ? { scale: 0.95 } : {}}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.4 }}
               >
-                <div className="flex items-center gap-2">
+                <motion.div 
+                  className="flex items-center gap-2"
+                  key={mode}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                >
                   {mode === "split" ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
@@ -259,26 +369,38 @@ function SplitMerge({ asset, push }) {
                     </svg>
                   )}
                   {mode === "split" ? "Execute Split" : "Execute Merge"}
-                </div>
-              </button>
-              {mode === "merge" && (
-                <div className={cx(
-                  "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium",
-                  canMerge 
-                    ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
-                    : "bg-amber-100 text-amber-700 border border-amber-200"
-                )}>
-                  <div className={cx("w-2 h-2 rounded-full", canMerge ? "bg-emerald-500" : "bg-amber-500")}></div>
-                  {canMerge ? "Equal amounts satisfied" : "Need to fill P/C/S to equal amounts"}
-                </div>
-              )}
+                </motion.div>
+              </motion.button>
+              <AnimatePresence>
+                {mode === "merge" && (
+                  <motion.div 
+                    className={cx(
+                      "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium",
+                      canMerge 
+                        ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
+                        : "bg-amber-100 text-amber-700 border border-amber-200"
+                    )}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <motion.div 
+                      className={cx("w-2 h-2 rounded-full", canMerge ? "bg-emerald-500" : "bg-amber-500")}
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
+                    />
+                    {canMerge ? "Equal amounts satisfied" : "Need to fill P/C/S to equal amounts"}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
       </div>
 
       <div className="space-y-4">
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-3xl border border-blue-200/50 p-6 shadow-lg shadow-blue-100/20">
+        <div className="bg-gradient-to-br from-slate-50 to-gray-100 rounded-3xl border border-blue-200/50 p-6 shadow-lg shadow-blue-100/20">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -340,7 +462,7 @@ function WrapUnwrap({ asset }) {
   return (
     <div className="mt-6 grid grid-cols-1 xl:grid-cols-3 gap-6">
       <div className="xl:col-span-2 space-y-6">
-        <div className="bg-gradient-to-br from-white to-slate-50 rounded-3xl border border-slate-200 p-6 shadow-lg shadow-slate-200/20">
+        <div className="bg-gradient-to-br from-blue-50 to-white-50 rounded-3xl border border-purple-200/50 p-6 shadow-lg shadow-purple-100/20">
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -393,32 +515,59 @@ function WrapUnwrap({ asset }) {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {mode === "wrap" ? (
-                <>
-                  <PreviewBox title="Will mint RWA" value={`${amt} RWA`} />
-                  <PreviewBox title="Network" value={`Testnet simulation · Est. gas`} subtle />
-                </>
-              ) : (
-                <>
-                  <PreviewBox title="Will redeem" value={`${amt} USD`} />
-                  <PreviewBox title="Network" value={`Testnet simulation · Est. gas`} subtle />
-                </>
-              )}
+              <AnimatePresence mode="wait">
+                {mode === "wrap" ? (
+                  <motion.div
+                    key="wrap-preview"
+                    className="contents"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <PreviewBox title="Will mint RWA" value={`${amt} RWA`} />
+                    <PreviewBox title="Network" value={`Testnet simulation · Est. gas`} subtle />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="unwrap-preview"
+                    className="contents"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <PreviewBox title="Will redeem" value={`${amt} USD`} />
+                    <PreviewBox title="Network" value={`Testnet simulation · Est. gas`} subtle />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
             
             <div className="pt-2">
-              <button 
+              <motion.button 
                 className={cx(
                   "w-full px-8 py-3 rounded-2xl text-base font-semibold transition-all duration-300 shadow-lg", 
                   amt > 0 
                     ? mode === "wrap" 
-                      ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-purple-200 hover:shadow-purple-300 transform hover:scale-105" 
-                      : "bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white shadow-orange-200 hover:shadow-orange-300 transform hover:scale-105"
+                      ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-purple-200 hover:shadow-purple-300" 
+                      : "bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white shadow-orange-200 hover:shadow-orange-300"
                     : "bg-slate-300 text-slate-500 cursor-not-allowed"
                 )} 
                 disabled={amt <= 0}
+                whileHover={amt > 0 ? { scale: 1.05 } : {}}
+                whileTap={amt > 0 ? { scale: 0.95 } : {}}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.4 }}
               >
-                <div className="flex items-center justify-center gap-2">
+                <motion.div 
+                  className="flex items-center justify-center gap-2"
+                  key={mode}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                >
                   {mode === "wrap" ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -429,8 +578,8 @@ function WrapUnwrap({ asset }) {
                     </svg>
                   )}
                   {mode === "wrap" ? "Execute Wrap" : "Execute Unwrap"}
-                </div>
-              </button>
+                </motion.div>
+              </motion.button>
             </div>
           </div>
         </div>
@@ -490,46 +639,121 @@ export default function StructurePage({ params, push }) {
   const asset = getAsset(assetId)
 
   return (
-    <div className="space-y-6">
+    <motion.div 
+      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
       {/* Simplified Header with Core Equation */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 p-8 border border-violet-200/30">
+      <motion.div 
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 p-8 border border-violet-200/30"
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
         <div className="absolute inset-0 bg-gradient-to-br from-violet-100/20 to-purple-100/20"></div>
         <div className="relative">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg">
+            <motion.div 
+              className="flex items-center gap-4"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <motion.div 
+                className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg"
+                whileHover={{ rotate: 360, scale: 1.1 }}
+                transition={{ duration: 0.6 }}
+              >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
-              </div>
-              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+              </motion.div>
+              <motion.h1 
+                className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
                 Structure (P·C·S)
-              </h1>
-            </div>
+              </motion.h1>
+            </motion.div>
             
-            <div className="flex items-center gap-4">
+            <motion.div 
+              className="flex items-center gap-4"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
               <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-700 to-gray-800 text-white shadow-lg">
+                <motion.div 
+                  className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-700 to-gray-800 text-white shadow-lg"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
-                </div>
+                </motion.div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-700 mb-2">Core Equation</h3>
-                  <div className="bg-white rounded-2xl border border-slate-200 px-6 py-3 shadow-lg">
+                  <motion.h3 
+                    className="text-lg font-bold text-slate-700 mb-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    Core Equation
+                  </motion.h3>
+                  <motion.div 
+                    className="bg-white rounded-2xl border border-slate-200 px-6 py-3 shadow-lg"
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.3, delay: 0.6 }}
+                    whileHover={{ scale: 1.02, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
+                  >
                     <div className="text-xl font-bold text-slate-800 font-mono tracking-wide">
-                      <span className="text-emerald-600">1P</span> + <span className="text-blue-600">1C</span> + <span className="text-amber-600">1S</span> = <span className="text-purple-600">1 RWA</span>
+                      <motion.span 
+                        className="text-emerald-600"
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        1P
+                      </motion.span> + <motion.span 
+                        className="text-blue-600"
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        1C
+                      </motion.span> + <motion.span 
+                        className="text-amber-600"
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        1S
+                      </motion.span> = <motion.span 
+                        className="text-purple-600"
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        1 RWA
+                      </motion.span>
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Enhanced Tab Section */}
-      <div className="bg-white/70 backdrop-blur-sm rounded-3xl border border-slate-200/50 shadow-xl shadow-slate-200/20 p-6">
+      <motion.div 
+        className="bg-white/70 backdrop-blur-sm rounded-3xl border border-slate-200/50 shadow-xl shadow-slate-200/20 p-6"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex gap-3">
             <button 
@@ -587,14 +811,32 @@ export default function StructurePage({ params, push }) {
           </div>
         </div>
 
-        {tab === "split-merge" ? (
-          <SplitMerge asset={asset} push={push} />
-        ) : (
-          <WrapUnwrap asset={asset} />
-        )}
-      </div>
+        <AnimatePresence mode="wait">
+          {tab === "split-merge" ? (
+            <motion.div
+              key="split-merge"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              <SplitMerge asset={asset} push={push} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="wrap-unwrap"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              <WrapUnwrap asset={asset} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
 
-    </div>
+    </motion.div>
   )
 }

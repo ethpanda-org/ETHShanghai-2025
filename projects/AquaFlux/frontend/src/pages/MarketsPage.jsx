@@ -120,6 +120,9 @@ export default function MarketsPage({ push }) {
 
       <KPIBar />
 
+      <LegendBar open={showExplainer} setOpen={setShowExplainer} />
+      <Explainer open={showExplainer} setOpen={setShowExplainer} />
+
       {/* Enhanced Filters */}
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 p-6 shadow-sm">
         <div className="flex flex-col xl:flex-row xl:items-center gap-6">
@@ -183,9 +186,6 @@ export default function MarketsPage({ push }) {
           </div>
         </div>
       </div>
-
-      <LegendBar open={showExplainer} setOpen={setShowExplainer} />
-      <Explainer open={showExplainer} setOpen={setShowExplainer} />
 
       {/* Content */}
       {view === "cards" ? (

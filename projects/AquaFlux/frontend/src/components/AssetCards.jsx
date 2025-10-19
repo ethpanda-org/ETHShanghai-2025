@@ -41,9 +41,9 @@ export default function AssetCards({ assets, onSwap, onBuild }) {
                 <AssetAvatar a={a} />
                 <div className="text-base font-semibold truncate whitespace-nowrap" title={a.name}>{a.name}</div>
                 {a.isNew && <Badge tone="info">New</Badge>}
-                <Badge>{a.type}</Badge>
+                {/* <Badge>{a.type}</Badge>
                 <Badge tone="success">{a.rating}</Badge>
-                {isNearMaturity(a) && <Badge tone="warn">Near Maturity</Badge>}
+                {isNearMaturity(a) && <Badge tone="warn">Near Maturity</Badge>} */}
               </div>
               <div className="text-xs text-slate-500 mt-1 truncate whitespace-nowrap" title={`Issuer: ${a.issuer} · Maturity: ${a.maturity}`}>
                 Issuer: {a.issuer} · Maturity: {a.maturity}
@@ -99,9 +99,6 @@ export default function AssetCards({ assets, onSwap, onBuild }) {
             />
           )}
 
-          {/* <div className="mt-3 text-[11px] text-slate-500 border-t pt-2">
-            Equation always holds: <b>1P + 1C + 1S = 1 RWA</b>. <b>Click P/C/S for quick trading</b>, or use "Portfolio Purchase" for proportional customization.
-          </div> */}
         </div>
       ))}
     </div>
