@@ -45,7 +45,7 @@ export function ReleaseInstructionsDialog({
       }
       toast.success('已复制到剪贴板')
     } catch (err) {
-      toast.error('复制失败，请手动复制')
+      toast.error(err instanceof Error ? err.message : '复制失败，请手动复制')
     }
   }
 

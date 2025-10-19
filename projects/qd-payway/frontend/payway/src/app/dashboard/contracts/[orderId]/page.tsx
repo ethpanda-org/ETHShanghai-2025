@@ -26,9 +26,9 @@ export default function ContractDetailPage() {
         setError(undefined)
         const data = await getContractByOrderId(orderId)
         setContract(data)
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error loading contract:', err)
-        setError(err.message || '加载订单信息失败')
+        setError(err instanceof Error ? err.message : '加载订单信息失败')
       } finally {
         setIsLoading(false)
       }

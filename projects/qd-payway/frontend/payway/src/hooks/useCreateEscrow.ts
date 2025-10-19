@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi'
+import { useWriteContract, useAccount } from 'wagmi'
 import { parseUnits } from 'viem'
 import { CONTRACTS, ESCROW_ABI } from '@/lib/contracts'
 import usdtAbi from '@/lib/usdt-abi.json'
@@ -23,24 +23,12 @@ export function useCreateEscrow() {
   const [currentStep, setCurrentStep] = useState<TransactionStep>(TransactionStep.IDLE)
   const [error, setError] = useState<string>()
   const [transactionHash, setTransactionHash] = useState<string>()
-  const [approveHash, setApproveHash] = useState<`0x${string}`>()
-  const [depositHash, setDepositHash] = useState<`0x${string}`>()
 
   // Approve交易
   const { writeContractAsync: approveAsync } = useWriteContract()
   
   // Deposit交易
   const { writeContractAsync: depositAsync } = useWriteContract()
-
-  // 等待Approve确认
-  const { isSuccess: isApproveSuccess } = useWaitForTransactionReceipt({
-    hash: approveHash,
-  })
-
-  // 等待Deposit确认
-  const { isSuccess: isDepositSuccess } = useWaitForTransactionReceipt({
-    hash: depositHash,
-  })
 
   // 创建托管合约
   const createEscrow = useCallback(async (params: CreateEscrowParams) => {
@@ -62,7 +50,6 @@ export function useCreateEscrow() {
         args: [CONTRACTS.ESCROW as `0x${string}`, amountInWei],
       })
 
-      setApproveHash(approveHash)
       setTransactionHash(approveHash)
       toast.success('授权交易已提交')
 
@@ -89,7 +76,6 @@ export function useCreateEscrow() {
         ],
       })
 
-      setDepositHash(depositHash)
       setTransactionHash(depositHash)
       toast.success('托管合约创建交易已提交')
 
@@ -125,23 +111,25 @@ export function useCreateEscrow() {
         router.push(`/dashboard/contracts/${orderId}`)
       }, 2000)
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error creating escrow:', err)
       setCurrentStep(TransactionStep.ERROR)
       
+      const errorMessage = err instanceof Error ? err.message : '未知错误'
+      
       // 处理用户拒绝
-      if (err.message?.includes('User rejected')) {
+      if (errorMessage.includes('User rejected')) {
         setError('您拒绝了交易')
         toast.error('交易已取消')
-      } else if (err.message?.includes('insufficient funds')) {
+      } else if (errorMessage.includes('insufficient funds')) {
         setError('余额不足，请确保有足够的USDT和ETH支付Gas费')
         toast.error('余额不足')
       } else {
-        setError(err.message || '创建托管合约失败')
+        setError(errorMessage || '创建托管合约失败')
         toast.error('交易失败')
       }
     }
-  }, [approveAsync, depositAsync, router])
+  }, [approveAsync, depositAsync, router, userAddress])
 
   return {
     createEscrow,

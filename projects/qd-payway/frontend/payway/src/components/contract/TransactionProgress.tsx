@@ -84,8 +84,7 @@ export function TransactionProgress({
               <Loader2 className="h-4 w-4 animate-spin text-teal-600" />
             )}
             {(step === TransactionStep.APPROVED || 
-              step === TransactionStep.DEPOSITING || 
-              step === TransactionStep.COMPLETED) && (
+              step === TransactionStep.DEPOSITING) && (
               <CheckCircle2 className="h-4 w-4 text-emerald-600" />
             )}
             {step === TransactionStep.IDLE && (
@@ -98,8 +97,7 @@ export function TransactionProgress({
               <div className="text-sm text-teal-700">
                 {step === TransactionStep.APPROVING && '请在钱包中确认授权交易...'}
                 {(step === TransactionStep.APPROVED || 
-                  step === TransactionStep.DEPOSITING || 
-                  step === TransactionStep.COMPLETED) && '授权成功 ✓'}
+                  step === TransactionStep.DEPOSITING) && '授权成功 ✓'}
               </div>
             </div>
           </div>
@@ -108,9 +106,6 @@ export function TransactionProgress({
           <div className="flex items-center gap-3">
             {step === TransactionStep.DEPOSITING && (
               <Loader2 className="h-4 w-4 animate-spin text-teal-600" />
-            )}
-            {step === TransactionStep.COMPLETED && (
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
             )}
             {(step === TransactionStep.IDLE || 
               step === TransactionStep.APPROVING || 
@@ -123,7 +118,6 @@ export function TransactionProgress({
               </div>
               <div className="text-sm text-teal-700">
                 {step === TransactionStep.DEPOSITING && '请在钱包中确认创建交易...'}
-                {step === TransactionStep.COMPLETED && '创建成功 ✓'}
                 {(step === TransactionStep.IDLE || 
                   step === TransactionStep.APPROVING || 
                   step === TransactionStep.APPROVED) && '等待授权完成...'}

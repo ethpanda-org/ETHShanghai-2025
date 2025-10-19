@@ -212,6 +212,7 @@ export async function getUserContractsWithRole(userAddress: string) {
   const { data, error } = await supabase
     .from('user_contracts')
     .select('*')
+    .or(`sender_address.eq.${userAddress},receiver_address.eq.${userAddress}`)
 
   if (error) {
     console.error('Error fetching user contracts:', error)

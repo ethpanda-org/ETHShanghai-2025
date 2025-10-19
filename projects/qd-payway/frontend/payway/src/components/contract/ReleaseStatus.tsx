@@ -1,7 +1,9 @@
 'use client'
 
+import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import type { Database } from '@/lib/types/supabase'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -19,18 +21,15 @@ interface ReleaseStatusProps {
   orderId: string
 }
 
-interface ReleaseRequest {
-  id: string
-  order_id: string
-  sender_email: string
-  request_status: 'pending' | 'processing' | 'completed' | 'failed'
-  transaction_hash: string | null
-  error_message: string | null
-  created_at: string
-  processed_at: string | null
-}
+type ReleaseRequest = Database['public']['Tables']['release_requests']['Row']
+type RequestStatus = 'pending' | 'processing' | 'completed' | 'failed'
 
 export function ReleaseStatus({ orderId }: ReleaseStatusProps) {
+  // 类型守护函数
+  const isValidStatus = (status: string): status is RequestStatus => {
+    return ['pending', 'processing', 'completed', 'failed'].includes(status)
+  }
+
   // 查询最新的放款请求
   const { data: releaseRequest, isLoading } = useQuery<ReleaseRequest | null>({
     queryKey: ['release-request', orderId],
@@ -51,7 +50,8 @@ export function ReleaseStatus({ orderId }: ReleaseStatusProps) {
       return data
     },
     // 如果状态是 processing，每 10 秒轮询一次
-    refetchInterval: (data) => {
+    refetchInterval: (query) => {
+      const data = query.state.data
       if (data?.request_status === 'processing' || data?.request_status === 'pending') {
         return 10000 // 10 seconds
       }
@@ -98,7 +98,12 @@ export function ReleaseStatus({ orderId }: ReleaseStatusProps) {
   }
 
   // 状态图标和颜色映射
-  const statusConfig = {
+  const statusConfig: Record<RequestStatus, {
+    icon: React.ReactElement
+    color: string
+    label: string
+    description: string
+  }> = {
     pending: {
       icon: <Clock className="h-5 w-5" />,
       color: 'bg-teal-100 text-teal-800 border-teal-200',
@@ -125,7 +130,11 @@ export function ReleaseStatus({ orderId }: ReleaseStatusProps) {
     },
   }
 
-  const config = statusConfig[releaseRequest.request_status]
+  // 获取状态配置，如果状态无效则使用 pending 作为默认值
+  const status = isValidStatus(releaseRequest.request_status) 
+    ? releaseRequest.request_status 
+    : 'pending'
+  const config = statusConfig[status]
 
   return (
     <Card>
@@ -148,14 +157,16 @@ export function ReleaseStatus({ orderId }: ReleaseStatusProps) {
             <p className="text-sm font-medium text-gray-900">
               {config.description}
             </p>
-            <p className="text-xs text-gray-500">
-              请求时间: {new Date(releaseRequest.created_at).toLocaleString('zh-CN')}
-            </p>
+            {releaseRequest.created_at && (
+              <p className="text-xs text-gray-500">
+                请求时间: {new Date(releaseRequest.created_at).toLocaleString('zh-CN')}
+              </p>
+            )}
           </div>
         </div>
 
         {/* 错误信息 */}
-        {releaseRequest.request_status === 'failed' && releaseRequest.error_message && (
+        {status === 'failed' && releaseRequest.error_message && (
           <div className="rounded-lg bg-red-50 border border-red-200 p-3">
             <p className="text-sm font-medium text-red-900 mb-1">错误原因：</p>
             <p className="text-sm text-red-700">{releaseRequest.error_message}</p>
@@ -187,8 +198,7 @@ export function ReleaseStatus({ orderId }: ReleaseStatusProps) {
         )}
 
         {/* 处理中提示 */}
-        {(releaseRequest.request_status === 'pending' || 
-          releaseRequest.request_status === 'processing') && (
+        {(status === 'pending' || status === 'processing') && (
           <div className="rounded-lg bg-teal-50 border border-teal-200 p-3">
             <p className="text-sm text-teal-800">
               ⏱️ 正在处理中，预计需要 5-10 分钟。页面将自动更新状态，请耐心等待。

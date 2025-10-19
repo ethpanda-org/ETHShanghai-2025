@@ -29,7 +29,7 @@ export function HeroSection() {
           <p className="mb-10 text-lg text-gray-600 sm:text-xl">
             让企业能够安全、高效地利用稳定币完成贸易结算，
             <br className="hidden sm:block" />
-            将商业信任从依赖"人"转变为依赖"代码"
+            将商业信任从依赖&quot;人&quot;转变为依赖&quot;代码&quot;
           </p>
 
           {/* CTA Buttons */}
@@ -43,7 +43,7 @@ export function HeroSection() {
               </Button>
             ) : (
               <div className="rounded-lg border border-teal-200 bg-teal-50 px-4 py-2 text-sm text-teal-700">
-                👆 点击右上角"连接钱包"开始使用
+                👆 点击右上角&quot;连接钱包&quot;开始使用
               </div>
             )}
           </div>

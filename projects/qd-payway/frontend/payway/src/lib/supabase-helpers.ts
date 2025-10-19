@@ -5,11 +5,12 @@
 
 import { supabase } from './supabase'
 import type { Database } from './types/supabase'
+import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 
 // 合约类型别名
-type Contract = Database['public']['Tables']['contracts']['Row']
 type ContractInsert = Database['public']['Tables']['contracts']['Insert']
 type ContractUpdate = Database['public']['Tables']['contracts']['Update']
+type ContractRow = Database['public']['Tables']['contracts']['Row']
 
 /**
  * 合约查询助手
@@ -196,22 +197,25 @@ export const contractQueries = {
 /**
  * 通用错误处理
  */
-export function handleSupabaseError(error: any, operation: string): never {
+export function handleSupabaseError(error: unknown, operation: string): never {
   console.error(`Supabase ${operation} error:`, error)
-  throw new Error(`${operation}: ${error.message || '未知错误'}`)
+  const errorMessage = error instanceof Error ? error.message : '未知错误'
+  throw new Error(`${operation}: ${errorMessage}`)
 }
 
 /**
  * 检查是否为 "未找到" 错误
  */
-export function isNotFoundError(error: any): boolean {
-  return error?.code === 'PGRST116'
+export function isNotFoundError(error: unknown): boolean {
+  return (error as { code?: string })?.code === 'PGRST116'
 }
 
 /**
  * 实时订阅助手
  */
-export function subscribeToContracts(callback: (payload: any) => void) {
+export function subscribeToContracts(
+  callback: (payload: RealtimePostgresChangesPayload<ContractRow>) => void
+) {
   return supabase
     .channel('contracts_changes')
     .on(
@@ -225,7 +229,10 @@ export function subscribeToContracts(callback: (payload: any) => void) {
 /**
  * 订阅特定订单的变化
  */
-export function subscribeToContract(orderId: string, callback: (payload: any) => void) {
+export function subscribeToContract(
+  orderId: string,
+  callback: (payload: RealtimePostgresChangesPayload<ContractRow>) => void
+) {
   return supabase
     .channel(`contract_${orderId}`)
     .on(

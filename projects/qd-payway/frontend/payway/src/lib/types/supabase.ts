@@ -84,6 +84,54 @@ export type Database = {
         }
         Relationships: []
       }
+      release_requests: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          order_id: string
+          processed_at: string | null
+          request_status: string
+          sender_email: string
+          transaction_hash: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          order_id: string
+          processed_at?: string | null
+          request_status: string
+          sender_email: string
+          transaction_hash?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          order_id?: string
+          processed_at?: string | null
+          request_status?: string
+          sender_email?: string
+          transaction_hash?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "release_requests_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["order_id"]
+          },
+          {
+            foreignKeyName: "release_requests_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "user_contracts"
+            referencedColumns: ["order_id"]
+          },
+        ]
+      }
     }
     Views: {
       user_contracts: {
