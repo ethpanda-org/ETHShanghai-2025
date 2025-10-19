@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Timelock Email Verification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', Helvetica, Arial, sans-serif;
+            background-color: #f8fafc;
+            color: #1f2937;
+            font-size: 16px;
+            line-height: 1.6;
+            min-width: 320px;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #f8fafc;
+            padding: 20px;
+        }
+        
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .header-card {
+            text-align: center;
+        }
+        
+        .brand-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        
+        .email-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-text {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .verification-code-container {
+            background-color: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .verification-code {
+            font-size: 40px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            color: #1f2937;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .verification-instruction {
+            font-size: 14px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .info-box {
+            background-color: #fef3c7;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .info-title {
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 5px;
+        }
+        
+        .info-content {
+            font-weight: 500;
+            color: #d97706;
+        }
+        
+        .security-box {
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .security-text {
+            font-weight: 500;
+            color: #6b7280;
+        }
+        
+        .footer-card {
+            text-align: center;
+            padding: 25px;
+        }
+        
+        .footer-brand {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        
+        .footer-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+            margin: 5px 0;
+        }
+        
+        .footer-copyright {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 8px;
+        }
+        
+        /* Mobile responsive styles */
+        @media screen and (max-width: 480px) {
+            .email-container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .brand-title {
+                font-size: 24px;
+            }
+            
+            .email-title {
+                font-size: 18px;
+            }
+            
+            .section-title {
+                font-size: 16px;
+            }
+            
+            .verification-code {
+                font-size: 28px;
+                letter-spacing: 4px;
+            }
+            
+            .verification-instruction {
+                font-size: 12px;
+            }
+        }
+        
+        /* Extra small devices */
+        @media screen and (max-width: 320px) {
+            .verification-code {
+                font-size: 24px;
+                letter-spacing: 2px;
+            }
+        }
+        
+        /* Ensure consistent layout scaling */
+        @media screen and (max-width: 600px) {
+            .email-container {
+                transform-origin: top center;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header Section -->
+        <div class="card header-card">
+            <div class="brand-title">Timelock</div>
+            <div class="email-title">Email Verification</div>
+            <div class="welcome-text">Welcome to Timelock! Please verify your email to continue</div>
+        </div>
+
+        <!-- Main Content Section -->
+        <div class="card">
+            <!-- Verification Code -->
+            <div class="section-title">🔐 Verification Code</div>
+            
+            <div class="verification-code-container">
+                <div class="verification-code">{{CODE}}</div>
+                <div class="verification-instruction">Enter this code to verify</div>
+            </div>
+            
+            <!-- Expiry Info -->
+            <div class="section-title">⏰ Important Information</div>
+            
+            <div class="info-box">
+                <div class="info-title">Code Expiry</div>
+                <div class="info-content">This code will expire in {{EXPIRE}}</div>
+            </div>
+            
+            <!-- Security Notice -->
+            <div class="section-title">🛡️ Security Notice</div>
+            
+            <div class="security-box">
+                <div class="security-text">
+                    If you didn't request this verification, you can safely ignore this email. 
+                    Your account security is not compromised.
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="card footer-card">
+            <div class="footer-brand">Timelock</div>
+            <div class="footer-subtitle">Automated message from Timelock Protocol</div>
+            <div class="footer-copyright">© 2025 Timelock Labs. All rights reserved.</div>
+        </div>
+    </div>
+</body>
+</html>
