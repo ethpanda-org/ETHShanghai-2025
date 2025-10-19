@@ -1,4 +1,4 @@
-# [项目名称] - ETHShanghai 2025
+# [Predmoon] - ETHShanghai 2025
 
 > 请按照以下模板填写你的项目信息
 
@@ -14,25 +14,25 @@
 
 ### 1) 项目概述 (Overview)
 
-- **项目名称**：[请填写你的项目名称]
-- **一句话介绍**：[一句话描述你的项目]
-- **目标用户**：[谁是你的目标用户？]
-- **核心问题与动机（Pain Points）**：[你要解决什么问题？]
-- **解决方案（Solution）**：[你的解决方案是什么？]
+- **项目名称**：[Predmoon]
+- **一句话介绍**：[A prediction market platform that users could trade by their belifs and knowledges]
+- **目标用户**：[All crypto users]
+- **核心问题与动机（Pain Points）**：[Monetizing Beliefs and getting collective wisdom based on blockchain]
+- **解决方案（Solution）**：[We developed Predmoon using a combination of smart contracts, Vue, Supabase, and Privy to let users trade their knowledge on-chain. The platform operates like Tinder: swiping left or right corresponds to a YES/NO transaction, and users can earn a profit.]
 
 ### 2) 架构与实现 (Architecture & Implementation)
 
 - **总览图（可贴图/链接）**：[系统架构图链接]
 - **关键模块**：
-  - 前端：React/Next.js/Vue.js 等
-  - 后端：Node.js/Python/Go 等
+  - 前端：Vue/Nuxt.js/Privy.js/typescript.js 等
+  - 后端：Supabase/node.js 等
   - 合约：Solidity 智能合约
   - 其他：[索引、Oracles、AI 代理等]
 - **依赖与技术栈**：
-  - 前端：React, Next.js, ethers.js, Tailwind CSS
-  - 后端：Node.js, Express, PostgreSQL
-  - 合约：Solidity, Foundry/Hardhat
-  - 部署：Vercel, Railway, Sepolia 测试网
+  - 前端：Vue/Nuxt.js, ethers.js, Tailwind CSS, Privy.js
+  - 后端：Node.js, Supabase, PostgreSQL
+  - 合约：Solidity, Hardhat
+  - 部署：Vercel, AWS, Sepolia 测试网
 
 ### 3) 合约与部署 (Contracts & Deployment)（如有）
 
@@ -84,16 +84,16 @@ pnpm --filter frontend dev
 # 打开 http://localhost:3000
 ```
 
-- **在线 Demo（如有）**：[Demo 链接]
-- **账号与测试说明（如需要）**：[测试账号信息]
+- **在线 Demo（如有）**：[pred.wtf]
+- **账号与测试说明（如需要）**：[register by your own email]
 
 ### 5) Demo 与关键用例 (Demo & Key Flows)
 
 - **视频链接（≤3 分钟，中文）**：[视频链接]
 - **关键用例步骤（2-4 个要点）**：
-  - 用例 1：[描述第一个关键功能]
-  - 用例 2：[描述第二个关键功能]
-  - 用例 3：[描述第三个关键功能]
+  - 用例 1：[Login module with Privy(embed wallet)]
+  - 用例 2：[Deposit through multi-chain]
+  - 用例 3：[Trade module]
 
 ### 6) 可验证边界 (Verifiable Scope)
 
@@ -116,15 +116,5 @@ pnpm --filter frontend dev
 - **联系方式（Email/TG/X）**：[联系方式]
 - **可演示时段（时区）**：[可演示时间]
 
-## 三、快速自检清单 (Submission Checklist)
 
-- [ ] README 按模板填写完整（概述、架构、复现、Demo、边界）
-- [ ] 本地可一键运行，关键用例可复现
-- [ ] （如有）测试网合约地址与验证链接已提供
-- [ ] Demo 视频（≤3 分钟，中文）链接可访问
-- [ ] 如未完全开源，已在"可验证边界"清晰说明
-- [ ] 联系方式与可演示时段已填写
 
----
-
-**注意**：请删除此模板说明，只保留你填写的内容。
