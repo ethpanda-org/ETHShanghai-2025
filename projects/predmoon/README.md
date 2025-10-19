@@ -92,9 +92,11 @@ pnpm --filter frontend dev
 
 ### 7) 路线图与影响 (Roadmap & Impact)
 
-- **赛后 1-3 周**：持续优化页面和系统性能
-- **赛后 1-3 个月**：内容流量持续运营，增加流动性
-- **预期对以太坊生态的价值**：eth上华语第一家预测市场
+- **赛后 1-3 周**：完成页面与系统性能的持续优化，提升用户体验与市场稳定性。
+- **赛后 1-3 个月**：通过冷启动运营与社区激励计划推动用户增长；
+ 开展多轮营销活动提升品牌曝光与预测市场流动性；
+ 逐步开启 PredSeed 融资计划，为后续产品扩展与生态建设提供资金支持。
+- **预期对以太坊生态的价值**：成为 以太坊生态中首个华语预测市场项目，以特色风格创新用户体验，助力全球预测市场的多元化发展。
 
 ### 8) 团队与联系 (Team & Contacts)
 
@@ -110,6 +112,4 @@ pnpm --filter frontend dev
   Our team consists of 10+ talented professionals, covering development, design, community, and marketing. Together, we bring a balanced mix of technical expertise, creative vision, and operational experience to build PredMoon.
 - **联系方式（Email/TG/X）**：b@pred.wtf
 - **可演示时段（时区）**：free
-
-
 
