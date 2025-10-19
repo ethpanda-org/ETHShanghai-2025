@@ -24,8 +24,9 @@ import {
   getAddressUrl 
 } from '@/lib/contracts'
 import { AddressDisplay } from './AddressDisplay'
+import { ReleaseInstructionsDialog } from './ReleaseInstructionsDialog'
+import { ReleaseStatus } from './ReleaseStatus'
 import { toast } from 'sonner'
-import { useState } from 'react'
 
 interface ContractDetailsProps {
   contract: Contract
@@ -33,7 +34,6 @@ interface ContractDetailsProps {
 
 export function ContractDetails({ contract }: ContractDetailsProps) {
   const { address } = useAccount()
-  const [showReleaseInstructions, setShowReleaseInstructions] = useState(false)
 
   // 判断当前用户是否为付款方
   const isSender = address?.toLowerCase() === contract.senderAddress.toLowerCase()
@@ -213,46 +213,28 @@ export function ContractDetails({ contract }: ContractDetailsProps) {
         </CardContent>
       </Card>
 
-      {/* 操作按钮 - 仅付款方可见 */}
+      {/* 放款状态追踪 - 显示给所有用户 */}
+      {contract.status === 'PENDING' && (
+        <ReleaseStatus orderId={contract.orderId} />
+      )}
+
+      {/* 操作按钮 - 仅付款方可见且状态为 PENDING */}
       {isSender && contract.status === 'PENDING' && (
         <Card className="border-blue-200 bg-blue-50">
           <CardHeader>
             <CardTitle>操作</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* 申请放款按钮 */}
-            <Button 
-              className="w-full"
-              onClick={() => setShowReleaseInstructions(!showReleaseInstructions)}
+            {/* 申请放款按钮 - 使用新的对话框组件 */}
+            <ReleaseInstructionsDialog
+              orderId={contract.orderId}
+              userEmail={contract.verificationEmail || ''}
             >
-              申请放款
-            </Button>
-
-            {/* 放款说明 */}
-            {showReleaseInstructions && (
-              <Alert>
-                <Mail className="h-4 w-4" />
-                <AlertDescription>
-                  <div className="space-y-2">
-                    <p className="font-medium">如何放款？</p>
-                    <p className="text-sm">
-                      请使用您预留的邮箱 <strong>{contract.verificationEmail}</strong>
-                    </p>
-                    <p className="text-sm">
-                      向我们的指令邮箱 <strong>release@payway.com</strong> 发送邮件
-                    </p>
-                    <p className="text-sm">
-                      邮件标题为：<code className="rounded bg-gray-100 px-2 py-1">
-                        RELEASE: {contract.orderId}
-                      </code>
-                    </p>
-                    <p className="text-xs text-gray-600">
-                      我们将在收到邮件并验证通过后的数分钟内为您自动执行链上放款。
-                    </p>
-                  </div>
-                </AlertDescription>
-              </Alert>
-            )}
+              <Button className="w-full">
+                <Mail className="mr-2 h-4 w-4" />
+                申请放款
+              </Button>
+            </ReleaseInstructionsDialog>
 
             <Separator />
 
