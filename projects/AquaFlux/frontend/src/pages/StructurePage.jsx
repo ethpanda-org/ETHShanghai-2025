@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ASSETS, getAsset } from '../data/mockData'
 import AssetMiniCard from '../components/AssetMiniCard'
 import { cx } from '../utils/helpers'
+import { useAquaFluxCore, useAssetInfo } from '../hooks/useAquaFluxCore'
+import { useTokenAllowance } from '../hooks/useTokenAllowance'
 
 function PreviewBox({ title, value, warn = false, subtle = false, tokenType = null }) {
   // Extract token type from title if not provided
@@ -209,6 +211,60 @@ function SplitMerge({ asset, push }) {
   const [amount, setAmount] = useState("") // RWA or sets
   const amt = parseFloat(amount) || 0
 
+  // Use blockchain asset ID - in real app this should map from UI asset to blockchain ID
+  const blockchainAssetId = `0x94e997e91240e3af49fbaac7e5898097cc2f82961778fef3c5602ae767e008d0`
+  
+  // Use AquaFluxCore hook
+  const { 
+    executeSplit,
+    executeMerge,
+    isSplitting,
+    isMerging, 
+    isConfirming, 
+    isSuccess, 
+    error, 
+    isLoading,
+    lastTxHash
+  } = useAquaFluxCore()
+
+  // Handle split execution
+  const handleExecuteSplit = async () => {
+    if (!amt || amt <= 0) return
+    
+    try {
+      // Convert USD amount to wei (assuming 18 decimals)
+      const amountInWei = BigInt(Math.floor(amt * 10**18))
+      
+      const result = await executeSplit({
+        assetId: blockchainAssetId,
+        amount: amountInWei
+      })
+      
+      console.log('Split transaction initiated:', result)
+    } catch (err) {
+      console.error('Split failed:', err)
+    }
+  }
+
+  // Handle merge execution
+  const handleExecuteMerge = async () => {
+    if (!amt || amt <= 0) return
+    
+    try {
+      // Convert set amount to wei (assuming 18 decimals)
+      const amountInWei = BigInt(Math.floor(amt * 10**18))
+      
+      const result = await executeMerge({
+        assetId: blockchainAssetId,
+        amount: amountInWei
+      })
+      
+      console.log('Merge transaction initiated:', result)
+    } catch (err) {
+      console.error('Merge failed:', err)
+    }
+  }
+
   // Split result: 1 RWA → 1 P + 1 C + 1 S
   const outPCS = { P: amt, C: amt, S: amt }
 
@@ -345,7 +401,8 @@ function SplitMerge({ asset, push }) {
                       : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-200 hover:shadow-blue-300"
                     : "bg-slate-300 text-slate-500 cursor-not-allowed"
                 )} 
-                disabled={amt <= 0}
+                disabled={amt <= 0 || (mode === "split" && (isSplitting || isConfirming)) || (mode === "merge" && (isMerging || isConfirming))}
+                onClick={mode === "split" ? handleExecuteSplit : handleExecuteMerge}
                 whileHover={amt > 0 ? { scale: 1.05 } : {}}
                 whileTap={amt > 0 ? { scale: 0.95 } : {}}
                 initial={{ opacity: 0, y: 10 }}
@@ -353,22 +410,47 @@ function SplitMerge({ asset, push }) {
                 transition={{ duration: 0.3, delay: 0.4 }}
               >
                 <motion.div 
-                  className="flex items-center gap-2"
+                  className="flex items-center justify-center gap-2"
                   key={mode}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.2 }}
                 >
                   {mode === "split" ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                    </svg>
+                    (isSplitting || isConfirming) ? (
+                      <>
+                        <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        {isSplitting ? "Splitting..." : "Confirming..."}
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                        Execute Split
+                      </>
+                    )
                   ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                    </svg>
+                    (isMerging || isConfirming) ? (
+                      <>
+                        <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        {isMerging ? "Merging..." : "Confirming..."}
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                        </svg>
+                        Execute Merge
+                      </>
+                    )
                   )}
-                  {mode === "split" ? "Execute Split" : "Execute Merge"}
                 </motion.div>
               </motion.button>
               <AnimatePresence>
@@ -459,6 +541,83 @@ function WrapUnwrap({ asset }) {
   const [amount, setAmount] = useState("")
   const amt = parseFloat(amount) || 0
   
+  // Use blockchain asset ID - in real app this should map from UI asset to blockchain ID
+  const blockchainAssetId = `0x94e997e91240e3af49fbaac7e5898097cc2f82961778fef3c5602ae767e008d0`
+  // Use AquaFluxCore hook
+  const { 
+    executeWrap,
+    executeSplit,
+    isWrapping,
+    isSplitting, 
+    isConfirming, 
+    isSuccess, 
+    error, 
+    isLoading,
+    lastTxHash
+  } = useAquaFluxCore()
+  
+  // Get asset info to find underlying token
+  const { asset: assetInfo } = useAssetInfo(blockchainAssetId)
+  
+  // Check token allowance
+  const {
+    needsApproval,
+    executeApproveMax,
+    isApproving,
+    isConfirmingApprove,
+    isApproveSuccess,
+    approveError,
+    refetchAllowance
+  } = useTokenAllowance({
+    tokenAddress: assetInfo?.underlying,
+    amount: amount
+  })
+  
+  // Handle approve execution
+  const handleExecuteApprove = async () => {
+    if (!assetInfo?.underlying || !amount) return
+    
+    try {
+      const result = await executeApproveMax()
+      console.log('Approve transaction initiated:', result)
+    } catch (err) {
+      console.error('Approve failed:', err)
+    }
+  }
+  
+  // Handle wrap execution
+  const handleExecuteWrap = async () => {
+    if (!amt || amt <= 0) return
+    
+    try {
+      // Convert USD amount to wei (assuming 18 decimals)
+      const amountInWei = BigInt(Math.floor(amt * 10**18))
+      
+      const result = await executeWrap({
+        assetId: blockchainAssetId,
+        amount: amountInWei
+      })
+      
+      console.log('Wrap transaction initiated:', result)
+      
+      // Refetch allowance after successful wrap
+      if (result) {
+        setTimeout(() => {
+          refetchAllowance()
+        }, 2000)
+      }
+    } catch (err) {
+      console.error('Wrap failed:', err)
+    }
+  }
+  
+  // Refetch allowance when approve is successful
+  if (isApproveSuccess) {
+    setTimeout(() => {
+      refetchAllowance()
+    }, 2000)
+  }
+  
   return (
     <div className="mt-6 grid grid-cols-1 xl:grid-cols-3 gap-6">
       <div className="xl:col-span-2 space-y-6">
@@ -545,41 +704,180 @@ function WrapUnwrap({ asset }) {
             </div>
             
             <div className="pt-2">
-              <motion.button 
-                className={cx(
-                  "w-full px-8 py-3 rounded-2xl text-base font-semibold transition-all duration-300 shadow-lg", 
-                  amt > 0 
-                    ? mode === "wrap" 
-                      ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-purple-200 hover:shadow-purple-300" 
-                      : "bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white shadow-orange-200 hover:shadow-orange-300"
-                    : "bg-slate-300 text-slate-500 cursor-not-allowed"
-                )} 
-                disabled={amt <= 0}
-                whileHover={amt > 0 ? { scale: 1.05 } : {}}
-                whileTap={amt > 0 ? { scale: 0.95 } : {}}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.4 }}
-              >
-                <motion.div 
-                  className="flex items-center justify-center gap-2"
-                  key={mode}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.2 }}
+              {/* Conditional button based on wrap mode and approval status */}
+              {mode === "wrap" && needsApproval && amt > 0 ? (
+                // Show approve button when approval is needed
+                <motion.button 
+                  className={cx(
+                    "w-full px-8 py-3 rounded-2xl text-base font-semibold transition-all duration-300 shadow-lg",
+                    "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-200 hover:shadow-blue-300"
+                  )} 
+                  disabled={isApproving || isConfirmingApprove}
+                  onClick={handleExecuteApprove}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.4 }}
                 >
-                  {mode === "wrap" ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                    </svg>
-                  )}
-                  {mode === "wrap" ? "Execute Wrap" : "Execute Unwrap"}
-                </motion.div>
-              </motion.button>
+                  <motion.div 
+                    className="flex items-center justify-center gap-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {isApproving || isConfirmingApprove ? (
+                      <>
+                        <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        {isApproving ? "Approving..." : "Confirming Approval..."}
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Approve Token
+                      </>
+                    )}
+                  </motion.div>
+                </motion.button>
+              ) : (
+                // Show wrap/unwrap button
+                <motion.button 
+                  className={cx(
+                    "w-full px-8 py-3 rounded-2xl text-base font-semibold transition-all duration-300 shadow-lg", 
+                    amt > 0 
+                      ? mode === "wrap" 
+                        ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-purple-200 hover:shadow-purple-300" 
+                        : "bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white shadow-orange-200 hover:shadow-orange-300"
+                      : "bg-slate-300 text-slate-500 cursor-not-allowed"
+                  )} 
+                  disabled={amt <= 0 || (mode === "wrap" && (isWrapping || isConfirming))}
+                  onClick={mode === "wrap" ? handleExecuteWrap : undefined}
+                  whileHover={amt > 0 ? { scale: 1.05 } : {}}
+                  whileTap={amt > 0 ? { scale: 0.95 } : {}}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.4 }}
+                >
+                  <motion.div 
+                    className="flex items-center justify-center gap-2"
+                    key={mode}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {mode === "wrap" ? (
+                      isWrapping || isConfirming ? (
+                        <>
+                          <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          {isWrapping ? "Wrapping..." : "Confirming..."}
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                          Execute Wrap
+                        </>
+                      )
+                    ) : (
+                      <>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                        </svg>
+                        Execute Unwrap
+                      </>
+                    )}
+                  </motion.div>
+                </motion.button>
+              )}
+              
+              {/* Transaction status */}
+              <AnimatePresence>
+                {/* Approve success status */}
+                {isApproveSuccess && (
+                  <motion.div
+                    className="mt-3 p-3 rounded-xl text-sm bg-emerald-50 text-emerald-800 border border-emerald-200"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Token approved successfully! You can now execute wrap.
+                    </div>
+                  </motion.div>
+                )}
+                
+                {/* Approve error status */}
+                {approveError && (
+                  <motion.div
+                    className="mt-3 p-3 rounded-xl text-sm bg-red-50 text-red-800 border border-red-200"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      Approval failed: {approveError?.message || 'Unknown error'}
+                    </div>
+                  </motion.div>
+                )}
+                
+                {/* Wrap transaction status */}
+                {(isSuccess || error) && (
+                  <motion.div
+                    className={cx(
+                      "mt-3 p-3 rounded-xl text-sm",
+                      isSuccess 
+                        ? "bg-emerald-50 text-emerald-800 border border-emerald-200" 
+                        : "bg-red-50 text-red-800 border border-red-200"
+                    )}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {isSuccess ? (
+                      <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Wrap transaction successful! {lastTxHash && (
+                          <a 
+                            href={`https://testnet.bscscan.com/tx/${lastTxHash}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="underline hover:no-underline"
+                          >
+                            View on BSCScan
+                          </a>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Transaction failed: {error?.message || 'Unknown error'}
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>

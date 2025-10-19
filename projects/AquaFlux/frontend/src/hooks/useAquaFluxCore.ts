@@ -1,0 +1,238 @@
+import { useState } from 'react'
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi'
+import AquaFluxCoreContract from '../abis/AquaFluxCore.json'
+import { getContractAddresses } from '../lib/contracts'
+
+const AquaFluxCoreABI = AquaFluxCoreContract.abi
+
+export interface WrapParams {
+  assetId: `0x${string}`
+  amount: bigint
+}
+
+export interface SplitParams {
+  assetId: `0x${string}`
+  amount: bigint
+}
+
+export interface MergeParams {
+  assetId: `0x${string}`
+  amount: bigint
+}
+
+export interface AssetInfo {
+  issuer: `0x${string}`
+  underlying: `0x${string}`
+  maturity: bigint
+  operationDeadline: bigint
+  couponRate: bigint
+  couponAllocationC: bigint
+  couponAllocationS: bigint
+  sTokenFeeAllocation: bigint
+  name: string
+  metadataURI: string
+  verified: boolean
+  paused: boolean
+  aqToken: `0x${string}`
+  pToken: `0x${string}`
+  cToken: `0x${string}`
+  sToken: `0x${string}`
+}
+
+export function useAquaFluxCore() {
+  const { address, chainId } = useAccount()
+  const [lastTxHash, setLastTxHash] = useState<`0x${string}` | undefined>()
+  
+  const contractAddresses = getContractAddresses(chainId || 97)
+  const aquaFluxCoreAddress = contractAddresses?.AquaFluxCore
+
+  const { writeContract: wrapAsset, isPending: isWrapping } = useWriteContract()
+  const { writeContract: splitAsset, isPending: isSplitting } = useWriteContract()
+  const { writeContract: mergeAsset, isPending: isMerging } = useWriteContract()
+  
+  const { isLoading: isConfirming, isSuccess, error } = useWaitForTransactionReceipt({
+    hash: lastTxHash,
+  })
+
+  const executeWrap = async (params: WrapParams) => {
+    if (!aquaFluxCoreAddress || !address) {
+      throw new Error('AquaFlux Core not available or wallet not connected')
+    }
+
+    return new Promise((resolve, reject) => {
+      wrapAsset(
+        {
+          address: aquaFluxCoreAddress,
+          abi: AquaFluxCoreABI,
+          functionName: 'wrap',
+          args: [
+            params.assetId,
+            params.amount
+          ],
+        },
+        {
+          onSuccess: (hash) => {
+            setLastTxHash(hash)
+            resolve({ 
+              hash, 
+              isLoading: true, 
+              isSuccess: false, 
+              error: null 
+            })
+          },
+          onError: (error) => {
+            reject({ 
+              hash: undefined,
+              isLoading: false, 
+              isSuccess: false, 
+              error 
+            })
+          },
+        }
+      )
+    })
+  }
+
+  const executeSplit = async (params: SplitParams) => {
+    if (!aquaFluxCoreAddress || !address) {
+      throw new Error('AquaFlux Core not available or wallet not connected')
+    }
+
+    return new Promise((resolve, reject) => {
+      splitAsset(
+        {
+          address: aquaFluxCoreAddress,
+          abi: AquaFluxCoreABI,
+          functionName: 'split',
+          args: [
+            params.assetId,
+            params.amount
+          ],
+        },
+        {
+          onSuccess: (hash) => {
+            setLastTxHash(hash)
+            resolve({ 
+              hash, 
+              isLoading: true, 
+              isSuccess: false, 
+              error: null 
+            })
+          },
+          onError: (error) => {
+            reject({ 
+              hash: undefined,
+              isLoading: false, 
+              isSuccess: false, 
+              error 
+            })
+          },
+        }
+      )
+    })
+  }
+
+  const executeMerge = async (params: MergeParams) => {
+    if (!aquaFluxCoreAddress || !address) {
+      throw new Error('AquaFlux Core not available or wallet not connected')
+    }
+
+    return new Promise((resolve, reject) => {
+      mergeAsset(
+        {
+          address: aquaFluxCoreAddress,
+          abi: AquaFluxCoreABI,
+          functionName: 'merge',
+          args: [
+            params.assetId,
+            params.amount
+          ],
+        },
+        {
+          onSuccess: (hash) => {
+            setLastTxHash(hash)
+            resolve({ 
+              hash, 
+              isLoading: true, 
+              isSuccess: false, 
+              error: null 
+            })
+          },
+          onError: (error) => {
+            reject({ 
+              hash: undefined,
+              isLoading: false, 
+              isSuccess: false, 
+              error 
+            })
+          },
+        }
+      )
+    })
+  }
+
+  return {
+    executeWrap,
+    executeSplit,
+    executeMerge,
+    isWrapping,
+    isSplitting,
+    isMerging,
+    isConfirming,
+    isSuccess,
+    error,
+    isLoading: isConfirming,
+    aquaFluxCoreAddress,
+    lastTxHash
+  }
+}
+
+// Hook for getting asset info
+export function useAssetInfo(assetId: `0x${string}` | undefined) {
+  const { chainId } = useAccount()
+  const contractAddresses = getContractAddresses(chainId || 97)
+  const aquaFluxCoreAddress = contractAddresses?.AquaFluxCore
+
+  const { data: assetInfo, isLoading, error, refetch } = useReadContract({
+    address: aquaFluxCoreAddress,
+    abi: AquaFluxCoreABI,
+    functionName: 'getAssetInfo',
+    args: assetId ? [assetId] : undefined,
+    query: {
+      enabled: Boolean(aquaFluxCoreAddress && assetId)
+    }
+  }) as {
+    data: AssetInfo | undefined,
+    isLoading: boolean,
+    error: any,
+    refetch: () => void
+  }
+
+
+  // Convert the tuple result to typed AssetInfo object
+  const asset: AssetInfo | null = assetInfo ? {
+    issuer: assetInfo.issuer,
+    underlying: assetInfo.underlying,
+    maturity: assetInfo.maturity,
+    operationDeadline: assetInfo.operationDeadline,
+    couponRate: assetInfo.couponRate,
+    couponAllocationC: assetInfo.couponAllocationC,
+    couponAllocationS: assetInfo.couponAllocationS,
+    sTokenFeeAllocation: assetInfo.sTokenFeeAllocation,
+    name: assetInfo.name,
+    metadataURI: assetInfo.metadataURI,
+    verified: assetInfo.verified,
+    paused: assetInfo.paused,
+    aqToken: assetInfo.aqToken,
+    pToken: assetInfo.pToken,
+    cToken: assetInfo.cToken,
+    sToken: assetInfo.sToken
+  } : null
+
+  return {
+    asset,
+    isLoading,
+    error,
+    refetch
+  }
+}
