@@ -1,0 +1,17 @@
+{
+  "chainId": 11155111,
+  "deployer": "0xF0C995a3659a2BC6020F579AEd7A206244AE52c0",
+  "timestamp": 1760886216,
+  "contracts": {
+    "SoccerAgentRegistry": "0x93D251E6a2F08b61c06d36eEDD81bA6ac384E40D",
+    "ServerReputationRegistry": "0x0D5a8A2f22cC59a9293C14404a41818E71b3528A",
+    "LaunchPad": "0xBA9d3DA6116d8D3d5F90B3065f59d7B205F5C852",
+    "Competition": "0xDe30530F1Fa736E656A42fCb3f91E004B1e1819a"
+  },
+  "config": {
+    "uniswapV2Router": "0xC532a74256D3Db42D0Bf7a0400fEFDbad7694008",
+    "foundationAddress": "0xF0C995a3659a2BC6020F579AEd7A206244AE52c0",
+    "platformTreasury": "0xF0C995a3659a2BC6020F579AEd7A206244AE52c0",
+    "minMatchFee": "1000000000000000"
+  }
+}

@@ -8,6 +8,11 @@ libs = ["dependencies"]
 # 设置 RPC URL
 rpc_url = "http://127.0.0.1:8545"
 
+fs_permissions = [
+    { access = "read", path = "./" },
+    { access = "read-write", path = "./deployments/" }
+]
+
 # fork_url = ""
 # 可选:设置特定区块高度
 # fork_block_number = 

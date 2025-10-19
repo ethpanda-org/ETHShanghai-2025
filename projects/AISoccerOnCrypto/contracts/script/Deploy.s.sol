@@ -17,13 +17,7 @@ contract Deploy is Script {
     // Sepolia Testnet: 0xC532a74256D3Db42D0Bf7a0400fEFDbad7694008
     // Base Mainnet: 0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24
     // Arbitrum: 0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24
-    address constant UNISWAP_V2_ROUTER = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
-    
-    // Foundation address - receives 5% of token launch fees
-    address constant FOUNDATION_ADDRESS = address(0x1234567890123456789012345678901234567890); // TODO: Update
-    
-    // Platform treasury - receives platform fees from matches
-    address constant PLATFORM_TREASURY = address(0x1234567890123456789012345678901234567890); // TODO: Update
+    address constant UNISWAP_V2_ROUTER = 0xC532a74256D3Db42D0Bf7a0400fEFDbad7694008;
     
     // Minimum match fee (0.001 ETH = 1000000000000000 wei)
     uint256 constant MIN_MATCH_FEE = 0.001 ether;
@@ -43,6 +37,13 @@ contract Deploy is Script {
         console.log("Account balance:", deployer.balance);
 
         vm.startBroadcast(deployerPrivateKey);
+
+        // Foundation address - receives 5% of token launch fees
+        address FOUNDATION_ADDRESS = deployer; // TODO: Update
+    
+        // Platform treasury - receives platform fees from matches
+        address PLATFORM_TREASURY = deployer; // TODO: Update
+    
 
         // ===== Step 1: Deploy SoccerAgentRegistry (serves as IdentityRegistry) =====
         console.log("\n=== Deploying SoccerAgentRegistry ===");
@@ -126,7 +127,7 @@ contract Deploy is Script {
         ));
 
         string memory filename = string(abi.encodePacked(
-            "deployments-",
+            "./deployments/deployments-",
             vm.toString(block.chainid),
             ".json"
         ));
