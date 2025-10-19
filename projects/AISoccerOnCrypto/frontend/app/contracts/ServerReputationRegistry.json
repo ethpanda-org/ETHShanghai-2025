@@ -1,0 +1,1191 @@
+{
+  "address": "0x0D5a8A2f22cC59a9293C14404a41818E71b3528A",
+  "abi": [
+    {
+      "type": "constructor",
+      "inputs": [
+        {
+          "name": "_identityRegistry",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "_clientExists",
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "_clients",
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "_feedback",
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "",
+          "type": "uint64",
+          "internalType": "uint64"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "score",
+          "type": "uint8",
+          "internalType": "uint8"
+        },
+        {
+          "name": "tag1",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "tag2",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "isRevoked",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "_lastIndex",
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint64",
+          "internalType": "uint64"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "_responderExists",
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "",
+          "type": "uint64",
+          "internalType": "uint64"
+        },
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "_responders",
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "",
+          "type": "uint64",
+          "internalType": "uint64"
+        },
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "_responseCount",
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "",
+          "type": "uint64",
+          "internalType": "uint64"
+        },
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint64",
+          "internalType": "uint64"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "appendResponse",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "clientAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "feedbackIndex",
+          "type": "uint64",
+          "internalType": "uint64"
+        },
+        {
+          "name": "responseUri",
+          "type": "string",
+          "internalType": "string"
+        },
+        {
+          "name": "responseHash",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "decodeScores",
+      "inputs": [
+        {
+          "name": "tag2",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "selfScore",
+          "type": "uint128",
+          "internalType": "uint128"
+        },
+        {
+          "name": "opponentScore",
+          "type": "uint128",
+          "internalType": "uint128"
+        }
+      ],
+      "stateMutability": "pure"
+    },
+    {
+      "type": "function",
+      "name": "getAgentMatchCount",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getAgentMatchStats",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "totalMatches",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "wins",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "draws",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "losses",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "totalSelfScore",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "totalOpponentScore",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getAgentMatches",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "tuple[]",
+          "internalType": "struct ServerReputationRegistry.ServerFeedback[]",
+          "components": [
+            {
+              "name": "agentId",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "opponentAgentId",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "result",
+              "type": "uint8",
+              "internalType": "uint8"
+            },
+            {
+              "name": "selfScore",
+              "type": "uint128",
+              "internalType": "uint128"
+            },
+            {
+              "name": "opponentScore",
+              "type": "uint128",
+              "internalType": "uint128"
+            },
+            {
+              "name": "matchLogUri",
+              "type": "string",
+              "internalType": "string"
+            },
+            {
+              "name": "matchLogHash",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getAgentMatchesPaginated",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "offset",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "limit",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "tuple[]",
+          "internalType": "struct ServerReputationRegistry.ServerFeedback[]",
+          "components": [
+            {
+              "name": "agentId",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "opponentAgentId",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "result",
+              "type": "uint8",
+              "internalType": "uint8"
+            },
+            {
+              "name": "selfScore",
+              "type": "uint128",
+              "internalType": "uint128"
+            },
+            {
+              "name": "opponentScore",
+              "type": "uint128",
+              "internalType": "uint128"
+            },
+            {
+              "name": "matchLogUri",
+              "type": "string",
+              "internalType": "string"
+            },
+            {
+              "name": "matchLogHash",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getAuthorizedServers",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address[]",
+          "internalType": "address[]"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getClients",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address[]",
+          "internalType": "address[]"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getHeadToHeadMatches",
+      "inputs": [
+        {
+          "name": "agentId1",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "agentId2",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "tuple[]",
+          "internalType": "struct ServerReputationRegistry.ServerFeedback[]",
+          "components": [
+            {
+              "name": "agentId",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "opponentAgentId",
+              "type": "uint256",
+              "internalType": "uint256"
+            },
+            {
+              "name": "result",
+              "type": "uint8",
+              "internalType": "uint8"
+            },
+            {
+              "name": "selfScore",
+              "type": "uint128",
+              "internalType": "uint128"
+            },
+            {
+              "name": "opponentScore",
+              "type": "uint128",
+              "internalType": "uint128"
+            },
+            {
+              "name": "matchLogUri",
+              "type": "string",
+              "internalType": "string"
+            },
+            {
+              "name": "matchLogHash",
+              "type": "bytes32",
+              "internalType": "bytes32"
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getIdentityRegistry",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getLastIndex",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "clientAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint64",
+          "internalType": "uint64"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getResponseCount",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "clientAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "feedbackIndex",
+          "type": "uint64",
+          "internalType": "uint64"
+        },
+        {
+          "name": "responders",
+          "type": "address[]",
+          "internalType": "address[]"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "count",
+          "type": "uint64",
+          "internalType": "uint64"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getSummary",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "clientAddresses",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "tag1",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "tag2",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "count",
+          "type": "uint64",
+          "internalType": "uint64"
+        },
+        {
+          "name": "averageScore",
+          "type": "uint8",
+          "internalType": "uint8"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "giveFeedback",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "score",
+          "type": "uint8",
+          "internalType": "uint8"
+        },
+        {
+          "name": "tag1",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "tag2",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "feedbackUri",
+          "type": "string",
+          "internalType": "string"
+        },
+        {
+          "name": "feedbackHash",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "feedbackAuth",
+          "type": "bytes",
+          "internalType": "bytes"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "identityRegistry",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "isAuthorizedServer",
+      "inputs": [
+        {
+          "name": "serverAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "owner",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "readAllFeedback",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "clientAddresses",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "tag1",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "tag2",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "includeRevoked",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "clients",
+          "type": "address[]",
+          "internalType": "address[]"
+        },
+        {
+          "name": "scores",
+          "type": "uint8[]",
+          "internalType": "uint8[]"
+        },
+        {
+          "name": "tag1s",
+          "type": "bytes32[]",
+          "internalType": "bytes32[]"
+        },
+        {
+          "name": "tag2s",
+          "type": "bytes32[]",
+          "internalType": "bytes32[]"
+        },
+        {
+          "name": "revokedStatuses",
+          "type": "bool[]",
+          "internalType": "bool[]"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "readFeedback",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "clientAddress",
+          "type": "address",
+          "internalType": "address"
+        },
+        {
+          "name": "index",
+          "type": "uint64",
+          "internalType": "uint64"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "score",
+          "type": "uint8",
+          "internalType": "uint8"
+        },
+        {
+          "name": "tag1",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "tag2",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        },
+        {
+          "name": "isRevoked",
+          "type": "bool",
+          "internalType": "bool"
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "registerServer",
+      "inputs": [
+        {
+          "name": "serverAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "revokeFeedback",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "feedbackIndex",
+          "type": "uint64",
+          "internalType": "uint64"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "submitMatchResult",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "opponentAgentId",
+          "type": "uint256",
+          "internalType": "uint256"
+        },
+        {
+          "name": "result",
+          "type": "uint8",
+          "internalType": "uint8"
+        },
+        {
+          "name": "selfScore",
+          "type": "uint128",
+          "internalType": "uint128"
+        },
+        {
+          "name": "opponentScore",
+          "type": "uint128",
+          "internalType": "uint128"
+        },
+        {
+          "name": "matchLogUri",
+          "type": "string",
+          "internalType": "string"
+        },
+        {
+          "name": "matchLogHash",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "function",
+      "name": "unregisterServer",
+      "inputs": [
+        {
+          "name": "serverAddress",
+          "type": "address",
+          "internalType": "address"
+        }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    },
+    {
+      "type": "event",
+      "name": "FeedbackRevoked",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "indexed": true,
+          "internalType": "uint256"
+        },
+        {
+          "name": "clientAddress",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "feedbackIndex",
+          "type": "uint64",
+          "indexed": true,
+          "internalType": "uint64"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "MatchResultSubmitted",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "indexed": true,
+          "internalType": "uint256"
+        },
+        {
+          "name": "opponentAgentId",
+          "type": "uint256",
+          "indexed": true,
+          "internalType": "uint256"
+        },
+        {
+          "name": "serverAddress",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "result",
+          "type": "uint8",
+          "indexed": false,
+          "internalType": "uint8"
+        },
+        {
+          "name": "selfScore",
+          "type": "uint128",
+          "indexed": false,
+          "internalType": "uint128"
+        },
+        {
+          "name": "opponentScore",
+          "type": "uint128",
+          "indexed": false,
+          "internalType": "uint128"
+        },
+        {
+          "name": "matchLogUri",
+          "type": "string",
+          "indexed": false,
+          "internalType": "string"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "NewFeedback",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "indexed": true,
+          "internalType": "uint256"
+        },
+        {
+          "name": "clientAddress",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "score",
+          "type": "uint8",
+          "indexed": false,
+          "internalType": "uint8"
+        },
+        {
+          "name": "tag1",
+          "type": "bytes32",
+          "indexed": true,
+          "internalType": "bytes32"
+        },
+        {
+          "name": "tag2",
+          "type": "bytes32",
+          "indexed": false,
+          "internalType": "bytes32"
+        },
+        {
+          "name": "feedbackUri",
+          "type": "string",
+          "indexed": false,
+          "internalType": "string"
+        },
+        {
+          "name": "feedbackHash",
+          "type": "bytes32",
+          "indexed": false,
+          "internalType": "bytes32"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ResponseAppended",
+      "inputs": [
+        {
+          "name": "agentId",
+          "type": "uint256",
+          "indexed": true,
+          "internalType": "uint256"
+        },
+        {
+          "name": "clientAddress",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "feedbackIndex",
+          "type": "uint64",
+          "indexed": false,
+          "internalType": "uint64"
+        },
+        {
+          "name": "responder",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        },
+        {
+          "name": "responseUri",
+          "type": "string",
+          "indexed": false,
+          "internalType": "string"
+        },
+        {
+          "name": "responseHash",
+          "type": "bytes32",
+          "indexed": false,
+          "internalType": "bytes32"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ServerRegistered",
+      "inputs": [
+        {
+          "name": "serverAddress",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "event",
+      "name": "ServerUnregistered",
+      "inputs": [
+        {
+          "name": "serverAddress",
+          "type": "address",
+          "indexed": true,
+          "internalType": "address"
+        }
+      ],
+      "anonymous": false
+    },
+    {
+      "type": "error",
+      "name": "ECDSAInvalidSignature",
+      "inputs": []
+    },
+    {
+      "type": "error",
+      "name": "ECDSAInvalidSignatureLength",
+      "inputs": [
+        {
+          "name": "length",
+          "type": "uint256",
+          "internalType": "uint256"
+        }
+      ]
+    },
+    {
+      "type": "error",
+      "name": "ECDSAInvalidSignatureS",
+      "inputs": [
+        {
+          "name": "s",
+          "type": "bytes32",
+          "internalType": "bytes32"
+        }
+      ]
+    }
+  ]
+}
