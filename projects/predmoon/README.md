@@ -1,13 +1,12 @@
 # [Predmoon] - ETHShanghai 2025
 
-> 请按照以下模板填写你的项目信息
 
 ## 一、提交物清单 (Deliverables)
 
 - [x] GitHub 仓库（公开或临时私有）：包含完整代码与本 README
 - [ ] Demo 视频（≤ 3 分钟，中文）：展示核心功能与流程
 - [x] 在线演示链接（如有）：前端 Demo 或后端 API 文档
-- [ ] 合约部署信息（如有）：网络、地址、验证链接、最小复现脚本
+- [x] 合约部署信息（如有）：网络、地址、验证链接、最小复现脚本
 - [x] 可选材料：Pitch Deck（不计入评分权重）
 
 ## 二、参赛队伍填写区 (Fill-in Template)
@@ -22,12 +21,12 @@
 
 ### 2) 架构与实现 (Architecture & Implementation)
 
-- **总览图（可贴图/链接）**：[系统架构图链接]
+- **总览图（可贴图/链接）**：https://raw.githubusercontent.com/TuringM-Labs/TuringM/main/assets/flow.jpg
 - **关键模块**：
-  - 前端：Vue/Nuxt.js/Privy.js/typescript.js 等
-  - 后端：Supabase/node.js 等
-  - 合约：Solidity 智能合约
-  - 其他：[索引、Oracles、AI 代理等]
+  - 前端：滑动交易系统/嵌入式钱包/跨链转账集成等
+  - 后端：链下订单撮合/混合去中心化交易所模型
+  - 合约：跨链桥技术/高效交易结算/去中心化安全/生态兼容性等
+  - 其他：自研大型語言模型（LLM）
 - **依赖与技术栈**：
   - 前端：Vue/Nuxt.js, ethers.js, Tailwind CSS, Privy.js
   - 后端：Node.js, Supabase, PostgreSQL
@@ -39,9 +38,9 @@
 - **网络**：Sepolia 测试网
 - **核心合约与地址**：
   ```
-  ContractName: 0x...
+  ContractName: 0xfa8472996347B8636f7Cf969F775c200A7d6c259
   ```
-- **验证链接（Etherscan/BlockScout）**：[验证链接]
+- **验证链接（Etherscan/BlockScout）**：https://sepolia.etherscan.io/address/0xfa8472996347B8636f7Cf969F775c200A7d6c259
 - **最小复现脚本**：
   ```bash
   # 部署合约
@@ -91,21 +90,18 @@ pnpm --filter frontend dev
 
 - **视频链接（≤3 分钟，中文）**：[视频链接]
 - **关键用例步骤（2-4 个要点）**：
-  - 用例 1：[Login module with Privy(embed wallet)]
-  - 用例 2：[Deposit through multi-chain]
-  - 用例 3：[Trade module]
+  - 用例 1：Login module with Privy(embed wallet)
+  - 用例 2：Deposit through multi-chain
+  - 用例 3：Trade module
 
 ### 6) 可验证边界 (Verifiable Scope)
-
-- **如未完全开源，请在此明确**：
-  - 哪些模块可复现/可验证：[列出可验证的部分]
-  - 哪些模块暂不公开及原因：[说明原因]
+商业应用原因，无法提供完整的系统代码
 
 ### 7) 路线图与影响 (Roadmap & Impact)
 
-- **赛后 1-3 周**：[短期计划]
-- **赛后 1-3 个月**：[中期计划]
-- **预期对以太坊生态的价值**：[长期价值]
+- **赛后 1-3 周**：持续优化页面和系统性能
+- **赛后 1-3 个月**：内容流量持续运营，增加流动性
+- **预期对以太坊生态的价值**：eth上华语第一家预测市场
 
 ### 8) 团队与联系 (Team & Contacts)
 
@@ -113,8 +109,8 @@ pnpm --filter frontend dev
 - **成员与分工**：
   - Adam - Founder - marketing/tech
   - KK - Co-Founder - marketing
-  - Ben - DEV - Fullstack/pitch
-- **联系方式（Email/TG/X）**：1836867954@qq.com
+  - Ben - Co-Founder - Fullstack/pitch
+- **联系方式（Email/TG/X）**：b@pred.wtf
 - **可演示时段（时区）**：free
 
 
