@@ -20,7 +20,7 @@ import "../utils/DateUtils.sol";
  * @dev Main registry contract for AquaFlux protocol
  * Manages asset registration, verification, and token operations (wrap/split/merge/unwrap)
  */
-contract AquaFluxCore is 
+contract AquaFluxCore is
     IAquaFluxCore,
     Initializable,
     AccessControlUpgradeable,
@@ -38,22 +38,22 @@ contract AquaFluxCore is
 
     // Factory contract for deploying tokens
     ITokenFactory public factory;
-    
+
     // Timelock contract for governance operations
     address public timelock;
-    
-        // Global fee rates for different operations (in basis points, 0 = disabled)
+
+    // Global fee rates for different operations (in basis points, 0 = disabled)
     mapping(string => uint256) public globalFeeRates;
-    
+
     // Asset-specific fee tracking: assetId => total fees collected
     mapping(bytes32 => uint256) public assetFeesCollected;
-    
+
     // Asset-specific fee tracking by operation: assetId => operation => fees collected
     mapping(bytes32 => mapping(string => uint256)) public assetFeesByOperation;
-    
+
     // Asset-specific fee balances (underlying tokens held): assetId => balance
     mapping(bytes32 => uint256) public assetFeeBalances;
-    
+
     // Supported operations for fee collection
     string public constant OPERATION_REGISTER = "register";
     string public constant OPERATION_WRAP = "wrap";
@@ -63,7 +63,7 @@ contract AquaFluxCore is
 
     // Asset registry
     mapping(bytes32 => AssetInfo) public assets;
-    
+
     // Asset ID counter for unique identification
     uint256 private _assetIdCounter;
 
@@ -71,40 +71,41 @@ contract AquaFluxCore is
 
     // Asset maturity management structure
     struct AssetMaturityManagement {
-        bool operationsStopped;          // Whether operations have been stopped
-        bool fundsWithdrawn;             // Whether funds were withdrawn for offline redemption
-        bool revenueInjected;            // Whether redemption revenue was injected
-        bool distributionSet;            // Whether distribution plan was set
-        uint256 withdrawnAmount;         // Amount of underlying tokens withdrawn
-        uint256 totalRevenueInjected;    // Total revenue injected back
-        uint256 injectionTimestamp;      // Timestamp when revenue was injected
+        bool operationsStopped; // Whether operations have been stopped
+        bool fundsWithdrawn; // Whether funds were withdrawn for offline redemption
+        bool revenueInjected; // Whether redemption revenue was injected
+        bool distributionSet; // Whether distribution plan was set
+        uint256 withdrawnAmount; // Amount of underlying tokens withdrawn
+        uint256 totalRevenueInjected; // Total revenue injected back
+        uint256 injectionTimestamp; // Timestamp when revenue was injected
     }
 
     // Token distribution plan structure
     struct TokenDistributionPlan {
-        uint256 pTokenAllocation;        // P Token allocation amount
-        uint256 cTokenAllocation;        // C Token allocation amount
-        uint256 sTokenAllocation;        // S Token allocation amount (includes protocol fee reward)
-        uint256 protocolFeeReward;       // Additional protocol fee reward for S Token holders
-        uint256 allocationTimestamp;     // Timestamp when allocation was set
+        uint256 pTokenAllocation; // P Token allocation amount
+        uint256 cTokenAllocation; // C Token allocation amount
+        uint256 sTokenAllocation; // S Token allocation amount (includes protocol fee reward)
+        uint256 protocolFeeReward; // Additional protocol fee reward for S Token holders
+        uint256 allocationTimestamp; // Timestamp when allocation was set
     }
 
     // Asset lifecycle states
     enum AssetLifecycleState {
-        ACTIVE,              // Active trading state
-        OPERATIONS_STOPPED,  // Operations stopped (reached operationDeadline)
-        FUNDS_WITHDRAWN,     // Funds withdrawn for offline redemption
-        REVENUE_INJECTED,    // Redemption revenue injected
-        DISTRIBUTION_SET,    // Distribution plan set
-        CLAIMABLE           // Users can claim rewards
+        ACTIVE, // Active trading state
+        OPERATIONS_STOPPED, // Operations stopped (reached operationDeadline)
+        FUNDS_WITHDRAWN, // Funds withdrawn for offline redemption
+        REVENUE_INJECTED, // Redemption revenue injected
+        DISTRIBUTION_SET, // Distribution plan set
+        CLAIMABLE // Users can claim rewards
     }
 
     // Maturity management mappings
     mapping(bytes32 => AssetMaturityManagement) public maturityManagement;
     mapping(bytes32 => TokenDistributionPlan) public distributionPlans;
-    
+
     // User claim tracking: assetId => user => tokenAddress => claimed
-    mapping(bytes32 => mapping(address => mapping(address => bool))) public userClaimed;
+    mapping(bytes32 => mapping(address => mapping(address => bool)))
+        public userClaimed;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -123,7 +124,7 @@ contract AquaFluxCore is
         __UUPSUpgradeable_init();
 
         factory = ITokenFactory(_factory);
-        
+
         // Grant roles
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         _grantRole(ADMIN_ROLE, admin);
@@ -131,19 +132,19 @@ contract AquaFluxCore is
         _grantRole(OPERATOR_ROLE, admin);
         // TIMELOCK_ROLE will be granted to timelock contract after deployment
     }
-    
+
     /**
      * @dev Changes the token factory address
      * @param newFactory The address of the new factory contract
      */
     function setFactory(address newFactory) external onlyRole(ADMIN_ROLE) {
-        require(newFactory != address(0), "Invalid factory address");
+        if (newFactory == address(0)) revert InvalidFactoryAddress();
         // Basic compatibility check - ensure it has the required interface
-        require(ITokenFactory(newFactory).deployToken.selector != bytes4(0), "Invalid factory interface");
-        
+        if (ITokenFactory(newFactory).deployToken.selector == bytes4(0)) revert InvalidFactoryInterface();
+
         address oldFactory = address(factory);
         factory = ITokenFactory(newFactory);
-        
+
         emit FactoryChanged(oldFactory, newFactory);
     }
 
@@ -152,19 +153,19 @@ contract AquaFluxCore is
      * @param newTimelock The address of the timelock contract
      */
     function setTimelock(address newTimelock) external onlyRole(ADMIN_ROLE) {
-        require(newTimelock != address(0), "Invalid timelock address");
-        
+        if (newTimelock == address(0)) revert InvalidTimelockAddress();
+
         address oldTimelock = timelock;
         timelock = newTimelock;
-        
+
         // Grant TIMELOCK_ROLE to the new timelock contract
         _grantRole(TIMELOCK_ROLE, newTimelock);
-        
+
         // Revoke TIMELOCK_ROLE from old timelock if it exists
         if (oldTimelock != address(0)) {
             _revokeRole(TIMELOCK_ROLE, oldTimelock);
         }
-        
+
         emit TimelockUpdated(oldTimelock, newTimelock);
     }
 
@@ -208,34 +209,36 @@ contract AquaFluxCore is
         string calldata name,
         string calldata metadataURI
     ) external override returns (bytes32 assetId) {
-        require(underlying != address(0), "Invalid underlying token");
-        require(maturity > block.timestamp, "Maturity must be in the future");
-        require(operationDeadline > block.timestamp, "Operation deadline must be in the future");
-        require(operationDeadline < maturity, "Operation deadline must be before maturity");
-        require(couponRate <= 10000, "Coupon rate must be <= 100%");
-        require(couponAllocationC <= 10000, "C allocation must be <= 100%");
-        require(couponAllocationS <= 10000, "S allocation must be <= 100%");
-        require(couponAllocationC + couponAllocationS == 10000, "C + S allocation must equal 100%");
-        require(sTokenFeeAllocation <= 10000, "S Token fee allocation must be <= 100%");
-        require(bytes(name).length > 0, "Asset name required");
-        require(bytes(metadataURI).length > 0, "Metadata URI required");
+        if (underlying == address(0)) revert InvalidUnderlyingToken();
+        if (maturity <= block.timestamp) revert MaturityMustBeInFuture();
+        if (operationDeadline <= block.timestamp) revert OperationDeadlineMustBeInFutureReg();
+        if (operationDeadline >= maturity) revert OperationDeadlineMustBeBeforeMaturity();
+        if (couponRate > 10000) revert CouponRateTooHigh();
+        if (couponAllocationC > 10000) revert InvalidAllocationPercentage();
+        if (couponAllocationS > 10000) revert InvalidAllocationPercentage();
+        if (couponAllocationC + couponAllocationS != 10000) revert AllocationSumMustEqual100();
+        if (sTokenFeeAllocation > 10000) revert STokenFeeAllocationTooHigh();
+        if (bytes(name).length == 0) revert AssetNameRequired();
+        if (bytes(metadataURI).length == 0) revert MetadataURIRequired();
 
         // Generate unique asset ID
-        assetId = keccak256(abi.encodePacked(
-            underlying,
-            maturity,
-            operationDeadline,
-            couponRate,
-            couponAllocationC,
-            couponAllocationS,
-            sTokenFeeAllocation,
-            name,
-            metadataURI,
-            msg.sender,
-            _assetIdCounter++
-        ));
+        assetId = keccak256(
+            abi.encodePacked(
+                underlying,
+                maturity,
+                operationDeadline,
+                couponRate,
+                couponAllocationC,
+                couponAllocationS,
+                sTokenFeeAllocation,
+                name,
+                metadataURI,
+                msg.sender,
+                _assetIdCounter++
+            )
+        );
 
-        require(!isAssetRegistered(assetId), "Asset already registered");
+        if (isAssetRegistered(assetId)) revert AssetAlreadyRegistered();
 
         // Collect fee for register operation (if enabled)
         // Note: For register operation, we use amount = 1 as a base unit for fee calculation
@@ -262,7 +265,17 @@ contract AquaFluxCore is
             sToken: address(0)
         });
 
-        emit AssetRegistered(assetId, msg.sender, underlying, maturity, couponRate, couponAllocationC, couponAllocationS, name, metadataURI);
+        emit AssetRegistered(
+            assetId,
+            msg.sender,
+            underlying,
+            maturity,
+            couponRate,
+            couponAllocationC,
+            couponAllocationS,
+            name,
+            metadataURI
+        );
     }
 
     /**
@@ -270,8 +283,8 @@ contract AquaFluxCore is
      * @param assetId The asset identifier to verify
      */
     function verify(bytes32 assetId) external override onlyRole(VERIFIER_ROLE) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(!assets[assetId].verified, "Asset already verified");
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (assets[assetId].verified) revert AssetAlreadyVerified();
 
         assets[assetId].verified = true;
         emit AssetVerified(assetId);
@@ -282,10 +295,20 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @param amount The amount to wrap
      */
-    function wrap(bytes32 assetId, uint256 amount) external override nonReentrant whenNotPaused whenAssetNotPaused(assetId) whenAssetOperationsAllowed(assetId) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(assets[assetId].verified, "Asset not verified");
-        require(amount > 0, "Amount must be greater than 0");
+    function wrap(
+        bytes32 assetId,
+        uint256 amount
+    )
+        external
+        override
+        nonReentrant
+        whenNotPaused
+        whenAssetNotPaused(assetId)
+        whenAssetOperationsAllowed(assetId)
+    {
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (!assets[assetId].verified) revert AssetNotVerified();
+        if (amount == 0) revert AmountMustBeGreaterThanZero();
 
         AssetInfo storage asset = assets[assetId];
         IERC20 underlying = IERC20(asset.underlying);
@@ -298,13 +321,23 @@ contract AquaFluxCore is
         uint256 balanceBefore = underlying.balanceOf(address(this));
         underlying.safeTransferFrom(msg.sender, address(this), amount);
         uint256 balanceAfter = underlying.balanceOf(address(this));
-        require(balanceAfter - balanceBefore == amount, "Insufficient underlying received");
+        if (balanceAfter - balanceBefore != amount) revert InsufficientUnderlyingReceived();
 
         // Deploy AqToken if not already deployed
         if (asset.aqToken == address(0)) {
-            string memory name = string(abi.encodePacked("AquaFlux ", IERC20Metadata(asset.underlying).symbol()));
-            string memory symbol = string(abi.encodePacked("aq ", IERC20Metadata(asset.underlying).symbol()));
-            
+            string memory name = string(
+                abi.encodePacked(
+                    "AquaFlux ",
+                    IERC20Metadata(asset.underlying).symbol()
+                )
+            );
+            string memory symbol = string(
+                abi.encodePacked(
+                    "aq ",
+                    IERC20Metadata(asset.underlying).symbol()
+                )
+            );
+
             asset.aqToken = factory.deployToken("AQ", assetId, name, symbol);
         }
 
@@ -319,13 +352,23 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @param amount The amount to split
      */
-    function split(bytes32 assetId, uint256 amount) external override nonReentrant whenNotPaused whenAssetNotPaused(assetId) whenAssetOperationsAllowed(assetId) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(assets[assetId].verified, "Asset not verified");
-        require(amount > 0, "Amount must be greater than 0");
+    function split(
+        bytes32 assetId,
+        uint256 amount
+    )
+        external
+        override
+        nonReentrant
+        whenNotPaused
+        whenAssetNotPaused(assetId)
+        whenAssetOperationsAllowed(assetId)
+    {
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (!assets[assetId].verified) revert AssetNotVerified();
+        if (amount == 0) revert AmountMustBeGreaterThanZero();
 
         AssetInfo storage asset = assets[assetId];
-        require(asset.aqToken != address(0), "AqToken not deployed");
+        if (asset.aqToken == address(0)) revert AqTokenNotDeployed();
 
         // Collect fee for split operation
         uint256 feeAmount = _collectFee(OPERATION_SPLIT, assetId, amount);
@@ -336,20 +379,44 @@ contract AquaFluxCore is
 
         // Deploy P/C/S tokens if not already deployed
         if (asset.pToken == address(0)) {
-            string memory name = DateUtils.formatAssetTokenName("P", asset.name, asset.maturity);
-            string memory symbol = DateUtils.formatAssetTokenName("P", asset.name, asset.maturity);
+            string memory name = DateUtils.formatAssetTokenName(
+                "P",
+                asset.name,
+                asset.maturity
+            );
+            string memory symbol = DateUtils.formatAssetTokenName(
+                "P",
+                asset.name,
+                asset.maturity
+            );
             asset.pToken = factory.deployToken("P", assetId, name, symbol);
         }
 
         if (asset.cToken == address(0)) {
-            string memory name = DateUtils.formatAssetTokenName("C", asset.name, asset.maturity);
-            string memory symbol = DateUtils.formatAssetTokenName("C", asset.name, asset.maturity);
+            string memory name = DateUtils.formatAssetTokenName(
+                "C",
+                asset.name,
+                asset.maturity
+            );
+            string memory symbol = DateUtils.formatAssetTokenName(
+                "C",
+                asset.name,
+                asset.maturity
+            );
             asset.cToken = factory.deployToken("C", assetId, name, symbol);
         }
 
         if (asset.sToken == address(0)) {
-            string memory name = DateUtils.formatAssetTokenName("S", asset.name, asset.maturity);
-            string memory symbol = DateUtils.formatAssetTokenName("S", asset.name, asset.maturity);
+            string memory name = DateUtils.formatAssetTokenName(
+                "S",
+                asset.name,
+                asset.maturity
+            );
+            string memory symbol = DateUtils.formatAssetTokenName(
+                "S",
+                asset.name,
+                asset.maturity
+            );
             asset.sToken = factory.deployToken("S", assetId, name, symbol);
         }
 
@@ -366,16 +433,26 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @param amount The amount to merge
      */
-    function merge(bytes32 assetId, uint256 amount) external override nonReentrant whenNotPaused whenAssetNotPaused(assetId) whenAssetOperationsAllowed(assetId) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(assets[assetId].verified, "Asset not verified");
-        require(amount > 0, "Amount must be greater than 0");
+    function merge(
+        bytes32 assetId,
+        uint256 amount
+    )
+        external
+        override
+        nonReentrant
+        whenNotPaused
+        whenAssetNotPaused(assetId)
+        whenAssetOperationsAllowed(assetId)
+    {
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (!assets[assetId].verified) revert AssetNotVerified();
+        if (amount == 0) revert AmountMustBeGreaterThanZero();
 
         AssetInfo storage asset = assets[assetId];
-        require(asset.aqToken != address(0), "AqToken not deployed");
-        require(asset.pToken != address(0), "PToken not deployed");
-        require(asset.cToken != address(0), "CToken not deployed");
-        require(asset.sToken != address(0), "SToken not deployed");
+        if (asset.aqToken == address(0)) revert AqTokenNotDeployed();
+        if (asset.pToken == address(0)) revert PTokenNotDeployed();
+        if (asset.cToken == address(0)) revert CTokenNotDeployed();
+        if (asset.sToken == address(0)) revert STokenNotDeployed();
 
         // Collect fee for merge operation
         uint256 feeAmount = _collectFee(OPERATION_MERGE, assetId, amount);
@@ -397,13 +474,23 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @param amount The amount to unwrap
      */
-    function unwrap(bytes32 assetId, uint256 amount) external override nonReentrant whenNotPaused whenAssetNotPaused(assetId) whenAssetOperationsAllowed(assetId) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(assets[assetId].verified, "Asset not verified");
-        require(amount > 0, "Amount must be greater than 0");
+    function unwrap(
+        bytes32 assetId,
+        uint256 amount
+    )
+        external
+        override
+        nonReentrant
+        whenNotPaused
+        whenAssetNotPaused(assetId)
+        whenAssetOperationsAllowed(assetId)
+    {
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (!assets[assetId].verified) revert AssetNotVerified();
+        if (amount == 0) revert AmountMustBeGreaterThanZero();
 
         AssetInfo storage asset = assets[assetId];
-        require(asset.aqToken != address(0), "AqToken not deployed");
+        if (asset.aqToken == address(0)) revert AqTokenNotDeployed();
 
         // Collect fee for unwrap operation
         uint256 feeAmount = _collectFee(OPERATION_UNWRAP, assetId, amount);
@@ -423,7 +510,9 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @return The asset information
      */
-    function getAssetInfo(bytes32 assetId) external view override returns (AssetInfo memory) {
+    function getAssetInfo(
+        bytes32 assetId
+    ) external view override returns (AssetInfo memory) {
         return assets[assetId];
     }
 
@@ -432,7 +521,9 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @return True if asset is registered
      */
-    function isAssetRegistered(bytes32 assetId) public view override returns (bool) {
+    function isAssetRegistered(
+        bytes32 assetId
+    ) public view override returns (bool) {
         return assets[assetId].issuer != address(0);
     }
 
@@ -441,7 +532,9 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @return True if asset is verified
      */
-    function isAssetVerified(bytes32 assetId) external view override returns (bool) {
+    function isAssetVerified(
+        bytes32 assetId
+    ) external view override returns (bool) {
         return assets[assetId].verified;
     }
 
@@ -462,7 +555,9 @@ contract AquaFluxCore is
     /**
      * @dev Required by the OZ UUPS module
      */
-    function _authorizeUpgrade(address newImplementation) internal override onlyRole(TIMELOCK_ROLE) {}
+    function _authorizeUpgrade(
+        address newImplementation
+    ) internal override onlyRole(TIMELOCK_ROLE) {}
 
     /**
      * @dev Returns the version of the registry
@@ -471,7 +566,7 @@ contract AquaFluxCore is
         return "1.0.0";
     }
 
-        /**
+    /**
      * @dev Updates the coupon allocation for C and S tokens (admin only)
      * @param assetId The asset identifier
      * @param newCouponAllocationC The new coupon allocation to C token (in basis points, 0-10000)
@@ -482,21 +577,21 @@ contract AquaFluxCore is
         uint256 newCouponAllocationC,
         uint256 newCouponAllocationS
     ) external override onlyRole(ADMIN_ROLE) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(newCouponAllocationC <= 10000, "C allocation must be <= 100%");
-        require(newCouponAllocationS <= 10000, "S allocation must be <= 100%");
-        require(newCouponAllocationC + newCouponAllocationS == 10000, "C + S allocation must equal 100%");
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (newCouponAllocationC > 10000) revert InvalidAllocationPercentage();
+        if (newCouponAllocationS > 10000) revert InvalidAllocationPercentage();
+        if (newCouponAllocationC + newCouponAllocationS != 10000) revert AllocationSumMustEqual100();
 
         AssetInfo storage asset = assets[assetId];
-        
+
         // Store old values for event
         uint256 oldCAllocation = asset.couponAllocationC;
         uint256 oldSAllocation = asset.couponAllocationS;
-        
+
         // Update allocations
         asset.couponAllocationC = newCouponAllocationC;
         asset.couponAllocationS = newCouponAllocationS;
-        
+
         emit CouponAllocationUpdated(
             assetId,
             oldCAllocation,
@@ -516,17 +611,17 @@ contract AquaFluxCore is
         bytes32 assetId,
         string calldata newMetadataURI
     ) external override onlyRole(ADMIN_ROLE) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(bytes(newMetadataURI).length > 0, "Metadata URI cannot be empty");
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (bytes(newMetadataURI).length == 0) revert EmptyMetadataURI();
 
         AssetInfo storage asset = assets[assetId];
-        
+
         // Store old value for event
         string memory oldMetadataURI = asset.metadataURI;
-        
+
         // Update metadata URI
         asset.metadataURI = newMetadataURI;
-        
+
         emit MetadataURIUpdated(
             assetId,
             oldMetadataURI,
@@ -544,17 +639,17 @@ contract AquaFluxCore is
         bytes32 assetId,
         uint256 newSTokenFeeAllocation
     ) external onlyRole(ADMIN_ROLE) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(newSTokenFeeAllocation <= 10000, "S Token fee allocation must be <= 100%");
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (newSTokenFeeAllocation > 10000) revert STokenFeeAllocationTooHigh();
 
         AssetInfo storage asset = assets[assetId];
-        
+
         // Store old value for event
         uint256 oldSTokenFeeAllocation = asset.sTokenFeeAllocation;
-        
+
         // Update S Token fee allocation
         asset.sTokenFeeAllocation = newSTokenFeeAllocation;
-        
+
         emit STokenFeeAllocationUpdated(
             assetId,
             oldSTokenFeeAllocation,
@@ -572,18 +667,18 @@ contract AquaFluxCore is
         bytes32 assetId,
         uint256 newOperationDeadline
     ) external onlyRole(ADMIN_ROLE) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(newOperationDeadline > block.timestamp, "Operation deadline must be in the future");
-        require(newOperationDeadline < assets[assetId].maturity, "Operation deadline must be before maturity");
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (newOperationDeadline <= block.timestamp) revert OperationDeadlineMustBeInFuture();
+        if (newOperationDeadline >= assets[assetId].maturity) revert OperationDeadlineMustBeBeforeMaturity();
 
         AssetInfo storage asset = assets[assetId];
-        
+
         // Store old value for event
         uint256 oldOperationDeadline = asset.operationDeadline;
-        
+
         // Update operation deadline
         asset.operationDeadline = newOperationDeadline;
-        
+
         emit OperationDeadlineUpdated(
             assetId,
             oldOperationDeadline,
@@ -601,8 +696,8 @@ contract AquaFluxCore is
         string calldata operation,
         uint256 feeRate
     ) external onlyRole(ADMIN_ROLE) {
-        require(_isValidOperation(operation), "Invalid operation");
-        require(feeRate <= 10000, "Fee rate must be <= 100%");
+        if (!_isValidOperation(operation)) revert InvalidOperation();
+        if (feeRate > 10000) revert FeeRateTooHigh();
 
         uint256 oldFeeRate = globalFeeRates[operation];
         globalFeeRates[operation] = feeRate;
@@ -615,7 +710,9 @@ contract AquaFluxCore is
      * @param operation The operation type
      * @return feeRate The fee rate in basis points (0 = disabled)
      */
-    function getGlobalFeeRate(string calldata operation) external view returns (uint256 feeRate) {
+    function getGlobalFeeRate(
+        string calldata operation
+    ) external view returns (uint256 feeRate) {
         return globalFeeRates[operation];
     }
 
@@ -624,7 +721,9 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @return totalFees The total fees collected for this asset
      */
-    function getAssetFeesCollected(bytes32 assetId) external view returns (uint256 totalFees) {
+    function getAssetFeesCollected(
+        bytes32 assetId
+    ) external view returns (uint256 totalFees) {
         return assetFeesCollected[assetId];
     }
 
@@ -634,7 +733,10 @@ contract AquaFluxCore is
      * @param operation The operation type
      * @return fees The fees collected for this asset and operation
      */
-    function getAssetFeesByOperation(bytes32 assetId, string calldata operation) external view returns (uint256 fees) {
+    function getAssetFeesByOperation(
+        bytes32 assetId,
+        string calldata operation
+    ) external view returns (uint256 fees) {
         return assetFeesByOperation[assetId][operation];
     }
 
@@ -643,7 +745,9 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @return balance The fee balance in underlying tokens
      */
-    function getAssetFeeBalance(bytes32 assetId) external view returns (uint256 balance) {
+    function getAssetFeeBalance(
+        bytes32 assetId
+    ) external view returns (uint256 balance) {
         return assetFeeBalances[assetId];
     }
 
@@ -660,22 +764,28 @@ contract AquaFluxCore is
         uint256 amount
     ) internal returns (uint256 feeAmount) {
         uint256 feeRate = globalFeeRates[operation];
-        
+
         if (feeRate == 0) {
             return 0;
         }
 
         feeAmount = Math.mulDiv(amount, feeRate, 10000);
-        
+
         if (feeAmount > 0) {
             // Record fees for this specific asset
             assetFeesCollected[assetId] += feeAmount;
             assetFeesByOperation[assetId][operation] += feeAmount;
-            
+
             // Add to asset fee balance (the actual tokens are held by this contract)
             assetFeeBalances[assetId] += feeAmount;
 
-            emit FeeCollected(assetId, operation, msg.sender, amount, feeAmount);
+            emit FeeCollected(
+                assetId,
+                operation,
+                msg.sender,
+                amount,
+                feeAmount
+            );
         }
     }
 
@@ -684,8 +794,8 @@ contract AquaFluxCore is
      * @param assetId The asset identifier to pause
      */
     function pauseAsset(bytes32 assetId) external onlyRole(ADMIN_ROLE) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(!assets[assetId].paused, "Asset already paused");
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (assets[assetId].paused) revert AssetAlreadyPaused();
 
         assets[assetId].paused = true;
         emit AssetPaused(assetId, msg.sender);
@@ -696,8 +806,8 @@ contract AquaFluxCore is
      * @param assetId The asset identifier to unpause
      */
     function unpauseAsset(bytes32 assetId) external onlyRole(ADMIN_ROLE) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(assets[assetId].paused, "Asset not paused");
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (!assets[assetId].paused) revert AssetNotPaused();
 
         assets[assetId].paused = false;
         emit AssetUnpaused(assetId, msg.sender);
@@ -717,7 +827,7 @@ contract AquaFluxCore is
      * @param assetId The asset identifier to check
      */
     modifier whenAssetNotPaused(bytes32 assetId) {
-        require(!assets[assetId].paused, "Asset operations are paused");
+        if (assets[assetId].paused) revert AssetOperationsArePaused();
         _;
     }
 
@@ -726,7 +836,7 @@ contract AquaFluxCore is
      * @param assetId The asset identifier to check
      */
     modifier whenOperationAllowed(bytes32 assetId) {
-        require(block.timestamp < assets[assetId].operationDeadline, "Asset operations have expired");
+        if (block.timestamp >= assets[assetId].operationDeadline) revert AssetOperationsHaveExpired();
         _;
     }
 
@@ -735,14 +845,15 @@ contract AquaFluxCore is
      * @param operation The operation type to validate
      * @return True if operation is valid
      */
-    function _isValidOperation(string memory operation) internal pure returns (bool) {
-        return (
-            keccak256(bytes(operation)) == keccak256(bytes(OPERATION_REGISTER)) ||
+    function _isValidOperation(
+        string memory operation
+    ) internal pure returns (bool) {
+        return (keccak256(bytes(operation)) ==
+            keccak256(bytes(OPERATION_REGISTER)) ||
             keccak256(bytes(operation)) == keccak256(bytes(OPERATION_WRAP)) ||
             keccak256(bytes(operation)) == keccak256(bytes(OPERATION_SPLIT)) ||
             keccak256(bytes(operation)) == keccak256(bytes(OPERATION_MERGE)) ||
-            keccak256(bytes(operation)) == keccak256(bytes(OPERATION_UNWRAP))
-        );
+            keccak256(bytes(operation)) == keccak256(bytes(OPERATION_UNWRAP)));
     }
 
     // === MATURITY MANAGEMENT FUNCTIONS ===
@@ -752,34 +863,38 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @return The current lifecycle state (0=ACTIVE, 1=OPERATIONS_STOPPED, 2=FUNDS_WITHDRAWN, 3=REVENUE_INJECTED, 4=DISTRIBUTION_SET, 5=CLAIMABLE)
      */
-    function getAssetLifecycleState(bytes32 assetId) external view returns (uint8) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        
+    function getAssetLifecycleState(
+        bytes32 assetId
+    ) external view returns (uint8) {
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+
         AssetInfo storage asset = assets[assetId];
-        AssetMaturityManagement storage management = maturityManagement[assetId];
-        
+        AssetMaturityManagement storage management = maturityManagement[
+            assetId
+        ];
+
         // Check if operations are manually stopped first
         if (management.operationsStopped) {
             if (!management.fundsWithdrawn) {
                 return uint8(AssetLifecycleState.OPERATIONS_STOPPED);
             }
-            
+
             if (!management.revenueInjected) {
                 return uint8(AssetLifecycleState.FUNDS_WITHDRAWN);
             }
-            
+
             if (!management.distributionSet) {
                 return uint8(AssetLifecycleState.REVENUE_INJECTED);
             }
-            
+
             return uint8(AssetLifecycleState.CLAIMABLE);
         }
-        
+
         // Check if still in active trading period and not manually stopped
         if (block.timestamp < asset.operationDeadline) {
             return uint8(AssetLifecycleState.ACTIVE);
         }
-        
+
         // Operations should be stopped after deadline (but not manually stopped yet)
         return uint8(AssetLifecycleState.OPERATIONS_STOPPED);
     }
@@ -788,12 +903,14 @@ contract AquaFluxCore is
      * @dev Manually stops operations for an asset (admin only)
      * @param assetId The asset identifier
      */
-    function stopAssetOperations(bytes32 assetId) external onlyRole(ADMIN_ROLE) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(!maturityManagement[assetId].operationsStopped, "Operations already stopped");
-        
+    function stopAssetOperations(
+        bytes32 assetId
+    ) external onlyRole(ADMIN_ROLE) {
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (maturityManagement[assetId].operationsStopped) revert OperationsAlreadyStopped();
+
         maturityManagement[assetId].operationsStopped = true;
-        
+
         emit AssetOperationsStopped(assetId, msg.sender);
     }
 
@@ -802,14 +919,16 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @return True if operations are stopped
      */
-    function _areOperationsStopped(bytes32 assetId) internal view returns (bool) {
+    function _areOperationsStopped(
+        bytes32 assetId
+    ) internal view returns (bool) {
         // Operations are stopped if:
         // 1. Manual stop was triggered, OR
         // 2. Operation deadline has passed
         if (maturityManagement[assetId].operationsStopped) {
             return true;
         }
-        
+
         return block.timestamp >= assets[assetId].operationDeadline;
     }
 
@@ -818,7 +937,7 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      */
     modifier whenAssetOperationsAllowed(bytes32 assetId) {
-        require(!_areOperationsStopped(assetId), "Asset operations are stopped");
+        if (_areOperationsStopped(assetId)) revert AssetOperationsAreStopped();
         _;
     }
 
@@ -829,17 +948,20 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @param amount The amount to withdraw
      */
-    function withdrawForRedemption(bytes32 assetId, uint256 amount) external onlyRole(TIMELOCK_ROLE) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(_areOperationsStopped(assetId), "Operations not stopped yet");
-        require(!maturityManagement[assetId].fundsWithdrawn, "Funds already withdrawn");
-        require(amount > 0, "Amount must be greater than 0");
+    function withdrawForRedemption(
+        bytes32 assetId,
+        uint256 amount
+    ) external onlyRole(TIMELOCK_ROLE) {
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (!_areOperationsStopped(assetId)) revert OperationsNotStoppedYet();
+        if (maturityManagement[assetId].fundsWithdrawn) revert FundsAlreadyWithdrawn();
+        if (amount == 0) revert AmountMustBeGreaterThanZero();
 
         AssetInfo storage asset = assets[assetId];
         IERC20 underlying = IERC20(asset.underlying);
-        
+
         uint256 contractBalance = underlying.balanceOf(address(this));
-        require(contractBalance >= amount, "Insufficient contract balance");
+        if (contractBalance < amount) revert InsufficientContractBalance();
 
         // Mark funds as withdrawn
         maturityManagement[assetId].fundsWithdrawn = true;
@@ -856,11 +978,14 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @param amount The amount of revenue to inject
      */
-    function injectRedemptionRevenue(bytes32 assetId, uint256 amount) external onlyRole(TIMELOCK_ROLE) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(maturityManagement[assetId].fundsWithdrawn, "Funds not withdrawn yet");
-        require(!maturityManagement[assetId].revenueInjected, "Revenue already injected");
-        require(amount > 0, "Amount must be greater than 0");
+    function injectRedemptionRevenue(
+        bytes32 assetId,
+        uint256 amount
+    ) external onlyRole(TIMELOCK_ROLE) {
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (!maturityManagement[assetId].fundsWithdrawn) revert FundsNotWithdrawnYet();
+        if (maturityManagement[assetId].revenueInjected) revert RevenueAlreadyInjected();
+        if (amount == 0) revert AmountMustBeGreaterThanZero();
 
         AssetInfo storage asset = assets[assetId];
         IERC20 underlying = IERC20(asset.underlying);
@@ -874,7 +999,7 @@ contract AquaFluxCore is
         uint256 balanceBefore = underlying.balanceOf(address(this));
         underlying.safeTransferFrom(msg.sender, address(this), amount);
         uint256 balanceAfter = underlying.balanceOf(address(this));
-        require(balanceAfter - balanceBefore == amount, "Insufficient revenue received");
+        if (balanceAfter - balanceBefore != amount) revert InsufficientRevenueReceived();
 
         emit RedemptionRevenueInjected(assetId, msg.sender, amount);
     }
@@ -894,14 +1019,17 @@ contract AquaFluxCore is
         uint256 sAllocation,
         uint256 protocolFeeReward
     ) external onlyRole(ADMIN_ROLE) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(maturityManagement[assetId].revenueInjected, "Revenue not injected yet");
-        require(!maturityManagement[assetId].distributionSet, "Distribution already set");
-        
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (!maturityManagement[assetId].revenueInjected) revert RevenueNotInjectedYet();
+        if (maturityManagement[assetId].distributionSet) revert DistributionAlreadySet();
+
         // Calculate total allocation including protocol fee reward
-        uint256 totalAllocation = pAllocation + cAllocation + sAllocation + protocolFeeReward;
-        require(totalAllocation > 0, "Total allocation must be greater than 0");
-        require(totalAllocation <= maturityManagement[assetId].totalRevenueInjected, "Total allocation exceeds injected revenue");
+        uint256 totalAllocation = pAllocation +
+            cAllocation +
+            sAllocation +
+            protocolFeeReward;
+        if (totalAllocation == 0) revert TotalAllocationMustBeGreaterThanZero();
+        if (totalAllocation > maturityManagement[assetId].totalRevenueInjected) revert TotalAllocationExceedsInjectedRevenue();
 
         // Set distribution plan
         distributionPlans[assetId] = TokenDistributionPlan({
@@ -914,7 +1042,14 @@ contract AquaFluxCore is
 
         maturityManagement[assetId].distributionSet = true;
 
-        emit DistributionPlanSet(assetId, pAllocation, cAllocation, sAllocation, protocolFeeReward, msg.sender);
+        emit DistributionPlanSet(
+            assetId,
+            pAllocation,
+            cAllocation,
+            sAllocation,
+            protocolFeeReward,
+            msg.sender
+        );
     }
 
     /**
@@ -922,30 +1057,28 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @param tokenAddress The token address (P, C, or S token)
      */
-    function claimMaturityReward(bytes32 assetId, address tokenAddress) external nonReentrant {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(maturityManagement[assetId].distributionSet, "Distribution not set");
-        require(!userClaimed[assetId][msg.sender][tokenAddress], "Already claimed");
+    function claimMaturityReward(
+        bytes32 assetId,
+        address tokenAddress
+    ) external nonReentrant {
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (!maturityManagement[assetId].distributionSet) revert DistributionNotSet();
+        if (userClaimed[assetId][msg.sender][tokenAddress]) revert AlreadyClaimed();
 
         AssetInfo storage asset = assets[assetId];
         TokenDistributionPlan storage plan = distributionPlans[assetId];
 
         // Verify tokenAddress is valid for this asset
-        require(
-            tokenAddress == asset.pToken || 
-            tokenAddress == asset.cToken || 
-            tokenAddress == asset.sToken, 
-            "Invalid token address"
-        );
-        require(tokenAddress != address(0), "Token not deployed");
+        if (tokenAddress != asset.pToken && tokenAddress != asset.cToken && tokenAddress != asset.sToken) revert InvalidTokenAddress();
+        if (tokenAddress == address(0)) revert TokenNotDeployed();
 
         // Get user's token balance
         uint256 userBalance = IERC20(tokenAddress).balanceOf(msg.sender);
-        require(userBalance > 0, "No tokens to claim for");
+        if (userBalance == 0) revert NoTokensToClaimFor();
 
         // Get total supply of the token
         uint256 totalSupply = IERC20(tokenAddress).totalSupply();
-        require(totalSupply > 0, "No total supply");
+        if (totalSupply == 0) revert NoTotalSupply();
 
         // Calculate user's proportional reward
         uint256 tokenAllocation;
@@ -958,12 +1091,18 @@ contract AquaFluxCore is
             tokenAllocation = plan.sTokenAllocation + plan.protocolFeeReward;
         }
 
-        uint256 userReward = Math.mulDiv(tokenAllocation, userBalance, totalSupply);
-        require(userReward > 0, "No reward to claim");
+        uint256 userReward = Math.mulDiv(
+            tokenAllocation,
+            userBalance,
+            totalSupply
+        );
+        if (userReward == 0) revert NoRewardToClaim();
 
         // Check contract has sufficient balance
-        uint256 contractBalance = IERC20(asset.underlying).balanceOf(address(this));
-        require(contractBalance >= userReward, "Insufficient contract balance");
+        uint256 contractBalance = IERC20(asset.underlying).balanceOf(
+            address(this)
+        );
+        if (contractBalance < userReward) revert InsufficientContractBalance();
 
         // Mark as claimed
         userClaimed[assetId][msg.sender][tokenAddress] = true;
@@ -971,7 +1110,13 @@ contract AquaFluxCore is
         // Transfer reward to user
         IERC20(asset.underlying).safeTransfer(msg.sender, userReward);
 
-        emit MaturityRewardClaimed(assetId, msg.sender, tokenAddress, userBalance, userReward);
+        emit MaturityRewardClaimed(
+            assetId,
+            msg.sender,
+            tokenAddress,
+            userBalance,
+            userReward
+        );
     }
 
     /**
@@ -979,68 +1124,104 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      */
     function claimAllMaturityRewards(bytes32 assetId) external nonReentrant {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(maturityManagement[assetId].distributionSet, "Distribution not set");
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (!maturityManagement[assetId].distributionSet) revert DistributionNotSet();
 
         AssetInfo storage asset = assets[assetId];
         TokenDistributionPlan storage plan = distributionPlans[assetId];
-        
+
         uint256 totalReward = 0;
         uint256 userReward;
 
         // Claim P Token rewards
-        if (asset.pToken != address(0) && !userClaimed[assetId][msg.sender][asset.pToken]) {
+        if (
+            asset.pToken != address(0) &&
+            !userClaimed[assetId][msg.sender][asset.pToken]
+        ) {
             uint256 userBalance = IERC20(asset.pToken).balanceOf(msg.sender);
             if (userBalance > 0) {
                 uint256 totalSupply = IERC20(asset.pToken).totalSupply();
                 if (totalSupply > 0) {
-                    userReward = (plan.pTokenAllocation * userBalance) / totalSupply;
+                    userReward =
+                        (plan.pTokenAllocation * userBalance) /
+                        totalSupply;
                     if (userReward > 0) {
                         userClaimed[assetId][msg.sender][asset.pToken] = true;
                         totalReward += userReward;
-                        emit MaturityRewardClaimed(assetId, msg.sender, asset.pToken, userBalance, userReward);
+                        emit MaturityRewardClaimed(
+                            assetId,
+                            msg.sender,
+                            asset.pToken,
+                            userBalance,
+                            userReward
+                        );
                     }
                 }
             }
         }
 
         // Claim C Token rewards
-        if (asset.cToken != address(0) && !userClaimed[assetId][msg.sender][asset.cToken]) {
+        if (
+            asset.cToken != address(0) &&
+            !userClaimed[assetId][msg.sender][asset.cToken]
+        ) {
             uint256 userBalance = IERC20(asset.cToken).balanceOf(msg.sender);
             if (userBalance > 0) {
                 uint256 totalSupply = IERC20(asset.cToken).totalSupply();
                 if (totalSupply > 0) {
-                    userReward = (plan.cTokenAllocation * userBalance) / totalSupply;
+                    userReward =
+                        (plan.cTokenAllocation * userBalance) /
+                        totalSupply;
                     if (userReward > 0) {
                         userClaimed[assetId][msg.sender][asset.cToken] = true;
                         totalReward += userReward;
-                        emit MaturityRewardClaimed(assetId, msg.sender, asset.cToken, userBalance, userReward);
+                        emit MaturityRewardClaimed(
+                            assetId,
+                            msg.sender,
+                            asset.cToken,
+                            userBalance,
+                            userReward
+                        );
                     }
                 }
             }
         }
 
         // Claim S Token rewards (includes protocol fee reward)
-        if (asset.sToken != address(0) && !userClaimed[assetId][msg.sender][asset.sToken]) {
+        if (
+            asset.sToken != address(0) &&
+            !userClaimed[assetId][msg.sender][asset.sToken]
+        ) {
             uint256 userBalance = IERC20(asset.sToken).balanceOf(msg.sender);
             if (userBalance > 0) {
                 uint256 totalSupply = IERC20(asset.sToken).totalSupply();
                 if (totalSupply > 0) {
-                    userReward = ((plan.sTokenAllocation + plan.protocolFeeReward) * userBalance) / totalSupply;
+                    userReward =
+                        ((plan.sTokenAllocation + plan.protocolFeeReward) *
+                            userBalance) /
+                        totalSupply;
                     if (userReward > 0) {
                         userClaimed[assetId][msg.sender][asset.sToken] = true;
                         totalReward += userReward;
-                        emit MaturityRewardClaimed(assetId, msg.sender, asset.sToken, userBalance, userReward);
+                        emit MaturityRewardClaimed(
+                            assetId,
+                            msg.sender,
+                            asset.sToken,
+                            userBalance,
+                            userReward
+                        );
                     }
                 }
             }
         }
 
-        require(totalReward > 0, "No rewards to claim");
+        if (totalReward == 0) revert NoRewardsToClaim();
 
         // Check contract has sufficient balance
-        uint256 contractBalance = IERC20(asset.underlying).balanceOf(address(this));
-        require(contractBalance >= totalReward, "Insufficient contract balance");
+        uint256 contractBalance = IERC20(asset.underlying).balanceOf(
+            address(this)
+        );
+        if (contractBalance < totalReward) revert InsufficientContractBalance();
 
         // Transfer total reward to user
         IERC20(asset.underlying).safeTransfer(msg.sender, totalReward);
@@ -1053,20 +1234,31 @@ contract AquaFluxCore is
      * @param tokenAddress The token address
      * @return The claimable reward amount
      */
-    function getClaimableReward(bytes32 assetId, address user, address tokenAddress) external view returns (uint256) {
-        if (!isAssetRegistered(assetId) || !maturityManagement[assetId].distributionSet) {
+    function getClaimableReward(
+        bytes32 assetId,
+        address user,
+        address tokenAddress
+    ) external view returns (uint256) {
+        if (
+            !isAssetRegistered(assetId) ||
+            !maturityManagement[assetId].distributionSet
+        ) {
             return 0;
         }
-        
+
         if (userClaimed[assetId][user][tokenAddress]) {
             return 0;
         }
 
         AssetInfo storage asset = assets[assetId];
-        if (tokenAddress != asset.pToken && tokenAddress != asset.cToken && tokenAddress != asset.sToken) {
+        if (
+            tokenAddress != asset.pToken &&
+            tokenAddress != asset.cToken &&
+            tokenAddress != asset.sToken
+        ) {
             return 0;
         }
-        
+
         if (tokenAddress == address(0)) {
             return 0;
         }
@@ -1083,7 +1275,7 @@ contract AquaFluxCore is
 
         TokenDistributionPlan storage plan = distributionPlans[assetId];
         uint256 tokenAllocation;
-        
+
         if (tokenAddress == asset.pToken) {
             tokenAllocation = plan.pTokenAllocation;
         } else if (tokenAddress == asset.cToken) {
@@ -1108,17 +1300,17 @@ contract AquaFluxCore is
         address to,
         uint256 amount
     ) external onlyRole(TIMELOCK_ROLE) {
-        require(isAssetRegistered(assetId), "Asset not registered");
-        require(to != address(0), "Invalid recipient address");
-        require(amount > 0, "Amount must be greater than 0");
-        require(amount <= assetFeeBalances[assetId], "Insufficient fee balance");
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (to == address(0)) revert InvalidRecipientAddress();
+        if (amount == 0) revert AmountMustBeGreaterThanZero();
+        if (amount > assetFeeBalances[assetId]) revert InsufficientFeeBalance();
 
         AssetInfo storage asset = assets[assetId];
         IERC20 underlying = IERC20(asset.underlying);
-        
+
         // Check contract has sufficient balance
         uint256 contractBalance = underlying.balanceOf(address(this));
-        require(contractBalance >= amount, "Insufficient contract balance");
+        if (contractBalance < amount) revert InsufficientContractBalance();
 
         // Reduce the tracked fee balance
         assetFeeBalances[assetId] -= amount;
@@ -1134,7 +1326,9 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @return The amount of fees available for withdrawal
      */
-    function getWithdrawableFees(bytes32 assetId) external view returns (uint256) {
+    function getWithdrawableFees(
+        bytes32 assetId
+    ) external view returns (uint256) {
         return assetFeeBalances[assetId];
     }
 
@@ -1147,47 +1341,53 @@ contract AquaFluxCore is
         bytes32[] calldata assetIds,
         address to
     ) external onlyRole(TIMELOCK_ROLE) {
-        require(to != address(0), "Invalid recipient address");
-        require(assetIds.length > 0, "No assets provided");
+        if (to == address(0)) revert InvalidRecipientAddress();
+        if (assetIds.length == 0) revert NoAssetsProvided();
 
         uint256 totalWithdrawn = 0;
-        
+
         for (uint256 i = 0; i < assetIds.length; i++) {
             bytes32 assetId = assetIds[i];
-            require(isAssetRegistered(assetId), "Asset not registered");
-            
+            if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+
             uint256 feeBalance = assetFeeBalances[assetId];
             if (feeBalance > 0) {
                 AssetInfo storage asset = assets[assetId];
                 IERC20 underlying = IERC20(asset.underlying);
-                
+
                 // Check contract has sufficient balance
                 uint256 contractBalance = underlying.balanceOf(address(this));
                 if (contractBalance >= feeBalance) {
                     // Reduce the tracked fee balance
                     assetFeeBalances[assetId] = 0;
                     totalWithdrawn += feeBalance;
-                    
+
                     // Transfer fees to recipient
                     underlying.safeTransfer(to, feeBalance);
-                    
-                    emit ProtocolFeesWithdrawn(assetId, to, feeBalance, msg.sender);
+
+                    emit ProtocolFeesWithdrawn(
+                        assetId,
+                        to,
+                        feeBalance,
+                        msg.sender
+                    );
                 }
             }
         }
-        
-        require(totalWithdrawn > 0, "No fees available for withdrawal");
+
+        if (totalWithdrawn == 0) revert InsufficientFeeBalance();
     }
 
     /**
      * @dev Gets the total withdrawable fees across all assets for a specific underlying token
      * @return totalFees The total fees available for withdrawal
      */
-    function getTotalWithdrawableFeesForToken(address /* underlyingToken */) external pure returns (uint256 totalFees) {
+    function getTotalWithdrawableFeesForToken(
+        address /* underlyingToken */
+    ) external pure returns (uint256 totalFees) {
         // Note: This function would need to iterate through all assets
         // In a production environment, consider maintaining a separate mapping for efficiency
         // For now, this function provides the interface but would require asset enumeration
         return 0; // Placeholder - would need asset enumeration to implement fully
     }
-
 }

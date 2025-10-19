@@ -1,6 +1,66 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+// ========== CUSTOM ERRORS ==========
+
+// === Admin Function Errors ===
+error InvalidFactoryAddress();
+error InvalidFactoryInterface();
+error InvalidTimelockAddress();
+error AssetNotRegistered();
+error AssetAlreadyVerified();
+error InvalidAllocationPercentage();
+error AllocationSumMustEqual100();
+error STokenFeeAllocationTooHigh();
+error OperationDeadlineMustBeInFuture();
+error OperationDeadlineMustBeBeforeMaturity();
+error EmptyMetadataURI();
+error InvalidOperation();
+error FeeRateTooHigh();
+error AssetAlreadyPaused();
+error AssetNotPaused();
+error OperationsAlreadyStopped();
+error OperationsNotStoppedYet();
+error FundsAlreadyWithdrawn();
+error InsufficientContractBalance();
+error FundsNotWithdrawnYet();
+error RevenueNotInjectedYet();
+error RevenueAlreadyInjected();
+error DistributionAlreadySet();
+error TotalAllocationMustBeGreaterThanZero();
+error TotalAllocationExceedsInjectedRevenue();
+error InvalidRecipientAddress();
+error AmountMustBeGreaterThanZero();
+error InsufficientFeeBalance();
+error NoAssetsProvided();
+error InsufficientRevenueReceived();
+
+// === User Function Errors ===
+error InvalidUnderlyingToken();  
+error MaturityMustBeInFuture();
+error OperationDeadlineMustBeInFutureReg();
+error CouponRateTooHigh();
+error AssetNameRequired();
+error MetadataURIRequired();
+error AssetAlreadyRegistered();
+error AssetNotVerified();
+error AssetOperationsArePaused();
+error AssetOperationsAreStopped();
+error AssetOperationsHaveExpired();
+error InsufficientUnderlyingReceived();
+error AqTokenNotDeployed();
+error PTokenNotDeployed();
+error CTokenNotDeployed();
+error STokenNotDeployed();
+error DistributionNotSet();
+error AlreadyClaimed();
+error InvalidTokenAddress();
+error TokenNotDeployed();
+error NoTokensToClaimFor();
+error NoTotalSupply();
+error NoRewardToClaim();
+error NoRewardsToClaim();
+
 /**
  * @title IAquaFluxCore
  * @dev Interface for the main AquaFlux Registry contract

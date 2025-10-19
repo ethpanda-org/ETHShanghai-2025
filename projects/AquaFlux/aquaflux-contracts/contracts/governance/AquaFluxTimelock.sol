@@ -104,18 +104,18 @@ contract AquaFluxTimelock is TimelockController {
      */
     function _configureDefaults() internal {
         // Business operations
-        _setOperationDelay(bytes4(keccak256("upgradeTo(address)")), 7 days);
+        _setOperationDelay(bytes4(keccak256("upgradeTo(address)")), 3 days);
         _setOperationDelay(
             bytes4(keccak256("upgradeToAndCall(address,bytes)")),
-            7 days
-        );
-        _setOperationDelay(
-            bytes4(keccak256("withdrawAllProtocolFees(bytes32[],address)")),
             3 days
         );
         _setOperationDelay(
+            bytes4(keccak256("withdrawAllProtocolFees(bytes32[],address)")),
+            1 days
+        );
+        _setOperationDelay(
             bytes4(keccak256("withdrawForRedemption(bytes32,uint256)")),
-            2 days
+            1 days
         );
         _setOperationDelay(
             bytes4(keccak256("withdrawProtocolFees(bytes32,address,uint256)")),
@@ -123,7 +123,7 @@ contract AquaFluxTimelock is TimelockController {
         );
         _setOperationDelay(
             bytes4(keccak256("injectRedemptionRevenue(bytes32,uint256)")),
-            1 days
+            12 hours
         );
 
         // Emergency functions
