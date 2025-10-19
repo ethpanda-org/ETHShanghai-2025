@@ -14,11 +14,11 @@
 
 ### 1) 项目概述 (Overview)
 
-- **项目名称**：[Predmoon]
-- **一句话介绍**：[A prediction market platform that users could trade by their belifs and knowledges]
-- **目标用户**：[All crypto users]
-- **核心问题与动机（Pain Points）**：[Monetizing Beliefs and getting collective wisdom based on blockchain]
-- **解决方案（Solution）**：[We developed Predmoon using a combination of smart contracts, Vue, Supabase, and Privy to let users trade their knowledge on-chain. The platform operates like Tinder: swiping left or right corresponds to a YES/NO transaction, and users can earn a profit.]
+- **项目名称**：Predmoon
+- **一句话介绍**：A prediction market platform that users could trade by their belifs and knowledges
+- **目标用户**：All crypto users
+- **核心问题与动机（Pain Points）**：Monetizing Beliefs and getting collective wisdom based on blockchain
+- **解决方案（Solution）**：We developed Predmoon using a combination of smart contracts, Vue, Supabase, and Privy to let users trade their knowledge on-chain. The platform operates like Tinder: swiping left or right corresponds to a YES/NO transaction, and users can earn a profit.
 
 ### 2) 架构与实现 (Architecture & Implementation)
 
@@ -84,8 +84,8 @@ pnpm --filter frontend dev
 # 打开 http://localhost:3000
 ```
 
-- **在线 Demo（如有）**：[pred.wtf]
-- **账号与测试说明（如需要）**：[register by your own email]
+- **在线 Demo（如有）**：pred.wtf
+- **账号与测试说明（如需要）**：register by your own email
 
 ### 5) Demo 与关键用例 (Demo & Key Flows)
 
@@ -109,12 +109,13 @@ pnpm --filter frontend dev
 
 ### 8) 团队与联系 (Team & Contacts)
 
-- **团队名**：[你的团队名称]
+- **团队名**：[帝景苑8号10层泳池维护团队]
 - **成员与分工**：
-  - [姓名] - [角色] - [负责模块]
-  - [姓名] - [角色] - [负责模块]
-- **联系方式（Email/TG/X）**：[联系方式]
-- **可演示时段（时区）**：[可演示时间]
+  - Adam - Founder - marketing/tech
+  - KK - Co-Founder - marketing
+  - Ben - DEV - Fullstack/pitch
+- **联系方式（Email/TG/X）**：1836867954@qq.com
+- **可演示时段（时区）**：free
 
 
 
