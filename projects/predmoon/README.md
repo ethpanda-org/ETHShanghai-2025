@@ -107,9 +107,14 @@ pnpm --filter frontend dev
 
 - **团队名**：[帝景苑8号10层泳池维护团队]
 - **成员与分工**：
-  - Adam - Founder - marketing/tech
-  - KK - Co-Founder - marketing
-  - Ben - Co-Founder - Fullstack/pitch
+  - Adam Ma – Founder
+  Adam has extensive experience in both Web2 and Web3 entrepreneurship, as well as years of experience at major tech companies including 360, RC, and iHealth. He has won 20+ global hackathon awards and previously founded a sneaker marketplace with millions in transaction volume, as well as Web3 RWA projects. Notably, he has executed a user cold-start of 5,000+ users in a single day.
+  - KK – Co-founder
+  KK graduated from HKUST and brings extensive development experience, including years at Tsinghua Research Institute, combined with strong social and creative insight. He leads product design, social media, and brand strategy, and has deep experience with AI tools and innovative product ideation.
+  - Ben – Co-founder
+  Ben graduated from Shanghai University and has 9 years of solid front-end development experience. He previously worked at Citibank Singapore HQ, specializing in React and Vue development.
+  - Other core team members
+  Our team consists of 10+ talented professionals, covering development, design, community, and marketing. Together, we bring a balanced mix of technical expertise, creative vision, and operational experience to build PredMoon.
 - **联系方式（Email/TG/X）**：b@pred.wtf
 - **可演示时段（时区）**：free
 
