@@ -2,9 +2,9 @@ import { useMemo } from 'react'
 import { avg } from '../utils/helpers'
 
 interface Asset {
-  id: string
-  name: string
-  issuer: string
+  assetId?: string
+  name?: string
+  issuer?: string
   pApy: number
   cApr: number
   sApyRange: number[]
@@ -29,9 +29,15 @@ export function useSortedFiltered(assets: Asset[], { sort, search, goal }: Filte
     let list = assets.filter((a) => {
       const q = search.trim().toLowerCase()
       if (!q) return true
-      return a.name.toLowerCase().includes(q) || 
-             a.issuer.toLowerCase().includes(q) || 
-             a.id.toLowerCase().includes(q)
+
+      // Safe search with null/undefined checks
+      const name = a.name?.toLowerCase() || ''
+      const issuer = a.issuer?.toLowerCase() || ''
+      const id = (a.assetId)?.toLowerCase() || ''
+
+      return name.includes(q) ||
+             issuer.includes(q) ||
+             id.includes(q)
     })
     
     list = list.map((a) => ({ 

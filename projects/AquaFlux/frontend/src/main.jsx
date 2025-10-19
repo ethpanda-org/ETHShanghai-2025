@@ -10,8 +10,6 @@ import {
 } from '@rainbow-me/rainbowkit'
 import { WagmiProvider } from 'wagmi'
 import {
-  mainnet,
-  bscTestnet,
   sepolia,
 } from 'wagmi/chains'
 import {
@@ -20,35 +18,11 @@ import {
 } from '@tanstack/react-query'
 
 
-export const PharosTestnet = {
-  id: 688688,
-  name: 'Pharos Testnet',
-  nativeCurrency: {
-    name: 'Pharos',
-    symbol: 'PHRS', // Verify the correct symbol
-    decimals: 18,
-  },
-  rpcUrls: {
-    default: {
-      http: ['https://testnet.dplabs-internal.com'], // Verify the correct RPC URL
-    },
-    public: {
-      http: ['https://testnet.dplabs-internal.com'], // Verify the correct RPC URL
-    },
-  },
-  blockExplorers: {
-    default: {
-      name: 'Pharosscan',
-      url: 'https://testnet.pharosscan.xyz/', // Verify the correct explorer URL
-    },
-  },
-  testnet: true,
-};
 
 const config = getDefaultConfig({
   appName: 'AquaFlux',
   projectId: 'YOUR_PROJECT_ID',
-  chains: [sepolia, mainnet, bscTestnet, PharosTestnet],
+  chains: [sepolia],
   ssr: false,
 })
 

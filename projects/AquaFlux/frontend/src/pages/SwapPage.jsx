@@ -65,7 +65,7 @@ export default function SwapPage({ params, push }) {
               Swap
             </div>
           </button>
-          <button
+          {/* <button
             onClick={() => setActiveTab('liquidity')}
             className={cx(
               "px-6 py-3 rounded-2xl font-semibold text-sm transition-all duration-300",
@@ -80,7 +80,7 @@ export default function SwapPage({ params, push }) {
               </svg>
               Liquidity
             </div>
-          </button>
+          </button> */}
         </div>
       </div>
 

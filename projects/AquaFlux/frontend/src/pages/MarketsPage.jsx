@@ -15,7 +15,7 @@ function KPIBar({ apiAssets }) {
   // 计算TVL总和并格式化
   const totalTVL = apiAssets ? 
     apiAssets.reduce((sum, asset) => sum + (asset.tvl || 0), 0) : 0
-  const formattedTVL = totalTVL >= 1 ? `$${totalTVL.toFixed(1)}m` : `$${(totalTVL * 1000).toFixed(0)}k`
+  const formattedTVL = totalTVL >= 1 ? `$${totalTVL.toFixed(1)}` : `$${(totalTVL * 1000).toFixed(0)}k`
   
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
@@ -24,17 +24,17 @@ function KPIBar({ apiAssets }) {
           <KPI label="TVL" value={formattedTVL} trend="up" trendValue="+2.3%" />
         </div>
         <div className="bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl p-4 border border-emerald-200/50">
-          <KPI label="24h Volume" value="$4.5m" trend="up" trendValue="+12.5%" />
+          <KPI label="24h Volume" value="$4.5" trend="up" trendValue="+12.5%" />
         </div>
         <div className="bg-gradient-to-br from-purple-50 to-violet-100 rounded-2xl p-4 border border-purple-200/50">
-          <KPI label="Active Markets" value={activeMarketsCount.toString()} trend="up" trendValue="+2" />
+          <KPI label="Active Markets" value={activeMarketsCount.toString()} trend="up" trendValue={apiAssets.filter(asset => asset.isNew).length} />
         </div>
       </div>
       <div className="flex flex-col gap-3">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-slate-200/50 shadow-sm">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span className="text-sm font-medium text-slate-700">Network: Pharos</span>
+            <span className="text-sm font-medium text-slate-700">Network: Sepolia</span>
           </div>
         </div>
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 border border-slate-200/50 shadow-sm">

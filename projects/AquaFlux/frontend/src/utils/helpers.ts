@@ -32,8 +32,19 @@ export function daysUntil(dateStr: string): number {
 }
 
 // 判断是否临近到期
-export function isNearMaturity(asset: Asset): boolean { 
-  return daysUntil(asset.maturity) <= 90 
+export function isNearMaturity(asset: Asset): boolean {
+  return daysUntil(asset.maturity) <= 90
+}
+
+// 格式化日期为 YYYY-MM-DD
+export function formatDateToYMD(dateString: string | null | undefined): string {
+  if (!dateString) return 'N/A'
+  try {
+    const date = new Date(dateString)
+    return date.toISOString().split('T')[0]
+  } catch (error) {
+    return 'N/A'
+  }
 }
 
 // 基于 ID 的种子生成器（用于模拟数据）

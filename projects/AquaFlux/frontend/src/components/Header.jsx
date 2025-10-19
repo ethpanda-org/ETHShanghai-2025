@@ -208,7 +208,7 @@ export default function Header({ nav, push }) {
 
           {/* Right: Utilities */}
           <div className="ml-auto flex items-center gap-2">
-            <SearchButton onOpen={() => setPaletteOpen(true)} />
+            {/* <SearchButton onOpen={() => setPaletteOpen(true)} /> */}
             {/* <button
               className="hidden md:inline-flex items-center justify-center h-9 px-2 rounded-xl border text-sm text-slate-600 hover:bg-slate-50"
               onClick={() => setLang(lang === 'ZH' ? 'EN' : 'ZH')}
@@ -229,7 +229,7 @@ export default function Header({ nav, push }) {
               🔔
             </button> */}
             <div className="hidden md:block">
-              <NetworkStatus />
+              {/* <NetworkStatus /> */}
             </div>
             <WalletButton />
           </div>

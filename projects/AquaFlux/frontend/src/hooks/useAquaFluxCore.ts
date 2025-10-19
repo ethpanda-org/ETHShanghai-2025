@@ -27,7 +27,7 @@ export interface MergeParams {
 
 export interface AssetInfo {
   issuer: `0x${string}`
-  underlying: `0x${string}`
+  rwaToken: `0x${string}`
   maturity: bigint
   operationDeadline: bigint
   couponRate: bigint
@@ -39,9 +39,9 @@ export interface AssetInfo {
   verified: boolean
   paused: boolean
   aqToken: `0x${string}`
-  pToken: `0x${string}`
-  cToken: `0x${string}`
-  sToken: `0x${string}`
+  pTokenAddress: `0x${string}`
+  cTokenAddress: `0x${string}`
+  sTokenAddress: `0x${string}`
 }
 
 export function useAquaFluxCore() {
@@ -257,17 +257,17 @@ export function useAssetInfo(assetId: `0x${string}` | undefined) {
       enabled: Boolean(aquaFluxCoreAddress && assetId)
     }
   }) as {
-    data: AssetInfo | undefined,
+    data: any | undefined,
     isLoading: boolean,
     error: any,
     refetch: () => void
   }
 
-
+  console.log('assetInfo11111', assetInfo)
   // Convert the tuple result to typed AssetInfo object
   const asset: AssetInfo | null = assetInfo ? {
     issuer: assetInfo.issuer,
-    underlying: assetInfo.underlying,
+    rwaToken: assetInfo.rwaToken,
     maturity: assetInfo.maturity,
     operationDeadline: assetInfo.operationDeadline,
     couponRate: assetInfo.couponRate,
@@ -279,9 +279,9 @@ export function useAssetInfo(assetId: `0x${string}` | undefined) {
     verified: assetInfo.verified,
     paused: assetInfo.paused,
     aqToken: assetInfo.aqToken,
-    pToken: assetInfo.pToken,
-    cToken: assetInfo.cToken,
-    sToken: assetInfo.sToken
+    pTokenAddress: assetInfo.pTokenAddress,
+    cTokenAddress: assetInfo.cTokenAddress,
+    sTokenAddress: assetInfo.sTokenAddress
   } : null
 
   return {

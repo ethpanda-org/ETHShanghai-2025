@@ -33,7 +33,6 @@ interface UseTokenBalancesReturn {
  */
 export const useTokenBalances = (asset?: Asset): UseTokenBalancesReturn => {
   const { address } = useAccount()
-
   // Get AQ token balance
   const { 
     data: aqBalance, 
@@ -54,8 +53,8 @@ export const useTokenBalances = (asset?: Asset): UseTokenBalancesReturn => {
     refetch: refetchP
   } = useBalance({
     address: address,
-    token: asset?.ptoken as `0x${string}` | undefined,
-    enabled: Boolean(address && asset?.ptoken)
+    token: asset?.pTokenAddress as `0x${string}` | undefined,
+    enabled: Boolean(address && asset?.pTokenAddress)
   })
 
   // Get C token balance
@@ -66,8 +65,8 @@ export const useTokenBalances = (asset?: Asset): UseTokenBalancesReturn => {
     refetch: refetchC
   } = useBalance({
     address: address,
-    token: asset?.ctoken as `0x${string}` | undefined,
-    enabled: Boolean(address && asset?.ctoken)
+    token: asset?.cTokenAddress as `0x${string}` | undefined,
+    enabled: Boolean(address && asset?.cTokenAddress)
   })
 
   // Get S token balance
@@ -78,8 +77,8 @@ export const useTokenBalances = (asset?: Asset): UseTokenBalancesReturn => {
     refetch: refetchS
   } = useBalance({
     address: address,
-    token: asset?.stoken as `0x${string}` | undefined,
-    enabled: Boolean(address && asset?.stoken)
+    token: asset?.sTokenAddress as `0x${string}` | undefined,
+    enabled: Boolean(address && asset?.sTokenAddress)
   })
 
   // Convert balances from wei to readable format

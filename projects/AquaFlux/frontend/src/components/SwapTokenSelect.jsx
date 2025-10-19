@@ -27,7 +27,7 @@ export default function SwapTokenSelect({
         onClick={handleOpenModal}
         disabled={disabled}
         className={`
-          flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all duration-200 min-w-[140px]
+          flex items-center gap-3 px-4 rounded-2xl border transition-all duration-200 min-w-[180px] h-[52px]
           ${disabled
             ? 'border-slate-200 bg-slate-50 cursor-not-allowed'
             : 'border-slate-300 bg-white hover:border-blue-400 hover:shadow-md cursor-pointer'
@@ -39,11 +39,8 @@ export default function SwapTokenSelect({
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs">
               {token.symbol.slice(0, 2)}
             </div>
-            <div className="text-left">
-              <div className="font-medium text-slate-900">{formatTokenSymbol(token)}</div>
-              <div className="text-xs text-slate-500">{token.name}</div>
+            <span className="font-medium text-slate-900">{formatTokenSymbol(token)}</span>
             </div>
-          </div>
         ) : (
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center">

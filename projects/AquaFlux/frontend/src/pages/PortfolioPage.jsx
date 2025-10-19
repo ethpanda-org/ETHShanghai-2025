@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
-import { calculatePortfolioSummary, PORTFOLIO_HOLDINGS, getAsset, getPortfolioHolding } from '../data/mockData'
+import { calculatePortfolioSummary, PORTFOLIO_HOLDINGS, getAsset, getPortfolioHolding, createFallbackAsset } from '../data/mockData'
 import { cx } from '../utils/helpers'
 import AssetAvatar from '../components/AssetAvatar'
 import Badge from '../components/Badge'
+
 
 // P/C/S圆环组件
 function PCSRing({ pPercent, cPercent, sPercent, size = 48, strokeWidth = 6, onClick }) {
@@ -464,34 +465,6 @@ function HoldingRow({ asset, holding, highlighted, push }) {
           ${totalValue.toLocaleString('en-US', { minimumFractionDigits: 0 })}
         </div>
       </td>
-      
-      {/* Actions */}
-      <td className="py-4 px-4 text-right">
-        <div className="flex items-center gap-2 justify-end">
-          <button 
-            onClick={() => push('swap', { assetId: asset.id, from: 'USDC', to: `${asset.id}:P` })}
-            className="px-3 py-1.5 text-xs font-medium text-emerald-600 border border-emerald-300 rounded-xl hover:bg-emerald-50 hover:border-emerald-400 transition-all duration-200 transform hover:scale-105"
-          >
-            <div className="flex items-center gap-1">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-              </svg>
-              Swap
-            </div>
-          </button>
-          <button 
-            onClick={() => push('structure', { assetId: asset.id, tab: 'split-merge' })}
-            className="px-3 py-1.5 text-xs font-medium text-violet-600 border border-violet-300 rounded-xl hover:bg-violet-50 hover:border-violet-400 transition-all duration-200 transform hover:scale-105"
-          >
-            <div className="flex items-center gap-1">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              Structure
-            </div>
-          </button>
-        </div>
-      </td>
     </tr>
   )
 }
@@ -501,10 +474,19 @@ function HoldingsTable({ highlightNearMaturity, clearFilter, push }) {
   const [searchTerm, setSearchTerm] = useState('')
   
   // Filter and sort data
-  let filteredHoldings = PORTFOLIO_HOLDINGS.map(holding => ({
-    ...holding,
-    asset: getAsset(holding.assetId)
-  })).filter(item => {
+  let filteredHoldings = PORTFOLIO_HOLDINGS.map(holding => {
+    let asset = getAsset(holding.assetId)
+
+    // Use fallback asset if not found
+    if (!asset) {
+      asset = createFallbackAsset(holding.assetId)
+    }
+
+    return {
+      ...holding,
+      asset: asset
+    }
+  }).filter(item => {
     if (!item.asset) return false
     
     // Search filter
@@ -587,7 +569,6 @@ function HoldingsTable({ highlightNearMaturity, clearFilter, push }) {
               <th className="py-3 px-4 text-right text-sm font-medium text-slate-600">C Amount</th>
               <th className="py-3 px-4 text-right text-sm font-medium text-slate-600">S Amount</th>
               <th className="py-3 px-4 text-right text-sm font-medium text-slate-600">Value (USDC)</th>
-              <th className="py-3 px-4 text-right text-sm font-medium text-slate-600">Actions</th>
             </tr>
           </thead>
           <tbody>

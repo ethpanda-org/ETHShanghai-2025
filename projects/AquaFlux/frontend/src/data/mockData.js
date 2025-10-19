@@ -1,105 +1,37 @@
 // Mock Asset Data
 export const ASSETS = [
-  { 
-    assetId: "0x1e8c653fea1facd1da7c5b50a0999d68866c207d4505b4b7d80fcefc165d9134",
-    id: "UST-2026", 
-    name: "US Treasury 2Y", 
-    issuer: "U.S. Treasury", 
-    type: "Treasury Bond", 
-    rating: "AAA", 
-    chain: "Pharos", 
-    maturity: "2026-07-15", 
-    duration: 1.9, 
-    tvl: 12.3, 
-    vol24h: 2.1, 
-    pApy: 5.1, 
-    cApr: 4.2, 
-    sApyRange: [12, 20], 
-    lcr: 1.25, 
-    nav: 100, 
-    discountP: -1.5, 
-    rewards: ["Points"], 
-    isNew: true,
-    aqToken: '0xbee82fd0c15527ede2430ffdd12ebcf793ffe5c0',
-    ptoken: "0x16a2b4106e914aa64f71f6c274305ab9b8a3ffe8",
-    ctoken: "0x29d7551fd5cf2862ec28c98edc8fd61cc0427da2",
-    stoken: "0x8f9d4054085d4194c9cb3bbb6c273bd49f3fded8"
-  },
-  { 
-    assetId: "0x1e8c653fea1facd1da7c5b50a0999d68866c207d4505b4b7d80fcefc165d9134",
-    id: "CORP-2027-A", 
-    name: "Corp Bond A 2027", 
-    issuer: "Contoso Energy", 
-    type: "Corporate Bond", 
-    rating: "A-", 
-    chain: "Pharos", 
-    maturity: "2027-03-30", 
-    duration: 2.5, 
-    tvl: 8.9, 
-    vol24h: 0.8, 
-    pApy: 6.4, 
-    cApr: 5.6, 
-    sApyRange: [16, 28], 
-    lcr: 1.1, 
-    nav: 100, 
-    discountP: -2.2, 
-    rewards: ["External Rewards"], 
-    isNew: false,
-    aqToken: '0xbee82fd0c15527ede2430ffdd12ebcf793ffe5c0',
-    ptoken: "0x16a2b4106e914aa64f71f6c274305ab9b8a3ffe8",
-    ctoken: "0x29d7551fd5cf2862ec28c98edc8fd61cc0427da2",
-    stoken: "0x8f9d4054085d4194c9cb3bbb6c273bd49f3fded8"
-  },
-  { 
-    assetId: "0x1e8c653fea1facd1da7c5b50a0999d68866c207d4505b4b7d80fcefc165d9134",
-    id: "CP-180D-2026", 
-    name: "Commercial Paper 180D", 
-    issuer: "Fabrikam Finance", 
-    type: "Commercial Paper", 
-    rating: "A2/P2", 
-    chain: "Pharos", 
-    maturity: "2026-01-10", 
-    duration: 0.5, 
-    tvl: 4.1, 
-    vol24h: 1.2, 
-    pApy: 4.8, 
-    cApr: 6.2, 
-    sApyRange: [20, 35], 
-    lcr: 1.05, 
-    nav: 100, 
-    discountP: -0.9, 
-    rewards: ["None"], 
-    isNew: false,
-    aqToken: '0xbee82fd0c15527ede2430ffdd12ebcf793ffe5c0',
-    ptoken: "0x16a2b4106e914aa64f71f6c274305ab9b8a3ffe8",
-    ctoken: "0x29d7551fd5cf2862ec28c98edc8fd61cc0427da2",
-    stoken: "0x8f9d4054085d4194c9cb3bbb6c273bd49f3fded8"
-  },
-  { 
-    assetId: "0x1e8c653fea1facd1da7c5b50a0999d68866c207d4505b4b7d80fcefc165d9134",
-    id: "MUNI-2030", 
-    name: "Municipal Bond 2030", 
-    issuer: "Metro City", 
-    type: "Municipal Bond", 
-    rating: "AA", 
-    chain: "Pharos", 
-    maturity: "2030-09-01", 
-    duration: 4.8, 
-    tvl: 5.7, 
-    vol24h: 0.4, 
-    pApy: 5.9, 
-    cApr: 4.0, 
-    sApyRange: [10, 18], 
-    lcr: 1.3, 
-    nav: 100, 
-    discountP: -1.1, 
-    rewards: ["Points"], 
-    isNew: false,
-    aqToken: '0xbee82fd0c15527ede2430ffdd12ebcf793ffe5c0',
-    ptoken: "0x16a2b4106e914aa64f71f6c274305ab9b8a3ffe8",
-    ctoken: "0x29d7551fd5cf2862ec28c98edc8fd61cc0427da2",
-    stoken: "0x8f9d4054085d4194c9cb3bbb6c273bd49f3fded8"
-  },
+  {
+    "assetId": "0x90884d8c3a5ce7f76d651c63395429ccd7ea73310751ef56fcb98938343996ec",
+    "name": "Municipal Bond 2030",
+    "issuer": "Metro City",
+    "type": "Corporate Bond",
+    "rating": "AA",
+    "chain": "Pharos",
+    "maturity": "2030-10-10T14:18:44.000Z",
+    "duration": 2,
+    "rwaToken": "0x05E515224A8f941DF3f3744faaEA6f642b802cA9",
+    "aqToken": "0xA64f69Da13Ca5e0101413fb4E0c7a173F2A9270D",
+    "pTokenAddress": "0x00F63752d43EfA522EF8089fc931eC279b37902c",
+    "cTokenAddress": "0x032D90F0F42EbC05954B2a02410a3e6d8A9bA23a",
+    "sTokenAddress": "0x1e17279cB7748B54447b0a23a85efCaB17bc15F9",
+    "tvl": 199620,
+    "vol24h": 0,
+    "pApr": 14.9,
+    "cApr": 5.9,
+    "sApr": 6.3,
+    "sAprRange": [0, 0],
+    "lcr": 1.1,
+    "nav": 100,
+    "discountP": 50,
+    "rewards": [],
+    "isNew": true,
+    "isActive": true,
+    "createdAt": "2025-10-10T14:19:49.000Z",
+    "updatedAt": "2025-10-15T08:40:00.461Z",
+    "daysToMaturity": 1822,
+    "riskScore": 3,
+    "priceHistoryCount": 731
+  }
 ]
 
 // Investment Goal Data
@@ -145,9 +77,81 @@ export const PORTFOLIO_HOLDINGS = [
   }
 ]
 
+// Create fallback asset data for display purposes
+export function createFallbackAsset(assetId) {
+  const fallbackAssets = {
+    "UST-2026": {
+      assetId: "UST-2026",
+      name: "US Treasury 2026",
+      issuer: "US Treasury",
+      type: "Government Bond",
+      rating: "AAA",
+      chain: "Ethereum",
+      maturity: "2026-12-31",
+      nav: 100,
+      pApr: 4.2,
+      cApr: 2.8,
+      sAprRange: [1.5, 3.2]
+    },
+    "CORP-2027-A": {
+      assetId: "CORP-2027-A",
+      name: "Corporate Bond 2027-A",
+      issuer: "TechCorp Inc",
+      type: "Corporate Bond",
+      rating: "AA",
+      chain: "Ethereum",
+      maturity: "2027-08-15",
+      nav: 98,
+      pApr: 5.1,
+      cApr: 3.4,
+      sAprRange: [2.1, 4.8]
+    },
+    "CP-180D-2026": {
+      assetId: "CP-180D-2026",
+      name: "Commercial Paper 180D",
+      issuer: "FinanceGroup LLC",
+      type: "Commercial Paper",
+      rating: "A+",
+      chain: "Polygon",
+      maturity: "2026-06-20",
+      nav: 99,
+      pApr: 3.8,
+      cApr: 2.2,
+      sAprRange: [1.2, 2.9]
+    },
+    "MUNI-2030": {
+      assetId: "MUNI-2030",
+      name: "Municipal Bond 2030",
+      issuer: "Metro City",
+      type: "Municipal Bond",
+      rating: "AA-",
+      chain: "Arbitrum",
+      maturity: "2030-03-10",
+      nav: 102,
+      pApr: 4.7,
+      cApr: 3.1,
+      sAprRange: [1.8, 4.2]
+    }
+  }
+
+  return fallbackAssets[assetId] || {
+    assetId: assetId,
+    name: `Asset ${assetId}`,
+    issuer: "Unknown Issuer",
+    type: "Bond",
+    rating: "N/A",
+    chain: "Ethereum",
+    maturity: "2025-12-31",
+    nav: 100,
+    pApr: 0,
+    cApr: 0,
+    sAprRange: [0, 0]
+  }
+}
+
 // Helper functions
-export function getAsset(assetId) { 
-  return ASSETS.find(a => a.id === assetId) 
+export function getAsset(assetId) {
+  return ASSETS.find(a => a.assetId === assetId)
 }
 
 export function getPortfolioHolding(assetId) {
@@ -157,30 +161,34 @@ export function getPortfolioHolding(assetId) {
 export function calculatePortfolioSummary() {
   let totalValue = 0
   let totalP = 0
-  let totalC = 0 
+  let totalC = 0
   let totalS = 0
   let nearMaturityCount = 0
 
   PORTFOLIO_HOLDINGS.forEach(holding => {
-    const asset = getAsset(holding.assetId)
-    if (asset) {
-      // Calculate current values (using NAV as current price)
-      const pValue = holding.holdings.P.amount * asset.nav
-      const cValue = holding.holdings.C.amount * asset.nav 
-      const sValue = holding.holdings.S.amount * asset.nav
-      
-      totalP += pValue
-      totalC += cValue
-      totalS += sValue
-      totalValue += pValue + cValue + sValue
+    let asset = getAsset(holding.assetId)
 
-      // Check if near maturity (≤90 days)
-      const maturityDate = new Date(asset.maturity)
-      const today = new Date()
-      const daysToMaturity = Math.ceil((maturityDate - today) / (1000 * 60 * 60 * 24))
-      if (daysToMaturity <= 90 && daysToMaturity > 0) {
-        nearMaturityCount++
-      }
+    // Use fallback asset if not found
+    if (!asset) {
+      asset = createFallbackAsset(holding.assetId)
+    }
+
+    // Calculate current values (using NAV as current price)
+    const pValue = holding.holdings.P.amount * asset.nav
+    const cValue = holding.holdings.C.amount * asset.nav
+    const sValue = holding.holdings.S.amount * asset.nav
+
+    totalP += pValue
+    totalC += cValue
+    totalS += sValue
+    totalValue += pValue + cValue + sValue
+
+    // Check if near maturity (≤90 days)
+    const maturityDate = new Date(asset.maturity)
+    const today = new Date()
+    const daysToMaturity = Math.ceil((maturityDate - today) / (1000 * 60 * 60 * 24))
+    if (daysToMaturity <= 90 && daysToMaturity > 0) {
+      nearMaturityCount++
     }
   })
 
@@ -194,7 +202,7 @@ export function calculatePortfolioSummary() {
     cValue: totalC,
     sValue: totalS,
     pPercent,
-    cPercent, 
+    cPercent,
     sPercent,
     nearMaturityCount
   }
