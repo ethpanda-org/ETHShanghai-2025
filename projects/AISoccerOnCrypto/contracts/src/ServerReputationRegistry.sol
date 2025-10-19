@@ -3,6 +3,10 @@ pragma solidity ^0.8.20;
 
 import "./ReputationRegistry.sol";
 
+interface IServerReputationRegistry {
+    function isAuthorizedServer(address serverAddress) external view returns (bool);
+}
+
 /// @title ServerReputationRegistry
 /// @notice Allows authorized game servers to submit match results as feedback on-chain
 /// @dev Inherits from ReputationRegistry and adds server authorization management
