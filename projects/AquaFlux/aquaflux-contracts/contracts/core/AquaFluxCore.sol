@@ -84,6 +84,10 @@ contract AquaFluxCore is
         uint256 sTokenAllocation; // S Token allocation amount (includes protocol fee reward)
         uint256 protocolFeeReward; // Additional protocol fee reward for S Token holders
         uint256 allocationTimestamp; // Timestamp when allocation was set
+        // Fixed token supplies at time of distribution plan setting
+        uint256 fixedPTokenSupply; // Fixed P Token total supply
+        uint256 fixedCTokenSupply; // Fixed C Token total supply
+        uint256 fixedSTokenSupply; // Fixed S Token total supply
     }
 
     // Asset lifecycle states
@@ -99,10 +103,6 @@ contract AquaFluxCore is
     // Maturity management mappings
     mapping(bytes32 => AssetMaturityManagement) public maturityManagement;
     mapping(bytes32 => TokenDistributionPlan) public distributionPlans;
-
-    // User claim tracking: assetId => user => tokenAddress => claimed
-    mapping(bytes32 => mapping(address => mapping(address => bool)))
-        public userClaimed;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -985,7 +985,13 @@ contract AquaFluxCore is
             sAllocation +
             protocolFeeReward;
         if (totalAllocation == 0) revert TotalAllocationMustBeGreaterThanZero();
-        if (totalAllocation > maturityManagement[assetId].totalRevenueInjected) revert TotalAllocationExceedsInjectedRevenue();
+        if (totalAllocation != maturityManagement[assetId].totalRevenueInjected) revert TotalAllocationMustEqualInjectedRevenue();
+
+        // Get current token supplies to fix them for reward calculations
+        AssetInfo storage asset = assets[assetId];
+        uint256 currentPSupply = asset.pToken != address(0) ? IERC20(asset.pToken).totalSupply() : 0;
+        uint256 currentCSupply = asset.cToken != address(0) ? IERC20(asset.cToken).totalSupply() : 0;
+        uint256 currentSSupply = asset.sToken != address(0) ? IERC20(asset.sToken).totalSupply() : 0;
 
         // Set distribution plan
         distributionPlans[assetId] = TokenDistributionPlan({
@@ -993,7 +999,10 @@ contract AquaFluxCore is
             cTokenAllocation: cAllocation,
             sTokenAllocation: sAllocation,
             protocolFeeReward: protocolFeeReward,
-            allocationTimestamp: block.timestamp
+            allocationTimestamp: block.timestamp,
+            fixedPTokenSupply: currentPSupply,
+            fixedCTokenSupply: currentCSupply,
+            fixedSTokenSupply: currentSSupply
         });
 
         maturityManagement[assetId].distributionSet = true;
@@ -1019,7 +1028,6 @@ contract AquaFluxCore is
     ) external nonReentrant {
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (!maturityManagement[assetId].distributionSet) revert DistributionNotSet();
-        if (userClaimed[assetId][msg.sender][tokenAddress]) revert AlreadyClaimed();
 
         AssetInfo storage asset = assets[assetId];
         TokenDistributionPlan storage plan = distributionPlans[assetId];
@@ -1032,25 +1040,27 @@ contract AquaFluxCore is
         uint256 userBalance = IERC20(tokenAddress).balanceOf(msg.sender);
         if (userBalance == 0) revert NoTokensToClaimFor();
 
-        // Get total supply of the token
-        uint256 totalSupply = IERC20(tokenAddress).totalSupply();
-        if (totalSupply == 0) revert NoTotalSupply();
-
-        // Calculate user's proportional reward
+        // Get fixed total supply of the token at distribution plan time
+        uint256 fixedTotalSupply;
         uint256 tokenAllocation;
         if (tokenAddress == asset.pToken) {
+            fixedTotalSupply = plan.fixedPTokenSupply;
             tokenAllocation = plan.pTokenAllocation;
         } else if (tokenAddress == asset.cToken) {
+            fixedTotalSupply = plan.fixedCTokenSupply;
             tokenAllocation = plan.cTokenAllocation;
         } else if (tokenAddress == asset.sToken) {
+            fixedTotalSupply = plan.fixedSTokenSupply;
             // S Token gets its allocation plus protocol fee reward
             tokenAllocation = plan.sTokenAllocation + plan.protocolFeeReward;
         }
+        
+        if (fixedTotalSupply == 0) revert NoTotalSupply();
 
         uint256 userReward = Math.mulDiv(
             tokenAllocation,
             userBalance,
-            totalSupply
+            fixedTotalSupply
         );
         if (userReward == 0) revert NoRewardToClaim();
 
@@ -1060,8 +1070,8 @@ contract AquaFluxCore is
         );
         if (contractBalance < userReward) revert InsufficientContractBalance();
 
-        // Mark as claimed
-        userClaimed[assetId][msg.sender][tokenAddress] = true;
+        // Burn the user's tokens to prevent re-claiming from other addresses
+        IBaseToken(tokenAddress).burn(msg.sender, userBalance);
 
         // Transfer reward to user using distribution token
         IERC20(asset.distributionToken).safeTransfer(msg.sender, userReward);
@@ -1090,21 +1100,19 @@ contract AquaFluxCore is
         uint256 userReward;
 
         // Claim P Token rewards
-        if (
-            asset.pToken != address(0) &&
-            !userClaimed[assetId][msg.sender][asset.pToken]
-        ) {
+        if (asset.pToken != address(0)) {
             uint256 userBalance = IERC20(asset.pToken).balanceOf(msg.sender);
             if (userBalance > 0) {
-                uint256 totalSupply = IERC20(asset.pToken).totalSupply();
-                if (totalSupply > 0) {
+                uint256 fixedTotalSupply = plan.fixedPTokenSupply;
+                if (fixedTotalSupply > 0) {
                     userReward = Math.mulDiv(
                         plan.pTokenAllocation,
                         userBalance,
-                        totalSupply
+                        fixedTotalSupply
                     );
                     if (userReward > 0) {
-                        userClaimed[assetId][msg.sender][asset.pToken] = true;
+                        // Burn the user's P tokens to prevent re-claiming
+                        IBaseToken(asset.pToken).burn(msg.sender, userBalance);
                         totalReward += userReward;
                         emit MaturityRewardClaimed(
                             assetId,
@@ -1119,21 +1127,19 @@ contract AquaFluxCore is
         }
 
         // Claim C Token rewards
-        if (
-            asset.cToken != address(0) &&
-            !userClaimed[assetId][msg.sender][asset.cToken]
-        ) {
+        if (asset.cToken != address(0)) {
             uint256 userBalance = IERC20(asset.cToken).balanceOf(msg.sender);
             if (userBalance > 0) {
-                uint256 totalSupply = IERC20(asset.cToken).totalSupply();
-                if (totalSupply > 0) {
+                uint256 fixedTotalSupply = plan.fixedCTokenSupply;
+                if (fixedTotalSupply > 0) {
                     userReward = Math.mulDiv(
                         plan.cTokenAllocation,
                         userBalance,
-                        totalSupply
+                        fixedTotalSupply
                     );
                     if (userReward > 0) {
-                        userClaimed[assetId][msg.sender][asset.cToken] = true;
+                        // Burn the user's C tokens to prevent re-claiming
+                        IBaseToken(asset.cToken).burn(msg.sender, userBalance);
                         totalReward += userReward;
                         emit MaturityRewardClaimed(
                             assetId,
@@ -1148,21 +1154,19 @@ contract AquaFluxCore is
         }
 
         // Claim S Token rewards (includes protocol fee reward)
-        if (
-            asset.sToken != address(0) &&
-            !userClaimed[assetId][msg.sender][asset.sToken]
-        ) {
+        if (asset.sToken != address(0)) {
             uint256 userBalance = IERC20(asset.sToken).balanceOf(msg.sender);
             if (userBalance > 0) {
-                uint256 totalSupply = IERC20(asset.sToken).totalSupply();
-                if (totalSupply > 0) {
+                uint256 fixedTotalSupply = plan.fixedSTokenSupply;
+                if (fixedTotalSupply > 0) {
                     userReward = Math.mulDiv(
                         plan.sTokenAllocation + plan.protocolFeeReward,
                         userBalance,
-                        totalSupply
+                        fixedTotalSupply
                     );
                     if (userReward > 0) {
-                        userClaimed[assetId][msg.sender][asset.sToken] = true;
+                        // Burn the user's S tokens to prevent re-claiming
+                        IBaseToken(asset.sToken).burn(msg.sender, userBalance);
                         totalReward += userReward;
                         emit MaturityRewardClaimed(
                             assetId,
@@ -1207,9 +1211,6 @@ contract AquaFluxCore is
             return 0;
         }
 
-        if (userClaimed[assetId][user][tokenAddress]) {
-            return 0;
-        }
 
         AssetInfo storage asset = assets[assetId];
         if (
@@ -1229,23 +1230,26 @@ contract AquaFluxCore is
             return 0;
         }
 
-        uint256 totalSupply = IERC20(tokenAddress).totalSupply();
-        if (totalSupply == 0) {
-            return 0;
-        }
-
         TokenDistributionPlan storage plan = distributionPlans[assetId];
+        uint256 fixedTotalSupply;
         uint256 tokenAllocation;
 
         if (tokenAddress == asset.pToken) {
+            fixedTotalSupply = plan.fixedPTokenSupply;
             tokenAllocation = plan.pTokenAllocation;
         } else if (tokenAddress == asset.cToken) {
+            fixedTotalSupply = plan.fixedCTokenSupply;
             tokenAllocation = plan.cTokenAllocation;
         } else if (tokenAddress == asset.sToken) {
+            fixedTotalSupply = plan.fixedSTokenSupply;
             tokenAllocation = plan.sTokenAllocation + plan.protocolFeeReward;
         }
 
-        return Math.mulDiv(tokenAllocation, userBalance, totalSupply);
+        if (fixedTotalSupply == 0) {
+            return 0;
+        }
+
+        return Math.mulDiv(tokenAllocation, userBalance, fixedTotalSupply);
     }
 
     // === FEE EXTRACTION FUNCTIONS ===
