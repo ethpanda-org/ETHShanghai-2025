@@ -1,16 +1,27 @@
 import { useState, useEffect } from 'react'
 
+interface RouteParams {
+  [key: string]: string
+}
+
+interface Route {
+  name: string
+  params: RouteParams
+}
+
+type RouteName = 'markets' | 'swap' | 'structure' | 'portfolio'
+
 // URL-based routing hook
 export default function useRouter() {
-  const [route, setRoute] = useState({ name: "markets", params: {} })
+  const [route, setRoute] = useState<Route>({ name: "markets", params: {} })
   
   // Parse URL to get current route
-  const parseUrl = () => {
+  const parseUrl = (): Route => {
     const path = window.location.pathname
     const search = window.location.search
     const params = new URLSearchParams(search)
     
-    let name = "markets" // default
+    let name: RouteName = "markets" // default
     if (path === "/" || path === "/markets") {
       name = "markets"
     } else if (path === "/swap") {
@@ -22,7 +33,7 @@ export default function useRouter() {
     }
     
     // Convert URLSearchParams to object
-    const paramsObj = {}
+    const paramsObj: RouteParams = {}
     for (const [key, value] of params.entries()) {
       paramsObj[key] = value
     }
@@ -46,8 +57,8 @@ export default function useRouter() {
   }, [])
   
   // Navigate to new route
-  const push = (name, params = {}) => {
-    const newRoute = { name, params }
+  const push = (name: RouteName, params: RouteParams = {}) => {
+    const newRoute: Route = { name, params }
     setRoute(newRoute)
     
     // Update URL

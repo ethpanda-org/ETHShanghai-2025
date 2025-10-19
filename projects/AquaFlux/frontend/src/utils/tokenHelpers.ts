@@ -1,7 +1,56 @@
 import { ASSETS } from '../data/mockData'
 
+// Types
+interface Asset {
+  id: string
+  name: string
+  issuer: string
+  type: string
+  rating: string
+  chain: string
+}
+
+interface TokenInfo {
+  type: 'STABLE' | 'LEG' | 'UNKNOWN'
+  symbol?: string
+  assetId?: string | null
+  leg?: string
+}
+
+interface Token {
+  id: string
+  label: string
+  searchText: string
+  assetId?: string
+  leg?: string
+}
+
+interface TokenGroup {
+  key: string
+  label: string
+  tokens: Token[]
+}
+
+interface TokenUniverse {
+  groups: TokenGroup[]
+  subGroups: TokenGroup[]
+}
+
+interface QuoteParams {
+  from: string
+  to: string
+  amountIn: number
+}
+
+interface QuoteResult {
+  amountOut: number
+  price: number
+  impact: number
+  feeOut?: number
+}
+
 // Token Parsing Functions
-export function parseTokenId(id) {
+export function parseTokenId(id: string): TokenInfo {
   if (!id) return { type: 'UNKNOWN' }
   if (id === 'USDC') return { type: 'STABLE', symbol: 'USDC' }
   if (id.includes(':')) { 
@@ -12,16 +61,16 @@ export function parseTokenId(id) {
 }
 
 // Display Token Name
-export function displayToken(id) {
+export function displayToken(id: string): string {
   const info = parseTokenId(id)
   if (info.type === 'STABLE') return 'USDC'
   const a = info.assetId ? ASSETS.find(asset => asset.id === info.assetId) : null
-  return info.assetId ? `${info.leg} · ${a ? a.name : info.assetId}` : info.leg
+  return info.assetId ? `${info.leg} · ${a ? a.name : info.assetId}` : info.leg || ''
 }
 
 // Build Token Selector Data
-export function buildTokenUniverse(currentAsset) {
-  const makeLeg = (a, leg) => ({
+export function buildTokenUniverse(currentAsset?: Asset): TokenUniverse {
+  const makeLeg = (a: Asset, leg: string): Token => ({
     id: `${a.id}:${leg}`,
     label: `${leg} · ${a.name}`,
     searchText: `${a.id} ${a.name} ${a.issuer} ${a.type} ${a.rating} ${a.chain} ${leg}`.toLowerCase(),
@@ -29,7 +78,7 @@ export function buildTokenUniverse(currentAsset) {
     leg
   })
   
-  const groups = []
+  const groups: TokenGroup[] = []
   if (currentAsset) {
     groups.push({ 
       key: 'current', 
@@ -56,14 +105,14 @@ export function buildTokenUniverse(currentAsset) {
 }
 
 // Mock Price Function
-export function mockPriceUSD(tokenId) {
+export function mockPriceUSD(tokenId: string): number {
   const info = parseTokenId(tokenId)
   if (info.type === 'STABLE') return 1 // USDC
   return 33.3333333333 // Demo price per leg
 }
 
 // Mock Quote Function
-export function quoteMock({ from, to, amountIn }) {
+export function quoteMock({ from, to, amountIn }: QuoteParams): QuoteResult {
   const pIn = mockPriceUSD(from)
   const pOut = mockPriceUSD(to)
   if (pIn <= 0 || pOut <= 0) return { amountOut: 0, price: 0, impact: 0 }

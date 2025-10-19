@@ -10,6 +10,11 @@ export interface WrapParams {
   amount: bigint
 }
 
+export interface UnwrapParams {
+  assetId: `0x${string}`
+  amount: bigint
+}
+
 export interface SplitParams {
   assetId: `0x${string}`
   amount: bigint
@@ -47,6 +52,7 @@ export function useAquaFluxCore() {
   const aquaFluxCoreAddress = contractAddresses?.AquaFluxCore
 
   const { writeContract: wrapAsset, isPending: isWrapping } = useWriteContract()
+  const { writeContract: unwrapAsset, isPending: isUnwrapping } = useWriteContract()
   const { writeContract: splitAsset, isPending: isSplitting } = useWriteContract()
   const { writeContract: mergeAsset, isPending: isMerging } = useWriteContract()
   
@@ -56,7 +62,9 @@ export function useAquaFluxCore() {
 
   const executeWrap = async (params: WrapParams) => {
     if (!aquaFluxCoreAddress || !address) {
-      throw new Error('AquaFlux Core not available or wallet not connected')
+      const errorMsg = !address ? 'Wallet not connected' : 'AquaFlux Core contract not available on this network'
+      console.error('executeWrap failed:', errorMsg)
+      throw new Error(errorMsg)
     }
 
     return new Promise((resolve, reject) => {
@@ -93,9 +101,52 @@ export function useAquaFluxCore() {
     })
   }
 
+  const executeUnwrap = async (params: UnwrapParams) => {
+    if (!aquaFluxCoreAddress || !address) {
+      const errorMsg = !address ? 'Wallet not connected' : 'AquaFlux Core contract not available on this network'
+      console.error('executeUnwrap failed:', errorMsg)
+      throw new Error(errorMsg)
+    }
+
+    return new Promise((resolve, reject) => {
+      unwrapAsset(
+        {
+          address: aquaFluxCoreAddress,
+          abi: AquaFluxCoreABI,
+          functionName: 'unwrap',
+          args: [
+            params.assetId,
+            params.amount
+          ],
+        },
+        {
+          onSuccess: (hash) => {
+            setLastTxHash(hash)
+            resolve({ 
+              hash, 
+              isLoading: true, 
+              isSuccess: false, 
+              error: null 
+            })
+          },
+          onError: (error) => {
+            reject({ 
+              hash: undefined,
+              isLoading: false, 
+              isSuccess: false, 
+              error 
+            })
+          },
+        }
+      )
+    })
+  }
+
   const executeSplit = async (params: SplitParams) => {
     if (!aquaFluxCoreAddress || !address) {
-      throw new Error('AquaFlux Core not available or wallet not connected')
+      const errorMsg = !address ? 'Wallet not connected' : 'AquaFlux Core contract not available on this network'
+      console.error('executeSplit failed:', errorMsg)
+      throw new Error(errorMsg)
     }
 
     return new Promise((resolve, reject) => {
@@ -134,7 +185,9 @@ export function useAquaFluxCore() {
 
   const executeMerge = async (params: MergeParams) => {
     if (!aquaFluxCoreAddress || !address) {
-      throw new Error('AquaFlux Core not available or wallet not connected')
+      const errorMsg = !address ? 'Wallet not connected' : 'AquaFlux Core contract not available on this network'
+      console.error('executeMerge failed:', errorMsg)
+      throw new Error(errorMsg)
     }
 
     return new Promise((resolve, reject) => {
@@ -173,9 +226,11 @@ export function useAquaFluxCore() {
 
   return {
     executeWrap,
+    executeUnwrap,
     executeSplit,
     executeMerge,
     isWrapping,
+    isUnwrapping,
     isSplitting,
     isMerging,
     isConfirming,

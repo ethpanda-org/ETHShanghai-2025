@@ -1,10 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { ASSETS, getAsset } from '../data/mockData'
 import AssetMiniCard from '../components/AssetMiniCard'
 import { cx } from '../utils/helpers'
 import { useAquaFluxCore, useAssetInfo } from '../hooks/useAquaFluxCore'
 import { useTokenAllowance } from '../hooks/useTokenAllowance'
+import { useAccount, useSwitchChain } from 'wagmi'
 
 function PreviewBox({ title, value, warn = false, subtle = false, tokenType = null }) {
   // Extract token type from title if not provided
@@ -212,7 +215,7 @@ function SplitMerge({ asset, push }) {
   const amt = parseFloat(amount) || 0
 
   // Use blockchain asset ID - in real app this should map from UI asset to blockchain ID
-  const blockchainAssetId = `0x94e997e91240e3af49fbaac7e5898097cc2f82961778fef3c5602ae767e008d0`
+  const blockchainAssetId = `0x99ee5f77607391b5a5986637437f14ef5c50810c77784b2dfdbd6bcef0423bc8`
   
   // Use AquaFluxCore hook
   const { 
@@ -241,8 +244,14 @@ function SplitMerge({ asset, push }) {
       })
       
       console.log('Split transaction initiated:', result)
+      toast.success('Split transaction completed successfully!')
     } catch (err) {
       console.error('Split failed:', err)
+      if (err?.code === 4001 || err?.message?.includes('rejected')) {
+        toast.error('Transaction cancelled by user')
+      } else {
+        toast.error(`Split transaction failed: ${err?.message || 'Unknown error'}`)
+      }
     }
   }
 
@@ -260,8 +269,14 @@ function SplitMerge({ asset, push }) {
       })
       
       console.log('Merge transaction initiated:', result)
+      toast.success('Merge transaction completed successfully!')
     } catch (err) {
       console.error('Merge failed:', err)
+      if (err?.code === 4001 || err?.message?.includes('rejected')) {
+        toast.error('Transaction cancelled by user')
+      } else {
+        toast.error(`Merge transaction failed: ${err?.message || 'Unknown error'}`)
+      }
     }
   }
 
@@ -546,9 +561,9 @@ function WrapUnwrap({ asset }) {
   // Use AquaFluxCore hook
   const { 
     executeWrap,
-    executeSplit,
+    executeUnwrap,
     isWrapping,
-    isSplitting, 
+    isUnwrapping, 
     isConfirming, 
     isSuccess, 
     error, 
@@ -580,8 +595,39 @@ function WrapUnwrap({ asset }) {
     try {
       const result = await executeApproveMax()
       console.log('Approve transaction initiated:', result)
+      toast.success('Token approval completed successfully!')
     } catch (err) {
       console.error('Approve failed:', err)
+      if (err?.code === 4001 || err?.message?.includes('rejected')) {
+        toast.error('Approval cancelled by user')
+      } else {
+        toast.error(`Approval failed: ${err?.message || 'Unknown error'}`)
+      }
+    }
+  }
+  
+  // Handle unwrap execution (using unwrap method)
+  const handleExecuteUnwrap = async () => {
+    if (!amt || amt <= 0) return
+    
+    try {
+      // Convert RWA amount to wei (assuming 18 decimals)
+      const amountInWei = BigInt(Math.floor(amt * 10**18))
+      
+      const result = await executeUnwrap({
+        assetId: blockchainAssetId,
+        amount: amountInWei
+      })
+      
+      console.log('Unwrap transaction initiated:', result)
+      toast.success('Unwrap transaction completed successfully!')
+    } catch (err) {
+      console.error('Unwrap failed:', err)
+      if (err?.code === 4001 || err?.message?.includes('rejected')) {
+        toast.error('Transaction cancelled by user')
+      } else {
+        toast.error(`Unwrap transaction failed: ${err?.message || 'Unknown error'}`)
+      }
     }
   }
   
@@ -599,6 +645,7 @@ function WrapUnwrap({ asset }) {
       })
       
       console.log('Wrap transaction initiated:', result)
+      toast.success('Wrap transaction completed successfully!')
       
       // Refetch allowance after successful wrap
       if (result) {
@@ -608,15 +655,66 @@ function WrapUnwrap({ asset }) {
       }
     } catch (err) {
       console.error('Wrap failed:', err)
+      if (err?.code === 4001 || err?.message?.includes('rejected')) {
+        toast.error('Transaction cancelled by user')
+      } else {
+        toast.error(`Wrap transaction failed: ${err?.message || 'Unknown error'}`)
+      }
     }
   }
   
-  // Refetch allowance when approve is successful
+  // Handle approve status changes with toast notifications
+  useEffect(() => {
+    if (isApproveSuccess) {
+      toast.success('Token approved successfully! You can now execute wrap.')
+      setTimeout(() => {
+        refetchAllowance()
+      }, 2000)
+    }
+  }, [isApproveSuccess, refetchAllowance])
+  
+  useEffect(() => {
+    if (approveError) {
+      toast.error(`Approval failed: ${approveError?.message || 'Unknown error'}`)
+    }
+  }, [approveError])
+  
+  // Handle wrap/unwrap status changes with toast notifications  
+  useEffect(() => {
+    if (isSuccess && lastTxHash) {
+      toast.success(
+        <div>
+          <div>Transaction successful!</div>
+          <a 
+            href={`https://testnet.bscscan.com/tx/${lastTxHash}`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="underline hover:no-underline text-blue-600"
+          >
+            View on BSCScan
+          </a>
+        </div>,
+        {
+          autoClose: 10000
+        }
+      )
+    }
+  }, [isSuccess, lastTxHash])
+  
+  useEffect(() => {
+    if (error && !error?.message?.includes('rejected') && error?.code !== 4001) {
+      toast.error(`Transaction failed: ${error?.message || 'Unknown error'}`)
+    }
+  }, [error])
+  
+  // Refetch allowance when approve is successful - remove the old inline logic
+  /*
   if (isApproveSuccess) {
     setTimeout(() => {
       refetchAllowance()
     }, 2000)
   }
+  */
   
   return (
     <div className="mt-6 grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -755,8 +853,8 @@ function WrapUnwrap({ asset }) {
                         : "bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white shadow-orange-200 hover:shadow-orange-300"
                       : "bg-slate-300 text-slate-500 cursor-not-allowed"
                   )} 
-                  disabled={amt <= 0 || (mode === "wrap" && (isWrapping || isConfirming))}
-                  onClick={mode === "wrap" ? handleExecuteWrap : undefined}
+                  disabled={amt <= 0 || (mode === "wrap" && (isWrapping || isConfirming)) || (mode === "unwrap" && (isUnwrapping || isConfirming))}
+                  onClick={mode === "wrap" ? handleExecuteWrap : handleExecuteUnwrap}
                   whileHover={amt > 0 ? { scale: 1.05 } : {}}
                   whileTap={amt > 0 ? { scale: 0.95 } : {}}
                   initial={{ opacity: 0, y: 10 }}
@@ -788,96 +886,26 @@ function WrapUnwrap({ asset }) {
                         </>
                       )
                     ) : (
-                      <>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                        </svg>
-                        Execute Unwrap
-                      </>
+                      (isUnwrapping || isConfirming) ? (
+                        <>
+                          <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          {isUnwrapping ? "Unwrapping..." : "Confirming..."}
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                          </svg>
+                          Execute Unwrap
+                        </>
+                      )
                     )}
                   </motion.div>
                 </motion.button>
               )}
-              
-              {/* Transaction status */}
-              <AnimatePresence>
-                {/* Approve success status */}
-                {isApproveSuccess && (
-                  <motion.div
-                    className="mt-3 p-3 rounded-xl text-sm bg-emerald-50 text-emerald-800 border border-emerald-200"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Token approved successfully! You can now execute wrap.
-                    </div>
-                  </motion.div>
-                )}
-                
-                {/* Approve error status */}
-                {approveError && (
-                  <motion.div
-                    className="mt-3 p-3 rounded-xl text-sm bg-red-50 text-red-800 border border-red-200"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                      Approval failed: {approveError?.message || 'Unknown error'}
-                    </div>
-                  </motion.div>
-                )}
-                
-                {/* Wrap transaction status */}
-                {(isSuccess || error) && (
-                  <motion.div
-                    className={cx(
-                      "mt-3 p-3 rounded-xl text-sm",
-                      isSuccess 
-                        ? "bg-emerald-50 text-emerald-800 border border-emerald-200" 
-                        : "bg-red-50 text-red-800 border border-red-200"
-                    )}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {isSuccess ? (
-                      <div className="flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Wrap transaction successful! {lastTxHash && (
-                          <a 
-                            href={`https://testnet.bscscan.com/tx/${lastTxHash}`} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="underline hover:no-underline"
-                          >
-                            View on BSCScan
-                          </a>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                        Transaction failed: {error?.message || 'Unknown error'}
-                      </div>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -937,6 +965,7 @@ export default function StructurePage({ params, push }) {
   const asset = getAsset(assetId)
 
   return (
+    <>
     <motion.div 
       className="space-y-6"
       initial={{ opacity: 0 }}
@@ -1136,5 +1165,18 @@ export default function StructurePage({ params, push }) {
 
 
     </motion.div>
+    <ToastContainer
+      position="top-right"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="light"
+    />
+    </>
   )
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ASSETS, GOALS } from '../data/mockData'
 import { useSortedFiltered } from '../hooks/useSortedFiltered'
 import Badge from '../components/Badge'
@@ -6,19 +6,28 @@ import KPI from '../components/KPI'
 import AssetCards from '../components/AssetCards'
 import AssetTable from '../components/AssetTable'
 import { cx } from '../utils/helpers'
+import { assetsApi } from '../api'
 
-function KPIBar() {
+function KPIBar({ apiAssets }) {
+  // 计算资产数量
+  const activeMarketsCount = apiAssets ? apiAssets.length : 0
+  
+  // 计算TVL总和并格式化
+  const totalTVL = apiAssets ? 
+    apiAssets.reduce((sum, asset) => sum + (asset.tvl || 0), 0) : 0
+  const formattedTVL = totalTVL >= 1 ? `$${totalTVL.toFixed(1)}m` : `$${(totalTVL * 1000).toFixed(0)}k`
+  
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
       <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-4 border border-blue-200/50">
-          <KPI label="TVL" value="$31.0m" trend="up" trendValue="+2.3%" />
+          <KPI label="TVL" value={formattedTVL} trend="up" trendValue="+2.3%" />
         </div>
         <div className="bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl p-4 border border-emerald-200/50">
           <KPI label="24h Volume" value="$4.5m" trend="up" trendValue="+12.5%" />
         </div>
         <div className="bg-gradient-to-br from-purple-50 to-violet-100 rounded-2xl p-4 border border-purple-200/50">
-          <KPI label="Active Markets" value="24" trend="up" trendValue="+2" />
+          <KPI label="Active Markets" value={activeMarketsCount.toString()} trend="up" trendValue="+2" />
         </div>
       </div>
       <div className="flex flex-col gap-3">
@@ -92,7 +101,50 @@ export default function MarketsPage({ push }) {
   const [search, setSearch] = useState("")
   const [sort, setSort] = useState("trend")
   const [showExplainer, setShowExplainer] = useState(false)
-  const assets = useSortedFiltered(ASSETS, { sort, search, goal })
+  const [apiAssets, setApiAssets] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  
+  const assets = useSortedFiltered(
+    Array.isArray(apiAssets) ? apiAssets : [], 
+    { sort, search, goal }
+  )
+
+  useEffect(() => {
+    const fetchAssets = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        const response = await assetsApi.getAll()
+        const rawAssets = response.data?.assets || []
+        
+        // 数据验证和转换
+        const validatedAssets = rawAssets.map(asset => ({
+          ...asset,
+          sApyRange: Array.isArray(asset.sApyRange) ? asset.sApyRange : [0, 0],
+          pApy: Number(asset.pApy) || 0,
+          cApr: Number(asset.cApr) || 0,
+          tvl: Number(asset.tvl) || 0,
+          vol24h: Number(asset.vol24h) || 0
+        }))
+        
+        setApiAssets(validatedAssets)
+      } catch (err) {
+        setError(err.message)
+        console.error('Failed to fetch assets:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchAssets()
+  }, [])
+
+  useEffect(() => {
+    if (apiAssets) {
+      console.log('apiAssets更新了:', apiAssets)
+    }
+  }, [apiAssets])
 
   return (
     <div className="space-y-6">
@@ -118,7 +170,7 @@ export default function MarketsPage({ push }) {
         </header>
       </div>
 
-      <KPIBar />
+      <KPIBar apiAssets={apiAssets} />
 
       <LegendBar open={showExplainer} setOpen={setShowExplainer} />
       <Explainer open={showExplainer} setOpen={setShowExplainer} />
@@ -136,7 +188,7 @@ export default function MarketsPage({ push }) {
               <option value="trend">Trend</option>
               <option value="pApy">P-APY</option>
               <option value="cApr">C-APR</option>
-              <option value="sApy">S-APY Median</option>
+              <option value="sApyRange">S-APY Median</option>
               <option value="tvl">Highest TVL</option>
               <option value="maturity">Shortest Maturity</option>
             </select>

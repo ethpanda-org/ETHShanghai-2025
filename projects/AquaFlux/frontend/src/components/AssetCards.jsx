@@ -76,8 +76,8 @@ export default function AssetCards({ assets, onSwap, onBuild }) {
             />
             <PCSPanel 
               label="S" 
-              value={`${avg(a.sApy).toFixed(1)}%`} 
-              sub={`${a.sApy[0]}%~${a.sApy[1]}%`} 
+              value={`${avg(a.sApyRange).toFixed(1)}%`} 
+              sub={`${a.sApyRange[0]}%~${a.sApyRange[1]}%`} 
               tone="warn"
               onClick={() => onSwap({ assetId: a.id, from: "USDC", to: `${a.id}:S`, action: "buy" })}
             />
