@@ -104,9 +104,11 @@ contract AquaFluxCore is
      * @dev Registers a new asset, token will not be deployed until wrap is called
      * @param underlying The underlying RWA token address
      * @param maturity The maturity timestamp
+     * @param operationDeadline The deadline for all operations (must be before maturity)
      * @param couponRate The coupon rate in basis points
      * @param couponAllocationC The coupon allocation to C token (in basis points, 0-10000)
      * @param couponAllocationS The coupon allocation to S token (in basis points, 0-10000)
+     * @param sTokenFeeAllocation The fee allocation to S token holders (in basis points, 0-10000)
      * @param name The asset name in standard format (e.g., P-XYZ-31AUG2025)
      * @param metadataURI The metadata URI
      * @return assetId The unique asset identifier
@@ -114,18 +116,23 @@ contract AquaFluxCore is
     function register(
         address underlying,
         uint256 maturity,
+        uint256 operationDeadline,
         uint256 couponRate,
         uint256 couponAllocationC,
         uint256 couponAllocationS,
+        uint256 sTokenFeeAllocation,
         string calldata name,
         string calldata metadataURI
     ) external override returns (bytes32 assetId) {
         require(underlying != address(0), "Invalid underlying token");
         require(maturity > block.timestamp, "Maturity must be in the future");
+        require(operationDeadline > block.timestamp, "Operation deadline must be in the future");
+        require(operationDeadline < maturity, "Operation deadline must be before maturity");
         require(couponRate <= 10000, "Coupon rate must be <= 100%");
         require(couponAllocationC <= 10000, "C allocation must be <= 100%");
         require(couponAllocationS <= 10000, "S allocation must be <= 100%");
         require(couponAllocationC + couponAllocationS == 10000, "C + S allocation must equal 100%");
+        require(sTokenFeeAllocation <= 10000, "S Token fee allocation must be <= 100%");
         require(bytes(name).length > 0, "Asset name required");
         require(bytes(metadataURI).length > 0, "Metadata URI required");
 
@@ -133,9 +140,11 @@ contract AquaFluxCore is
         assetId = keccak256(abi.encodePacked(
             underlying,
             maturity,
+            operationDeadline,
             couponRate,
             couponAllocationC,
             couponAllocationS,
+            sTokenFeeAllocation,
             name,
             metadataURI,
             msg.sender,
@@ -144,17 +153,25 @@ contract AquaFluxCore is
 
         require(!isAssetRegistered(assetId), "Asset already registered");
 
+        // Collect fee for register operation (if enabled)
+        // Note: For register operation, we use amount = 1 as a base unit for fee calculation
+        // since there's no actual token amount involved in registration
+        _collectFee(OPERATION_REGISTER, assetId, 1);
+
         // Create asset info
         assets[assetId] = AssetInfo({
             issuer: msg.sender,
             underlying: underlying,
             maturity: maturity,
+            operationDeadline: operationDeadline,
             couponRate: couponRate,
             couponAllocationC: couponAllocationC,
             couponAllocationS: couponAllocationS,
+            sTokenFeeAllocation: sTokenFeeAllocation,
             name: name,
             metadataURI: metadataURI,
             verified: false,
+            paused: false,
             aqToken: address(0),
             pToken: address(0),
             cToken: address(0),
@@ -181,13 +198,17 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @param amount The amount to wrap
      */
-    function wrap(bytes32 assetId, uint256 amount) external override nonReentrant whenNotPaused {
+    function wrap(bytes32 assetId, uint256 amount) external override nonReentrant whenNotPaused whenAssetNotPaused(assetId) whenOperationAllowed(assetId) {
         require(isAssetRegistered(assetId), "Asset not registered");
         require(assets[assetId].verified, "Asset not verified");
         require(amount > 0, "Amount must be greater than 0");
 
         AssetInfo storage asset = assets[assetId];
         IERC20 underlying = IERC20(asset.underlying);
+
+        // Collect fee for wrap operation
+        uint256 feeAmount = _collectFee(OPERATION_WRAP, assetId, amount);
+        uint256 netAmount = amount - feeAmount;
 
         // Transfer underlying tokens from user to this contract
         underlying.safeTransferFrom(msg.sender, address(this), amount);
@@ -200,8 +221,8 @@ contract AquaFluxCore is
             asset.aqToken = factory.deployToken("AQ", assetId, name, symbol);
         }
 
-        // Mint AqTokens to user
-        IBaseToken(asset.aqToken).mint(msg.sender, amount);
+        // Mint AqTokens to user (net amount after fee)
+        IBaseToken(asset.aqToken).mint(msg.sender, netAmount);
 
         emit AssetWrapped(assetId, msg.sender, amount);
     }
@@ -211,13 +232,17 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @param amount The amount to split
      */
-    function split(bytes32 assetId, uint256 amount) external override nonReentrant whenNotPaused {
+    function split(bytes32 assetId, uint256 amount) external override nonReentrant whenNotPaused whenAssetNotPaused(assetId) whenOperationAllowed(assetId) {
         require(isAssetRegistered(assetId), "Asset not registered");
         require(assets[assetId].verified, "Asset not verified");
         require(amount > 0, "Amount must be greater than 0");
 
         AssetInfo storage asset = assets[assetId];
         require(asset.aqToken != address(0), "AqToken not deployed");
+
+        // Collect fee for split operation
+        uint256 feeAmount = _collectFee(OPERATION_SPLIT, assetId, amount);
+        uint256 netAmount = amount - feeAmount;
 
         // Burn AqTokens from user
         IBaseToken(asset.aqToken).burn(msg.sender, amount);
@@ -241,10 +266,10 @@ contract AquaFluxCore is
             asset.sToken = factory.deployToken("S", assetId, name, symbol);
         }
 
-        // Mint P/C/S tokens to user (1:1 ratio for now)
-        IBaseToken(asset.pToken).mint(msg.sender, amount);
-        IBaseToken(asset.cToken).mint(msg.sender, amount);
-        IBaseToken(asset.sToken).mint(msg.sender, amount);
+        // Mint P/C/S tokens to user (net amount after fee, 1:1:1 ratio)
+        IBaseToken(asset.pToken).mint(msg.sender, netAmount);
+        IBaseToken(asset.cToken).mint(msg.sender, netAmount);
+        IBaseToken(asset.sToken).mint(msg.sender, netAmount);
 
         emit AssetSplit(assetId, msg.sender, amount);
     }
@@ -254,7 +279,7 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @param amount The amount to merge
      */
-    function merge(bytes32 assetId, uint256 amount) external override nonReentrant whenNotPaused {
+    function merge(bytes32 assetId, uint256 amount) external override nonReentrant whenNotPaused whenAssetNotPaused(assetId) whenOperationAllowed(assetId) {
         require(isAssetRegistered(assetId), "Asset not registered");
         require(assets[assetId].verified, "Asset not verified");
         require(amount > 0, "Amount must be greater than 0");
@@ -265,13 +290,17 @@ contract AquaFluxCore is
         require(asset.cToken != address(0), "CToken not deployed");
         require(asset.sToken != address(0), "SToken not deployed");
 
+        // Collect fee for merge operation
+        uint256 feeAmount = _collectFee(OPERATION_MERGE, assetId, amount);
+        uint256 netAmount = amount - feeAmount;
+
         // Burn P/C/S tokens from user
         IBaseToken(asset.pToken).burn(msg.sender, amount);
         IBaseToken(asset.cToken).burn(msg.sender, amount);
         IBaseToken(asset.sToken).burn(msg.sender, amount);
 
-        // Mint AqTokens to user
-        IBaseToken(asset.aqToken).mint(msg.sender, amount);
+        // Mint AqTokens to user (net amount after fee)
+        IBaseToken(asset.aqToken).mint(msg.sender, netAmount);
 
         emit AssetMerged(assetId, msg.sender, amount);
     }
@@ -281,7 +310,7 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @param amount The amount to unwrap
      */
-    function unwrap(bytes32 assetId, uint256 amount) external override nonReentrant whenNotPaused {
+    function unwrap(bytes32 assetId, uint256 amount) external override nonReentrant whenNotPaused whenAssetNotPaused(assetId) whenOperationAllowed(assetId) {
         require(isAssetRegistered(assetId), "Asset not registered");
         require(assets[assetId].verified, "Asset not verified");
         require(amount > 0, "Amount must be greater than 0");
@@ -289,11 +318,15 @@ contract AquaFluxCore is
         AssetInfo storage asset = assets[assetId];
         require(asset.aqToken != address(0), "AqToken not deployed");
 
+        // Collect fee for unwrap operation
+        uint256 feeAmount = _collectFee(OPERATION_UNWRAP, assetId, amount);
+        uint256 netAmount = amount - feeAmount;
+
         // Burn AqTokens from user
         IBaseToken(asset.aqToken).burn(msg.sender, amount);
 
-        // Transfer underlying tokens to user
-        IERC20(asset.underlying).safeTransfer(msg.sender, amount);
+        // Transfer underlying tokens to user (net amount after fee)
+        IERC20(asset.underlying).safeTransfer(msg.sender, netAmount);
 
         emit AssetUnwrapped(assetId, msg.sender, amount);
     }
@@ -351,6 +384,127 @@ contract AquaFluxCore is
         return "1.0.0";
     }
 
+        /**
+     * @dev Updates the coupon allocation for C and S tokens (admin only)
+     * @param assetId The asset identifier
+     * @param newCouponAllocationC The new coupon allocation to C token (in basis points, 0-10000)
+     * @param newCouponAllocationS The new coupon allocation to S token (in basis points, 0-10000)
+     */
+    function updateCouponAllocation(
+        bytes32 assetId,
+        uint256 newCouponAllocationC,
+        uint256 newCouponAllocationS
+    ) external override onlyRole(ADMIN_ROLE) {
+        require(isAssetRegistered(assetId), "Asset not registered");
+        require(newCouponAllocationC <= 10000, "C allocation must be <= 100%");
+        require(newCouponAllocationS <= 10000, "S allocation must be <= 100%");
+        require(newCouponAllocationC + newCouponAllocationS == 10000, "C + S allocation must equal 100%");
+
+        AssetInfo storage asset = assets[assetId];
+        
+        // Store old values for event
+        uint256 oldCAllocation = asset.couponAllocationC;
+        uint256 oldSAllocation = asset.couponAllocationS;
+        
+        // Update allocations
+        asset.couponAllocationC = newCouponAllocationC;
+        asset.couponAllocationS = newCouponAllocationS;
+        
+        emit CouponAllocationUpdated(
+            assetId,
+            oldCAllocation,
+            oldSAllocation,
+            newCouponAllocationC,
+            newCouponAllocationS,
+            msg.sender
+        );
+    }
+
+    /**
+     * @dev Updates the metadata URI for an asset (admin only)
+     * @param assetId The asset identifier
+     * @param newMetadataURI The new metadata URI
+     */
+    function updateMetadataURI(
+        bytes32 assetId,
+        string calldata newMetadataURI
+    ) external override onlyRole(ADMIN_ROLE) {
+        require(isAssetRegistered(assetId), "Asset not registered");
+        require(bytes(newMetadataURI).length > 0, "Metadata URI cannot be empty");
+
+        AssetInfo storage asset = assets[assetId];
+        
+        // Store old value for event
+        string memory oldMetadataURI = asset.metadataURI;
+        
+        // Update metadata URI
+        asset.metadataURI = newMetadataURI;
+        
+        emit MetadataURIUpdated(
+            assetId,
+            oldMetadataURI,
+            newMetadataURI,
+            msg.sender
+        );
+    }
+
+    /**
+     * @dev Updates the S Token fee allocation for an asset (admin only)
+     * @param assetId The asset identifier
+     * @param newSTokenFeeAllocation The new S Token fee allocation (in basis points, 0-10000)
+     */
+    function updateSTokenFeeAllocation(
+        bytes32 assetId,
+        uint256 newSTokenFeeAllocation
+    ) external onlyRole(ADMIN_ROLE) {
+        require(isAssetRegistered(assetId), "Asset not registered");
+        require(newSTokenFeeAllocation <= 10000, "S Token fee allocation must be <= 100%");
+
+        AssetInfo storage asset = assets[assetId];
+        
+        // Store old value for event
+        uint256 oldSTokenFeeAllocation = asset.sTokenFeeAllocation;
+        
+        // Update S Token fee allocation
+        asset.sTokenFeeAllocation = newSTokenFeeAllocation;
+        
+        emit STokenFeeAllocationUpdated(
+            assetId,
+            oldSTokenFeeAllocation,
+            newSTokenFeeAllocation,
+            msg.sender
+        );
+    }
+
+    /**
+     * @dev Updates the operation deadline for an asset (admin only)
+     * @param assetId The asset identifier
+     * @param newOperationDeadline The new operation deadline (must be before maturity)
+     */
+    function updateOperationDeadline(
+        bytes32 assetId,
+        uint256 newOperationDeadline
+    ) external onlyRole(ADMIN_ROLE) {
+        require(isAssetRegistered(assetId), "Asset not registered");
+        require(newOperationDeadline > block.timestamp, "Operation deadline must be in the future");
+        require(newOperationDeadline < assets[assetId].maturity, "Operation deadline must be before maturity");
+
+        AssetInfo storage asset = assets[assetId];
+        
+        // Store old value for event
+        uint256 oldOperationDeadline = asset.operationDeadline;
+        
+        // Update operation deadline
+        asset.operationDeadline = newOperationDeadline;
+        
+        emit OperationDeadlineUpdated(
+            assetId,
+            oldOperationDeadline,
+            newOperationDeadline,
+            msg.sender
+        );
+    }
+
     /**
      * @dev Sets global fee rate for an operation (admin only)
      * @param operation The operation type (register, wrap, split, merge, unwrap)
@@ -359,7 +513,7 @@ contract AquaFluxCore is
     function setGlobalFeeRate(
         string calldata operation,
         uint256 feeRate
-    ) external override onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(ADMIN_ROLE) {
         require(_isValidOperation(operation), "Invalid operation");
         require(feeRate <= 10000, "Fee rate must be <= 100%");
 
@@ -374,7 +528,7 @@ contract AquaFluxCore is
      * @param operation The operation type
      * @return feeRate The fee rate in basis points (0 = disabled)
      */
-    function getGlobalFeeRate(string calldata operation) external view override returns (uint256 feeRate) {
+    function getGlobalFeeRate(string calldata operation) external view returns (uint256 feeRate) {
         return globalFeeRates[operation];
     }
 
@@ -383,7 +537,7 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @return totalFees The total fees collected for this asset
      */
-    function getAssetFeesCollected(bytes32 assetId) external view override returns (uint256 totalFees) {
+    function getAssetFeesCollected(bytes32 assetId) external view returns (uint256 totalFees) {
         return assetFeesCollected[assetId];
     }
 
@@ -393,7 +547,7 @@ contract AquaFluxCore is
      * @param operation The operation type
      * @return fees The fees collected for this asset and operation
      */
-    function getAssetFeesByOperation(bytes32 assetId, string calldata operation) external view override returns (uint256 fees) {
+    function getAssetFeesByOperation(bytes32 assetId, string calldata operation) external view returns (uint256 fees) {
         return assetFeesByOperation[assetId][operation];
     }
 
@@ -402,7 +556,7 @@ contract AquaFluxCore is
      * @param assetId The asset identifier
      * @return balance The fee balance in underlying tokens
      */
-    function getAssetFeeBalance(bytes32 assetId) external view override returns (uint256 balance) {
+    function getAssetFeeBalance(bytes32 assetId) external view returns (uint256 balance) {
         return assetFeeBalances[assetId];
     }
 
@@ -436,6 +590,57 @@ contract AquaFluxCore is
 
             emit FeeCollected(assetId, operation, msg.sender, amount, feeAmount);
         }
+    }
+
+    /**
+     * @dev Pauses all operations for a specific asset (admin only)
+     * @param assetId The asset identifier to pause
+     */
+    function pauseAsset(bytes32 assetId) external onlyRole(ADMIN_ROLE) {
+        require(isAssetRegistered(assetId), "Asset not registered");
+        require(!assets[assetId].paused, "Asset already paused");
+
+        assets[assetId].paused = true;
+        emit AssetPaused(assetId, msg.sender);
+    }
+
+    /**
+     * @dev Unpauses all operations for a specific asset (admin only)
+     * @param assetId The asset identifier to unpause
+     */
+    function unpauseAsset(bytes32 assetId) external onlyRole(ADMIN_ROLE) {
+        require(isAssetRegistered(assetId), "Asset not registered");
+        require(assets[assetId].paused, "Asset not paused");
+
+        assets[assetId].paused = false;
+        emit AssetUnpaused(assetId, msg.sender);
+    }
+
+    /**
+     * @dev Checks if an asset is paused
+     * @param assetId The asset identifier
+     * @return True if asset is paused
+     */
+    function isAssetPaused(bytes32 assetId) external view returns (bool) {
+        return assets[assetId].paused;
+    }
+
+    /**
+     * @dev Modifier to check if an asset is not paused
+     * @param assetId The asset identifier to check
+     */
+    modifier whenAssetNotPaused(bytes32 assetId) {
+        require(!assets[assetId].paused, "Asset operations are paused");
+        _;
+    }
+
+    /**
+     * @dev Modifier to check if operations are still allowed for an asset
+     * @param assetId The asset identifier to check
+     */
+    modifier whenOperationAllowed(bytes32 assetId) {
+        require(block.timestamp < assets[assetId].operationDeadline, "Asset operations have expired");
+        _;
     }
 
     /**

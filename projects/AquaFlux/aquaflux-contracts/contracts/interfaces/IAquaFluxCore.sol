@@ -13,12 +13,15 @@ interface IAquaFluxCore {
         address issuer;           // Asset issuer address
         address underlying;       // Underlying RWA token address
         uint256 maturity;         // Maturity timestamp
+        uint256 operationDeadline; // Deadline for all operations (before maturity)
         uint256 couponRate;       // Coupon rate (in basis points)
         uint256 couponAllocationC; // Coupon allocation to C token (in basis points, 0-10000)
         uint256 couponAllocationS; // Coupon allocation to S token (in basis points, 0-10000)
+        uint256 sTokenFeeAllocation; // Fee allocation to S token holders (in basis points, 0-10000)
         string name;              // Asset name in standard format (e.g., P-XYZ-31AUG2025)
         string metadataURI;       // Metadata URI for asset details
         bool verified;            // Whether asset is verified by admin
+        bool paused;              // Whether asset operations are paused
         address aqToken;          // AqToken contract address
         address pToken;           // PToken contract address
         address cToken;           // CToken contract address
@@ -146,9 +149,11 @@ interface IAquaFluxCore {
      * @dev Registers a new asset
      * @param underlying The underlying RWA token address
      * @param maturity The maturity timestamp
+     * @param operationDeadline The deadline for all operations (must be before maturity)
      * @param couponRate The coupon rate in basis points
      * @param couponAllocationC The coupon allocation to C token (in basis points, 0-10000)
      * @param couponAllocationS The coupon allocation to S token (in basis points, 0-10000)
+     * @param sTokenFeeAllocation The fee allocation to S token holders (in basis points, 0-10000)
      * @param name The asset name in standard format (e.g., P-XYZ-31AUG2025)
      * @param metadataURI The metadata URI
      * @return assetId The unique asset identifier
@@ -156,9 +161,11 @@ interface IAquaFluxCore {
     function register(
         address underlying,
         uint256 maturity,
+        uint256 operationDeadline,
         uint256 couponRate,
         uint256 couponAllocationC,
         uint256 couponAllocationS,
+        uint256 sTokenFeeAllocation,
         string calldata name,
         string calldata metadataURI
     ) external returns (bytes32 assetId);
@@ -219,6 +226,28 @@ interface IAquaFluxCore {
     function isAssetVerified(bytes32 assetId) external view returns (bool);
 
     /**
+     * @dev Updates the coupon allocation for C and S tokens (admin only)
+     * @param assetId The asset identifier
+     * @param newCouponAllocationC The new coupon allocation to C token (in basis points, 0-10000)
+     * @param newCouponAllocationS The new coupon allocation to S token (in basis points, 0-10000)
+     */
+    function updateCouponAllocation(
+        bytes32 assetId,
+        uint256 newCouponAllocationC,
+        uint256 newCouponAllocationS
+    ) external;
+
+    /**
+     * @dev Updates the metadata URI for an asset (admin only)
+     * @param assetId The asset identifier
+     * @param newMetadataURI The new metadata URI
+     */
+    function updateMetadataURI(
+        bytes32 assetId,
+        string calldata newMetadataURI
+    ) external;
+
+    /**
      * @dev Emitted when global fee rate is updated
      * @param operation The operation type (register, wrap, split, merge, unwrap)
      * @param oldFeeRate The old fee rate
@@ -249,41 +278,89 @@ interface IAquaFluxCore {
     );
 
     /**
-     * @dev Sets global fee rate for an operation (admin only)
-     * @param operation The operation type (register, wrap, split, merge, unwrap)
-     * @param feeRate The fee rate in basis points (0-10000, 0 = disabled)
+     * @dev Emitted when an asset is paused
+     * @param assetId The asset identifier
+     * @param pausedBy The admin who paused the asset
      */
-    function setGlobalFeeRate(
-        string calldata operation,
-        uint256 feeRate
+    event AssetPaused(
+        bytes32 indexed assetId,
+        address indexed pausedBy
+    );
+
+    /**
+     * @dev Emitted when an asset is unpaused
+     * @param assetId The asset identifier
+     * @param unpausedBy The admin who unpaused the asset
+     */
+    event AssetUnpaused(
+        bytes32 indexed assetId,
+        address indexed unpausedBy
+    );
+
+    /**
+     * @dev Emitted when S Token fee allocation is updated
+     * @param assetId The asset identifier
+     * @param oldSTokenFeeAllocation The previous S Token fee allocation
+     * @param newSTokenFeeAllocation The new S Token fee allocation
+     * @param updatedBy The admin who updated the allocation
+     */
+    event STokenFeeAllocationUpdated(
+        bytes32 indexed assetId,
+        uint256 oldSTokenFeeAllocation,
+        uint256 newSTokenFeeAllocation,
+        address indexed updatedBy
+    );
+
+    /**
+     * @dev Emitted when operation deadline is updated
+     * @param assetId The asset identifier
+     * @param oldOperationDeadline The previous operation deadline
+     * @param newOperationDeadline The new operation deadline
+     * @param updatedBy The admin who updated the deadline
+     */
+    event OperationDeadlineUpdated(
+        bytes32 indexed assetId,
+        uint256 oldOperationDeadline,
+        uint256 newOperationDeadline,
+        address indexed updatedBy
+    );
+
+    /**
+     * @dev Pauses all operations for a specific asset (admin only)
+     * @param assetId The asset identifier to pause
+     */
+    function pauseAsset(bytes32 assetId) external;
+
+    /**
+     * @dev Unpauses all operations for a specific asset (admin only)
+     * @param assetId The asset identifier to unpause
+     */
+    function unpauseAsset(bytes32 assetId) external;
+
+    /**
+     * @dev Checks if an asset is paused
+     * @param assetId The asset identifier
+     * @return True if asset is paused
+     */
+    function isAssetPaused(bytes32 assetId) external view returns (bool);
+
+    /**
+     * @dev Updates the S Token fee allocation for an asset (admin only)
+     * @param assetId The asset identifier
+     * @param newSTokenFeeAllocation The new S Token fee allocation (in basis points, 0-10000)
+     */
+    function updateSTokenFeeAllocation(
+        bytes32 assetId,
+        uint256 newSTokenFeeAllocation
     ) external;
 
     /**
-     * @dev Gets global fee rate for an operation
-     * @param operation The operation type
-     * @return feeRate The fee rate in basis points (0 = disabled)
-     */
-    function getGlobalFeeRate(string calldata operation) external view returns (uint256 feeRate);
-
-    /**
-     * @dev Gets total fees collected for an asset
+     * @dev Updates the operation deadline for an asset (admin only)
      * @param assetId The asset identifier
-     * @return totalFees The total fees collected for this asset
+     * @param newOperationDeadline The new operation deadline (must be before maturity)
      */
-    function getAssetFeesCollected(bytes32 assetId) external view returns (uint256 totalFees);
-
-    /**
-     * @dev Gets fees collected for an asset by operation type
-     * @param assetId The asset identifier
-     * @param operation The operation type
-     * @return fees The fees collected for this asset and operation
-     */
-    function getAssetFeesByOperation(bytes32 assetId, string calldata operation) external view returns (uint256 fees);
-
-    /**
-     * @dev Gets the fee balance available for an asset
-     * @param assetId The asset identifier
-     * @return balance The fee balance in underlying tokens
-     */
-    function getAssetFeeBalance(bytes32 assetId) external view returns (uint256 balance);
+    function updateOperationDeadline(
+        bytes32 assetId,
+        uint256 newOperationDeadline
+    ) external;
 }
