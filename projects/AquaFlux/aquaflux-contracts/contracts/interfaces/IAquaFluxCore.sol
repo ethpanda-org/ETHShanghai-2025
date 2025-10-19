@@ -14,6 +14,9 @@ interface IAquaFluxCore {
         address underlying;       // Underlying RWA token address
         uint256 maturity;         // Maturity timestamp
         uint256 couponRate;       // Coupon rate (in basis points)
+        uint256 couponAllocationC; // Coupon allocation to C token (in basis points, 0-10000)
+        uint256 couponAllocationS; // Coupon allocation to S token (in basis points, 0-10000)
+        string name;              // Asset name in standard format (e.g., P-XYZ-31AUG2025)
         string metadataURI;       // Metadata URI for asset details
         bool verified;            // Whether asset is verified by admin
         address aqToken;          // AqToken contract address
@@ -29,6 +32,9 @@ interface IAquaFluxCore {
      * @param underlying The underlying token address
      * @param maturity The maturity timestamp
      * @param couponRate The coupon rate
+     * @param couponAllocationC The coupon allocation to C token
+     * @param couponAllocationS The coupon allocation to S token
+     * @param name The asset name in standard format
      * @param metadataURI The metadata URI
      */
     event AssetRegistered(
@@ -37,6 +43,9 @@ interface IAquaFluxCore {
         address underlying,
         uint256 maturity,
         uint256 couponRate,
+        uint256 couponAllocationC,
+        uint256 couponAllocationS,
+        string name,
         string metadataURI
     );
 
@@ -102,10 +111,45 @@ interface IAquaFluxCore {
     event FactoryChanged(address indexed oldFactory, address indexed newFactory);
 
     /**
+     * @dev Emitted when coupon allocation is updated
+     * @param assetId The asset identifier
+     * @param oldCAllocation The previous C token allocation
+     * @param oldSAllocation The previous S token allocation
+     * @param newCAllocation The new C token allocation
+     * @param newSAllocation The new S token allocation
+     * @param updatedBy The admin who updated the allocation
+     */
+    event CouponAllocationUpdated(
+        bytes32 indexed assetId,
+        uint256 oldCAllocation,
+        uint256 oldSAllocation,
+        uint256 newCAllocation,
+        uint256 newSAllocation,
+        address indexed updatedBy
+    );
+
+    /**
+     * @dev Emitted when metadata URI is updated
+     * @param assetId The asset identifier
+     * @param oldMetadataURI The previous metadata URI
+     * @param newMetadataURI The new metadata URI
+     * @param updatedBy The admin who updated the metadata URI
+     */
+    event MetadataURIUpdated(
+        bytes32 indexed assetId,
+        string oldMetadataURI,
+        string newMetadataURI,
+        address indexed updatedBy
+    );
+
+    /**
      * @dev Registers a new asset
      * @param underlying The underlying RWA token address
      * @param maturity The maturity timestamp
      * @param couponRate The coupon rate in basis points
+     * @param couponAllocationC The coupon allocation to C token (in basis points, 0-10000)
+     * @param couponAllocationS The coupon allocation to S token (in basis points, 0-10000)
+     * @param name The asset name in standard format (e.g., P-XYZ-31AUG2025)
      * @param metadataURI The metadata URI
      * @return assetId The unique asset identifier
      */
@@ -113,6 +157,9 @@ interface IAquaFluxCore {
         address underlying,
         uint256 maturity,
         uint256 couponRate,
+        uint256 couponAllocationC,
+        uint256 couponAllocationS,
+        string calldata name,
         string calldata metadataURI
     ) external returns (bytes32 assetId);
 
@@ -170,4 +217,73 @@ interface IAquaFluxCore {
      * @return True if asset is verified
      */
     function isAssetVerified(bytes32 assetId) external view returns (bool);
-} 
+
+    /**
+     * @dev Emitted when global fee rate is updated
+     * @param operation The operation type (register, wrap, split, merge, unwrap)
+     * @param oldFeeRate The old fee rate
+     * @param newFeeRate The new fee rate in basis points (0 = disabled)
+     * @param updatedBy The admin who updated the fee rate
+     */
+    event GlobalFeeRateUpdated(
+        string indexed operation,
+        uint256 oldFeeRate,
+        uint256 newFeeRate,
+        address indexed updatedBy
+    );
+
+    /**
+     * @dev Emitted when fee is collected for an asset
+     * @param assetId The asset identifier
+     * @param operation The operation type
+     * @param user The user who paid the fee
+     * @param operationAmount The operation amount
+     * @param feeAmount The fee amount collected
+     */
+    event FeeCollected(
+        bytes32 indexed assetId,
+        string indexed operation,
+        address indexed user,
+        uint256 operationAmount,
+        uint256 feeAmount
+    );
+
+    /**
+     * @dev Sets global fee rate for an operation (admin only)
+     * @param operation The operation type (register, wrap, split, merge, unwrap)
+     * @param feeRate The fee rate in basis points (0-10000, 0 = disabled)
+     */
+    function setGlobalFeeRate(
+        string calldata operation,
+        uint256 feeRate
+    ) external;
+
+    /**
+     * @dev Gets global fee rate for an operation
+     * @param operation The operation type
+     * @return feeRate The fee rate in basis points (0 = disabled)
+     */
+    function getGlobalFeeRate(string calldata operation) external view returns (uint256 feeRate);
+
+    /**
+     * @dev Gets total fees collected for an asset
+     * @param assetId The asset identifier
+     * @return totalFees The total fees collected for this asset
+     */
+    function getAssetFeesCollected(bytes32 assetId) external view returns (uint256 totalFees);
+
+    /**
+     * @dev Gets fees collected for an asset by operation type
+     * @param assetId The asset identifier
+     * @param operation The operation type
+     * @return fees The fees collected for this asset and operation
+     */
+    function getAssetFeesByOperation(bytes32 assetId, string calldata operation) external view returns (uint256 fees);
+
+    /**
+     * @dev Gets the fee balance available for an asset
+     * @param assetId The asset identifier
+     * @return balance The fee balance in underlying tokens
+     */
+    function getAssetFeeBalance(bytes32 assetId) external view returns (uint256 balance);
+}

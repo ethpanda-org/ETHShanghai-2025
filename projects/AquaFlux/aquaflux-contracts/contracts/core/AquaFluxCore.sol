@@ -35,6 +35,25 @@ contract AquaFluxCore is
     // Factory contract for deploying tokens
     ITokenFactory public factory;
     
+        // Global fee rates for different operations (in basis points, 0 = disabled)
+    mapping(string => uint256) public globalFeeRates;
+    
+    // Asset-specific fee tracking: assetId => total fees collected
+    mapping(bytes32 => uint256) public assetFeesCollected;
+    
+    // Asset-specific fee tracking by operation: assetId => operation => fees collected
+    mapping(bytes32 => mapping(string => uint256)) public assetFeesByOperation;
+    
+    // Asset-specific fee balances (underlying tokens held): assetId => balance
+    mapping(bytes32 => uint256) public assetFeeBalances;
+    
+    // Supported operations for fee collection
+    string public constant OPERATION_REGISTER = "register";
+    string public constant OPERATION_WRAP = "wrap";
+    string public constant OPERATION_SPLIT = "split";
+    string public constant OPERATION_MERGE = "merge";
+    string public constant OPERATION_UNWRAP = "unwrap";
+
     // Asset registry
     mapping(bytes32 => AssetInfo) public assets;
     
@@ -86,6 +105,9 @@ contract AquaFluxCore is
      * @param underlying The underlying RWA token address
      * @param maturity The maturity timestamp
      * @param couponRate The coupon rate in basis points
+     * @param couponAllocationC The coupon allocation to C token (in basis points, 0-10000)
+     * @param couponAllocationS The coupon allocation to S token (in basis points, 0-10000)
+     * @param name The asset name in standard format (e.g., P-XYZ-31AUG2025)
      * @param metadataURI The metadata URI
      * @return assetId The unique asset identifier
      */
@@ -93,11 +115,18 @@ contract AquaFluxCore is
         address underlying,
         uint256 maturity,
         uint256 couponRate,
+        uint256 couponAllocationC,
+        uint256 couponAllocationS,
+        string calldata name,
         string calldata metadataURI
     ) external override returns (bytes32 assetId) {
         require(underlying != address(0), "Invalid underlying token");
         require(maturity > block.timestamp, "Maturity must be in the future");
         require(couponRate <= 10000, "Coupon rate must be <= 100%");
+        require(couponAllocationC <= 10000, "C allocation must be <= 100%");
+        require(couponAllocationS <= 10000, "S allocation must be <= 100%");
+        require(couponAllocationC + couponAllocationS == 10000, "C + S allocation must equal 100%");
+        require(bytes(name).length > 0, "Asset name required");
         require(bytes(metadataURI).length > 0, "Metadata URI required");
 
         // Generate unique asset ID
@@ -105,6 +134,9 @@ contract AquaFluxCore is
             underlying,
             maturity,
             couponRate,
+            couponAllocationC,
+            couponAllocationS,
+            name,
             metadataURI,
             msg.sender,
             _assetIdCounter++
@@ -118,6 +150,9 @@ contract AquaFluxCore is
             underlying: underlying,
             maturity: maturity,
             couponRate: couponRate,
+            couponAllocationC: couponAllocationC,
+            couponAllocationS: couponAllocationS,
+            name: name,
             metadataURI: metadataURI,
             verified: false,
             aqToken: address(0),
@@ -126,7 +161,7 @@ contract AquaFluxCore is
             sToken: address(0)
         });
 
-        emit AssetRegistered(assetId, msg.sender, underlying, maturity, couponRate, metadataURI);
+        emit AssetRegistered(assetId, msg.sender, underlying, maturity, couponRate, couponAllocationC, couponAllocationS, name, metadataURI);
     }
 
     /**
@@ -160,7 +195,7 @@ contract AquaFluxCore is
         // Deploy AqToken if not already deployed
         if (asset.aqToken == address(0)) {
             string memory name = string(abi.encodePacked("AquaFlux ", IERC20Metadata(asset.underlying).symbol()));
-            string memory symbol = string(abi.encodePacked("aq", IERC20Metadata(asset.underlying).symbol()));
+            string memory symbol = string(abi.encodePacked("aq ", IERC20Metadata(asset.underlying).symbol()));
             
             asset.aqToken = factory.deployToken("AQ", assetId, name, symbol);
         }
@@ -315,4 +350,106 @@ contract AquaFluxCore is
     function version() public pure returns (string memory) {
         return "1.0.0";
     }
-} 
+
+    /**
+     * @dev Sets global fee rate for an operation (admin only)
+     * @param operation The operation type (register, wrap, split, merge, unwrap)
+     * @param feeRate The fee rate in basis points (0-10000, 0 = disabled)
+     */
+    function setGlobalFeeRate(
+        string calldata operation,
+        uint256 feeRate
+    ) external override onlyRole(ADMIN_ROLE) {
+        require(_isValidOperation(operation), "Invalid operation");
+        require(feeRate <= 10000, "Fee rate must be <= 100%");
+
+        uint256 oldFeeRate = globalFeeRates[operation];
+        globalFeeRates[operation] = feeRate;
+
+        emit GlobalFeeRateUpdated(operation, oldFeeRate, feeRate, msg.sender);
+    }
+
+    /**
+     * @dev Gets global fee rate for an operation
+     * @param operation The operation type
+     * @return feeRate The fee rate in basis points (0 = disabled)
+     */
+    function getGlobalFeeRate(string calldata operation) external view override returns (uint256 feeRate) {
+        return globalFeeRates[operation];
+    }
+
+    /**
+     * @dev Gets total fees collected for an asset
+     * @param assetId The asset identifier
+     * @return totalFees The total fees collected for this asset
+     */
+    function getAssetFeesCollected(bytes32 assetId) external view override returns (uint256 totalFees) {
+        return assetFeesCollected[assetId];
+    }
+
+    /**
+     * @dev Gets fees collected for an asset by operation type
+     * @param assetId The asset identifier
+     * @param operation The operation type
+     * @return fees The fees collected for this asset and operation
+     */
+    function getAssetFeesByOperation(bytes32 assetId, string calldata operation) external view override returns (uint256 fees) {
+        return assetFeesByOperation[assetId][operation];
+    }
+
+    /**
+     * @dev Gets the fee balance available for an asset
+     * @param assetId The asset identifier
+     * @return balance The fee balance in underlying tokens
+     */
+    function getAssetFeeBalance(bytes32 assetId) external view override returns (uint256 balance) {
+        return assetFeeBalances[assetId];
+    }
+
+    /**
+     * @dev Internal function to collect fees for an operation
+     * @param operation The operation type
+     * @param assetId The asset identifier
+     * @param amount The operation amount
+     * @return feeAmount The actual fee amount collected
+     */
+    function _collectFee(
+        string memory operation,
+        bytes32 assetId,
+        uint256 amount
+    ) internal returns (uint256 feeAmount) {
+        uint256 feeRate = globalFeeRates[operation];
+        
+        if (feeRate == 0) {
+            return 0;
+        }
+
+        feeAmount = (amount * feeRate) / 10000;
+        
+        if (feeAmount > 0) {
+            // Record fees for this specific asset
+            assetFeesCollected[assetId] += feeAmount;
+            assetFeesByOperation[assetId][operation] += feeAmount;
+            
+            // Add to asset fee balance (the actual tokens are held by this contract)
+            assetFeeBalances[assetId] += feeAmount;
+
+            emit FeeCollected(assetId, operation, msg.sender, amount, feeAmount);
+        }
+    }
+
+    /**
+     * @dev Internal function to validate operation type
+     * @param operation The operation type to validate
+     * @return True if operation is valid
+     */
+    function _isValidOperation(string memory operation) internal pure returns (bool) {
+        return (
+            keccak256(bytes(operation)) == keccak256(bytes(OPERATION_REGISTER)) ||
+            keccak256(bytes(operation)) == keccak256(bytes(OPERATION_WRAP)) ||
+            keccak256(bytes(operation)) == keccak256(bytes(OPERATION_SPLIT)) ||
+            keccak256(bytes(operation)) == keccak256(bytes(OPERATION_MERGE)) ||
+            keccak256(bytes(operation)) == keccak256(bytes(OPERATION_UNWRAP))
+        );
+    }
+}
