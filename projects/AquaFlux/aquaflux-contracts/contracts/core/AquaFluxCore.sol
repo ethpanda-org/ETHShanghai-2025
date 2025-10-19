@@ -38,9 +38,6 @@ contract AquaFluxCore is
     // Factory contract for deploying tokens
     ITokenFactory public factory;
 
-    // Timelock contract for governance operations
-    address public timelock;
-
     // Global fee rates for different operations (in basis points, 0 = disabled)
     mapping(string => uint256) public globalFeeRates;
 
@@ -52,9 +49,11 @@ contract AquaFluxCore is
 
     // Asset-specific fee balances (underlying tokens held): assetId => balance
     mapping(bytes32 => uint256) public assetFeeBalances;
+    
+    // Asset-specific underlying token balances: assetId => balance
+    mapping(bytes32 => uint256) public assetUnderlyingBalances;
 
     // Supported operations for fee collection
-    string public constant OPERATION_REGISTER = "register";
     string public constant OPERATION_WRAP = "wrap";
     string public constant OPERATION_SPLIT = "split";
     string public constant OPERATION_MERGE = "merge";
@@ -70,7 +69,6 @@ contract AquaFluxCore is
 
     // Asset maturity management structure
     struct AssetMaturityManagement {
-        bool operationsStopped; // Whether operations have been stopped
         bool fundsWithdrawn; // Whether funds were withdrawn for offline redemption
         bool revenueInjected; // Whether redemption revenue was injected
         bool distributionSet; // Whether distribution plan was set
@@ -136,9 +134,7 @@ contract AquaFluxCore is
         _grantRole(OPERATOR_ROLE, admin);
         
         // Configure timelock (required for governance functionality)
-        timelock = _timelock;
         _grantRole(TIMELOCK_ROLE, _timelock);
-        emit TimelockUpdated(address(0), _timelock);
     }
 
     /**
@@ -156,43 +152,6 @@ contract AquaFluxCore is
         emit FactoryChanged(oldFactory, newFactory);
     }
 
-    /**
-     * @dev Sets the timelock contract address (governance controlled)
-     * Can only be called through the existing timelock governance process
-     * @param newTimelock The address of the new timelock contract
-     */
-    function setTimelock(address newTimelock) external onlyRole(TIMELOCK_ROLE) {
-        if (newTimelock == address(0)) revert InvalidTimelockAddress();
-
-        address oldTimelock = timelock;
-        timelock = newTimelock;
-
-        // Grant TIMELOCK_ROLE to the new timelock contract
-        _grantRole(TIMELOCK_ROLE, newTimelock);
-
-        // Revoke TIMELOCK_ROLE from old timelock if it exists
-        if (oldTimelock != address(0)) {
-            _revokeRole(TIMELOCK_ROLE, oldTimelock);
-        }
-
-        emit TimelockUpdated(oldTimelock, newTimelock);
-    }
-
-    /**
-     * @dev Gets the current timelock contract address
-     * @return The address of the timelock contract
-     */
-    function getTimelock() external view returns (address) {
-        return timelock;
-    }
-
-    /**
-     * @dev Checks if timelock is configured and ready for use
-     * @return True if timelock is set and has TIMELOCK_ROLE
-     */
-    function isTimelockReady() external view returns (bool) {
-        return timelock != address(0) && hasRole(TIMELOCK_ROLE, timelock);
-    }
 
     /**
      * @dev Registers a new asset, token will not be deployed until wrap is called
@@ -235,11 +194,6 @@ contract AquaFluxCore is
 
         if (isAssetRegistered(assetId)) revert AssetAlreadyRegistered();
 
-        // Collect fee for register operation (if enabled)
-        // Note: For register operation, we use amount = 1 as a base unit for fee calculation
-        // since there's no actual token amount involved in registration
-        _collectFee(OPERATION_REGISTER, assetId, 1);
-
         // Create asset info
         assets[assetId] = AssetInfo({
             issuer: msg.sender,
@@ -257,7 +211,8 @@ contract AquaFluxCore is
             aqToken: address(0),
             pToken: address(0),
             cToken: address(0),
-            sToken: address(0)
+            sToken: address(0),
+            distributionToken: address(0)
         });
 
         emit AssetRegistered(
@@ -319,6 +274,9 @@ contract AquaFluxCore is
         underlying.safeTransferFrom(msg.sender, address(this), amount);
         uint256 balanceAfter = underlying.balanceOf(address(this));
         if (balanceAfter - balanceBefore != amount) revert InsufficientUnderlyingReceived();
+        
+        // Update asset-specific underlying balance tracking
+        assetUnderlyingBalances[assetId] += netAmount;
 
         // Deploy AqToken if not already deployed
         if (asset.aqToken == address(0)) {
@@ -496,6 +454,9 @@ contract AquaFluxCore is
         // Burn AqTokens from user
         IBaseToken(asset.aqToken).burn(msg.sender, amount);
 
+        // Update asset-specific underlying balance tracking
+        assetUnderlyingBalances[assetId] -= netAmount;
+
         // Transfer underlying tokens to user (net amount after fee)
         IERC20(asset.underlying).safeTransfer(msg.sender, netAmount);
 
@@ -536,9 +497,9 @@ contract AquaFluxCore is
     }
 
     /**
-     * @dev Pauses all operations
+     * @dev Pauses all operations (global pause requires timelock governance)
      */
-    function pause() external onlyRole(OPERATOR_ROLE) {
+    function pause() external onlyRole(TIMELOCK_ROLE) {
         _pause();
     }
 
@@ -559,7 +520,7 @@ contract AquaFluxCore is
     /**
      * @dev Returns the version of the registry
      */
-    function version() public pure returns (string memory) {
+    function version() public pure virtual returns (string memory) {
         return "1.0.0";
     }
 
@@ -749,6 +710,17 @@ contract AquaFluxCore is
     }
 
     /**
+     * @dev Gets the underlying token balance for a specific asset
+     * @param assetId The asset identifier
+     * @return balance The underlying token balance tracked for this asset
+     */
+    function getAssetUnderlyingBalance(
+        bytes32 assetId
+    ) external view returns (uint256 balance) {
+        return assetUnderlyingBalances[assetId];
+    }
+
+    /**
      * @dev Internal function to collect fees for an operation
      * @param operation The operation type
      * @param assetId The asset identifier
@@ -799,10 +771,10 @@ contract AquaFluxCore is
     }
 
     /**
-     * @dev Unpauses all operations for a specific asset (admin only)
+     * @dev Unpauses all operations for a specific asset (operator role)
      * @param assetId The asset identifier to unpause
      */
-    function unpauseAsset(bytes32 assetId) external onlyRole(TIMELOCK_ROLE) {
+    function unpauseAsset(bytes32 assetId) external onlyRole(OPERATOR_ROLE) {
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (!assets[assetId].paused) revert AssetNotPaused();
 
@@ -845,9 +817,7 @@ contract AquaFluxCore is
     function _isValidOperation(
         string memory operation
     ) internal pure returns (bool) {
-        return (keccak256(bytes(operation)) ==
-            keccak256(bytes(OPERATION_REGISTER)) ||
-            keccak256(bytes(operation)) == keccak256(bytes(OPERATION_WRAP)) ||
+        return (keccak256(bytes(operation)) == keccak256(bytes(OPERATION_WRAP)) ||
             keccak256(bytes(operation)) == keccak256(bytes(OPERATION_SPLIT)) ||
             keccak256(bytes(operation)) == keccak256(bytes(OPERATION_MERGE)) ||
             keccak256(bytes(operation)) == keccak256(bytes(OPERATION_UNWRAP)));
@@ -870,46 +840,27 @@ contract AquaFluxCore is
             assetId
         ];
 
-        // Check if operations are manually stopped first
-        if (management.operationsStopped) {
-            if (!management.fundsWithdrawn) {
-                return uint8(AssetLifecycleState.OPERATIONS_STOPPED);
-            }
-
-            if (!management.revenueInjected) {
-                return uint8(AssetLifecycleState.FUNDS_WITHDRAWN);
-            }
-
-            if (!management.distributionSet) {
-                return uint8(AssetLifecycleState.REVENUE_INJECTED);
-            }
-
-            return uint8(AssetLifecycleState.CLAIMABLE);
-        }
-
-        // Check if still in active trading period and not manually stopped
+        // Check if still in active trading period
         if (block.timestamp < asset.operationDeadline) {
             return uint8(AssetLifecycleState.ACTIVE);
         }
 
-        // Operations should be stopped after deadline (but not manually stopped yet)
-        return uint8(AssetLifecycleState.OPERATIONS_STOPPED);
+        // Operations are stopped after deadline, check progress through maturity process
+        if (!management.fundsWithdrawn) {
+            return uint8(AssetLifecycleState.OPERATIONS_STOPPED);
+        }
+
+        if (!management.revenueInjected) {
+            return uint8(AssetLifecycleState.FUNDS_WITHDRAWN);
+        }
+
+        if (!management.distributionSet) {
+            return uint8(AssetLifecycleState.REVENUE_INJECTED);
+        }
+
+        return uint8(AssetLifecycleState.CLAIMABLE);
     }
 
-    /**
-     * @dev Manually stops operations for an asset (admin only)
-     * @param assetId The asset identifier
-     */
-    function stopAssetOperations(
-        bytes32 assetId
-    ) external onlyRole(TIMELOCK_ROLE) {
-        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
-        if (maturityManagement[assetId].operationsStopped) revert OperationsAlreadyStopped();
-
-        maturityManagement[assetId].operationsStopped = true;
-
-        emit AssetOperationsStopped(assetId, msg.sender);
-    }
 
     /**
      * @dev Checks if operations are stopped for an asset (internal)
@@ -919,13 +870,7 @@ contract AquaFluxCore is
     function _areOperationsStopped(
         bytes32 assetId
     ) internal view returns (bool) {
-        // Operations are stopped if:
-        // 1. Manual stop was triggered, OR
-        // 2. Operation deadline has passed
-        if (maturityManagement[assetId].operationsStopped) {
-            return true;
-        }
-
+        // Operations are stopped when operation deadline has passed
         return block.timestamp >= assets[assetId].operationDeadline;
     }
 
@@ -942,50 +887,64 @@ contract AquaFluxCore is
 
     /**
      * @dev Withdraws underlying tokens for offline redemption (admin only)
+     * Automatically calculates withdrawable amount (total balance - protocol fees)
      * @param assetId The asset identifier
-     * @param amount The amount to withdraw
+     * @param recipient The address to receive the withdrawn funds
      */
     function withdrawForRedemption(
         bytes32 assetId,
-        uint256 amount
+        address recipient
     ) external onlyRole(TIMELOCK_ROLE) {
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (!_areOperationsStopped(assetId)) revert OperationsNotStoppedYet();
         if (maturityManagement[assetId].fundsWithdrawn) revert FundsAlreadyWithdrawn();
-        if (amount == 0) revert AmountMustBeGreaterThanZero();
+        if (recipient == address(0)) revert InvalidRecipientAddress();
 
         AssetInfo storage asset = assets[assetId];
         IERC20 underlying = IERC20(asset.underlying);
 
-        uint256 contractBalance = underlying.balanceOf(address(this));
-        if (contractBalance < amount) revert InsufficientContractBalance();
+        // Calculate withdrawable amount: asset balance - protocol fees
+        uint256 assetBalance = assetUnderlyingBalances[assetId];
+        uint256 protocolFees = assetFeeBalances[assetId];
+        uint256 withdrawableAmount = assetBalance - protocolFees;
+
+        if (withdrawableAmount == 0) revert AmountMustBeGreaterThanZero();
 
         // Mark funds as withdrawn
         maturityManagement[assetId].fundsWithdrawn = true;
-        maturityManagement[assetId].withdrawnAmount = amount;
+        maturityManagement[assetId].withdrawnAmount = withdrawableAmount;
 
-        // Transfer underlying tokens to admin for offline redemption
-        underlying.safeTransfer(msg.sender, amount);
+        // Update asset-specific underlying balance tracking
+        assetUnderlyingBalances[assetId] -= withdrawableAmount;
 
-        emit FundsWithdrawnForRedemption(assetId, msg.sender, amount);
+        // Transfer underlying tokens to specified recipient for offline redemption
+        underlying.safeTransfer(recipient, withdrawableAmount);
+
+        emit FundsWithdrawnForRedemption(assetId, recipient, withdrawableAmount);
     }
 
     /**
      * @dev Injects redemption revenue back into the contract (admin only)
      * @param assetId The asset identifier
+     * @param distributionToken The token address to be used for distribution (e.g., USDC)
      * @param amount The amount of revenue to inject
      */
     function injectRedemptionRevenue(
         bytes32 assetId,
+        address distributionToken,
         uint256 amount
     ) external onlyRole(TIMELOCK_ROLE) {
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (!maturityManagement[assetId].fundsWithdrawn) revert FundsNotWithdrawnYet();
         if (maturityManagement[assetId].revenueInjected) revert RevenueAlreadyInjected();
         if (amount == 0) revert AmountMustBeGreaterThanZero();
+        if (distributionToken == address(0)) revert InvalidUnderlyingToken();
 
         AssetInfo storage asset = assets[assetId];
-        IERC20 underlying = IERC20(asset.underlying);
+        IERC20 distributionTokenContract = IERC20(distributionToken);
+
+        // Set the distribution token (first-set, then-fixed approach)
+        asset.distributionToken = distributionToken;
 
         // Mark revenue as injected
         maturityManagement[assetId].revenueInjected = true;
@@ -993,9 +952,9 @@ contract AquaFluxCore is
         maturityManagement[assetId].injectionTimestamp = block.timestamp;
 
         // Transfer revenue from admin to contract and verify the full amount arrived
-        uint256 balanceBefore = underlying.balanceOf(address(this));
-        underlying.safeTransferFrom(msg.sender, address(this), amount);
-        uint256 balanceAfter = underlying.balanceOf(address(this));
+        uint256 balanceBefore = distributionTokenContract.balanceOf(address(this));
+        distributionTokenContract.safeTransferFrom(msg.sender, address(this), amount);
+        uint256 balanceAfter = distributionTokenContract.balanceOf(address(this));
         if (balanceAfter - balanceBefore != amount) revert InsufficientRevenueReceived();
 
         emit RedemptionRevenueInjected(assetId, msg.sender, amount);
@@ -1095,8 +1054,8 @@ contract AquaFluxCore is
         );
         if (userReward == 0) revert NoRewardToClaim();
 
-        // Check contract has sufficient balance
-        uint256 contractBalance = IERC20(asset.underlying).balanceOf(
+        // Check contract has sufficient balance using distribution token
+        uint256 contractBalance = IERC20(asset.distributionToken).balanceOf(
             address(this)
         );
         if (contractBalance < userReward) revert InsufficientContractBalance();
@@ -1104,8 +1063,8 @@ contract AquaFluxCore is
         // Mark as claimed
         userClaimed[assetId][msg.sender][tokenAddress] = true;
 
-        // Transfer reward to user
-        IERC20(asset.underlying).safeTransfer(msg.sender, userReward);
+        // Transfer reward to user using distribution token
+        IERC20(asset.distributionToken).safeTransfer(msg.sender, userReward);
 
         emit MaturityRewardClaimed(
             assetId,
@@ -1219,14 +1178,14 @@ contract AquaFluxCore is
 
         if (totalReward == 0) revert NoRewardsToClaim();
 
-        // Check contract has sufficient balance
-        uint256 contractBalance = IERC20(asset.underlying).balanceOf(
+        // Check contract has sufficient balance using distribution token
+        uint256 contractBalance = IERC20(asset.distributionToken).balanceOf(
             address(this)
         );
         if (contractBalance < totalReward) revert InsufficientContractBalance();
 
-        // Transfer total reward to user
-        IERC20(asset.underlying).safeTransfer(msg.sender, totalReward);
+        // Transfer total reward to user using distribution token
+        IERC20(asset.distributionToken).safeTransfer(msg.sender, totalReward);
     }
 
     /**

@@ -58,14 +58,13 @@ contract AquaFluxTimelock is TimelockController {
     );
 
     /**
-     * @dev Constructor with aquaFluxCore placeholder for deployment compatibility
+     * @dev Constructor for AquaFlux timelock controller
      */
     constructor(
         uint256 minDelay,
         address[] memory proposers,
         address[] memory executors,
-        address admin,
-        address /* aquaFluxCore */
+        address admin
     ) TimelockController(minDelay, proposers, executors, admin) {
         require(
             minDelay >= MINIMUM_ALLOWED_MIN_DELAY,
@@ -113,7 +112,7 @@ contract AquaFluxTimelock is TimelockController {
             1 days
         );
         _setOperationDelay(
-            bytes4(keccak256("withdrawForRedemption(bytes32,uint256)")),
+            bytes4(keccak256("withdrawForRedemption(bytes32,address)")),
             1 days
         );
         _setOperationDelay(
@@ -121,13 +120,12 @@ contract AquaFluxTimelock is TimelockController {
             1 days
         );
         _setOperationDelay(
-            bytes4(keccak256("injectRedemptionRevenue(bytes32,uint256)")),
+            bytes4(keccak256("injectRedemptionRevenue(bytes32,address,uint256)")),
             12 hours
         );
 
         // High-risk governance functions (longer delays)
         _setOperationDelay(bytes4(keccak256("setFactory(address)")), 3 days);
-        _setOperationDelay(bytes4(keccak256("setTimelock(address)")), 7 days);
         _setOperationDelay(
             bytes4(keccak256("setGlobalFeeRate(string,uint256)")),
             2 days
@@ -156,14 +154,19 @@ contract AquaFluxTimelock is TimelockController {
             bytes4(keccak256("updateMetadataURI(bytes32,string)")),
             12 hours
         );
+        
+        // Critical ERC20 operations - approve is high risk as it grants spending rights
+        _setOperationDelay(
+            bytes4(keccak256("approve(address,uint256)")),
+            3 days  // Same as other high-risk operations like setFactory
+        );
 
-        // Governance functions for safety measure removal (1 day delay)
+        // Global pause/unpause functions (1 day delay) - affect entire protocol
+        _setOperationDelay(bytes4(keccak256("pause()")), 1 days);
         _setOperationDelay(bytes4(keccak256("unpause()")), 1 days);
-        _setOperationDelay(bytes4(keccak256("unpauseAsset(bytes32)")), 1 days);
-        _setOperationDelay(bytes4(keccak256("stopAssetOperations(bytes32)")), 1 days);
 
-        // Note: pause() and pauseAsset() now use OPERATOR_ROLE and don't require timelock
-        // They are removed from emergency functions as they can be executed directly
+        // Note: pauseAsset() and unpauseAsset() now use OPERATOR_ROLE and don't require timelock
+        // They handle individual assets and can be executed directly for quick response
     }
 
     /**

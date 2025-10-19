@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 /**
  * @title IBaseToken
  * @dev Base token interface for all AquaFlux tokens (AqToken, PToken, CToken, SToken)
- * 权限相关由 AccessControlUpgradeable 实现，接口无需 import IAccessControlUpgradeable
  */
 interface IBaseToken is IERC20 {
     /**

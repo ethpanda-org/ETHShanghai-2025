@@ -20,7 +20,6 @@ error InvalidOperation();
 error FeeRateTooHigh();
 error AssetAlreadyPaused();
 error AssetNotPaused();
-error OperationsAlreadyStopped();
 error OperationsNotStoppedYet();
 error FundsAlreadyWithdrawn();
 error InsufficientContractBalance();
@@ -87,6 +86,7 @@ interface IAquaFluxCore {
         address pToken;           // PToken contract address
         address cToken;           // CToken contract address
         address sToken;           // SToken contract address
+        address distributionToken; // Token used for maturity reward distribution (e.g., USDC)
     }
 
     /**
@@ -194,12 +194,6 @@ interface IAquaFluxCore {
      */
     event FactoryChanged(address indexed oldFactory, address indexed newFactory);
 
-    /**
-     * @dev Emitted when the timelock contract is updated
-     * @param oldTimelock The address of the previous timelock contract
-     * @param newTimelock The address of the new timelock contract
-     */
-    event TimelockUpdated(address indexed oldTimelock, address indexed newTimelock);
 
     /**
      * @dev Emitted when coupon allocation is updated
@@ -416,16 +410,6 @@ interface IAquaFluxCore {
     // === MATURITY MANAGEMENT EVENTS ===
 
     /**
-     * @dev Emitted when asset operations are manually stopped
-     * @param assetId The asset identifier
-     * @param stoppedBy The admin who stopped operations
-     */
-    event AssetOperationsStopped(
-        bytes32 indexed assetId,
-        address indexed stoppedBy
-    );
-
-    /**
      * @dev Emitted when funds are withdrawn for offline redemption
      * @param assetId The asset identifier
      * @param withdrawnBy The admin who withdrew funds
@@ -532,24 +516,20 @@ interface IAquaFluxCore {
     function getAssetLifecycleState(bytes32 assetId) external view returns (uint8);
 
     /**
-     * @dev Manually stops operations for an asset (admin only)
-     * @param assetId The asset identifier
-     */
-    function stopAssetOperations(bytes32 assetId) external;
-
-    /**
      * @dev Withdraws underlying tokens for offline redemption (admin only)
+     * Automatically calculates withdrawable amount (total balance - protocol fees)
      * @param assetId The asset identifier
-     * @param amount The amount to withdraw
+     * @param recipient The address to receive the withdrawn funds
      */
-    function withdrawForRedemption(bytes32 assetId, uint256 amount) external;
+    function withdrawForRedemption(bytes32 assetId, address recipient) external;
 
     /**
      * @dev Injects redemption revenue back into the contract (admin only)
      * @param assetId The asset identifier
+     * @param distributionToken The token address to be used for distribution (e.g., USDC)
      * @param amount The amount of revenue to inject
      */
-    function injectRedemptionRevenue(bytes32 assetId, uint256 amount) external;
+    function injectRedemptionRevenue(bytes32 assetId, address distributionToken, uint256 amount) external;
 
     /**
      * @dev Sets the distribution plan for P/C/S tokens (admin only)
@@ -589,25 +569,11 @@ interface IAquaFluxCore {
      */
     function getClaimableReward(bytes32 assetId, address user, address tokenAddress) external view returns (uint256);
 
-    // === TIMELOCK MANAGEMENT FUNCTIONS ===
-
-    /**
-     * @dev Sets the timelock contract address (admin only)
-     * @param newTimelock The address of the timelock contract
-     */
-    function setTimelock(address newTimelock) external;
-
-    /**
-     * @dev Gets the current timelock contract address
-     * @return The address of the timelock contract
-     */
-    function getTimelock() external view returns (address);
-
-    /**
-     * @dev Checks if timelock is configured and ready for use
-     * @return True if timelock is set and has required role
-     */
-    function isTimelockReady() external view returns (bool);
+    // === TIMELOCK MANAGEMENT ===
+    // Timelock management is handled through standard AccessControl functions:
+    // - grantRole(TIMELOCK_ROLE, timelockAddress) to set timelock
+    // - revokeRole(TIMELOCK_ROLE, oldTimelockAddress) to remove timelock  
+    // - hasRole(TIMELOCK_ROLE, address) to check if address has timelock role
 
     // === FEE EXTRACTION EVENTS ===
 
@@ -645,6 +611,13 @@ interface IAquaFluxCore {
      * @return The amount of fees available for withdrawal
      */
     function getWithdrawableFees(bytes32 assetId) external view returns (uint256);
+
+    /**
+     * @dev Gets the underlying token balance for a specific asset
+     * @param assetId The asset identifier
+     * @return The underlying token balance tracked for this asset
+     */
+    function getAssetUnderlyingBalance(bytes32 assetId) external view returns (uint256);
 
     /**
      * @dev Withdraws all accumulated protocol fees for multiple assets (admin only)

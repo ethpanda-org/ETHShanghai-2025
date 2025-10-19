@@ -114,10 +114,10 @@ contract BaseToken is
     }
 
     /**
-     * @dev Hook that is called before any transfer of tokens (OpenZeppelin 5.x 用 _update)
+     * @dev Hook that is called before any transfer of tokens (OpenZeppelin 5.x use _update)
      */
     function _update(address from, address to, uint256 value) internal virtual override(ERC20Upgradeable) {
-        require(!paused(), "Pausable: token transfer while paused");
+        _requireNotPaused();
         super._update(from, to, value);
     }
 
