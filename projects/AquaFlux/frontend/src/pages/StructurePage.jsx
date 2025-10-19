@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { toast, ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import { toast } from 'react-toastify'
 import { ASSETS, getAsset } from '../data/mockData'
 import AssetMiniCard from '../components/AssetMiniCard'
 import { cx } from '../utils/helpers'
@@ -1314,18 +1313,6 @@ export default function StructurePage({ params, push }) {
 
 
     </motion.div>
-    <ToastContainer
-      position="top-right"
-      autoClose={5000}
-      hideProgressBar={false}
-      newestOnTop={false}
-      closeOnClick
-      rtl={false}
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-      theme="light"
-    />
     </>
   )
 }

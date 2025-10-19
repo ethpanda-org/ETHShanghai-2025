@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import useRouter from './hooks/useRouter'
 import Header from './components/Header'
 import MarketsPage from './pages/MarketsPage'
@@ -47,6 +49,21 @@ export default function App() {
         {nav === "swap" && <SwapPage params={route.params} push={push} />}
         {nav === "structure" && <StructurePage params={route.params} push={push} />}
       </div>
+
+      {/* Global Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        className="toast-container"
+      />
     </div>
   )
 }

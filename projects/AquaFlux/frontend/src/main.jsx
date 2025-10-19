@@ -12,6 +12,7 @@ import { WagmiProvider } from 'wagmi'
 import {
   mainnet,
   bscTestnet,
+  sepolia,
 } from 'wagmi/chains'
 import {
   QueryClientProvider,
@@ -47,7 +48,7 @@ export const PharosTestnet = {
 const config = getDefaultConfig({
   appName: 'AquaFlux',
   projectId: 'YOUR_PROJECT_ID',
-  chains: [mainnet, bscTestnet, PharosTestnet],
+  chains: [sepolia, mainnet, bscTestnet, PharosTestnet],
   ssr: false,
 })
 
