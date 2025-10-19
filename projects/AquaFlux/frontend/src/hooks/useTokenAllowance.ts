@@ -43,7 +43,7 @@ export function useTokenAllowance({ tokenAddress, amount }: UseTokenAllowancePar
   const { address, chainId } = useAccount()
   const [lastApproveTxHash, setLastApproveTxHash] = useState<`0x${string}` | undefined>()
   
-  const contractAddresses = getContractAddresses(chainId || 97)
+  const contractAddresses = getContractAddresses(chainId || 688688)
   const aquaFluxCoreAddress = contractAddresses?.AquaFluxCore
   
   // Get token decimals

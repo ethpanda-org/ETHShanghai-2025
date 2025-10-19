@@ -7,7 +7,9 @@ import AssetMiniCard from '../components/AssetMiniCard'
 import { cx } from '../utils/helpers'
 import { useAquaFluxCore, useAssetInfo } from '../hooks/useAquaFluxCore'
 import { useTokenAllowance } from '../hooks/useTokenAllowance'
-import { useAccount, useSwitchChain } from 'wagmi'
+import { useTokenBalances } from '../hooks/useTokenBalances'
+import { useAccount, useSwitchChain, useChainId } from 'wagmi'
+import { getNetworkName, getExplorerUrl } from '../utils/networkHelpers'
 
 function PreviewBox({ title, value, warn = false, subtle = false, tokenType = null }) {
   // Extract token type from title if not provided
@@ -214,10 +216,27 @@ function SplitMerge({ asset, push }) {
   const [amount, setAmount] = useState("") // RWA or sets
   const amt = parseFloat(amount) || 0
 
-  // Use blockchain asset ID - in real app this should map from UI asset to blockchain ID
-  const blockchainAssetId = `0x99ee5f77607391b5a5986637437f14ef5c50810c77784b2dfdbd6bcef0423bc8`
+  // Get current chain ID
+  const chainId = useChainId()
+
+  // Get token balances for P, C, S tokens
+  const { balances, isLoading: balancesLoading, error: balancesError } = useTokenBalances(asset)
+
+  // Use blockchain asset ID from asset object
+  const blockchainAssetId = asset.assetId
   
-  // Use AquaFluxCore hook
+  // Check if asset has matured
+  const isMatured = () => {
+    if (!asset.maturity) return false
+    
+    const now = new Date()
+    const maturityDate = new Date(asset.maturity)
+    
+    // If maturity format includes time (YYYY-MM-DD HH:MM:SS), parse it
+    // If it's just date (YYYY-MM-DD), it will default to 00:00:00
+    return now > maturityDate
+  }
+  
   const { 
     executeSplit,
     executeMerge,
@@ -230,9 +249,37 @@ function SplitMerge({ asset, push }) {
     lastTxHash
   } = useAquaFluxCore()
 
+  // Handle transaction success with explorer link for SplitMerge
+  useEffect(() => {
+    if (isSuccess && lastTxHash) {
+      toast.success(
+        <div>
+          <div>Transaction successful!</div>
+          <a 
+            href={`${getExplorerUrl(chainId)}${lastTxHash}`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="underline hover:no-underline text-blue-600"
+          >
+            View on {getNetworkName(chainId)}
+          </a>
+        </div>,
+        {
+          autoClose: 10000
+        }
+      )
+    }
+  }, [isSuccess, lastTxHash, chainId])
+
   // Handle split execution
   const handleExecuteSplit = async () => {
     if (!amt || amt <= 0) return
+    
+    // Check if asset has matured
+    if (isMatured()) {
+      toast.error('Operation time has expired')
+      return
+    }
     
     try {
       // Convert USD amount to wei (assuming 18 decimals)
@@ -243,8 +290,11 @@ function SplitMerge({ asset, push }) {
         amount: amountInWei
       })
       
-      console.log('Split transaction initiated:', result)
-      toast.success('Split transaction completed successfully!')
+      // Show transaction submitted notification after wallet confirmation
+      if (result) {
+        console.log('Split transaction initiated:', result)
+        toast.info('Transaction submitted, please wait for confirmation...')
+      }
     } catch (err) {
       console.error('Split failed:', err)
       if (err?.code === 4001 || err?.message?.includes('rejected')) {
@@ -259,6 +309,12 @@ function SplitMerge({ asset, push }) {
   const handleExecuteMerge = async () => {
     if (!amt || amt <= 0) return
     
+    // Check if asset has matured
+    if (isMatured()) {
+      toast.error('Operation time has expired')
+      return
+    }
+    
     try {
       // Convert set amount to wei (assuming 18 decimals)
       const amountInWei = BigInt(Math.floor(amt * 10**18))
@@ -268,8 +324,11 @@ function SplitMerge({ asset, push }) {
         amount: amountInWei
       })
       
-      console.log('Merge transaction initiated:', result)
-      toast.success('Merge transaction completed successfully!')
+      // Show transaction submitted notification after wallet confirmation
+      if (result) {
+        console.log('Merge transaction initiated:', result)
+        toast.info('Transaction submitted, please wait for confirmation...')
+      }
     } catch (err) {
       console.error('Merge failed:', err)
       if (err?.code === 4001 || err?.message?.includes('rejected')) {
@@ -283,14 +342,16 @@ function SplitMerge({ asset, push }) {
   // Split result: 1 RWA → 1 P + 1 C + 1 S
   const outPCS = { P: amt, C: amt, S: amt }
 
-  // Merge needs equal legs; compute deficits from a mock balance
-  const mockBalance = { P: 0.6 * amt, C: 1.2 * amt, S: 0.7 * amt } // just to show deficit UI
+  // Merge needs equal legs; compute deficits based on actual token balances
   const need = { 
-    P: Math.max(0, amt - mockBalance.P), 
-    C: Math.max(0, amt - mockBalance.C), 
-    S: Math.max(0, amt - mockBalance.S) 
+    P: Math.max(0, amt - (balances?.P || 0)), 
+    C: Math.max(0, amt - (balances?.C || 0)), 
+    S: Math.max(0, amt - (balances?.S || 0)) 
   }
   const canMerge = need.P === 0 && need.C === 0 && need.S === 0 && amt > 0
+  
+  // Check if user has enough AQ tokens for Split operation
+  const canSplit = amt <= (balances?.AQ || 0)
 
   return (
     <div className="mt-6 grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -357,9 +418,28 @@ function SplitMerge({ asset, push }) {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >
-                <PreviewBox title="Will get P" value={`${outPCS.P} P`} tokenType="P" />
-                <PreviewBox title="Will get C" value={`${outPCS.C} C`} tokenType="C" />
-                <PreviewBox title="Will get S" value={`${outPCS.S} S`} tokenType="S" />
+                <PreviewBox title="Will get P" value={`${amt} P`} tokenType="P" />
+                <PreviewBox title="Will get C" value={`${amt} C`} tokenType="C" />
+                <PreviewBox title="Will get S" value={`${amt} S`} tokenType="S" />
+                
+                {/* AQ Token Balance for Split */}
+                <motion.div 
+                  className="col-span-3 text-center p-3 bg-purple-50 rounded-lg border border-purple-200 mt-3"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <div className="text-xs text-purple-600 font-medium mb-1">Your RWA Balance</div>
+                  <div className="text-lg font-bold text-purple-800">
+                    {balancesLoading ? '...' : `${(balances?.AQ || 0).toFixed(2)} RWA`}
+                  </div>
+                  {amt > (balances?.AQ || 0) && (
+                    <div className="text-xs text-red-600 mt-1 font-medium">
+                      Insufficient balance (need {amt} RWA)
+                    </div>
+                  )}
+                </motion.div>
+                
                 <motion.div 
                   className="col-span-3 text-[11px] text-slate-500 text-center mt-2"
                   initial={{ opacity: 0 }}
@@ -381,6 +461,33 @@ function SplitMerge({ asset, push }) {
                 <PreviewBox title="Need P" value={`${need.P.toFixed(2)} P`} warn={need.P > 0} tokenType="P" />
                 <PreviewBox title="Need C" value={`${need.C.toFixed(2)} C`} warn={need.C > 0} tokenType="C" />
                 <PreviewBox title="Need S" value={`${need.S.toFixed(2)} S`} warn={need.S > 0} tokenType="S" />
+                
+                {/* Current Token Balances */}
+                <motion.div 
+                  className="col-span-3 grid grid-cols-3 gap-2 mt-4"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <div className="text-center p-2 bg-emerald-50 rounded-lg border border-emerald-200">
+                    <div className="text-xs text-emerald-600 font-medium">Your P Balance</div>
+                    <div className="text-sm font-bold text-emerald-800">
+                      {balancesLoading ? '...' : `${(balances?.P || 0).toFixed(2)} P`}
+                    </div>
+                  </div>
+                  <div className="text-center p-2 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="text-xs text-blue-600 font-medium">Your C Balance</div>
+                    <div className="text-sm font-bold text-blue-800">
+                      {balancesLoading ? '...' : `${(balances?.C || 0).toFixed(2)} C`}
+                    </div>
+                  </div>
+                  <div className="text-center p-2 bg-amber-50 rounded-lg border border-amber-200">
+                    <div className="text-xs text-amber-600 font-medium">Your S Balance</div>
+                    <div className="text-sm font-bold text-amber-800">
+                      {balancesLoading ? '...' : `${(balances?.S || 0).toFixed(2)} S`}
+                    </div>
+                  </div>
+                </motion.div>
                 {(need.P > 0 || need.C > 0 || need.S > 0) && (
                   <motion.div 
                     className="col-span-3 text-[11px] text-amber-700"
@@ -410,16 +517,20 @@ function SplitMerge({ asset, push }) {
               <motion.button 
                 className={cx(
                   "px-8 py-3 rounded-2xl text-base font-semibold transition-all duration-300 shadow-lg", 
-                  amt > 0 
+                  amt > 0 && ((mode === "split" && canSplit) || (mode === "merge" && canMerge))
                     ? mode === "split" 
                       ? "bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-emerald-200 hover:shadow-emerald-300" 
                       : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-200 hover:shadow-blue-300"
                     : "bg-slate-300 text-slate-500 cursor-not-allowed"
                 )} 
-                disabled={amt <= 0 || (mode === "split" && (isSplitting || isConfirming)) || (mode === "merge" && (isMerging || isConfirming))}
+                disabled={
+                  amt <= 0 || 
+                  (mode === "split" && (isSplitting || isConfirming || !canSplit)) || 
+                  (mode === "merge" && (isMerging || isConfirming || !canMerge))
+                }
                 onClick={mode === "split" ? handleExecuteSplit : handleExecuteMerge}
-                whileHover={amt > 0 ? { scale: 1.05 } : {}}
-                whileTap={amt > 0 ? { scale: 0.95 } : {}}
+                whileHover={amt > 0 && ((mode === "split" && canSplit) || (mode === "merge" && canMerge)) ? { scale: 1.05 } : {}}
+                whileTap={amt > 0 && ((mode === "split" && canSplit) || (mode === "merge" && canMerge)) ? { scale: 0.95 } : {}}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.4 }}
@@ -556,8 +667,24 @@ function WrapUnwrap({ asset }) {
   const [amount, setAmount] = useState("")
   const amt = parseFloat(amount) || 0
   
-  // Use blockchain asset ID - in real app this should map from UI asset to blockchain ID
-  const blockchainAssetId = `0x94e997e91240e3af49fbaac7e5898097cc2f82961778fef3c5602ae767e008d0`
+  // Get current chain ID
+  const chainId = useChainId()
+  
+  // Use blockchain asset ID from asset object
+  const blockchainAssetId = asset.assetId
+  
+  // Check if asset has matured
+  const isMatured = () => {
+    if (!asset.maturity) return false
+    
+    const now = new Date()
+    const maturityDate = new Date(asset.maturity)
+    
+    // If maturity format includes time (YYYY-MM-DD HH:MM:SS), parse it
+    // If it's just date (YYYY-MM-DD), it will default to 00:00:00
+    return now > maturityDate
+  }
+  
   // Use AquaFluxCore hook
   const { 
     executeWrap,
@@ -594,8 +721,12 @@ function WrapUnwrap({ asset }) {
     
     try {
       const result = await executeApproveMax()
-      console.log('Approve transaction initiated:', result)
-      toast.success('Token approval completed successfully!')
+      
+      // Show transaction submitted notification after wallet confirmation
+      if (result) {
+        console.log('Approve transaction initiated:', result)
+        toast.success('Transaction submitted, please wait for confirmation...')
+      }
     } catch (err) {
       console.error('Approve failed:', err)
       if (err?.code === 4001 || err?.message?.includes('rejected')) {
@@ -610,6 +741,12 @@ function WrapUnwrap({ asset }) {
   const handleExecuteUnwrap = async () => {
     if (!amt || amt <= 0) return
     
+    // Check if asset has matured
+    if (isMatured()) {
+      toast.error('Operation time has expired')
+      return
+    }
+    
     try {
       // Convert RWA amount to wei (assuming 18 decimals)
       const amountInWei = BigInt(Math.floor(amt * 10**18))
@@ -619,8 +756,11 @@ function WrapUnwrap({ asset }) {
         amount: amountInWei
       })
       
-      console.log('Unwrap transaction initiated:', result)
-      toast.success('Unwrap transaction completed successfully!')
+      // Show transaction submitted notification after wallet confirmation
+      if (result) {
+        console.log('Unwrap transaction initiated:', result)
+        toast.success('Transaction submitted, please wait for confirmation...')
+      }
     } catch (err) {
       console.error('Unwrap failed:', err)
       if (err?.code === 4001 || err?.message?.includes('rejected')) {
@@ -635,6 +775,12 @@ function WrapUnwrap({ asset }) {
   const handleExecuteWrap = async () => {
     if (!amt || amt <= 0) return
     
+    // Check if asset has matured
+    if (isMatured()) {
+      toast.error('Operation time has expired')
+      return
+    }
+    
     try {
       // Convert USD amount to wei (assuming 18 decimals)
       const amountInWei = BigInt(Math.floor(amt * 10**18))
@@ -644,8 +790,11 @@ function WrapUnwrap({ asset }) {
         amount: amountInWei
       })
       
-      console.log('Wrap transaction initiated:', result)
-      toast.success('Wrap transaction completed successfully!')
+      // Show transaction submitted notification after wallet confirmation
+      if (result) {
+        console.log('Wrap transaction initiated:', result)
+        toast.success('Transaction submitted, please wait for confirmation...')
+      }
       
       // Refetch allowance after successful wrap
       if (result) {
@@ -686,12 +835,12 @@ function WrapUnwrap({ asset }) {
         <div>
           <div>Transaction successful!</div>
           <a 
-            href={`https://testnet.bscscan.com/tx/${lastTxHash}`} 
+            href={`${getExplorerUrl(chainId)}${lastTxHash}`} 
             target="_blank" 
             rel="noopener noreferrer"
             className="underline hover:no-underline text-blue-600"
           >
-            View on BSCScan
+            View on {getNetworkName(chainId)}
           </a>
         </div>,
         {
@@ -961,7 +1110,7 @@ function WrapUnwrap({ asset }) {
 
 export default function StructurePage({ params, push }) {
   const [tab, setTab] = useState(params.tab || "split-merge")
-  const [assetId, setAssetId] = useState(params.assetId || ASSETS[0].id)
+  const [assetId, setAssetId] = useState(params.assetId || ASSETS[0].assetId)
   const asset = getAsset(assetId)
 
   return (

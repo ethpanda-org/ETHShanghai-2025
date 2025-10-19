@@ -106,7 +106,7 @@ export default function MarketsPage({ push }) {
   const [error, setError] = useState(null)
   
   const assets = useSortedFiltered(
-    Array.isArray(apiAssets) ? apiAssets : [], 
+    Array.isArray(apiAssets) ? apiAssets : ASSETS, 
     { sort, search, goal }
   )
 
@@ -137,7 +137,7 @@ export default function MarketsPage({ push }) {
       }
     }
 
-    fetchAssets()
+    // fetchAssets()
   }, [])
 
   useEffect(() => {
@@ -170,7 +170,7 @@ export default function MarketsPage({ push }) {
         </header>
       </div>
 
-      <KPIBar apiAssets={apiAssets} />
+      <KPIBar apiAssets={ASSETS} />
 
       <LegendBar open={showExplainer} setOpen={setShowExplainer} />
       <Explainer open={showExplainer} setOpen={setShowExplainer} />

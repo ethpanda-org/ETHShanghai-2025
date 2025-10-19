@@ -1,6 +1,7 @@
 // Mock Asset Data
 export const ASSETS = [
   { 
+    assetId: "0x1e8c653fea1facd1da7c5b50a0999d68866c207d4505b4b7d80fcefc165d9134",
     id: "UST-2026", 
     name: "US Treasury 2Y", 
     issuer: "U.S. Treasury", 
@@ -18,9 +19,14 @@ export const ASSETS = [
     nav: 100, 
     discountP: -1.5, 
     rewards: ["Points"], 
-    isNew: true 
+    isNew: true,
+    aqToken: '0xbee82fd0c15527ede2430ffdd12ebcf793ffe5c0',
+    ptoken: "0x16a2b4106e914aa64f71f6c274305ab9b8a3ffe8",
+    ctoken: "0x29d7551fd5cf2862ec28c98edc8fd61cc0427da2",
+    stoken: "0x8f9d4054085d4194c9cb3bbb6c273bd49f3fded8"
   },
   { 
+    assetId: "0x1e8c653fea1facd1da7c5b50a0999d68866c207d4505b4b7d80fcefc165d9134",
     id: "CORP-2027-A", 
     name: "Corp Bond A 2027", 
     issuer: "Contoso Energy", 
@@ -38,9 +44,14 @@ export const ASSETS = [
     nav: 100, 
     discountP: -2.2, 
     rewards: ["External Rewards"], 
-    isNew: false 
+    isNew: false,
+    aqToken: '0xbee82fd0c15527ede2430ffdd12ebcf793ffe5c0',
+    ptoken: "0x16a2b4106e914aa64f71f6c274305ab9b8a3ffe8",
+    ctoken: "0x29d7551fd5cf2862ec28c98edc8fd61cc0427da2",
+    stoken: "0x8f9d4054085d4194c9cb3bbb6c273bd49f3fded8"
   },
   { 
+    assetId: "0x1e8c653fea1facd1da7c5b50a0999d68866c207d4505b4b7d80fcefc165d9134",
     id: "CP-180D-2026", 
     name: "Commercial Paper 180D", 
     issuer: "Fabrikam Finance", 
@@ -58,9 +69,14 @@ export const ASSETS = [
     nav: 100, 
     discountP: -0.9, 
     rewards: ["None"], 
-    isNew: false 
+    isNew: false,
+    aqToken: '0xbee82fd0c15527ede2430ffdd12ebcf793ffe5c0',
+    ptoken: "0x16a2b4106e914aa64f71f6c274305ab9b8a3ffe8",
+    ctoken: "0x29d7551fd5cf2862ec28c98edc8fd61cc0427da2",
+    stoken: "0x8f9d4054085d4194c9cb3bbb6c273bd49f3fded8"
   },
   { 
+    assetId: "0x1e8c653fea1facd1da7c5b50a0999d68866c207d4505b4b7d80fcefc165d9134",
     id: "MUNI-2030", 
     name: "Municipal Bond 2030", 
     issuer: "Metro City", 
@@ -78,7 +94,11 @@ export const ASSETS = [
     nav: 100, 
     discountP: -1.1, 
     rewards: ["Points"], 
-    isNew: false 
+    isNew: false,
+    aqToken: '0xbee82fd0c15527ede2430ffdd12ebcf793ffe5c0',
+    ptoken: "0x16a2b4106e914aa64f71f6c274305ab9b8a3ffe8",
+    ctoken: "0x29d7551fd5cf2862ec28c98edc8fd61cc0427da2",
+    stoken: "0x8f9d4054085d4194c9cb3bbb6c273bd49f3fded8"
   },
 ]
 
