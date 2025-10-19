@@ -179,17 +179,17 @@ MIT License
 
 ### 项目概述
 
-AI Soccer On Crypto 是一个去中心化的游戏平台，AI代理在区块链上进行足球比赛。该平台结合了基于NFT的代理身份、公平发行代币机制、链上声誉系统和自动化代币经济学。
+AI Soccer On Crypto 是一个去中心化的游戏平台，AI Agent在区块链上进行足球比赛。该平台结合了基于NFT的Agent身份、公平发行代币机制、链上声誉系统和自动化代币经济学。
 
 ### 核心功能
 
-🤖 **AI代理身份系统**
-- 基于NFT的AI足球代理注册
-- 唯一的代理ID和元数据（团队名称、模型版本）
+🤖 **Agent身份系统**
+- 基于NFT的AI足球Agent注册
+- 唯一的Agent ID和元数据（团队名称、模型版本）
 - 所有权追踪和转移功能
 
 💰 **公平发行代币平台**
-- 发行与代理绑定的ERC20代币
+- 发行与Agent绑定的ERC20代币
 - 公平分配：50%公开铸造、5%所有者、45%流动性
 - 批量铸造并附带消息
 - 自动Uniswap V2流动性供应
@@ -210,7 +210,7 @@ AI Soccer On Crypto 是一个去中心化的游戏平台，AI代理在区块链�
 🔥 **自动代币回购**
 - 使用20%的比赛奖励进行代币回购
 - 购买的代币自动销毁
-- 支持代理代币经济
+- 支持Agent代币经济
 
 ### 系统架构
 
@@ -233,14 +233,14 @@ LaunchPad   Competition   ServerRegistry
 
 | 合约 | 地址（Sepolia测试网） | 说明 |
 |----------|-------------------|-------------|
-| SoccerAgentRegistry | `0x93D251E6a2F08b61c06d36eEDD81bA6ac384E40D` | 代理身份与NFT管理 |
+| SoccerAgentRegistry | `0x93D251E6a2F08b61c06d36eEDD81bA6ac384E40D` | Agent身份与NFT管理 |
 | ServerReputationRegistry | `0x0D5a8A2f22cC59a9293C14404a41818E71b3528A` | 服务器授权与声誉管理 |
 | LaunchPad | `0xBA9d3DA6116d8D3d5F90B3065f59d7B205F5C852` | 代币公平发行平台 |
 | Competition | `0xDe30530F1Fa736E656A42fCb3f91E004B1e1819a` | 比赛管理与费用分配 |
 
 ### 快速开始
 
-#### 1. 注册代理
+#### 1. 注册Agent
 ```javascript
 const agentRegistry = new ethers.Contract(AGENT_REGISTRY_ADDRESS, ABI, signer);
 const tx = await agentRegistry.registerSoccerAgent(
@@ -252,7 +252,7 @@ const receipt = await tx.wait();
 const agentId = receipt.events[0].args.agentId;
 ```
 
-#### 2. 发行代理代币
+#### 2. 发行Agent代币
 ```javascript
 const launchPad = new ethers.Contract(LAUNCHPAD_ADDRESS, ABI, signer);
 const tx = await launchPad.launchToken(agentId);
@@ -281,11 +281,11 @@ const tx = await competition.createMatchInvitation(
 
 ### 代币经济学
 
-**总供应量**：每个代理100,000,000代币
+**总供应量**：每个Agent100,000,000代币
 
 **分配方案**：
 - 50% 公开铸造（5000万代币）
-- 5% 代理所有者（500万代币）
+- 5% Agent所有者（500万代币）
 - 45% 流动性池（4500万代币）
 
 **铸造规则**：
@@ -335,15 +335,15 @@ forge script script/Deploy.s.sol:Deploy --rpc-url $RPC_URL --broadcast
 - ✅ OpenZeppelin安全库
 - ✅ 所有状态更改函数的重入保护
 - ✅ 访问控制和授权
-- ✅ 代理所有权验证
+- ✅ Agent所有权验证
 - ⚠️ **未经审计** - 风险自负
 
 ### 主要工作流程
 
-#### 工作流程1：注册代理并发行代币
-1. 开发者调用 `SoccerAgentRegistry.registerSoccerAgent()` 注册代理
-2. 获得唯一的代理ID（NFT）
-3. 代理所有者调用 `LaunchPad.launchToken(agentId)` 发行代币
+#### 工作流程1：注册Agent并发行代币
+1. 开发者调用 `SoccerAgentRegistry.registerSoccerAgent()` 注册Agent
+2. 获得唯一的Agent ID（NFT）
+3. Agent所有者调用 `LaunchPad.launchToken(agentId)` 发行代币
 4. TokenBoundAgent ERC20合约部署
 5. 用户在3天内铸造代币（目标50%）
 6. 达到50%后自动添加流动性并启用转账
