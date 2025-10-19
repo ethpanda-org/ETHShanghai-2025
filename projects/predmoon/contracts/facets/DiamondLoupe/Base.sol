@@ -1,0 +1,55 @@
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.20;
+
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import {DiamondCutStorage} from "../DiamondCut/Storage.sol";
+import {IDiamondLoupeBase} from "./IBase.sol";
+import {DiamondLoupeStorage} from "./Storage.sol";
+
+abstract contract DiamondLoupeBase is IDiamondLoupeBase {
+    using EnumerableSet for EnumerableSet.AddressSet;
+    using EnumerableSet for EnumerableSet.Bytes32Set;
+
+    function _facetSelectors(address facet) internal view returns (bytes4[] memory selectors) {
+        EnumerableSet.Bytes32Set storage facetSelectors_ = DiamondCutStorage.load().facetSelectors[facet];
+        uint256 selectorCount = facetSelectors_.length();
+        selectors = new bytes4[](selectorCount);
+        for (uint256 i = 0; i < selectorCount; i++) {
+            selectors[i] = bytes4(facetSelectors_.at(i));
+        }
+    }
+
+    function _facetAddresses() internal view returns (address[] memory) {
+        return DiamondCutStorage.load().facets.values();
+    }
+
+    function _facetAddress(bytes4 selector) internal view returns (address) {
+        return DiamondCutStorage.load().selectorToFacet[selector];
+    }
+
+    function _facets() internal view returns (Facet[] memory facets) {
+        address[] memory facetAddresses = _facetAddresses();
+        uint256 facetCount = facetAddresses.length;
+        facets = new Facet[](facetCount);
+
+        // Build up facet struct.
+        for (uint256 i = 0; i < facetCount; i++) {
+            address facet = facetAddresses[i];
+            bytes4[] memory selectors = _facetSelectors(facet);
+
+            facets[i] = Facet({facet: facet, selectors: selectors});
+        }
+    }
+
+    function _supportsInterface(bytes4 interfaceId) internal view returns (bool) {
+        return DiamondLoupeStorage.load().supportedInterfaces[interfaceId];
+    }
+
+    function _addInterface(bytes4 interfaceId) internal {
+        DiamondLoupeStorage.load().supportedInterfaces[interfaceId] = true;
+    }
+
+    function _removeInterface(bytes4 interfaceId) internal {
+        DiamondLoupeStorage.load().supportedInterfaces[interfaceId] = false;
+    }
+}
