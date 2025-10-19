@@ -116,12 +116,16 @@ contract AquaFluxTimelock is TimelockController {
             1 days
         );
         _setOperationDelay(
-            bytes4(keccak256("withdrawProtocolFees(bytes32,address,uint256)")),
+            bytes4(keccak256("withdrawProtocolFees(bytes32,address)")),
             1 days
         );
         _setOperationDelay(
-            bytes4(keccak256("injectRedemptionRevenue(bytes32,address,uint256)")),
+            bytes4(keccak256("setDistributionConfig(bytes32,address,address,uint256)")),
             12 hours
+        );
+        _setOperationDelay(
+            bytes4(keccak256("updateDistributionConfig(bytes32,address,address,uint256)")),
+            2 days
         );
 
         // High-risk governance functions (longer delays)

@@ -34,6 +34,15 @@ error AmountMustBeGreaterThanZero();
 error InsufficientFeeBalance();
 error NoAssetsProvided();
 error InsufficientRevenueReceived();
+error InvalidDistributionAddress();
+error TotalAllocationMismatch();
+error InsufficientDistributionBalance();
+error InsufficientAllowance();
+error DistributionTokenNotSet();
+error InvalidNewDistributionToken();
+error InvalidNewDistributionAddress();
+error InvalidNewDistributionAmount();
+error DistributionConfigNotSet();
 
 // === User Function Errors ===
 error InvalidUnderlyingToken();  
@@ -421,15 +430,37 @@ interface IAquaFluxCore {
     );
 
     /**
-     * @dev Emitted when redemption revenue is injected back into contract
+     * @dev Emitted when distribution configuration is set for an asset
      * @param assetId The asset identifier
-     * @param injectedBy The admin who injected revenue
-     * @param amount The amount injected
+     * @param distributionToken The token address to be used for distribution
+     * @param distributionAddress Address that holds the distribution funds
+     * @param totalDistributionAmount Total amount to be distributed
      */
-    event RedemptionRevenueInjected(
+    event DistributionConfigSet(
         bytes32 indexed assetId,
-        address indexed injectedBy,
-        uint256 amount
+        address indexed distributionToken,
+        address indexed distributionAddress,
+        uint256 totalDistributionAmount
+    );
+
+    /**
+     * @dev Emitted when distribution configuration is updated for an asset
+     * @param assetId The asset identifier
+     * @param oldDistributionToken The previous distribution token address
+     * @param oldDistributionAddress The previous distribution address
+     * @param oldTotalDistributionAmount The previous total distribution amount
+     * @param newDistributionToken The new distribution token address
+     * @param newDistributionAddress The new distribution address
+     * @param newTotalDistributionAmount The new total distribution amount
+     */
+    event DistributionConfigUpdated(
+        bytes32 indexed assetId,
+        address oldDistributionToken,
+        address oldDistributionAddress,
+        uint256 oldTotalDistributionAmount,
+        address indexed newDistributionToken,
+        address indexed newDistributionAddress,
+        uint256 newTotalDistributionAmount
     );
 
     /**
@@ -510,7 +541,7 @@ interface IAquaFluxCore {
     /**
      * @dev Gets the current lifecycle state of an asset
      * @param assetId The asset identifier
-     * @return The current lifecycle state (0=ACTIVE, 1=OPERATIONS_STOPPED, 2=FUNDS_WITHDRAWN, 3=REVENUE_INJECTED, 4=DISTRIBUTION_SET, 5=CLAIMABLE)
+     * @return The current lifecycle state (0=ACTIVE, 1=OPERATIONS_STOPPED, 2=FUNDS_WITHDRAWN, 3=DISTRIBUTION_CONFIG_SET, 4=DISTRIBUTION_SET, 5=CLAIMABLE)
      */
     function getAssetLifecycleState(bytes32 assetId) external view returns (uint8);
 
@@ -523,12 +554,32 @@ interface IAquaFluxCore {
     function withdrawForRedemption(bytes32 assetId, address recipient) external;
 
     /**
-     * @dev Injects redemption revenue back into the contract (admin only)
+     * @dev Sets the distribution configuration for maturity rewards (admin only)
      * @param assetId The asset identifier
      * @param distributionToken The token address to be used for distribution (e.g., USDC)
-     * @param amount The amount of revenue to inject
+     * @param distributionAddress Address that holds the distribution funds
+     * @param totalDistributionAmount Total amount to be distributed
      */
-    function injectRedemptionRevenue(bytes32 assetId, address distributionToken, uint256 amount) external;
+    function setDistributionConfig(
+        bytes32 assetId,
+        address distributionToken,
+        address distributionAddress,
+        uint256 totalDistributionAmount
+    ) external;
+
+    /**
+     * @dev Updates the distribution configuration for maturity rewards (admin only)
+     * @param assetId The asset identifier
+     * @param newDistributionToken The new token address to be used for distribution
+     * @param newDistributionAddress The new address that holds the distribution funds
+     * @param newTotalDistributionAmount The new total amount to be distributed
+     */
+    function updateDistributionConfig(
+        bytes32 assetId,
+        address newDistributionToken,
+        address newDistributionAddress,
+        uint256 newTotalDistributionAmount
+    ) external;
 
     /**
      * @dev Sets the distribution plan for P/C/S tokens (admin only)
@@ -593,15 +644,13 @@ interface IAquaFluxCore {
     // === FEE EXTRACTION FUNCTIONS ===
 
     /**
-     * @dev Withdraws accumulated protocol fees for a specific asset (admin only)
+     * @dev Withdraws all accumulated protocol fees for a specific asset (admin only)
      * @param assetId The asset identifier
      * @param to The address to receive the fees
-     * @param amount The amount of fees to withdraw
      */
     function withdrawProtocolFees(
         bytes32 assetId,
-        address to,
-        uint256 amount
+        address to
     ) external;
 
     /**

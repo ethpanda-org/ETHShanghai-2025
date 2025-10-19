@@ -67,14 +67,20 @@ contract AquaFluxCore is
 
     // === MATURITY MANAGEMENT DATA STRUCTURES ===
 
+    // Distribution configuration structure
+    struct DistributionConfig {
+        address distributionToken;    // Token used for distribution (e.g., USDC)
+        address distributionAddress; // Address holding distribution funds
+        uint256 totalDistributionAmount; // Total amount to distribute
+        uint256 configTimestamp;     // When config was set
+    }
+
     // Asset maturity management structure
     struct AssetMaturityManagement {
         bool fundsWithdrawn; // Whether funds were withdrawn for offline redemption
-        bool revenueInjected; // Whether redemption revenue was injected
+        bool distributionConfigSet; // Whether distribution config was set
         bool distributionSet; // Whether distribution plan was set
         uint256 withdrawnAmount; // Amount of underlying tokens withdrawn
-        uint256 totalRevenueInjected; // Total revenue injected back
-        uint256 injectionTimestamp; // Timestamp when revenue was injected
     }
 
     // Token distribution plan structure
@@ -95,7 +101,7 @@ contract AquaFluxCore is
         ACTIVE, // Active trading state
         OPERATIONS_STOPPED, // Operations stopped (reached operationDeadline)
         FUNDS_WITHDRAWN, // Funds withdrawn for offline redemption
-        REVENUE_INJECTED, // Redemption revenue injected
+        DISTRIBUTION_CONFIG_SET, // Distribution config set
         DISTRIBUTION_SET, // Distribution plan set
         CLAIMABLE // Users can claim rewards
     }
@@ -103,6 +109,7 @@ contract AquaFluxCore is
     // Maturity management mappings
     mapping(bytes32 => AssetMaturityManagement) public maturityManagement;
     mapping(bytes32 => TokenDistributionPlan) public distributionPlans;
+    mapping(bytes32 => DistributionConfig) public distributionConfigs;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -189,8 +196,12 @@ contract AquaFluxCore is
         if (bytes(name).length == 0) revert AssetNameRequired();
         if (bytes(metadataURI).length == 0) revert MetadataURIRequired();
 
-        // Generate unique asset ID
-        assetId = keccak256(abi.encodePacked(address(this), _assetIdCounter++));
+        // Generate unique asset ID (includes chain ID for cross-chain uniqueness)
+        assetId = keccak256(abi.encodePacked(
+            block.chainid,         // Chain ID for cross-chain uniqueness
+            address(this),         // Contract address
+            _assetIdCounter++      // Incremental counter
+        ));
 
         if (isAssetRegistered(assetId)) revert AssetAlreadyRegistered();
 
@@ -329,6 +340,10 @@ contract AquaFluxCore is
         uint256 feeAmount = _collectFee(OPERATION_SPLIT, assetId, amount);
         uint256 netAmount = amount - feeAmount;
 
+        // Update asset-specific underlying balance tracking - subtract fee amount
+        // This reduces the underlying asset value backing user tokens, effectively collecting the fee
+        assetUnderlyingBalances[assetId] -= feeAmount;
+
         // Burn AqTokens from user
         IBaseToken(asset.aqToken).burn(msg.sender, amount);
 
@@ -413,6 +428,10 @@ contract AquaFluxCore is
         uint256 feeAmount = _collectFee(OPERATION_MERGE, assetId, amount);
         uint256 netAmount = amount - feeAmount;
 
+        // Update asset-specific underlying balance tracking - subtract fee amount
+        // This reduces the underlying asset value backing user tokens, effectively collecting the fee
+        assetUnderlyingBalances[assetId] -= feeAmount;
+
         // Burn P/C/S tokens from user
         IBaseToken(asset.pToken).burn(msg.sender, amount);
         IBaseToken(asset.cToken).burn(msg.sender, amount);
@@ -455,6 +474,8 @@ contract AquaFluxCore is
         IBaseToken(asset.aqToken).burn(msg.sender, amount);
 
         // Update asset-specific underlying balance tracking
+        // Check for underflow: tracked balance must be sufficient
+        if (assetUnderlyingBalances[assetId] < netAmount) revert InsufficientContractBalance();
         assetUnderlyingBalances[assetId] -= netAmount;
 
         // Transfer underlying tokens to user (net amount after fee)
@@ -800,14 +821,6 @@ contract AquaFluxCore is
         _;
     }
 
-    /**
-     * @dev Modifier to check if operations are still allowed for an asset
-     * @param assetId The asset identifier to check
-     */
-    modifier whenOperationAllowed(bytes32 assetId) {
-        if (block.timestamp >= assets[assetId].operationDeadline) revert AssetOperationsHaveExpired();
-        _;
-    }
 
     /**
      * @dev Internal function to validate operation type
@@ -828,7 +841,7 @@ contract AquaFluxCore is
     /**
      * @dev Gets the current lifecycle state of an asset
      * @param assetId The asset identifier
-     * @return The current lifecycle state (0=ACTIVE, 1=OPERATIONS_STOPPED, 2=FUNDS_WITHDRAWN, 3=REVENUE_INJECTED, 4=DISTRIBUTION_SET, 5=CLAIMABLE)
+     * @return The current lifecycle state (0=ACTIVE, 1=OPERATIONS_STOPPED, 2=FUNDS_WITHDRAWN, 3=DISTRIBUTION_CONFIG_SET, 4=DISTRIBUTION_SET, 5=CLAIMABLE)
      */
     function getAssetLifecycleState(
         bytes32 assetId
@@ -850,12 +863,12 @@ contract AquaFluxCore is
             return uint8(AssetLifecycleState.OPERATIONS_STOPPED);
         }
 
-        if (!management.revenueInjected) {
+        if (!management.distributionConfigSet) {
             return uint8(AssetLifecycleState.FUNDS_WITHDRAWN);
         }
 
         if (!management.distributionSet) {
-            return uint8(AssetLifecycleState.REVENUE_INJECTED);
+            return uint8(AssetLifecycleState.DISTRIBUTION_CONFIG_SET);
         }
 
         return uint8(AssetLifecycleState.CLAIMABLE);
@@ -903,11 +916,9 @@ contract AquaFluxCore is
         AssetInfo storage asset = assets[assetId];
         IERC20 underlying = IERC20(asset.underlying);
 
-        // Calculate withdrawable amount: asset balance - protocol fees
-        uint256 assetBalance = assetUnderlyingBalances[assetId];
-        uint256 protocolFees = assetFeeBalances[assetId];
-        uint256 withdrawableAmount = assetBalance - protocolFees;
-
+        // Get withdrawable amount: assetUnderlyingBalances already tracks net user assets
+        // (fees have already been deducted during operations)
+        uint256 withdrawableAmount = assetUnderlyingBalances[assetId];
         if (withdrawableAmount == 0) revert AmountMustBeGreaterThanZero();
 
         // Mark funds as withdrawn
@@ -924,40 +935,89 @@ contract AquaFluxCore is
     }
 
     /**
-     * @dev Injects redemption revenue back into the contract (admin only)
+     * @dev Sets the distribution configuration for maturity rewards (admin only)
      * @param assetId The asset identifier
      * @param distributionToken The token address to be used for distribution (e.g., USDC)
-     * @param amount The amount of revenue to inject
+     * @param distributionAddress Address that holds the distribution funds
+     * @param totalDistributionAmount Total amount to be distributed
      */
-    function injectRedemptionRevenue(
+    function setDistributionConfig(
         bytes32 assetId,
         address distributionToken,
-        uint256 amount
+        address distributionAddress,
+        uint256 totalDistributionAmount
     ) external onlyRole(TIMELOCK_ROLE) {
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (!maturityManagement[assetId].fundsWithdrawn) revert FundsNotWithdrawnYet();
-        if (maturityManagement[assetId].revenueInjected) revert RevenueAlreadyInjected();
-        if (amount == 0) revert AmountMustBeGreaterThanZero();
+        if (maturityManagement[assetId].distributionConfigSet) revert RevenueAlreadyInjected();
         if (distributionToken == address(0)) revert InvalidUnderlyingToken();
+        if (distributionAddress == address(0)) revert InvalidDistributionAddress();
+        if (totalDistributionAmount == 0) revert AmountMustBeGreaterThanZero();
 
         AssetInfo storage asset = assets[assetId];
-        IERC20 distributionTokenContract = IERC20(distributionToken);
 
         // Set the distribution token (first-set, then-fixed approach)
         asset.distributionToken = distributionToken;
 
-        // Mark revenue as injected
-        maturityManagement[assetId].revenueInjected = true;
-        maturityManagement[assetId].totalRevenueInjected = amount;
-        maturityManagement[assetId].injectionTimestamp = block.timestamp;
+        // Set distribution configuration
+        distributionConfigs[assetId] = DistributionConfig({
+            distributionToken: distributionToken,
+            distributionAddress: distributionAddress,
+            totalDistributionAmount: totalDistributionAmount,
+            configTimestamp: block.timestamp
+        });
 
-        // Transfer revenue from admin to contract and verify the full amount arrived
-        uint256 balanceBefore = distributionTokenContract.balanceOf(address(this));
-        distributionTokenContract.safeTransferFrom(msg.sender, address(this), amount);
-        uint256 balanceAfter = distributionTokenContract.balanceOf(address(this));
-        if (balanceAfter - balanceBefore != amount) revert InsufficientRevenueReceived();
+        // Mark distribution config as set
+        maturityManagement[assetId].distributionConfigSet = true;
 
-        emit RedemptionRevenueInjected(assetId, msg.sender, amount);
+        emit DistributionConfigSet(assetId, distributionToken, distributionAddress, totalDistributionAmount);
+    }
+
+    /**
+     * @dev Updates the distribution configuration for maturity rewards (admin only)
+     * @param assetId The asset identifier
+     * @param newDistributionToken The new token address to be used for distribution
+     * @param newDistributionAddress The new address that holds the distribution funds
+     * @param newTotalDistributionAmount The new total amount to be distributed
+     */
+    function updateDistributionConfig(
+        bytes32 assetId,
+        address newDistributionToken,
+        address newDistributionAddress,
+        uint256 newTotalDistributionAmount
+    ) external onlyRole(TIMELOCK_ROLE) {
+        if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+        if (!maturityManagement[assetId].distributionConfigSet) revert DistributionConfigNotSet();
+        if (newDistributionToken == address(0)) revert InvalidNewDistributionToken();
+        if (newDistributionAddress == address(0)) revert InvalidNewDistributionAddress();
+        if (newTotalDistributionAmount == 0) revert InvalidNewDistributionAmount();
+
+        DistributionConfig storage config = distributionConfigs[assetId];
+        AssetInfo storage asset = assets[assetId];
+
+        // Store old values for event
+        address oldDistributionToken = config.distributionToken;
+        address oldDistributionAddress = config.distributionAddress;
+        uint256 oldTotalDistributionAmount = config.totalDistributionAmount;
+
+        // Update distribution config
+        config.distributionToken = newDistributionToken;
+        config.distributionAddress = newDistributionAddress;
+        config.totalDistributionAmount = newTotalDistributionAmount;
+        config.configTimestamp = block.timestamp; // Update timestamp
+
+        // Update asset's distribution token reference
+        asset.distributionToken = newDistributionToken;
+
+        emit DistributionConfigUpdated(
+            assetId,
+            oldDistributionToken,
+            oldDistributionAddress,
+            oldTotalDistributionAmount,
+            newDistributionToken,
+            newDistributionAddress,
+            newTotalDistributionAmount
+        );
     }
 
     /**
@@ -976,8 +1036,12 @@ contract AquaFluxCore is
         uint256 protocolFeeReward
     ) external onlyRole(TIMELOCK_ROLE) {
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
-        if (!maturityManagement[assetId].revenueInjected) revert RevenueNotInjectedYet();
+        if (!maturityManagement[assetId].distributionConfigSet) revert DistributionTokenNotSet();
         if (maturityManagement[assetId].distributionSet) revert DistributionAlreadySet();
+
+        // Get distribution config to validate against total amount
+        DistributionConfig storage config = distributionConfigs[assetId];
+        if (config.distributionToken == address(0)) revert DistributionTokenNotSet();
 
         // Calculate total allocation including protocol fee reward
         uint256 totalAllocation = pAllocation +
@@ -985,7 +1049,7 @@ contract AquaFluxCore is
             sAllocation +
             protocolFeeReward;
         if (totalAllocation == 0) revert TotalAllocationMustBeGreaterThanZero();
-        if (totalAllocation != maturityManagement[assetId].totalRevenueInjected) revert TotalAllocationMustEqualInjectedRevenue();
+        if (totalAllocation != config.totalDistributionAmount) revert TotalAllocationMismatch();
 
         // Get current token supplies to fix them for reward calculations
         AssetInfo storage asset = assets[assetId];
@@ -1064,17 +1128,23 @@ contract AquaFluxCore is
         );
         if (userReward == 0) revert NoRewardToClaim();
 
-        // Check contract has sufficient balance using distribution token
-        uint256 contractBalance = IERC20(asset.distributionToken).balanceOf(
-            address(this)
-        );
-        if (contractBalance < userReward) revert InsufficientContractBalance();
+        // Get distribution config
+        DistributionConfig storage config = distributionConfigs[assetId];
+        address distributionAddress = config.distributionAddress;
+        
+        // Check distribution address has sufficient balance and allowance
+        IERC20 distributionToken = IERC20(asset.distributionToken);
+        uint256 distributionBalance = distributionToken.balanceOf(distributionAddress);
+        uint256 allowance = distributionToken.allowance(distributionAddress, address(this));
+        
+        if (distributionBalance < userReward) revert InsufficientDistributionBalance();
+        if (allowance < userReward) revert InsufficientAllowance();
 
         // Burn the user's tokens to prevent re-claiming from other addresses
         IBaseToken(tokenAddress).burn(msg.sender, userBalance);
 
-        // Transfer reward to user using distribution token
-        IERC20(asset.distributionToken).safeTransfer(msg.sender, userReward);
+        // Transfer reward from distribution address to user
+        distributionToken.safeTransferFrom(distributionAddress, msg.sender, userReward);
 
         emit MaturityRewardClaimed(
             assetId,
@@ -1182,14 +1252,18 @@ contract AquaFluxCore is
 
         if (totalReward == 0) revert NoRewardsToClaim();
 
-        // Check contract has sufficient balance using distribution token
-        uint256 contractBalance = IERC20(asset.distributionToken).balanceOf(
-            address(this)
-        );
-        if (contractBalance < totalReward) revert InsufficientContractBalance();
+        // Get distribution config and check balance/allowance
+        DistributionConfig storage config = distributionConfigs[assetId];
+        address distributionAddress = config.distributionAddress;
+        IERC20 distributionToken = IERC20(asset.distributionToken);
+        uint256 distributionBalance = distributionToken.balanceOf(distributionAddress);
+        uint256 allowance = distributionToken.allowance(distributionAddress, address(this));
+        
+        if (distributionBalance < totalReward) revert InsufficientDistributionBalance();
+        if (allowance < totalReward) revert InsufficientAllowance();
 
-        // Transfer total reward to user using distribution token
-        IERC20(asset.distributionToken).safeTransfer(msg.sender, totalReward);
+        // Transfer total reward from distribution address to user
+        distributionToken.safeTransferFrom(distributionAddress, msg.sender, totalReward);
     }
 
     /**
@@ -1255,20 +1329,19 @@ contract AquaFluxCore is
     // === FEE EXTRACTION FUNCTIONS ===
 
     /**
-     * @dev Withdraws accumulated protocol fees for a specific asset (admin only)
+     * @dev Withdraws all accumulated protocol fees for a specific asset (admin only)
      * @param assetId The asset identifier
      * @param to The address to receive the fees
-     * @param amount The amount of fees to withdraw
      */
     function withdrawProtocolFees(
         bytes32 assetId,
-        address to,
-        uint256 amount
+        address to
     ) external onlyRole(TIMELOCK_ROLE) {
         if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
         if (to == address(0)) revert InvalidRecipientAddress();
+        
+        uint256 amount = assetFeeBalances[assetId];
         if (amount == 0) revert AmountMustBeGreaterThanZero();
-        if (amount > assetFeeBalances[assetId]) revert InsufficientFeeBalance();
 
         AssetInfo storage asset = assets[assetId];
         IERC20 underlying = IERC20(asset.underlying);
@@ -1276,15 +1349,20 @@ contract AquaFluxCore is
         // Check contract has sufficient balance
         uint256 contractBalance = underlying.balanceOf(address(this));
         if (contractBalance < amount) revert InsufficientContractBalance();
+        
+        // Additional safety check: verify total tracked balances don't exceed contract balance
+        // This helps detect accounting errors that could lead to withdrawing wrong funds
+        uint256 totalTrackedForAsset = assetUnderlyingBalances[assetId] + assetFeeBalances[assetId];
+        if (totalTrackedForAsset > contractBalance) {
+            // This indicates accounting error - tracked balances exceed actual contract balance
+            revert InsufficientContractBalance();
+        }
 
-        // Check tracked fee balance
-        if (assetFeeBalances[assetId] < amount) revert InsufficientFeeBalance();
-
-        // Transfer fees to recipient first
+        // Transfer all fees to recipient
         underlying.safeTransfer(to, amount);
 
-        // Only reduce the tracked fee balance after successful transfer
-        assetFeeBalances[assetId] -= amount;
+        // Clear the tracked fee balance after successful transfer
+        assetFeeBalances[assetId] = 0;
 
         emit ProtocolFeesWithdrawn(assetId, to, amount, msg.sender);
     }
@@ -1316,7 +1394,11 @@ contract AquaFluxCore is
 
         for (uint256 i = 0; i < assetIds.length; i++) {
             bytes32 assetId = assetIds[i];
-            if (!isAssetRegistered(assetId)) revert AssetNotRegistered();
+            
+            // Skip unregistered assets instead of reverting
+            if (!isAssetRegistered(assetId)) {
+                continue;
+            }
 
             uint256 feeBalance = assetFeeBalances[assetId];
             if (feeBalance > 0) {
