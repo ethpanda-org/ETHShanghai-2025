@@ -1,11 +1,10 @@
 import { Request, Response } from 'express';
 import { inject, singleton } from 'tsyringe';
 import { Logger } from 'pino';
-import { RequestWithUser } from '@/types/express';
 import { AssetService } from './asset.service';
-import { Decimal } from '@prisma/client/runtime/library';
 import {
   GetAssetsQueryInput,
+  PriceHistoryQueryInput,
   AssetIdInput
 } from './asset.schema';
 
@@ -47,6 +46,23 @@ export class AssetController {
       status: 'success',
       data: asset,
       message: 'Asset retrieved successfully'
+    });
+  }
+
+  /**
+   * 获取资产详细介绍（富文本内容）
+   * GET /api/v1/assets/:id/detail
+   */
+  public async getAssetDetail(req: Request, res: Response): Promise<void> {
+    this.logger.info({ assetId: req.params.id }, 'Asset detail request received');
+    const { id } = req.params as AssetIdInput;
+    const assetDetail = await this.assetService.getAssetDetail(id);
+
+    this.logger.info({ assetId: id }, 'Asset detail retrieved successfully');
+    res.status(200).json({
+      status: 'success',
+      data: assetDetail,
+      message: 'Asset detail retrieved successfully'
     });
   }
 }

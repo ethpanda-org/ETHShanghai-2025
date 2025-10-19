@@ -5,6 +5,7 @@ import { catchAsync } from '@/utils/catchAsync';
 import { validate } from '@/middlewares/validate.middleware';
 import {
   getAssetsQuerySchema,
+  assetIdSchema
 } from './asset.schema';
 
 export const configureAssetRoutes = (router: Router): void => {
@@ -15,5 +16,17 @@ export const configureAssetRoutes = (router: Router): void => {
     '/',
     validate(getAssetsQuerySchema),
     catchAsync(assetController.getAssets.bind(assetController))
+  );
+
+  router.get(
+    '/:id',
+    validate(assetIdSchema),
+    catchAsync(assetController.getAsset.bind(assetController))
+  );
+
+  router.get(
+    '/:id/detail',
+    validate(assetIdSchema),
+    catchAsync(assetController.getAssetDetail.bind(assetController))
   );
 };

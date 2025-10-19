@@ -2,8 +2,6 @@ import { Router } from 'express';
 
 // AquaFlux DeFi 模块路由
 import { configureAssetRoutes } from '@/modules/asset/asset.routes';
-import { configureStructureRoutes } from '@/modules/structure/structure.routes';
-import { configurePortfolioRoutes } from '@/modules/portfolio/portfolio.routes';
 
 // 定义一个类型，让我们的配置更安全
 type RouteConfig = {
@@ -15,8 +13,6 @@ type RouteConfig = {
 const v1Routes: RouteConfig[] = [
   // AquaFlux DeFi 核心模块
   { path: '/assets', configure: configureAssetRoutes },
-  { path: '/structure', configure: configureStructureRoutes },
-  { path: '/portfolio', configure: configurePortfolioRoutes },
 ];
 
 /**

@@ -65,7 +65,7 @@ export class AssetService {
           OR: [
             { name: { contains: search, mode: 'insensitive' } },
             { issuer: { contains: search, mode: 'insensitive' } },
-            { id: { contains: search, mode: 'insensitive' } }
+            { assetId: { contains: search, mode: 'insensitive' } }
           ]
         }),
         ...(type && { type }),
@@ -86,8 +86,8 @@ export class AssetService {
           include: {
             _count: {
               select: {
-                priceHistory: true,
-                portfolioPositions: true
+                priceHistory: true
+                // portfolioPositions removed - using Multicall2 for real-time data
               }
             }
           }
@@ -116,39 +116,167 @@ export class AssetService {
   }
 
   /**
-   * 根据ID获取单个资产
-   * @param id - 资产ID
+   * 根据assetId获取单个资产
+   * @param assetId - 资产ID (区块链上的资产唯一标识符)
    * @returns Promise<资产详情>
    * @throws AppError 当资产不存在时抛出404错误
    */
-  public async findById(id: string) {
+  public async findById(assetId: string) {
     try {
+      this.logger.info(`Attempting to find asset with assetId: ${assetId}`);
+
       const asset = await this.prisma.asset.findUnique({
-        where: { id, isActive: true },
+        where: { assetId, isActive: true },
         include: {
-          priceHistory: {
-            orderBy: { timestamp: 'desc' },
-            take: 1 // 获取最新价格
-          },
           _count: {
             select: {
-              portfolioPositions: true,
-              swapTransactions: true,
-              structureOperations: true
+              priceHistory: true
+              // portfolioPositions removed - using Multicall2 for real-time data
             }
           }
         }
       });
 
       if (!asset) {
-        throw new AppError(`Asset with ID ${id} not found`, 404);
+        throw new AppError(`Asset with assetId ${assetId} not found`, 404);
       }
 
       return this.formatAssetResponse(asset);
     } catch (error) {
       if (error instanceof AppError) throw error;
-      this.logger.error('Error in AssetService.findById:', error);
+      this.logger.error('Error in AssetService.findById:', {
+        error: error instanceof Error ? error.message : error,
+        stack: error instanceof Error ? error.stack : undefined,
+        assetId
+      });
       throw new AppError('Failed to fetch asset', 500);
     }
+  }
+
+  /**
+   * 获取资产详细介绍
+   * @param assetId - 资产ID
+   * @returns Promise<资产富文本详细介绍>
+   * @throws AppError 当资产不存在时抛出404错误
+   */
+  public async getAssetDetail(assetId: string) {
+    try {
+      this.logger.info(`Attempting to find asset detail for assetId: ${assetId}`);
+
+      // 先检查资产是否存在
+      const asset = await this.prisma.asset.findUnique({
+        where: { assetId, isActive: true }
+      });
+
+      if (!asset) {
+        throw new AppError(`Asset with assetId ${assetId} not found`, 404);
+      }
+
+      // 查询资产详细介绍
+      const assetDetail = await this.prisma.assetDetail.findUnique({
+        where: { assetId }
+      });
+
+      if (!assetDetail) {
+        throw new AppError(`Asset detail for assetId ${assetId} not found`, 404);
+      }
+
+      return {
+        assetId: assetDetail.assetId,
+        richTextContent: assetDetail.richTextContent,
+        contentType: assetDetail.contentType,
+        createdAt: assetDetail.createdAt,
+        updatedAt: assetDetail.updatedAt
+      };
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      this.logger.error('Error in AssetService.getAssetDetail:', {
+        error: error instanceof Error ? error.message : error,
+        stack: error instanceof Error ? error.stack : undefined,
+        assetId
+      });
+      throw new AppError('Failed to fetch asset detail', 500);
+    }
+  }
+
+  /**
+   * 格式化资产响应数据
+   * @param asset - 原始资产数据，包含关联关系
+   * @returns 格式化后的资产响应对象
+   */
+  private formatAssetResponse(asset: any) {
+    return {
+      assetId: asset.assetId,
+      name: asset.name,
+      issuer: asset.issuer,
+      type: asset.type,
+      rating: asset.rating,
+      chain: asset.chain,
+      maturity: asset.maturity,
+      duration: Number(asset.duration),
+      // 区块链合约地址信息
+      rwaToken: asset.rwaTokenAddress,
+      aqToken: asset.aqTokenAddress,
+      pTokenAddress: asset.pTokenAddress,
+      cTokenAddress: asset.cTokenAddress,
+      sTokenAddress: asset.sTokenAddress,
+      // 市场数据
+      tvl: Number(asset.tvl),
+      vol24h: Number(asset.vol24h),
+      pApr: Number(asset.pApr),
+      cApr: Number(asset.cApr),
+      sApr: Number(asset.sApr),
+      sAprRange: asset.sAprRange,
+      lcr: Number(asset.lcr),
+      nav: Number(asset.nav),
+      discountP: Number(asset.discountP),
+      rewards: asset.rewards,
+      isNew: asset.isNew,
+      isActive: asset.isActive,
+      createdAt: asset.createdAt,
+      updatedAt: asset.updatedAt,
+      // 计算的字段
+      daysToMaturity: asset.maturity ? 
+        Math.ceil((new Date(asset.maturity).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 
+        null,
+      riskScore: this.calculateRiskScore(asset.rating),
+      // 统计信息
+      ...(asset._count && {
+        priceHistoryCount: asset._count.priceHistory,
+        // portfolioPositionsCount removed - no longer tracked in database (using Multicall2)
+        structureOperationsCount: asset._count.structureOperations
+      }),
+      // 最新价格（如果有）
+      ...(asset.priceHistory && asset.priceHistory.length > 0 && {
+        latestPrice: {
+          nav: Number(asset.priceHistory[0].nav),
+          discountP: Number(asset.priceHistory[0].discountP),
+          pPrice: asset.priceHistory[0].pPrice ? Number(asset.priceHistory[0].pPrice) : null,
+          cPrice: asset.priceHistory[0].cPrice ? Number(asset.priceHistory[0].cPrice) : null,
+          sPrice: asset.priceHistory[0].sPrice ? Number(asset.priceHistory[0].sPrice) : null,
+          timestamp: asset.priceHistory[0].timestamp
+        }
+      })
+    };
+  }
+
+  /**
+   * 计算风险评分
+   * @param rating - 信用评级（可选）
+   * @returns 风险评分（1-20），评级越高分数越低
+   */
+  private calculateRiskScore(rating?: string | null): number {
+    if (!rating) return 10; // 默认风险评分
+
+    const ratingMap: Record<string, number> = {
+      'AAA': 1, 'AA+': 2, 'AA': 3, 'AA-': 4,
+      'A+': 5, 'A': 6, 'A-': 7,
+      'BBB+': 8, 'BBB': 9, 'BBB-': 10,
+      'BB+': 11, 'BB': 12, 'BB-': 13,
+      'B+': 14, 'B': 15, 'B-': 16,
+      'CCC': 17, 'CC': 18, 'C': 19, 'D': 20
+    };
+
+    return ratingMap[rating] || 10;
   }
 }
