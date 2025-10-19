@@ -1,0 +1,906 @@
+[
+  {
+    "inputs": [],
+    "name": "AccessControl_CallerIsNotAuthorized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AccessControl_CannotRemoveAdmin",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CallerIsNotAuthorized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "CallerIsNotOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DelegateNotAllowed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "EnforcedPause",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "context",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "newQuote",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxQuote",
+        "type": "uint256"
+      }
+    ],
+    "name": "ExceedsMaxTokenTransferOutQuote",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ExpectedPause",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidInitialization",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "OnlyDelegate",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PayoutTemporarilyDisabled",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ReentrancyGuardReentrantCall",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "userAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "signer",
+        "type": "address"
+      }
+    ],
+    "name": "VerifySignatureFailed",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "eip712Name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "eip712Version",
+        "type": "string"
+      }
+    ],
+    "name": "EIP712ConfigChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "enum IAppStorage.PayoutType",
+        "name": "payoutType",
+        "type": "uint8"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "feeTokenAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "FeeTokenPayout",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "feeTokenAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "feeTokenPriceStableCoin",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isEnabled",
+        "type": "bool"
+      }
+    ],
+    "name": "FeeTokenUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes4",
+        "name": "functionSig",
+        "type": "bytes4"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint8",
+        "name": "role",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "enabled",
+        "type": "bool"
+      }
+    ],
+    "name": "FunctionAccessChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "version",
+        "type": "uint64"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newMaxTTOQ",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "MaxTTOQUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Paused",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "string",
+        "name": "dateString",
+        "type": "string"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "profitTokenAddress",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "isDistributed",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "brokerageAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "revenueAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liquidity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "buyBackBurn",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stakingDividends",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "riskReserve",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "operatingCosts",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct IAppStorage.ProfitDistributedDetail",
+        "name": "detail",
+        "type": "tuple"
+      }
+    ],
+    "name": "ProfitDistribution",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "string",
+        "name": "context",
+        "type": "string"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newTTOQ",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "TTOQUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Unpaused",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint8",
+        "name": "role",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "enabled",
+        "type": "bool"
+      }
+    ],
+    "name": "UserRoleUpdated",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "roleA",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "roleB",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "roleC",
+        "type": "uint8"
+      }
+    ],
+    "name": "AdminFacet_init",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum IAppStorage.PayoutType",
+        "name": "payoutType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "feeTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "doPayoutVault",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "val",
+        "type": "address"
+      }
+    ],
+    "name": "getFeeTokenInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "isEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "priceStableCoin",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "shouldBurn",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "decimals",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "vaultAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "profitDistributedAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "brokerageVault",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liquidityFundVault",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "buyBackBurnFundVault",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stakingDividendsFundVault",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "riskReserveFundVault",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "operatingCostsFundVault",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalPayout",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IAppStorage.FeeTokenInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "val",
+        "type": "address"
+      }
+    ],
+    "name": "getFeeTokenPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "priceStableCoin",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getMaxFeeRateBps",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "maxFeeRateBps",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getMaxSlippageBps",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "dateString",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "profitTokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getProfitDistributedDetail",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "isDistributed",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "brokerageAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "revenueAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liquidity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "buyBackBurn",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stakingDividends",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "riskReserve",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "operatingCosts",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IAppStorage.ProfitDistributedDetail",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "salt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "maker",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenPriceInPaymentToken",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "paymentTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "slippageBps",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum IAppStorage.OrderSide",
+            "name": "side",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "feeTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "sig",
+            "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "exchangeNftAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "paymentTokenAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "fee1Amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "fee1TokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "fee2Amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "fee2TokenAddress",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct IAppStorage.Order",
+        "name": "order",
+        "type": "tuple"
+      }
+    ],
+    "name": "getRemainingAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "val",
+        "type": "address"
+      }
+    ],
+    "name": "isValidatePayment",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "dateString",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "profitTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "brokerageAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "revenueAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rewardFeeAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "profitDistribution",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "val",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "feeTokenPriceStableCoin",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isEnabled",
+        "type": "bool"
+      }
+    ],
+    "name": "setFeeToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "val",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxFeeRateBps",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "maxSlippageBps",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxSlippageBps",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "minimumOrderSalt_",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMinimumOrderSalt",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "val",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "isEnabled",
+        "type": "bool"
+      }
+    ],
+    "name": "setPayment",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "val",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "isEnabled",
+        "type": "bool"
+      }
+    ],
+    "name": "setShouldBurnFeeToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
