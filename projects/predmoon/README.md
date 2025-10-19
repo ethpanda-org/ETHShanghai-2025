@@ -21,7 +21,7 @@
 
 ### 2) 架构与实现 (Architecture & Implementation)
 
-- **总览图（可贴图/链接）**：https://raw.githubusercontent.com/TuringM-Labs/TuringM/main/assets/flow.jpg
+- **总览图（可贴图/链接）**：[![structure](https://raw.githubusercontent.com/TuringM-Labs/TuringM/main/assets/flow.jpg)]
 - **关键模块**：
   - 前端：滑动交易系统/嵌入式钱包/跨链转账集成等
   - 后端：链下订单撮合/混合去中心化交易所模型
@@ -38,17 +38,10 @@
 - **网络**：Sepolia 测试网
 - **核心合约与地址**：
   ```
-  ContractName: 0xfa8472996347B8636f7Cf969F775c200A7d6c259
+  ContractName: PredMoonApp https://sepolia.etherscan.io/address/0xfa8472996347B8636f7Cf969F775c200A7d6c259
   ```
-- **验证链接（Etherscan/BlockScout）**：https://sepolia.etherscan.io/address/0xfa8472996347B8636f7Cf969F775c200A7d6c259
-- **最小复现脚本**：
-  ```bash
-  # 部署合约
-  forge script script/Deploy.s.sol --rpc-url $SEPOLIA_RPC_URL --broadcast
-  
-  # 运行测试
-  forge test
-  ```
+- **验证链接（Etherscan/BlockScout）**：https://repo.sourcify.dev/11155111/0xfa8472996347B8636f7Cf969F775c200A7d6c259
+
 
 ### 4) 运行与复现 (Run & Reproduce)
 
