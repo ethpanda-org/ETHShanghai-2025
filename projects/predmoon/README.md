@@ -21,7 +21,7 @@
 
 ### 2) 架构与实现 (Architecture & Implementation)
 
-- **总览图（可贴图/链接）**：[![structure](https://raw.githubusercontent.com/TuringM-Labs/TuringM/main/assets/flow.jpg)]
+- **总览图**：[![structure](https://raw.githubusercontent.com/TuringM-Labs/TuringM/main/assets/flow.jpg)]
 - **关键模块**：
   - 前端：滑动交易系统/嵌入式钱包/跨链转账集成等
   - 后端：链下订单撮合/混合去中心化交易所模型
@@ -40,7 +40,7 @@
   ```
   ContractName: PredMoonApp https://sepolia.etherscan.io/address/0xfa8472996347B8636f7Cf969F775c200A7d6c259
   ```
-- **验证链接（Etherscan/BlockScout）**：https://repo.sourcify.dev/11155111/0xfa8472996347B8636f7Cf969F775c200A7d6c259
+- **验证链接**：https://repo.sourcify.dev/11155111/0xfa8472996347B8636f7Cf969F775c200A7d6c259
 
 
 ### 4) 运行与复现 (Run & Reproduce)
@@ -76,13 +76,13 @@ pnpm --filter frontend dev
 # 打开 http://localhost:3000
 ```
 
-- **在线 Demo（如有）**：pred.wtf
-- **账号与测试说明（如需要）**：register by your own email
+- **在线 Demo**：[pred.wtf](https://pred.wtf)
+- **账号与测试说明**：register by your own email
 
 ### 5) Demo 与关键用例 (Demo & Key Flows)
 
 - **视频链接（≤3 分钟，中文）**：[视频链接]
-- **关键用例步骤（2-4 个要点）**：
+- **关键用例步骤**：
   - 用例 1：Login module with Privy(embed wallet)
   - 用例 2：Deposit through multi-chain
   - 用例 3：Trade module
