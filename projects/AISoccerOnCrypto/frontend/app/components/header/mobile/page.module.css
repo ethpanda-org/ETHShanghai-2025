@@ -1,0 +1,328 @@
+@import '../../../web3.css';
+
+.section_1 {
+  width: 100%;
+  background-size: 100%;
+}
+
+.block_9 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  /* align-items: center; */
+  width: 80%;
+  height: 98px;
+}
+
+.image_1 {
+  width: 100px;
+  height: 100px; 
+  background-size: 100%;
+}
+
+.image_2 {
+  width: 307px;
+  height: 24px;
+  margin: 10px 0 0 21px;
+  background-size: 100%;
+}
+
+.menu {
+  width: 500px;
+}
+
+.menu_open {
+  display: none;
+}
+
+.menu_close {
+  display: none;
+}
+
+.mint {
+  width: 39px;
+  height: 13px;
+  overflow-wrap: break-word;
+  color: rgba(255, 255, 255, 1);
+  font-size: 18px;
+  font-family: PingFangSC-Semibold;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  /* line-height: 60px; */
+  margin: 44px 0 0 0;
+}
+
+.mint:hover {
+  color: rgba(2, 229, 254, 1);
+}
+
+.mint_selected {
+  width: 39px;
+  height: 13px;
+  overflow-wrap: break-word;
+  color: rgba(2, 229, 254, 1);
+  font-size: 18px;
+  font-family: PingFangSC-Semibold;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  /* line-height: 60px; */
+  margin: 44px 0 0 0;
+}
+
+.myrunes {
+  width: 126px;
+  height: 17px;
+  overflow-wrap: break-word;
+  color: rgba(255, 255, 255, 1);
+  font-size: 18px;
+  font-family: PingFangSC-Regular;
+  font-weight: NaN;
+  text-align: center;
+  white-space: nowrap;
+  /* line-height: 60px; */
+  margin: 44px 0 0 0;
+}
+
+.myrunes:hover {
+  color: rgba(2, 229, 254, 1);
+}
+
+.myrunes_selected {
+  width: 126px;
+  height: 17px;
+  overflow-wrap: break-word;
+  color: rgba(2, 229, 254, 1);
+  font-size: 18px;
+  font-family: PingFangSC-Regular;
+  font-weight: NaN;
+  text-align: center;
+  white-space: nowrap;
+  /* line-height: 60px; */
+  margin: 44px 0 0 0;
+}
+
+.text_3 {
+  width: 109px;
+  height: 18px;
+  overflow-wrap: break-word;
+  color: rgba(153, 153, 153, 1);
+  font-size: 18px;
+  font-family: PingFangSC-Regular;
+  font-weight: NaN;
+  text-align: center;
+  white-space: nowrap;
+  /* line-height: 60px; */
+  margin: 44px 0 0 0;
+}
+
+.text-wrapper_1 {
+  background-size: 100% 100%;
+  margin: 35px 0 0 0;
+}
+
+.image_3 {
+  width: 100%;
+  height: 1px;
+  margin: 11px 0 0 0;
+}
+
+.connect-button {
+  background-color: blue;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+.web3-btn-primary {
+  background-color: rgb(var(--primary-color));
+  border: 1px solid rgb(var(--primary-color));
+  color: rgb(var(--text-color));
+}
+
+@media (max-width: 800px) {
+  .image_1 {
+    width: 50px;
+    height: 50px; 
+    background-size: 100%;
+    margin: 0 0 0 0;
+  }
+  
+  .image_2 {
+    width: 144px;
+    height: 11px;
+    margin: 0 0 0 10px;
+    background-size: 100%;
+  }
+
+  .menu {
+    display: none;
+  }
+
+  .text-wrapper_1 {
+    display: none;
+  }
+
+  .block_9 {
+    width: 95%;
+    height: 30px;
+    align-items: center;
+  }
+
+  .menu_open {
+    display: block;
+    width: 21px;
+    height: 12px;
+    margin: 0 0 0 -9px;
+  }
+  
+  .menu_close {
+    display: block;
+    width: 21px;
+    height: 21px;
+    margin: 0 0 0 -9px;
+  }
+
+  .menu_mobile {
+    width: 90%;
+    background: transparent;
+    margin: 0 0 0 5px;
+    z-index: 1;
+  }
+
+  .selected_mobile {
+    width: 40px;
+    height: 14px;
+    overflow-wrap: break-word;
+    color: rgba(2, 229, 254, 1);
+    font-size: 18px;
+    font-family: PingFangSC-Semibold;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+    line-height: 30px;
+    margin: 15px 0 0 0;
+  }
+
+  .mobile {
+    width: 40px;
+    height: 14px;
+    overflow-wrap: break-word;
+    color: rgba(255, 255, 255, 1);
+    font-size: 18px;
+    font-family: PingFangSC-Semibold;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+    line-height: 30px;
+    margin: 0 0 0 0;
+  }
+  
+  .image_4 {
+    width: 100%;
+    height: 1px;
+    margin: 20px 0 0 0;
+  }
+  
+  .myrunes_mobile {
+    width: 130px;
+    height: 18px;
+    overflow-wrap: break-word;
+    color: rgba(255, 255, 255, 1);
+    font-size: 18px;
+    font-family: PingFangSC-Semibold;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+    line-height: 30px;
+    margin: 15px 0 0 0;
+  }
+
+  .myrunes_selected_mobile {
+    width: 130px;
+    height: 18px;
+    overflow-wrap: break-word;
+    color: rgba(2, 229, 254, 1);
+    font-size: 18px;
+    font-family: PingFangSC-Semibold;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+    line-height: 30px;
+    margin: 15px 0 0 0;
+  }
+  
+  .image_5 {
+    width: 100%;
+    height: 1px;
+    margin: 15px 0 0 0;
+  }
+  
+  .text_3 {
+    width: 112px;
+    height: 18px;
+    overflow-wrap: break-word;
+    color: rgba(153, 153, 153, 1);
+    font-size: 18px;
+    font-family: PingFangSC-Semibold;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+    line-height: 30px;
+    margin: 11px 0 0 0;
+  }
+  
+  .connect_btn {
+    width: 90%;
+    height: 50px;
+    background-size: 100% 100%;
+    margin: 11px 0 0 0;
+  }
+  
+  .connect_btn_text {
+    overflow-wrap: break-word;
+    color: white;
+    font-size: 15px;
+    font-family: PingFangSC-Semibold;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .address_btn {
+    width: 100%;
+    height: 50px;
+    background-color: transparent;
+    margin: 15px 0 0 0;      
+  }
+
+  .address_btn_text {
+    overflow-wrap: break-word;
+    color: white;
+    font-size: 15px;
+    font-family: PingFangSC-Semibold;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+  
+  .image_6 {
+    width: 100%;
+    height: 1px;
+    margin: 16px 0 0 0;
+  }
+  
+  .wallet {
+    height: 50px;
+    width: 325px;
+    margin: 21px 0 21px 25px;
+  }
+
+  .image_wallet {
+    width: 24px;
+    height: 24px;
+  }
+}

@@ -1,0 +1,117 @@
+
+.web3-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.web3-input {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  color: var(--foreground);
+  font-size: 1rem;
+}
+
+.web3-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/******web3 style********/
+/* https://rareblocks.xyz/ */
+.web3-text-gradient {
+  background: linear-gradient(to right, #30CFD0, #c43ad6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.web3-text-glow {
+  text-shadow: 0 0 80px rgb(192 219 255 / 75%), 0 0 32px rgb(65 120 255 / 24%);
+}
+
+.web3-btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 18px;
+  padding: 12px 32px;
+  margin: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  border-radius: 50px;
+}
+
+.web3-btn:hover {
+  transition: all 0.3s ease;
+}
+
+.web3-btn-primary {
+  background-color: rgb(var(--primary-color));
+  border: 1px solid rgb(var(--primary-color));
+  color: rgb(var(--text-color));
+}
+
+/* https://thegraph.com/en/ */
+.web3-btn-semi-transparent {
+  background-color: rgba(var(--primary-color), 0.15);
+  border: 1px solid rgba(var(--primary-color), 0.25);
+  color: rgba(var(--text-color), 0.8);
+}
+
+.web3-btn-semi-transparent:hover {
+  background-color: rgba(var(--primary-color), 0.35);
+  border: 1px solid rgba(var(--primary-color), 0.5);
+  color: rgba(var(--text-color), 0.9);
+}
+
+.web3-btn-glow:hover {
+  box-shadow: rgba(var(--primary-color), 0.5) 0px 0px 20px 0px;
+}
+
+/* https://sushi.com/ */
+.web3-btn-gradient {
+  background-image: linear-gradient(to right, rgb(1 134 218), rgb(182 49 167));
+  border: 0;
+  color: rgba(var(--text-color));
+}
+
+/* https://sushi.com/ */
+.web3-btn-gradient-border {
+  color: rgba(var(--text-color));
+  border: 2px double transparent;
+      background-image: linear-gradient(rgb(13, 14, 33), rgb(13, 14, 33)), radial-gradient(circle at left top, rgb(1, 110, 218), rgb(217, 0, 192));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.web3-card {
+  margin: 1rem;
+  padding: 1rem;
+  height: 300px;
+  width: 300px;
+  text-align: center;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background-color: gray;
+  border-radius: 10px;
+}
+
+.web3-bg-blur {
+  overflow: hidden;
+  background-color: transparent;
+}
+
+.web3-bg-blur::before {
+  content: '';
+  background-image: var(--bg-image);
+  background-size: cover;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  filter: blur(30px);
+  z-index: -1;
+}
