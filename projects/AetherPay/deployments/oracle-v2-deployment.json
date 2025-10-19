@@ -1,0 +1,13 @@
+{
+  "network": "op-sepolia",
+  "timestamp": "2025-09-30T12:09:17.500Z",
+  "contracts": {
+    "aetherOracleV2": "0x6a0c9aA2B04BA45Dd348a86Ae3ebE81EE89df106"
+  },
+  "configuration": {
+    "requiredSubmissions": "1",
+    "consensusWindow": "300",
+    "initialOracle": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c"
+  },
+  "deployer": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c"
+}

@@ -1,0 +1,13 @@
+{
+  "network": "op-sepolia",
+  "timestamp": "2025-10-13T02:10:15.234Z",
+  "deployer": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c",
+  "purpose": "Fix contribution tracking - donations show as $0.00",
+  "contracts": {
+    "DirectDonation": "0x947E33354FFf059b875E97e8daD32e39c1e59004",
+    "PaymentGatewayV2": "0x16e25554Ac0076b33910659Cddff3F1D20735900",
+    "OriginalPublicGoodsFund": "0x61E95B1551168D3f9F2C9EE6427705fCDC26b950"
+  },
+  "issue": "PublicGoodsFund.contributeSpread() calculates 0 when rates are equal",
+  "solution": "DirectDonation contract properly tracks contributions per user"
+}

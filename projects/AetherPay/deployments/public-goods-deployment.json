@@ -1,0 +1,38 @@
+{
+  "network": "op-sepolia",
+  "publicGoodsFund": "0x0C50DB765fa4b25D960D2CCa7556135909A742C1",
+  "deployer": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c",
+  "timestamp": "2025-10-01T10:29:26.428Z",
+  "supportedTokens": {
+    "MOCK_USDC": "0x07C1E2588295b73bD0b98F2806AbF13E748b6cC3",
+    "MOCK_USDT": "0xDda8cEa63EDa45777dBd2735A6B4C4c2Dd5f942C"
+  },
+  "publicGoods": [
+    {
+      "id": 0,
+      "name": "Ethereum Foundation Grants"
+    },
+    {
+      "id": 1,
+      "name": "Geth Development"
+    },
+    {
+      "id": 2,
+      "name": "Optimism Public Goods"
+    }
+  ],
+  "currentRound": {
+    "roundId": "1",
+    "recipients": [
+      "0x750EF1D7a0b4Ab1c97B7A623D7917CcEb5ea779C",
+      "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c",
+      "0x750EF1D7a0b4Ab1c97B7A623D7917CcEb5ea779C"
+    ],
+    "allocations": [
+      4000,
+      3000,
+      3000
+    ]
+  },
+  "explorer": "https://sepolia-optimistic.etherscan.io/address/0x0C50DB765fa4b25D960D2CCa7556135909A742C1"
+}

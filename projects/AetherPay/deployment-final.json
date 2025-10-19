@@ -1,0 +1,26 @@
+{
+  "network": "optimism-sepolia",
+  "chainId": 11155420,
+  "timestamp": "2025-10-12T12:35:05.605Z",
+  "deployer": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c",
+  "contracts": {
+    "PaymentGatewayV2": "0x119122157f5988d65D2D8B1A8b327C2eD27E9417",
+    "PublicGoodsFundV2": "0xa3CA872b3876FbC2a6759256e57583A25555B4Cb",
+    "FXRouter": "0x81C8F2AdD03187A17F8998541e27E2dD7566c504",
+    "MockUSDC": "0xb7225051e57db0296C1F56fbD536Acd06c889724",
+    "MockUSDT": "0x87a9Ce8663BF89D0e273068c2286Df44Ef6622D2",
+    "TreasuryAddress": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c",
+    "DonationAddress": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c"
+  },
+  "status": {
+    "totalDonations": "0.000075 USDC",
+    "totalContributors": "1",
+    "donationFunctional": true
+  },
+  "testOrder": {
+    "orderId": "FINAL_TEST_1760272481749",
+    "orderBytes32": "0x423a37437261bb70f6e831c7c6054d8b462a9405143dcd610f41e80bf2432924",
+    "amount": "50 USDC",
+    "status": "completed"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-09-29T01:30:49.565Z",
+  "model": {
+    "type": "LightGBM",
+    "version": "1.0",
+    "features": 624,
+    "accuracy": 0.618
+  },
+  "hashes": {
+    "modelHash": "0xcf59e4dae713d67a2f2d62e5bc653cfe0286bc460a8ea88400171e65728d555f",
+    "metadataHash": "0xb69f44315d99ba50b7057237014e0d6d2ed769569775be9f04851623d83f2d82",
+    "combinedHash": "0x1cb87fe1445f0be2641297d32a470cd1d78abbe0cadd03af292e65853cf91500"
+  },
+  "ipfs": {
+    "hash": "bafkreigplhsnvzyt2z5c6llc4w6gkph6akdlyrqkr2uiiaaxdzsxfdkvl4",
+    "url": "https://gateway.pinata.cloud/ipfs/bafkreigplhsnvzyt2z5c6llc4w6gkph6akdlyrqkr2uiiaaxdzsxfdkvl4",
+    "gateway": "Pinata"
+  },
+  "verification": {
+    "script": "\n// 验证模型完整性\nconst ipfsData = await fetch('https://gateway.pinata.cloud/ipfs/bafkreigplhsnvzyt2z5c6llc4w6gkph6akdlyrqkr2uiiaaxdzsxfdkvl4');\nconst modelData = await ipfsData.arrayBuffer();\nconst hash = crypto.createHash('sha256').update(Buffer.from(modelData)).digest('hex');\nconsole.assert(hash === 'cf59e4dae713d67a2f2d62e5bc653cfe0286bc460a8ea88400171e65728d555f', '模型验证失败');\n                "
+  }
+}

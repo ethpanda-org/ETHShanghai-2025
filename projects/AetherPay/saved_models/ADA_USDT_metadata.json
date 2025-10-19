@@ -1,0 +1,14 @@
+{
+  "pair": "ADA/USDT",
+  "trained_at": "2025-10-03T01:18:49.121006",
+  "version": "super_fast_1.0",
+  "performance": {
+    "r2": -3.9311260415516136,
+    "rmse": 0.005867102549895937
+  },
+  "training_config": {
+    "data_points": 500,
+    "features": 10,
+    "lookback": 5
+  }
+}

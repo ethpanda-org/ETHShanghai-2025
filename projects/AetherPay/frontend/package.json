@@ -1,0 +1,44 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.2.5",
+    "@supabase/supabase-js": "^2.75.0",
+    "@tanstack/react-query": "^5.64.2",
+    "@types/qrcode": "^1.5.5",
+    "autoprefixer": "^10.4.21",
+    "better-sqlite3": "^12.4.1",
+    "chart.js": "^4.5.1",
+    "clsx": "^2.1.1",
+    "next": "15.1.6",
+    "qrcode": "^1.5.4",
+    "qrcode.react": "^4.2.0",
+    "react": "^18.3.1",
+    "react-chartjs-2": "^5.3.0",
+    "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.6.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
+    "tailwind-merge": "^3.3.1",
+    "viem": "^2.21.54",
+    "wagmi": "^2.14.8"
+  },
+  "devDependencies": {
+    "@next/swc-linux-x64-gnu": "^15.5.4",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "15.1.6",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}

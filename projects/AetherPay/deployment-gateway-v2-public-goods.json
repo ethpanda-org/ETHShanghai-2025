@@ -1,0 +1,29 @@
+{
+  "network": "optimism-sepolia",
+  "chainId": 11155420,
+  "timestamp": "2025-10-12T12:26:21.446Z",
+  "deployer": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c",
+  "contracts": {
+    "PaymentGatewayV2": "0xAb30d4810D7240D56Ac5d1c18FC1524b5140C5e4",
+    "PublicGoodsFund": "0x0a093d7dA062cD542c554ac181267A90b837a892",
+    "FXRouter": "0x81C8F2AdD03187A17F8998541e27E2dD7566c504",
+    "MockUSDC": "0xb7225051e57db0296C1F56fbD536Acd06c889724",
+    "MockUSDT": "0x87a9Ce8663BF89D0e273068c2286Df44Ef6622D2",
+    "DonationAddress": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c",
+    "TreasuryAddress": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c",
+    "PublicGoodsFundV2": "0x0a093d7dA062cD542c554ac181267A90b837a892",
+    "PublicGoodsFundV1": "0x2f17730A67A19a3Ca2c61f80720E922C553299da"
+  },
+  "features": {
+    "spreadDonationEnabled": true,
+    "publicGoodsFundIntegrated": true,
+    "platformFeeRate": "30",
+    "donationPercentage": "500"
+  },
+  "testOrder": {
+    "orderId": "TEST_1760271688257",
+    "orderBytes32": "0x046521d00299349ad56bebaef40f8c56dccb1606b79a70db8b40732e8854b62d",
+    "status": "Created for testing"
+  },
+  "lastUpdated": "2025-10-15T22:30:12.424Z"
+}

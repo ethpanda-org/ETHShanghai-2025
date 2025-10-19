@@ -1,0 +1,16 @@
+{
+  "network": "op-sepolia",
+  "timestamp": "2025-09-29T09:04:18.240Z",
+  "contracts": {
+    "mockTokens": {
+      "USDC": "0x07C1E2588295b73bD0b98F2806AbF13E748b6cC3",
+      "USDT": "0xDda8cEa63EDa45777dBd2735A6B4C4c2Dd5f942C"
+    },
+    "factory": "0xE5Eb108E850304c458F9B548aD5195738C4e77bd",
+    "pool": "0x04A903665f595Cbff23100EFb7baB3A1059d92C2",
+    "router": "0xC2ab12Baf3735864528F890B809Ffe2f1cf2f8d1",
+    "oracle": "0xD274e66aB4eFa2F520fd3Ab6384d243B59bA4179",
+    "treasury": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c",
+    "donation": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c"
+  }
+}

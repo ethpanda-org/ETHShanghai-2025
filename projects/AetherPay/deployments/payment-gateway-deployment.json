@@ -1,0 +1,20 @@
+{
+  "network": "op-sepolia",
+  "timestamp": "2025-09-30T12:13:07.652Z",
+  "contracts": {
+    "paymentGateway": "0xe624C84633FA9C3D250222b202059d03830C52cf",
+    "fxRouter": "0xC2ab12Baf3735864528F890B809Ffe2f1cf2f8d1",
+    "treasury": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c",
+    "donation": "0x750EF1D7a0b4Ab1c97B7A623D7917CcEb5ea779C"
+  },
+  "supportedTokens": {
+    "USDC": "0x07C1E2588295b73bD0b98F2806AbF13E748b6cC3",
+    "USDT": "0xDda8cEa63EDa45777dBd2735A6B4C4c2Dd5f942C"
+  },
+  "configuration": {
+    "platformFeeRate": 30,
+    "donationPercentage": 500,
+    "orderExpiryTime": 1800
+  },
+  "deployer": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c"
+}

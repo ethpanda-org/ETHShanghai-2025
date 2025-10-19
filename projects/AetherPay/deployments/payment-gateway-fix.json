@@ -1,0 +1,22 @@
+{
+  "network": "op-sepolia",
+  "timestamp": "2025-10-13T00:50:35.064Z",
+  "deployer": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c",
+  "issue": "Fixed FXRouter address mismatch for cross-currency payments",
+  "contracts": {
+    "PaymentGatewayV2": "0x16e25554Ac0076b33910659Cddff3F1D20735900",
+    "FXRouter": "0x94e3dFEF2c19e2cFf0D2CC6F5801C7ceC3927663",
+    "FXPool": "0x6035B7FCbbc63CADCCd01f617375F4C6ca4C43A3",
+    "PublicGoodsFund": "0x61E95B1551168D3f9F2C9EE6427705fCDC26b950",
+    "AetherOracleV2": "0x6a0c9aA2B04BA45Dd348a86Ae3ebE81EE89df106"
+  },
+  "tokens": {
+    "USDC": "0xb7225051e57db0296C1F56fbD536Acd06c889724",
+    "USDT": "0x87a9Ce8663BF89D0e273068c2286Df44Ef6622D2"
+  },
+  "fixes": [
+    "PaymentGatewayV2 now uses correct FXRouter (0x94e3dFEF...)",
+    "FXRouter has USDC/USDT pool registered",
+    "Cross-currency payments should now work"
+  ]
+}

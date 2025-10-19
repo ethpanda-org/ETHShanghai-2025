@@ -1,0 +1,38 @@
+{
+  "network": "op-sepolia",
+  "aetherOracle": "0x44E5572DcF2CA78Ecd5561AA87904D2c2d2cE5Be",
+  "aetherOracleV2": "0x44E5572DcF2CA78Ecd5561AA87904D2c2d2cE5Be",
+  "aetherOracleV1": "0xD274e66aB4eFa2F520fd3Ab6384d243B59bA4179",
+  "deployer": "0x5ce38CfB6698c437d76436DF6d5f30355FDE6a8c",
+  "timestamp": "2025-09-30T00:00:00.000Z",
+  "settlementPaths": [
+    {
+      "id": "direct_l2",
+      "name": "Direct L2 Settlement",
+      "costBasisPoints": 60,
+      "settlementTime": 15
+    },
+    {
+      "id": "batched",
+      "name": "Batched Settlement",
+      "costBasisPoints": 30,
+      "settlementTime": 120
+    },
+    {
+      "id": "optimistic",
+      "name": "Optimistic Rollup",
+      "costBasisPoints": 40,
+      "settlementTime": 300
+    }
+  ],
+  "modelInfo": {
+    "pair": "BTC/USDT",
+    "ipfsHash": "bafkreigplhsnvzyt2z5c6llc4w6gkph6akdlyrqkr2uiiaaxdzsxfdkvl4",
+    "modelHash": "0xcf59e4dae713d67a2f2d62e5bc653cfe0286bc460a8ea88400171e65728d555f",
+    "features": 624,
+    "accuracy": "61.8%"
+  },
+  "donationAddress": "0x750EF1D7a0b4Ab1c97B7A623D7917CcEb5ea779C",
+  "explorer": "https://sepolia-optimistic.etherscan.io/address/0x44E5572DcF2CA78Ecd5561AA87904D2c2d2cE5Be",
+  "note": "Upgraded to AetherOracleV2 with multi-oracle consensus mechanism"
+}

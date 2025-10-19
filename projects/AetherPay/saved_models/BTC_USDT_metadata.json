@@ -1,0 +1,14 @@
+{
+  "pair": "BTC/USDT",
+  "trained_at": "2025-10-03T01:18:47.745114",
+  "version": "super_fast_1.0",
+  "performance": {
+    "r2": 0.0793508210141789,
+    "rmse": 183.14005066424053
+  },
+  "training_config": {
+    "data_points": 500,
+    "features": 10,
+    "lookback": 5
+  }
+}
