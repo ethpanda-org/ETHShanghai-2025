@@ -114,6 +114,13 @@ interface IAquaFluxCore {
     event FactoryChanged(address indexed oldFactory, address indexed newFactory);
 
     /**
+     * @dev Emitted when the timelock contract is updated
+     * @param oldTimelock The address of the previous timelock contract
+     * @param newTimelock The address of the new timelock contract
+     */
+    event TimelockUpdated(address indexed oldTimelock, address indexed newTimelock);
+
+    /**
      * @dev Emitted when coupon allocation is updated
      * @param assetId The asset identifier
      * @param oldCAllocation The previous C token allocation
@@ -325,6 +332,76 @@ interface IAquaFluxCore {
         address indexed updatedBy
     );
 
+    // === MATURITY MANAGEMENT EVENTS ===
+
+    /**
+     * @dev Emitted when asset operations are manually stopped
+     * @param assetId The asset identifier
+     * @param stoppedBy The admin who stopped operations
+     */
+    event AssetOperationsStopped(
+        bytes32 indexed assetId,
+        address indexed stoppedBy
+    );
+
+    /**
+     * @dev Emitted when funds are withdrawn for offline redemption
+     * @param assetId The asset identifier
+     * @param withdrawnBy The admin who withdrew funds
+     * @param amount The amount withdrawn
+     */
+    event FundsWithdrawnForRedemption(
+        bytes32 indexed assetId,
+        address indexed withdrawnBy,
+        uint256 amount
+    );
+
+    /**
+     * @dev Emitted when redemption revenue is injected back into contract
+     * @param assetId The asset identifier
+     * @param injectedBy The admin who injected revenue
+     * @param amount The amount injected
+     */
+    event RedemptionRevenueInjected(
+        bytes32 indexed assetId,
+        address indexed injectedBy,
+        uint256 amount
+    );
+
+    /**
+     * @dev Emitted when distribution plan is set
+     * @param assetId The asset identifier
+     * @param pAllocation P Token allocation amount
+     * @param cAllocation C Token allocation amount
+     * @param sAllocation S Token allocation amount
+     * @param protocolFeeReward Protocol fee reward for S Token holders
+     * @param setBy The admin who set the plan
+     */
+    event DistributionPlanSet(
+        bytes32 indexed assetId,
+        uint256 pAllocation,
+        uint256 cAllocation,
+        uint256 sAllocation,
+        uint256 protocolFeeReward,
+        address indexed setBy
+    );
+
+    /**
+     * @dev Emitted when a user claims maturity reward
+     * @param assetId The asset identifier
+     * @param user The user who claimed
+     * @param tokenAddress The token address for which reward was claimed
+     * @param tokenBalance The user's token balance
+     * @param rewardAmount The reward amount claimed
+     */
+    event MaturityRewardClaimed(
+        bytes32 indexed assetId,
+        address indexed user,
+        address indexed tokenAddress,
+        uint256 tokenBalance,
+        uint256 rewardAmount
+    );
+
     /**
      * @dev Pauses all operations for a specific asset (admin only)
      * @param assetId The asset identifier to pause
@@ -363,4 +440,145 @@ interface IAquaFluxCore {
         bytes32 assetId,
         uint256 newOperationDeadline
     ) external;
+
+    // === MATURITY MANAGEMENT FUNCTIONS ===
+
+    /**
+     * @dev Gets the current lifecycle state of an asset
+     * @param assetId The asset identifier
+     * @return The current lifecycle state (0=ACTIVE, 1=OPERATIONS_STOPPED, 2=FUNDS_WITHDRAWN, 3=REVENUE_INJECTED, 4=DISTRIBUTION_SET, 5=CLAIMABLE)
+     */
+    function getAssetLifecycleState(bytes32 assetId) external view returns (uint8);
+
+    /**
+     * @dev Manually stops operations for an asset (admin only)
+     * @param assetId The asset identifier
+     */
+    function stopAssetOperations(bytes32 assetId) external;
+
+    /**
+     * @dev Withdraws underlying tokens for offline redemption (admin only)
+     * @param assetId The asset identifier
+     * @param amount The amount to withdraw
+     */
+    function withdrawForRedemption(bytes32 assetId, uint256 amount) external;
+
+    /**
+     * @dev Injects redemption revenue back into the contract (admin only)
+     * @param assetId The asset identifier
+     * @param amount The amount of revenue to inject
+     */
+    function injectRedemptionRevenue(bytes32 assetId, uint256 amount) external;
+
+    /**
+     * @dev Sets the distribution plan for P/C/S tokens (admin only)
+     * @param assetId The asset identifier
+     * @param pAllocation P Token allocation amount
+     * @param cAllocation C Token allocation amount
+     * @param sAllocation S Token allocation amount
+     * @param protocolFeeReward Additional protocol fee reward for S Token holders
+     */
+    function setDistributionPlan(
+        bytes32 assetId,
+        uint256 pAllocation,
+        uint256 cAllocation,
+        uint256 sAllocation,
+        uint256 protocolFeeReward
+    ) external;
+
+    /**
+     * @dev Claims maturity reward for a specific token type
+     * @param assetId The asset identifier
+     * @param tokenAddress The token address (P, C, or S token)
+     */
+    function claimMaturityReward(bytes32 assetId, address tokenAddress) external;
+
+    /**
+     * @dev Claims maturity rewards for all token types at once
+     * @param assetId The asset identifier
+     */
+    function claimAllMaturityRewards(bytes32 assetId) external;
+
+    /**
+     * @dev Gets claimable reward amount for a user and token type
+     * @param assetId The asset identifier
+     * @param user The user address
+     * @param tokenAddress The token address
+     * @return The claimable reward amount
+     */
+    function getClaimableReward(bytes32 assetId, address user, address tokenAddress) external view returns (uint256);
+
+    // === TIMELOCK MANAGEMENT FUNCTIONS ===
+
+    /**
+     * @dev Sets the timelock contract address (admin only)
+     * @param newTimelock The address of the timelock contract
+     */
+    function setTimelock(address newTimelock) external;
+
+    /**
+     * @dev Gets the current timelock contract address
+     * @return The address of the timelock contract
+     */
+    function getTimelock() external view returns (address);
+
+    /**
+     * @dev Checks if timelock is configured and ready for use
+     * @return True if timelock is set and has required role
+     */
+    function isTimelockReady() external view returns (bool);
+
+    // === FEE EXTRACTION EVENTS ===
+
+    /**
+     * @dev Emitted when protocol fees are withdrawn
+     * @param assetId The asset identifier
+     * @param to The address that received the fees
+     * @param amount The amount of fees withdrawn
+     * @param withdrawnBy The admin who withdrew the fees
+     */
+    event ProtocolFeesWithdrawn(
+        bytes32 indexed assetId,
+        address indexed to,
+        uint256 amount,
+        address indexed withdrawnBy
+    );
+
+    // === FEE EXTRACTION FUNCTIONS ===
+
+    /**
+     * @dev Withdraws accumulated protocol fees for a specific asset (admin only)
+     * @param assetId The asset identifier
+     * @param to The address to receive the fees
+     * @param amount The amount of fees to withdraw
+     */
+    function withdrawProtocolFees(
+        bytes32 assetId,
+        address to,
+        uint256 amount
+    ) external;
+
+    /**
+     * @dev Gets the amount of withdrawable fees for a specific asset
+     * @param assetId The asset identifier
+     * @return The amount of fees available for withdrawal
+     */
+    function getWithdrawableFees(bytes32 assetId) external view returns (uint256);
+
+    /**
+     * @dev Withdraws all accumulated protocol fees for multiple assets (admin only)
+     * @param assetIds Array of asset identifiers
+     * @param to The address to receive the fees
+     */
+    function withdrawAllProtocolFees(
+        bytes32[] calldata assetIds,
+        address to
+    ) external;
+
+    /**
+     * @dev Gets the total withdrawable fees across all assets for a specific underlying token
+     * @param underlyingToken The underlying token address
+     * @return totalFees The total fees available for withdrawal
+     */
+    function getTotalWithdrawableFeesForToken(address underlyingToken) external view returns (uint256 totalFees);
 }
