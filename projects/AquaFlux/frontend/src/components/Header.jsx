@@ -56,7 +56,7 @@ function CommandPalette({ open, onClose }) {
           <span className="text-slate-400 text-sm">⌘K</span>
           <input
             autoFocus
-            placeholder="Enter: asset, swap, build… (demo)"
+            placeholder="Enter: asset, swap, structure… (demo)"
             className="flex-1 outline-none text-sm"
           />
           <button onClick={onClose} className="text-slate-500 hover:text-slate-700 text-sm">✕</button>
@@ -75,8 +75,9 @@ export default function Header({ nav, push }) {
 
   const handleNav = (key) => {
     if (key === 'markets') return push('markets')
+    if (key === 'portfolio') return push('portfolio')
     if (key === 'swap') return push('swap', { assetId: ASSETS[0].id, from: 'USDC', to: `${ASSETS[0].id}:P` })
-    if (key === 'build') return push('build', { assetId: ASSETS[0].id, tab: 'split-merge' })
+    if (key === 'structure') return push('structure', { assetId: ASSETS[0].id, tab: 'split-merge' })
   }
 
   useEffect(() => {
@@ -107,7 +108,8 @@ export default function Header({ nav, push }) {
             <nav className="hidden md:flex items-center gap-1">
               <NavTab active={nav === 'markets'} onClick={() => handleNav('markets')}>Markets</NavTab>
               <NavTab active={nav === 'swap'} onClick={() => handleNav('swap')}>Swap</NavTab>
-              <NavTab active={nav === 'build'} onClick={() => handleNav('build')}>Structure</NavTab>
+              <NavTab active={nav === 'structure'} onClick={() => handleNav('structure')}>Structure</NavTab>
+              <NavTab active={nav === 'portfolio'} onClick={() => handleNav('portfolio')}>Portfolio</NavTab>
             </nav>
           </div>
 

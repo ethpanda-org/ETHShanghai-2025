@@ -130,7 +130,7 @@ export default function MarketsPage({ push }) {
               value={sort} 
               onChange={(e) => setSort(e.target.value)}
             >
-              <option value="trend">Trend (Comprehensive)</option>
+              <option value="trend">Trend</option>
               <option value="pApy">P-APY</option>
               <option value="cApr">C-APR</option>
               <option value="sApy">S-APY Median</option>
@@ -192,7 +192,7 @@ export default function MarketsPage({ push }) {
         <AssetCards 
           assets={assets} 
           onSwap={(params) => push("swap", params)} 
-          onBuild={(params) => push("build", params)} 
+          onBuild={(params) => push("structure", params)} 
         />
       ) : (
         <AssetTable 

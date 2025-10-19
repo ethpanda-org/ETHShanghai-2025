@@ -172,7 +172,7 @@ export default function SwapPage({ params, push }) {
             </button>
             <button 
               className="ml-auto px-3 py-2 rounded-xl border text-sm hover:bg-slate-50" 
-              onClick={() => push("build", { assetId: asset.id, tab: "split-merge" })}
+              onClick={() => push("structure", { assetId: asset.id, tab: "split-merge" })}
             >
               去 结构：拆/组
             </button>
@@ -193,7 +193,7 @@ export default function SwapPage({ params, push }) {
           receipt={receipt} 
           onClose={() => setReceipt(null)} 
           onBackToAsset={() => push("markets", {})} 
-          onGoBuild={() => push("build", { assetId: asset.id, tab: "split-merge" })} 
+                      onGoBuild={() => push("structure", { assetId: asset.id, tab: "split-merge" })} 
         />
       )}
     </div>

@@ -89,7 +89,93 @@ export const GOALS = [
   { key: "Shield", hint: "S-focused: Sell protection for premiums (high risk)" },
 ]
 
-// Get Asset
+// Mock Portfolio Holdings Data
+export const PORTFOLIO_HOLDINGS = [
+  {
+    assetId: "UST-2026",
+    holdings: {
+      P: { amount: 1250.00, costBasis: 124750.00 },
+      C: { amount: 850.00, costBasis: 84150.00 },
+      S: { amount: 300.00, costBasis: 29700.00 }
+    }
+  },
+  {
+    assetId: "CORP-2027-A", 
+    holdings: {
+      P: { amount: 800.00, costBasis: 79200.00 },
+      C: { amount: 950.00, costBasis: 94050.00 },
+      S: { amount: 450.00, costBasis: 44550.00 }
+    }
+  },
+  {
+    assetId: "CP-180D-2026",
+    holdings: {
+      P: { amount: 600.00, costBasis: 59400.00 },
+      C: { amount: 200.00, costBasis: 19800.00 },
+      S: { amount: 100.00, costBasis: 9900.00 }
+    }
+  },
+  {
+    assetId: "MUNI-2030",
+    holdings: {
+      P: { amount: 450.00, costBasis: 44550.00 },
+      C: { amount: 380.00, costBasis: 37620.00 },
+      S: { amount: 120.00, costBasis: 11880.00 }
+    }
+  }
+]
+
+// Helper functions
 export function getAsset(assetId) { 
   return ASSETS.find(a => a.id === assetId) 
+}
+
+export function getPortfolioHolding(assetId) {
+  return PORTFOLIO_HOLDINGS.find(h => h.assetId === assetId)
+}
+
+export function calculatePortfolioSummary() {
+  let totalValue = 0
+  let totalP = 0
+  let totalC = 0 
+  let totalS = 0
+  let nearMaturityCount = 0
+
+  PORTFOLIO_HOLDINGS.forEach(holding => {
+    const asset = getAsset(holding.assetId)
+    if (asset) {
+      // Calculate current values (using NAV as current price)
+      const pValue = holding.holdings.P.amount * asset.nav
+      const cValue = holding.holdings.C.amount * asset.nav 
+      const sValue = holding.holdings.S.amount * asset.nav
+      
+      totalP += pValue
+      totalC += cValue
+      totalS += sValue
+      totalValue += pValue + cValue + sValue
+
+      // Check if near maturity (≤90 days)
+      const maturityDate = new Date(asset.maturity)
+      const today = new Date()
+      const daysToMaturity = Math.ceil((maturityDate - today) / (1000 * 60 * 60 * 24))
+      if (daysToMaturity <= 90 && daysToMaturity > 0) {
+        nearMaturityCount++
+      }
+    }
+  })
+
+  const pPercent = totalValue > 0 ? (totalP / totalValue) * 100 : 0
+  const cPercent = totalValue > 0 ? (totalC / totalValue) * 100 : 0
+  const sPercent = totalValue > 0 ? (totalS / totalValue) * 100 : 0
+
+  return {
+    totalValue,
+    pValue: totalP,
+    cValue: totalC,
+    sValue: totalS,
+    pPercent,
+    cPercent, 
+    sPercent,
+    nearMaturityCount
+  }
 }
