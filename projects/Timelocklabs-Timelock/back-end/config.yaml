@@ -51,10 +51,10 @@ scanner:
   rpc_retry_delay: "10s"               # RPC重试延迟（出错时等待时间）
   
   # 扫块配置
-  scan_batch_size: 100                # 每批扫描的区块数量
+  scan_batch_size: 10                # 每批扫描的区块数量
   scan_interval: "15s"                 # 快速扫描间隔
   scan_interval_slow: "30s"           # 慢速扫描间隔（到达最新块后）
-  scan_confirmations: 3              # 区块确认数
+  scan_confirmations: 1              # 区块确认数
 
   # Timelock流刷新配置
   flow_refresh_interval: "60s"        # 流刷新间隔
