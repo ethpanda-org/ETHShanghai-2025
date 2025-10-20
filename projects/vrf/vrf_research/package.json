@@ -1,0 +1,46 @@
+{
+  "name": "vrf-bls12381",
+  "version": "1.0.0",
+  "description": "VRF implementation using BLS12-381 curve",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run"
+  },
+  "keywords": [
+    "vrf",
+    "bls12-381",
+    "cryptography",
+    "verifiable-random-function"
+  ],
+  "author": "Jade Xie",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.8",
+    "vite-plugin-dts": "^3.7.0",
+    "vitest": "^1.1.0"
+  },
+  "dependencies": {
+    "@noble/curves": "^1.3.0",
+    "ethers": "^6.10.0"
+  }
+}
+

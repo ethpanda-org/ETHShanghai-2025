@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #0a0a0a;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background-color: #030712;
+  color: #f3f4f6;
+  min-height: 100vh;
+}
+
+.privacy-blur {
+  transition: all 0.3s ease;
+}
+
+.privacy-blur:hover {
+  filter: none;
+}
+
+.blurred {
+  filter: blur(4px);
+}
+
+.blurred-strong {
+  filter: blur(8px);
+}
+
+.blurred-stronger {
+  filter: blur(12px);
+}

@@ -1,0 +1,14 @@
+src/
+tests/
+*.test.ts
+*.spec.ts
+tsconfig.json
+vite.config.ts
+vitest.config.ts
+example.ts
+.gitignore
+node_modules/
+.vscode/
+.idea/
+*.log
+

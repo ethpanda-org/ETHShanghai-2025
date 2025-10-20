@@ -1,0 +1,94 @@
+% \documentclass[11pt,twoside,a4paper]{article}
+% \usepackage{times}
+
+% \usepackage{xeCJK}
+
+% \setmainfont{Times New Roman}
+
+% \setCJKmainfont{Songti SC}
+\documentclass[10pt]{ctexart}
+% \usepackage[UTF-8]{ctex}
+\usepackage{amsmath}
+\usepackage{amsthm} % 根据 amsthm 的手册, amsthm 的加载要在 amsmath 之后
+\usepackage{amssymb}  %为了能使用\mathbb{H} 
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage[colorlinks,linkcolor=blue]{hyperref} % 使用超链接
+\usepackage{pdfpages}
+\usepackage{geometry}
+\geometry{a4paper,scale=0.8}
+\usepackage{graphicx} %插入图片的宏包
+\usepackage{float} %设置图片浮动位置的宏包
+\usepackage{subfigure} %插入多图时用子图显示的宏包
+\usepackage{graphicx}
+\usepackage{enumerate}
+% \usepackage{natbib}
+% \newcommand{\upcite}[1][{\setcitestyle{square,super}}\cite{#1}]
+
+\usepackage{listings}
+
+\lstset{
+ columns=fixed,       
+ numbers=left,                                        % 在左侧显示行号
+ numberstyle=\tiny\color{gray},                       % 设定行号格式
+ frame=none,                                          % 不显示背景边框
+ backgroundcolor=\color[RGB]{245,245,244},            % 设定背景颜色
+ keywordstyle=\color[RGB]{40,40,255},                 % 设定关键字颜色
+ numberstyle=\footnotesize\color{darkgray},           
+ commentstyle=\it\color[RGB]{0,96,96},                % 设置代码注释的格式
+ stringstyle=\rmfamily\slshape\color[RGB]{128,0,0},   % 设置字符串格式
+ showstringspaces=false,                              % 不显示字符串中的空格
+%language=c++,                                        % 设置语言
+}
+
+\newtheorem{definition}{定义}
+\newtheorem{lemma}{引理}
+\newtheorem{theorem}{定理}
+\newtheorem{example}{例}
+
+
+\title{VRF 计算}
+\author{Jade Xie}
+\date{\today}
+\begin{document}
+\maketitle
+% \tableofcontents
+
+\subsection{准备阶段}
+
+
+
+\subsection{Porver 计算}
+
+\begin{itemize}
+    \item 输入：$sk, pk, in$
+\end{itemize}
+其中 $sk$ 为进行签名和输出随机数的私钥，$in$ 为输入。
+
+\begin{enumerate}
+    \item 计算 \[preout = sk \cdot H_{\mathbb{G}}(in)\] 其中 $H_{\mathbb{G}}$ 是 hash to curve 操作， $H$ 是一般的哈希函数。
+    \item 在 $\mathbb{F}_p$ 中选取随机数 $r_1$。
+    \item 计算 \[ R = r_1 \cdot \mathbf{G} \] \[R_m = r_1 \cdot H_{\mathbb{G}}(in)\]
+    \item 计算 \[c = H_p(in, pk, preout, R, R_m)\] 其中 $H_p$ 是在有限域 $\mathbb{F}_p$ 上进行哈希，先进行哈希，再映射到有限域 $\mathbb{F}_p$ 内。
+    \item 计算 \[s_1 = r_1 + c \cdot sk\]
+\end{enumerate}
+
+\begin{itemize}
+    \item 输出：$c, s_1, preout$
+\end{itemize}
+
+\subsection{Verifier 验证计算}
+
+\begin{itemize}
+    \item 输入：$pk, in, c, s_1, preout$
+\end{itemize}
+
+\begin{enumerate}
+    \item 计算 \[R = s_1 \cdot G - c \cdot pk\] \[R_m = s_1 \cdot  H_{\mathbb{G}}(in) - c \cdot preout\]
+    \item 判断 \[c \overset{?}{=} H_p(in, pk, preout, R, R_m)\]
+    \item 上一步如果相等，计算 \[out = H(preout, in)\]并输出 $out$ ，否则输出 $false$ 。
+\end{enumerate}
+
+\end{document}
