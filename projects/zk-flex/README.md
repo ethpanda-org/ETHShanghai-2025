@@ -4,11 +4,11 @@
 
 ## 一、提交物清单 (Deliverables)
 
-- [x] GitHub 仓库：https://github.com/TreapGoGo/zk-flex（完整代码）
-- [x] Demo 视频：[待添加]（≤ 3 分钟，中文）
+- [x] GitHub 仓库：[https://github.com/TreapGoGo/zk-flex](https://github.com/TreapGoGo/zk-flex)（完整代码）
+- [x] Demo 视频：[https://drive.google.com/file/d/1pst6BI9snMBEFiJs8w7Fcbaz_ynqhVVR/view?usp=sharing](https://drive.google.com/file/d/1pst6BI9snMBEFiJs8w7Fcbaz_ynqhVVR/view?usp=sharing) （≤ 3 分钟，中文）
 - [x] 在线演示链接：本地可运行（见下方复现指南）
 - [x] 合约部署信息：包含本地部署脚本与测试网部署指南
-- [x] Pitch Deck：见 [SLIDES.md](SLIDES.md)
+- [x] Pitch Deck：[https://gamma.app/docs/ZK-Flex-24p4lchlppubeic](https://gamma.app/docs/ZK-Flex-24p4lchlppubeic)
 
 ## 二、参赛队伍填写区 (Fill-in Template)
 
