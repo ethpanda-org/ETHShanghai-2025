@@ -31,7 +31,8 @@
 ### 2) 架构与实现 (Architecture & Implementation)
 
 - **系统架构总览**：
-  
+  ![系统架构图](docs/architecture.png)
+
 - **关键模块**：
   - **前端**：
     - 框架：Next.js 15.5.6 + React 19.1.0
@@ -127,8 +128,8 @@ PLATFORM_WALLET_PRIVATE_KEY=0x87269b1977619f55a9c6eea5a67209a0331b868e3b2c252ef7
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/your-username/qd-payway.git
-cd qd-payway
+git clone https://github.com/beanu/ETHShanghai-2025.git
+cd projects/qd-payway
 
 # 2. 进入前端目录
 cd frontend/payway
