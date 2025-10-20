@@ -1,0 +1,40 @@
+{
+  "name": "@focusbond/sdk-evm",
+  "version": "0.1.0",
+  "description": "FocusBond SDK for EVM chains",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "viem": "^2.21.19"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  },
+  "peerDependencies": {
+    "viem": "^2.0.0"
+  },
+  "keywords": [
+    "focusbond",
+    "evm",
+    "ethereum",
+    "base",
+    "defi",
+    "productivity"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jim3503/FocusBond-ETH.git",
+    "directory": "packages/sdk-evm"
+  },
+  "license": "MIT"
+}
