@@ -1,0 +1,22 @@
+[profile.default]
+src = "contracts"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.20"
+
+# Optimizer settings
+optimizer = true
+optimizer_runs = 200
+
+# EVM version
+evm_version = "paris"
+
+# Gas reports
+gas_reports = ["*"]
+
+# Test settings
+verbosity = 2
+
+[rpc_endpoints]
+localhost = "http://127.0.0.1:8545"
+anvil = "http://127.0.0.1:8545"
