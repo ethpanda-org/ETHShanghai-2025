@@ -1,0 +1,17 @@
+{
+  "hardhat": {},
+  "sepolia": {
+    "mockToken": {
+      "address": "0x2e3000d46a8ba4e567C6629EC19942Ff6d3C1fb9",
+      "name": "Mock RWA Token",
+      "symbol": "MRWA",
+      "deployedAt": "2025-10-20T07:36:13.306Z"
+    },
+    "assetId": "0xe4566c5dfad169ea69c0e3934bf6436eb7a9a0e7cecbb68e4fad18f0877a9bb1",
+    "registeredAt": "2025-10-20T07:38:14.193Z",
+    "verifiedAt": "2025-10-20T07:38:25.208Z",
+    "wrapAmount": "100",
+    "splitAmount": "50"
+  },
+  "mainnet": {}
+}
