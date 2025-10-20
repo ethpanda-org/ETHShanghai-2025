@@ -2,10 +2,11 @@
 
 ## 一、提交物清单 (Deliverables)
 
-- GitHub 仓库：https://github.com/Thyra-Protocol/Thyra-Demo/tree/main/ThyraFrontend
+- GitHub 仓库：https://github.com/Thyra-Protocol/
 - Demo 视频（≤ 3 分钟，中文）：https://drive.google.com/file/d/1BrpjQnTh6510EurKgnyO6yWWtrQr5bFS/view?usp=sharing
-- 在线演示链接：thyra.figma.site
+- Pitch Deck链接：https://docs.google.com/presentation/d/1lpB_sLstrVA7imVCWv96LlprC67_97Lk/edit?usp=drive_link&ouid=113044035090548933960&rtpof=true&sd=true
 - 合约部署信息：见下文“合约与部署”
+- 门户网站链接：thyra.figma.site
 
 
 ---
@@ -26,25 +27,37 @@
 - **核心问题与动机（Pain Points）**：
   - DeFi 生态碎片化、跨协议/多链操作门槛高，人工 24/7 维护难以为继；
   - 现有 DeFAI 多停留在一次性 `calldata` 翻译，缺乏持久状态、条件逻辑与动态适应；
-  - 现有自动化解决方案大多停留在trigger模式，无法适应用户和agent的执行需求
+  - 现有自动化解决方案大多停留在trigger-execute模式，无法适应用户和agent日益增长的执行需求。
 - **解决方案（Solution）**：
-  - 将自然语言意图翻译为标准化的策略中间表示（SIR），并在去中心化、事件驱动的 Thyra VM 中长期运行；
-  - 通过 `ThyraAccount`（Gnosis Safe + Diamond Proxy）实现细粒度、可撤销的自托管授权与链上护栏；
-  - 提供可组合、可审计、可复现的策略工件，支持跨协议/链/数据的模块化扩展。
+  - **自然语言驱动**：用简单的自然语言表达意图（如"每周一买入 $100 的 ETH"、"当 APY 更高时转移资金"、"价格下跌时卖出部分仓位"），Thyra 自动将其转化为可执行的策略；
+  - **7×24 自主执行**：持续监控市场价格与协议状态，在最佳时机自动执行，无需人工干预或频繁检查；
+  - **完全自托管**：通过 `ThyraAccount`（Gnosis Safe + Diamond Proxy）实现细粒度、可撤销的授权与链上护栏，用户始终保持资产完全控制权，随时可修改或撤销授权；
+  - **多场景覆盖**：支持长期投资组合构建和多种 DeFi 策略，提供可组合、可审计、可复现的策略工件。
 
 ### 2) 架构与实现 (Architecture & Implementation)
 
-- **总览图**：见仓库图片（如 `502f2bcb5c9f2bfafa6e6e6e5dcb3a4.png`，或 Pitch Deck/白皮书相应章节）。
+- **总览图**：
+
+![Thyra Architecture](Architecture.png)
+
 - **关键模块**：
-  - 前端：后续开放 Visual Strategy Builder；
-  - 后端/服务：事件订阅与策略编排（规划中）；
-  - 合约：`ThyraAccount`（Gnosis Safe + EIP-2535 Diamond）、Registry、Factory、各 Facet；
-  - 扩展：策略模板、协议适配器、审计/回放工具链。
+  - **Intent Translation Layer** ：Thyra Agent
+    - AI Agent：自然语言 → 可执行的 Thyra 二进制代码
+    - 可视化策略构建器 (Visual Strategy Builder)：基于 Blockly 的类型安全条件/动作组合，内置验证机制
+  - **Strategy Execution Layer**：Thyra Engine
+    - 编译器 (Compiler)：Thyra 二进制代码 → 线性 Opcode 指令
+    - 解释器与状态模型 (Interpreter & State Model)：隔离的执行上下文，可审计的运行时状态
+    - 调度器 (Scheduler)：协作式并发，为大规模长期运行的策略提供公平、可预测的执行进度
+  - **Asset Custody Layer**：Thyra Account
+    - Gnosis Safe + EIP-2535 Diamond 可升级 Facet 架构
+    - Merkle 预授权、重放保护、执行时间窗口、Gas 价格上限
+    - 支持闪电贷执行、多调用批量执行
 - **依赖与技术栈（计划）**：
   - 前端：Next.js/React、ethers.js、Tailwind CSS；
+  - 节点：Golang、Erigon；
   - 服务：Node.js/TypeScript；
   - 合约：Solidity、Foundry；
-  - 部署与监控：Etherscan/Arbiscan/BaseScan 校验、链上事件索引。
+
 
 ### 3) 合约与部署 (Contracts & Deployment)
 
@@ -74,10 +87,12 @@
   - `OwnershipFacet`: 0x7620f8de33daa4e03e26d9ea6222ed9953e5eb09 (`https://basescan.org/address/0x7620f8de33daa4e03e26d9ea6222ed9953e5eb09`)
   - `ThyraFactory`: 0x2017ccd606f5e0eb411e1d750c6f26acd2421078 (`https://basescan.org/address/0x2017ccd606f5e0eb411e1d750c6f26acd2421078`)
 
-> 说明：上述地址来自链上部署记录文件；如需验证事件与交易详情，可通过各链区块浏览器查看对应交易哈希与日志。
+>以下为DEMO所演示策略的执行记录；如需验证事件与交易详情，可通过各链区块浏览器查看对应交易哈希与日志。
+https://arbiscan.io/address/0xfcece1a244c836bfa2f1ef06d159a402d3713c5c#tokentxns
 
 ### 4) 运行与复现 (Run & Reproduce)
 
+运行与复现指令在三个repo中均有详细文档。以下为指令合集：
 <details>
 <summary><b>4.1 ThyraFrontend</b></summary>
 
@@ -218,18 +233,24 @@ forge test -vvv
 
 ---
 
-- **在线 Demo**：筹备中。
+- **测试覆盖说明**：
+  - **ThyraAccount**：包含完整 Executor 执行交易的端到端（E2E）测试；
+  - **ThyraCore**：包含两个真实策略的端到端测试：
+    1. 如果 Aave USDC APY 大于 5%，则自动存入 1000 USDC；
+    2. 如果 Uniswap V3 的 ETH 报价高于 4000 美元，则执行一笔 swap 交易。
+
+
 
 ### 5) Demo 与关键用例 (Demo & Key Flows)
 
-- 代表性用例（详见 `UseCase.md` 与 Pitch Deck）：
-  1. **统一可编程限价单 (Unified Programmable Limit Orders)**：在 Uniswap/Curve/Balancer/RFQ 等多协议间实现限价单/TWAP/DCA，支持分片执行、波动带控制与 TIF（Time-In-Force）语义，无需改变现有 UX 或放弃自托管；
+- 代表性用例（详见 [UseCase.md](UseCase.md) 与 Pitch Deck）：
+  1. **统一可编程限价单 (Unified Programmable Limit Orders)**：在 Uniswap/Curve/Balancer 等多协议间实现限价单/TWAP/DCA，支持分片执行、波动带控制与 TIF（Time-In-Force）语义，无需改变现有 UX 或放弃自托管
   2. **收益优化 (Yield Optimization)**：在 DSR/Aave/Morpho 等协议间基于净 APY（扣除 gas 与滑点成本）自动轮换稳定币/LST/LRT 头寸，仅在收益增量覆盖成本时执行再平衡，实现"设置即忘"的风险调整收益最大化；
   3. **可执行代理 (Execution-Capable Agents)**：为第三方 AI Agent（如 Olas、Virtuals 等框架）提供安全、可撤销的链上执行通道，通过 SIR 接收意图并由 SEE 在链上自主执行，支持角色隔离、预算/速率限制与全流程可审计；
   4. **高级交易工具 (Advanced Trading Tool)**：为专业交易者提供 CeFi 级 EMS/OMS 能力，包括 VWAP/TWAP/iceberg、Bracket/OCO 订单、MEV 感知路由、跨协议智能订单路由（SOR）以及组合级风控熔断机制，在保持完全自托管的前提下实现机构级执行质量。
 
 - **测试覆盖说明**：
-  - **ThyraAccount**：包含完整 Executor 执行交易的端到端（E2E）测试；
+  - **ThyraAccount**：包含完整 Executor 执行交易的integration 端到端（E2E）测试；
   - **ThyraCore**：包含两个真实策略的端到端测试：
     1. **收益优化策略**：如果 Aave USDC APY 大于 5%，则自动存入 1000 USDC；
     2. **价格触发交易策略**：如果 Uniswap V3 的 ETH 报价高于 4000 美元，则执行一笔 swap 交易。
@@ -238,12 +259,13 @@ forge test -vvv
 
 - 已公开且可验证：
   - 多链合约地址与部署交易（见上）；
+  - 核心工作流E2E测试；
   - Thyra Account repo；
   - 技术文档、Pitch Deck、用例说明与设计细节；
 - 暂未公开（ThyraCore部分在进行security review，review完成后逐步开源）：
   - 前端 Visual Strategy Builder 与部分服务端代码；
   - Thyra Agent服务的提示词及工具调用未公开，以防止潜在的提示词注入、供应链投毒等安全威胁，从而保护Thyra用户的资产安全与系统可信执行环境。
-  - Thyra Core正在进行security review。我们可以
+  - Thyra Core正在进行security review。我们可以向评委老师提供repo权限。
 
 ### 7) 路线图与影响 (Roadmap & Impact)
 
@@ -255,6 +277,7 @@ forge test -vvv
 - Integrate into Virtuals ACP
 
 #### 2026 Q1: Expansion
+- Thyra mainnet launch
 - Visual Strategy Builder release
 - Strategy template marketplace
 - Integrate 20+ major DeFi protocols
@@ -266,7 +289,8 @@ forge test -vvv
 - Enable third-party strategy developers, AI agent marketplace
 
 #### 长期价值
-- 将"意图执行层"标准化，降低自动化门槛，提升执行质量与透明度。
+- Thyra is building the  Execution Layer for DeFi 3.0
+
 
 ### 8) 团队与联系 (Team & Contacts)
 
