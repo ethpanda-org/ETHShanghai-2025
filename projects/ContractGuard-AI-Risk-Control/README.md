@@ -238,7 +238,7 @@ GET /security/health
 ```
 
 ## Demo视频
-[录制中，将在提交前完成]
+[[视频地址：](https://w:w.bilibili.com/video/BV1Cks3zSEhD/?spm_id_from=333.337.search-card.all.click)]
 
 ## 在线演示
 [部署中，将在提交前完成]
