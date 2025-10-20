@@ -42,7 +42,7 @@
 - **核心合约与地址**：
 
 ```text
-SubscriptionService: [待部署后填写合约地址]
+SubscriptionService: 0xb7505213f87f4ee854a29a7b39fed51792f027e7
 ```
 
 - **验证链接（Etherscan/BlockScout）**：[验证链接](https://sepolia.etherscan.io/address/0xb7505213f87f4ee854a29a7b39fed51792f027e7)
