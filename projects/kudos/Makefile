@@ -3,24 +3,19 @@ SHELL := /bin/bash
 
 FORGE ?= forge
 
-.PHONY: help test-unit test-marketplace fmt clean build deps deploy-sepolia anvil-smoke
+.PHONY: help test fmt clean build deps deploy-sepolia
 
 help:
 	@echo "Common tasks:"
 	@echo "  make deps          # fetch git submodule dependencies"
-	@echo "  make test-unit     # run unit test suite"
-	@echo "  make test-marketplace # run marketplace scenario tests"
+	@echo "  make test          # run the complete test suite"
 	@echo "  make fmt           # format Solidity sources"
 	@echo "  make build         # compile contracts"
 	@echo "  make clean         # clean build artifacts"
 	@echo "  make deploy-sepolia # deploy contracts to Sepolia using env credentials"
-	@echo "  make anvil-smoke   # run local smoke test against anvil"
 
-test-unit:
+test:
 	@$(FORGE) test
-
-test-marketplace:
-	@$(FORGE) test --match-path packages/contracts/test/marketplace/Marketplace_Purchase.t.sol
 
 fmt:
 	@$(FORGE) fmt
@@ -39,7 +34,7 @@ clean:
 deps:
 	@git submodule update --init --recursive
 
-deploy-sepolia:
+deploy-sepolia: test build
 	@if [ -f .env ]; then set -a && . .env && set +a; fi; \
 	if [ -z "$$SEPOLIA_RPC_URL" ]; then echo "SEPOLIA_RPC_URL is not set"; exit 1; fi; \
 	if [ -z "$$PRIVATE_KEY" ]; then echo "PRIVATE_KEY is not set"; exit 1; fi; \
@@ -49,6 +44,3 @@ deploy-sepolia:
 		--slow \
 		--private-key "$$PRIVATE_KEY"
 
-anvil-smoke:
-	@RPC_URL=$${ANVIL_RPC_URL:-http://127.0.0.1:8545}; \
-	$(FORGE) script packages/contracts/script/AnvilSmokeTest.s.sol --fork-url $$RPC_URL

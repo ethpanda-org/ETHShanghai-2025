@@ -71,6 +71,8 @@ contract Marketplace is ReputationController {
         Listing storage listing = _works[workId];
         if (listing.active) revert WorkAlreadyActive();
 
+        _ensureIdentity(msg.sender, identityMetadataURI);
+
         listing.creator = msg.sender;
         listing.price = price;
         listing.active = true;
