@@ -5,10 +5,9 @@
 ## 一、提交物清单 (Deliverables)
 
 - [x] GitHub 仓库（公开）：https://github.com/Coooder-Crypto/OwnFace
-- [ ] Demo 视频（≤ 3 分钟，中文）：录制中，预计提交时间 5 月底
-- [ ] 在线演示链接：计划部署至 Vercel（待上链参数稳定）
+- [x] Demo 视频（≤ 3 分钟，中文）：https://www.youtube.com/watch?v=XfdX-P65Xus
 - [x] 合约部署信息：见下文“合约与部署”
-- [ ] 可选材料：Pitch Deck（准备中）
+- [x] 可选材料：[Pitch Deck](https://github.com/Coooder-Crypto/OwnFace/blob/main/OwnFace.pdf)
 
 ## 二、参赛队伍填写区 (Fill-in Template)
 
@@ -48,7 +47,6 @@
   Groth16Verifier (Distance)：
   0xB28A3296ad9Add5BDB0C82b386229a34bAa17b1d
   ```
-- **验证链接**：部署后将提交至 Etherscan（预计 5 月底完成验证）
 - **最小复现脚本**：
   ```bash
   # 进入合约目录
@@ -83,9 +81,8 @@ NEXT_PUBLIC_REGISTRY_ADDRESS=0x9F361ac7525F8c6f4306585F048Ebd7Bc75D4354
 NEXT_PUBLIC_VERIFIER_ADDRESS=0xB28A3296ad9Add5BDB0C82b386229a34bAa17b1d
 NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
 
-# backend/.env（可选）
+# backend/.env
 PORT=4000
-PROVER_THREADS=4
 
 # contract/.env
 SEPOLIA_RPC_URL="https://sepolia.infura.io/v3/<YOUR_KEY>"
@@ -112,21 +109,17 @@ npm install
 npm run dev              # 打开 http://localhost:3000
 ```
 
-- **在线 Demo（如有）**：部署计划中，预计使用 Vercel Preview + 专用 RPC。
-- **账号与测试说明**：
-  - 使用任意邮箱格式作为 `userId` 即可注册。
-  - Demo 环境提供内置 mock embedding，亦支持上传 16 维 JSON/CSV。
-  - 需连接 Sepolia 钱包（建议使用测试账户）完成链上写入。
-
 ### 5) Demo 与关键用例 (Demo & Key Flows)
 
-- **视频链接**：制作中（脚本已完成）
+- **视频链接**：https://www.youtube.com/watch?v=XfdX-P65Xus
 - **关键用例步骤**：
-  1. **注册承诺**：用户上传/拍摄 embedding → 后端量化+Pedersen 承诺 → 前端发起 `register` 交易 → 合约记录向量哈希与 nonce。
-  2. **生成证明**：前端提交新的 embedding → 后端计算候选向量并生成 Groth16 证明 & Poseidon transcript。
-  3. **链上认证**：前端发起 `authenticate` 交易 → 合约验签证明 → 更新链上验证快照，前端展示结果与交易链接。
-  4. **监控指标**：`/metrics` 接口返回注册数、认证数与平均证明耗时，用于运营看板。
-
+1. **注册 Registration**  
+   - 前端采集 embedding 并调用后端 `/register`；  
+   - 后端输出 `commitmentHash`、`commitmentPoint`、`blinding`、`nonce`、`nonceHash`、`vectorHash`；  
+   - 前端通过 wagmi 发起 `register` 交易，合约写入 `Commitment` 结构体。  
+2. **认证 Authentication**  
+   - 前端采集新 embedding → 后端 `/authenticate` 生成 Groth16 证明及公开信号；  
+   - 前端提交 `authenticate` 交易，合约校验证明与哈希比对，留下 `VerificationRecord`。 
 ### 6) 可验证边界 (Verifiable Scope)
 
 - **可复现内容**：前端、后端、合约、Circom 电路及生成脚本均已开源，可在本地重新构建并运行。
@@ -153,18 +146,15 @@ npm run dev              # 打开 http://localhost:3000
 - **团队名**：OwnFace Core
 - **成员与分工**：
   - Coooder - 全栈工程师 - 架构设计、前端/合约集成
-  - 0xBiometric - 密码学工程师 - 电路与 zk 证明实现
-  - Sora - 产品设计师 - 产品体验、内容运营
 - **联系方式**：
   - GitHub Issues：https://github.com/Coooder-Crypto/OwnFace/issues
-  - Telegram：@ownface_xyz（若频道暂未启用，可通过 Issues 联系）
-- **可演示时段（UTC+8）**：每日 10:00 - 22:00，可根据评审需求预约
+
 
 ## 三、快速自检清单 (Submission Checklist)
 
 - [x] README 按模板填写完整（概述、架构、复现、Demo、边界）
-- [ ] 本地可一键运行，关键用例可复现（当前仍需手动部署 prover 依赖）
+- [x] 本地可一键运行，关键用例可复现
 - [x] 测试网合约地址与部署方式已提供
-- [ ] Demo 视频（≤ 3 分钟，中文）链接可访问
-- [x] 如未完全开源，已在“可验证边界”说明细节
+- [x] Demo 视频（≤ 3 分钟，中文）链接可访问
+- [ ] 如未完全开源，已在“可验证边界”说明细节
 - [x] 联系方式与可演示时段已填写
