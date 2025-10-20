@@ -1,0 +1,33 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navbar now uses Tailwind CSS */
+
+.content {
+  flex: 1;
+  padding: 2rem;
+}
+
+.footer {
+  background: #f8f9fa;
+  padding: 2rem;
+  text-align: center;
+  border-top: 2px solid #e0e0e0;
+}
+
+.footer p {
+  margin: 0.5rem 0;
+  color: #666;
+}
+
+.footer a {
+  color: #646cff;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
