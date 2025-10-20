@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-[#08090C] text-white font-sans min-h-screen;
+}
+
+#root {
+  @apply min-h-screen;
+}

@@ -1,0 +1,76 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+quickstart.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.history/
+
+# Testing
+coverage/
+*.lcov
+.nyc_output
+
+# Deployment artifacts
+deploy-artifacts/
+broadcast/
+cache/
+out/
+
+# Foundry
+contracts/cache/
+contracts/out/
+contracts/broadcast/
+contracts/lib/
+
+# Circuit artifacts
+circuits/build/
+circuits/*.zkey
+circuits/*.r1cs
+circuits/*.wasm
+circuits/*.sym
+circuits/*.wtns
+circuits/pot*.ptau
+circuits/verification_key.json
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Documentation (generated)
+DEPLOYMENT.md
+TROUBLESHOOTING.md
+VIEWING_KEY_GUIDE.md

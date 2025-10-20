@@ -1,0 +1,25 @@
+{
+  "name": "privacy-amm-circuits",
+  "version": "1.0.0",
+  "description": "Zero-Knowledge circuits for Privacy AMM (EthShanghai 2020 Hackathon)",
+  "main": "index.js",
+  "scripts": {
+    "build": "./scripts/build.sh",
+    "prove": "./scripts/prove.sh",
+    "clean": "rm -rf build output"
+  },
+  "keywords": [
+    "zk",
+    "circom",
+    "privacy",
+    "amm",
+    "groth16"
+  ],
+  "author": "EthShanghai 2020 Team",
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "circomlib": "^2.0.5",
+    "snarkjs": "^0.7.5"
+  }
+}
