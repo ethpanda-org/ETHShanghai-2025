@@ -1,0 +1,18 @@
+{
+  "name": "ProteinFoldDAO",
+  "tagline": "去中心化蛋白质折叠预测与数据协作平台",
+  "description": "结合链上协作与AI推理的蛋白质折叠预测平台，提供数据集管理、推理服务与可验证的结果溯源。",
+  "category": ["AI/DeSci", "Tooling", "Infra"],
+  "links": {
+    "repository": "",
+    "demo": "",
+    "website": ""
+  },
+  "contacts": [
+    { "name": "Friendheimnie", "github": "Friendheim" }
+  ],
+  "tech_stack": ["Python", "Streamlit", "SQLite", "Hardhat", "Solidity"],
+  "tracks": ["DeSci", "AI"],
+  "location": "Shanghai/Remote",
+  "license": "MIT"
+}
