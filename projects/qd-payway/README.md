@@ -112,7 +112,7 @@ NEXT_PUBLIC_RELEASE_EMAIL_ADDRESS=oreply@official.mcppayway.com
 **后端环境变量** (Supabase Secrets - 用于 Edge Functions)：
 ```bash
 # SendGrid 邮件服务
-SENDGRID_API_KEY=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
+SENDGRID_API_KEY=SG....
 SENDGRID_FROM_EMAIL=oreply@official.mcppayway.com
 
 # 区块链配置
