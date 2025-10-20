@@ -124,6 +124,8 @@ npx hardhat run scripts/interactions/demo-all.ts
 npx hardhat run scripts/interactions/demo-all.ts --network sepolia
 ```
 
+![Alt 文本](../img/interactions.png "可选标题")
+
 ### 方式二：分步执行
 
 单独运行每个步骤：

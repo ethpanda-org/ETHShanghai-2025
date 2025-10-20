@@ -45,6 +45,8 @@ npx hardhat run scripts/deploy/deploy-all.ts
 npx hardhat run scripts/deploy/deploy-all.ts --network sepolia
 ```
 
+![Alt 文本](../img/deploy.png "可选标题")
+
 ### 方式二：分步部署
 
 按顺序单独运行每个脚本：

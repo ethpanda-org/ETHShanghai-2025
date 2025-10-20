@@ -87,6 +87,8 @@ TokenFactory.grantRole(DEPLOYER_ROLE, AquaFluxCoreAddress);
 npx hardhat run scripts/setup/setup-all.ts --network sepolia
 ```
 
+![Alt 文本](../img/setup.png "可选标题")
+
 ### 方式二：分步配置
 
 ```bash
