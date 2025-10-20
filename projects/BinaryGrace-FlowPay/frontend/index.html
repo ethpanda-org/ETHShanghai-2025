@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowPay - 去中心化AI协作平台</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="/static/images/flowpay-logo.png" alt="FlowPay" class="logo-image">
+                    <h1>FlowPay</h1>
+                </div>
+                <div class="header-actions">
+                    <button id="connectWalletBtn" class="btn btn-primary">连接钱包</button>
+                    <div id="walletInfo" class="wallet-info" style="display: none;">
+                        <span id="walletAddress"></span>
+                        <button id="disconnectWalletBtn" class="btn btn-secondary">断开连接</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主要内容 -->
+        <main class="main">
+            <!-- 导航标签 -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="tasks">任务市场</button>
+                <button class="tab-btn" data-tab="publish">发布任务</button>
+                <button class="tab-btn" data-tab="agent">AI Agent</button>
+                <button class="tab-btn" data-tab="stats">统计信息</button>
+            </div>
+
+            <!-- 任务市场 -->
+            <div id="tasksTab" class="tab-content active">
+                <div class="section-header">
+                    <h2>任务市场</h2>
+                    <button id="refreshTasksBtn" class="btn btn-secondary">刷新</button>
+                </div>
+                <div id="tasksList" class="tasks-list">
+                    <!-- 任务列表将在这里动态加载 -->
+                </div>
+            </div>
+
+            <!-- 发布任务 -->
+            <div id="publishTab" class="tab-content">
+                <div class="section-header">
+                    <h2>发布新任务</h2>
+                </div>
+                <form id="publishTaskForm" class="publish-form">
+                    <div class="form-group">
+                        <label for="taskTitle">任务标题</label>
+                        <input type="text" id="taskTitle" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription">任务描述</label>
+                        <textarea id="taskDescription" name="description" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskType">任务类型</label>
+                        <select id="taskType" name="task_type" required>
+                            <option value="内容创作">内容创作</option>
+                            <option value="编程开发">编程开发</option>
+                            <option value="数据分析">数据分析</option>
+                            <option value="设计">设计</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskRequirements">任务要求</label>
+                        <textarea id="taskRequirements" name="requirements" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskReward">奖励金额 (ETH)</label>
+                        <input type="number" id="taskReward" name="reward" step="0.001" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDeadline">截止时间</label>
+                        <input type="datetime-local" id="taskDeadline" name="deadline" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="submissionLink">提交链接（可选）</label>
+                        <input type="url" id="submissionLink" name="submission_link">
+                    </div>
+                    <button type="submit" class="btn btn-primary">发布任务</button>
+                </form>
+            </div>
+
+            <!-- AI Agent -->
+            <div id="agentTab" class="tab-content">
+                <div class="section-header">
+                    <h2>AI Agent 控制台</h2>
+                </div>
+                <div class="agent-controls">
+                    <div class="agent-status">
+                        <h3>Agent 状态</h3>
+                        <div id="agentStatus" class="status-indicator">未启动</div>
+                    </div>
+                    <div class="agent-actions">
+                        <button id="startAgentBtn" class="btn btn-success">启动 AI Agent</button>
+                        <button id="stopAgentBtn" class="btn btn-danger" disabled>停止 AI Agent</button>
+                        <button id="syncAgentBtn" class="btn btn-primary">同步工作</button>
+                    </div>
+                    <div class="agent-logs">
+                        <h3>工作日志</h3>
+                        <div id="agentLogs" class="logs-container">
+                            <!-- 日志将在这里显示 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 统计信息 -->
+            <div id="statsTab" class="tab-content">
+                <div class="section-header">
+                    <h2>平台统计</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>总任务数</h3>
+                        <div id="totalTasks" class="stat-value">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>活跃工作者</h3>
+                        <div id="activeWorkers" class="stat-value">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>已完成任务</h3>
+                        <div id="completedTasks" class="stat-value">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>总奖励</h3>
+                        <div id="totalRewards" class="stat-value">-</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 通知区域 -->
+        <div id="notifications" class="notifications"></div>
+    </div>
+
+    <!-- 模态框 -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">任务详情</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- 模态框内容将在这里动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 支付确认模态框 -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>确认支付</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="payment-info">
+                    <h4>支付信息</h4>
+                    <p><strong>任务ID:</strong> <span id="paymentTaskId"></span></p>
+                    <p><strong>执行者:</strong> <span id="paymentExecutor"></span></p>
+                    <p><strong>奖励金额:</strong> <span id="paymentAmount"></span> ETH</p>
+                </div>
+                <div class="gas-settings">
+                    <h4>Gas 设置</h4>
+                    <div class="form-group">
+                        <label for="paymentGasLimit">Gas Limit</label>
+                        <input type="number" id="paymentGasLimit" value="200000">
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentGasPrice">Gas Price (Gwei)</label>
+                        <input type="number" id="paymentGasPrice" value="20" step="0.1">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button id="confirmPaymentBtn" class="btn btn-success">确认支付</button>
+                    <button id="cancelPaymentBtn" class="btn btn-secondary">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 脚本 -->
+    <script src="/static/js/web3.min.js"></script>
+    <script src="/static/js/i18n.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
