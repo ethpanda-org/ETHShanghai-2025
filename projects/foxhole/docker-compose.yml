@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  ws-server:
+    build: .
+    container_name: nlpmeme-ws-server
+    ports:
+      - "8765:8765"
+    volumes:
+      # 挂载数据目录，持久化日志
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - nlpmeme-network
+
+networks:
+  nlpmeme-network:
+    driver: bridge
+

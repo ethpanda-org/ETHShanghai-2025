@@ -1,0 +1,26 @@
+# CSV 数据文件
+*.csv
+
+# 日志文件
+*.log
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 测试文件
+test_*.py
+discover_*.py
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统
+.DS_Store
+Thumbs.db
+

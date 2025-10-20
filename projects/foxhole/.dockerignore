@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# 数据文件（会通过 volume 挂载）
+data/*.db
+*.log
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 测试文件
+test_*.py
+*_test.py
+
+# 文档
+*.md
+!README.md
+
+# 其他
+.DS_Store
+*.txt
+results.txt
+ws.txt
+
