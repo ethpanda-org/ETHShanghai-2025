@@ -251,7 +251,7 @@ export default function MyPage() {
       formData.append('file', file)
 
       // 使用公共IPFS网关进行上传 (实际项目中可能需要使用私有IPFS节点)
-      const response = await fetch('stt/fileUpload', {
+      const response = await fetch('/api/fileUpload', {
         method: 'POST',
         body: formData
       })

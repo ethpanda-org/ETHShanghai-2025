@@ -190,7 +190,7 @@ export default function Home() {
                   <VStack spacing={4}>
                     <HStack justify="space-between" w="full">
                       <VStack align="center" spacing={2}>
-                        <Avatar size="md" name={match.challengerAgent.teamName} />
+                        <Avatar size="md" name={match.challengerAgent.teamName} src="/images/logo.png"/>
                         <Text fontSize="sm" fontWeight="bold" textAlign="center" color="white">
                           {match.challengerAgent.teamName}
                         </Text>
@@ -205,7 +205,7 @@ export default function Home() {
                       </VStack>
 
                       <VStack align="center" spacing={2}>
-                        <Avatar size="md" name={match.opponentAgent.teamName} />
+                        <Avatar size="md" name={match.opponentAgent.teamName} src="/images/pk.jpg"/>
                         <Text fontSize="sm" fontWeight="bold" textAlign="center" color="white">
                           {match.opponentAgent.teamName}
                         </Text>
