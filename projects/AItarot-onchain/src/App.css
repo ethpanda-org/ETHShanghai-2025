@@ -1,0 +1,127 @@
+/* 页面背景：紫色神秘 + 女巫水印（SVG dataURI） */
+.page{
+  min-height:100vh;
+  padding:32px 16px;
+  background:
+    radial-gradient(1200px 800px at 10% -10%, rgba(255,255,255,0.06), transparent 60%),
+    radial-gradient(1200px 800px at 110% 10%, rgba(255,255,255,0.06), transparent 60%),
+    linear-gradient(135deg,#1d0b2e,#3a1a5f 40%,#5b2b86 70%,#2d0f48);
+  background-attachment: fixed;
+  color:#eee;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+}
+.page::before{
+  /* 女巫水印（浅紫色、右下角） */
+  content:"";
+  position:fixed; right:2%; bottom:2%;
+  width:220px; height:220px; opacity:.14; pointer-events:none;
+  background-size:contain; background-repeat:no-repeat;
+  background-image:url("data:image/svg+xml;utf8,\
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'>\
+    <circle cx='100' cy='100' r='96' fill='none' stroke='%23caa6ff' stroke-width='2'/>\
+    <path d='M45 120c22-10 58-12 88 0 4 2 3 6-2 7-20 5-62 5-82 0-5-1-6-5-4-7z' fill='%23caa6ff'/>\
+    <path d='M100 40c14 0 25 11 25 25s-11 25-25 25-25-11-25-25 11-25 25-25z' fill='none' stroke='%23caa6ff' stroke-width='2'/>\
+    <path d='M84 75l16-36 16 36' fill='none' stroke='%23caa6ff' stroke-width='2'/>\
+  </svg>");
+}
+
+/* 玻璃卡片容器 */
+.glass{
+  max-width:980px; margin:0 auto; padding:28px;
+  background: rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:18px; backdrop-filter: blur(8px);
+  box-shadow:0 10px 40px rgba(0,0,0,.35);
+}
+.title{ text-align:center; font-size:28px; font-weight:800; letter-spacing:.5px; margin-bottom:18px }
+
+/* 顶部分类选项卡 */
+.tabbar{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px }
+.tab{
+  padding:10px 16px; border-radius:14px;
+  background: rgba(255,255,255,.1); color:#e9ddff; font-weight:700;
+  transition:.15s; border:1px solid transparent;
+}
+.tab:hover{ background: rgba(255,255,255,.18) }
+.tab.active{
+  background:#7c4dff; color:#fff; border-color:#cdbdff; box-shadow:0 6px 18px rgba(124,77,255,.35)
+}
+
+/* 表单/按钮微调（选择框 + 输入框都清晰） */
+select, input, textarea{
+  background: rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,.3);
+  border-radius:10px; padding:10px 12px; outline:none; margin:6px 0;
+  width:100%;
+}
+select{ appearance:auto; color-scheme: dark; position:relative; z-index:10 }
+select option{ background:#2b1f46; color:#fff }
+input::placeholder, textarea::placeholder{ color:#ddd }
+
+/* 抽牌按钮等 */
+button{
+  cursor:pointer; border:0; border-radius:12px; padding:10px 14px; font-weight:700;
+}
+button:disabled{ opacity:.6; cursor:wait }
+.bg-indigo-500{ background:#6c5ce7; color:#fff }
+.bg-green-600{ background:#2ecc71; color:#fff }
+.bg-yellow-400{ background:#ffd166; color:#222 }
+
+/* 抽牌区：可视化卡面 + 翻转动画 */
+.cards-grid{
+  display:grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr));
+  gap:16px; margin:18px 0 12px;
+}
+.slot{ display:flex; flex-direction:column; align-items:center; gap:8px }
+.pos-name{ font-size:13px; color:#cfc3ff }
+.pos-sub{ font-size:12px; opacity:.8; }
+
+.tarot-card{
+  width:140px; height:220px; perspective:1000px; position:relative;
+  animation: pop .35s ease both;
+}
+@keyframes pop{ from{ transform:scale(.6); opacity:0 } to{ transform:scale(1); opacity:1 } }
+
+.card-front{
+  width:100%; height:100%;
+  border-radius:14px; overflow:hidden; position:absolute; top:0; left:0;
+  transform-style:preserve-3d; transition: transform .6s ease;
+  background: radial-gradient(120px 80px at 30% 20%,rgba(255,255,255,.18),transparent 60%),
+              linear-gradient(160deg,#2e1a47,#4b2f78 55%,#8b5cf6);
+  border:1px solid rgba(255,255,255,.25);
+  box-shadow: 0 6px 28px rgba(0,0,0,.45), inset 0 0 0 1px rgba(0,0,0,.2);
+}
+.tarot-card.reversed .card-front{ transform: rotate(180deg); }
+
+.card-art{
+  height:65%; background:
+    radial-gradient(120px 90px at 50% 30%, rgba(255,255,255,.12), transparent 60%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,.12) 0 2px, transparent 2px 6px);
+  border-bottom:1px dashed rgba(255,255,255,.28);
+}
+.card-name{
+  height:35%; display:flex; align-items:center; justify-content:center;
+  font-weight:800; letter-spacing:.8px; text-shadow:0 1px 0 rgba(0,0,0,.6);
+}
+
+/* 支付弹窗（若你用了） */
+.modal-mask{
+  position:fixed; inset:0; background:rgba(0,0,0,.55);
+  display:flex; align-items:center; justify-content:center; z-index:9999;
+}
+.modal-body{
+  width: min(92vw, 520px); background:#1f1433; color:#eee; border-radius:16px;
+  border:1px solid rgba(255,255,255,.18); padding:20px 18px; box-shadow:0 12px 36px rgba(0,0,0,.5);
+}
+.modal-body h3{ margin:2px 0 8px; font-size:20px }
+.modal-body .muted{ color:#cdbdff; font-size:13px; margin-bottom:8px }
+.addr-row{ display:flex; align-items:center; gap:8px; margin:8px 0 }
+.addr{
+  display:inline-block; padding:8px 10px; background:rgba(255,255,255,.08); border-radius:10px;
+  white-space:nowrap; overflow:auto; max-width: calc(100% - 90px);
+}
+.qr-wrap{ display:flex; justify-content:center; margin:12px 0 }
+.links{ display:flex; gap:8px; justify-content:flex-end }
+.btn{ background:#7c4dff; color:#fff }
+.btn.ghost{ background:transparent; border:1px solid rgba(255,255,255,.25); color:#fff }
+.btn.copy{ background:#4ade80; color:#1a1a1a }
+.tiny{ margin-top:10px; font-size:12px; color:#cdbdff }
