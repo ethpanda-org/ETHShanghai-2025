@@ -1,5 +1,5 @@
 {
-  "address": "0x93D251E6a2F08b61c06d36eEDD81bA6ac384E40D",
+  "address": "0xD71029B3186b550D98696247B3514307A2E0fF22",
   "abi": [
     {
       "type": "function",
@@ -137,6 +137,19 @@
               "internalType": "bool"
             }
           ]
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getTotalAgents",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256",
+          "internalType": "uint256"
         }
       ],
       "stateMutability": "view"

@@ -78,4 +78,8 @@ contract IdentityRegistry is ERC721URIStorage, Ownable {
         _setTokenURI(agentId, newUri);
         emit UriUpdated(agentId, newUri, msg.sender);
     }
+
+    function getTotalAgents() external view returns (uint256) {
+        return _lastId;
+    }
 }

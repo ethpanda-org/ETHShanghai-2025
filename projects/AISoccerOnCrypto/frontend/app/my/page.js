@@ -54,7 +54,8 @@ import {
   useLaunchToken,
   useAcceptMatchInvitation,
   useRejectMatchInvitation,
-  useMatch
+  useMatch,
+  useTotalAgents
 } from '../hooks/useContracts'
 
 export default function MyPage() {
@@ -88,6 +89,7 @@ export default function MyPage() {
   const { launchToken, isPending: isLaunching } = useLaunchToken()
   const { acceptInvitation, isPending: isAccepting } = useAcceptMatchInvitation()
   const { rejectInvitation, isPending: isRejecting } = useRejectMatchInvitation()
+  const { totalAgent, isLoading: totalAgentLoading } = useTotalAgents()
 
   // 获取每个Agent的详细信息
   useEffect(() => {
@@ -187,29 +189,27 @@ export default function MyPage() {
   }
 
   // 生成Agent元数据并上传到IPFS
-  const generateAndUploadMetadata = async (avatarIPFS, agentPackageIPFS) => {
+  const generateAndUploadMetadata = async (avatarIPFS, agentPackageIPFS) => {    
     const metadata = {
+      type: "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
       name: teamName,
       description: description || `AI Soccer Agent: ${teamName}`,
-      version: modelVersion,
       image: avatarIPFS,
-      attributes: [
+      endpoints: [
         {
-          trait_type: "Model Version",
-          value: modelVersion
-        },
-        {
-          trait_type: "Type",
-          value: "AI Soccer Agent"
-        },
-        {
-          trait_type: "Created",
-          value: new Date().toISOString()
+          name: "Robocup2DSimulationAgent",
+          endpoint: agentPackageIPFS,
+          version: modelVersion
         }
       ],
-      agent_package: agentPackageIPFS,
-      external_url: `${window.location.origin}/agent/`,
-      animation_url: agentPackageIPFS
+      registrations: [
+        {
+          agentId: totalAgent,
+          agentRegistry: "eip155:1:{identityRegistry}"
+        }
+      ],
+      supportedTrust: [        
+      ]
     }
 
     const metadataBlob = new Blob([JSON.stringify(metadata, null, 2)], {

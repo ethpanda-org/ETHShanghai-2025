@@ -28,15 +28,6 @@ export const useContracts = () => {
   }
 }
 
-// Hook for reading total agents
-export const useTotalAgents = () => {
-  const contracts = useContracts()
-  
-  // Note: We need to implement a counter or iterate through getDeveloperAgents
-  // For now, we'll return a placeholder
-  return { data: 0, isLoading: false }
-}
-
 // Hook for reading agent info
 export const useAgentInfo = (agentId) => {
   const contracts = useContracts()
@@ -249,6 +240,22 @@ export const useRegisterAgent = () => {
     isPending: isPending || isConfirming,
     isSuccess,
     hash
+  }
+}
+
+// Hook for reading total agents
+export const useTotalAgents = () => {
+  const contracts = useContracts()
+  
+  const { data, isLoading } = useReadContract({
+    address: contracts.SoccerAgentRegistry.address,
+    abi: contracts.SoccerAgentRegistry.abi,
+    functionName: 'getTotalAgents'
+  })
+
+  return { 
+    totalAgents: data ? Number(data) : 0, 
+    isLoading 
   }
 }
 

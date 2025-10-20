@@ -101,11 +101,11 @@ contract Deploy is Script {
         console.log("=================================\n");
 
         // Save deployment addresses to file
-        _saveDeploymentInfo(deployer);
+        _saveDeploymentInfo(deployer, FOUNDATION_ADDRESS, PLATFORM_TREASURY);
     }
 
     /// @notice Save deployment information to a JSON file
-    function _saveDeploymentInfo(address deployer) internal {
+    function _saveDeploymentInfo(address deployer, address foundationAddress, address platformTreasury) internal {
         string memory json = string(abi.encodePacked(
             '{\n',
             '  "chainId": ', vm.toString(block.chainid), ',\n',
@@ -119,8 +119,8 @@ contract Deploy is Script {
             '  },\n',
             '  "config": {\n',
             '    "uniswapV2Router": "', vm.toString(UNISWAP_V2_ROUTER), '",\n',
-            '    "foundationAddress": "', vm.toString(FOUNDATION_ADDRESS), '",\n',
-            '    "platformTreasury": "', vm.toString(PLATFORM_TREASURY), '",\n',
+            '    "foundationAddress": "', vm.toString(foundationAddress), '",\n',
+            '    "platformTreasury": "', vm.toString(platformTreasury), '",\n',
             '    "minMatchFee": "', vm.toString(MIN_MATCH_FEE), '"\n',
             '  }\n',
             '}'

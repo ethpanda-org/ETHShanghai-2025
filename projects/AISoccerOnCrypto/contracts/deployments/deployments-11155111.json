@@ -1,12 +1,12 @@
 {
   "chainId": 11155111,
   "deployer": "0xF0C995a3659a2BC6020F579AEd7A206244AE52c0",
-  "timestamp": 1760886216,
+  "timestamp": 1760937708,
   "contracts": {
-    "SoccerAgentRegistry": "0x93D251E6a2F08b61c06d36eEDD81bA6ac384E40D",
-    "ServerReputationRegistry": "0x0D5a8A2f22cC59a9293C14404a41818E71b3528A",
-    "LaunchPad": "0xBA9d3DA6116d8D3d5F90B3065f59d7B205F5C852",
-    "Competition": "0xDe30530F1Fa736E656A42fCb3f91E004B1e1819a"
+    "SoccerAgentRegistry": "0xD71029B3186b550D98696247B3514307A2E0fF22",
+    "ServerReputationRegistry": "0x1E62552AADFe9Cb24d722eA265dC54be48146781",
+    "LaunchPad": "0xF486Ad19cF2212F001004ca90D1B1f2c5C78Ae8C",
+    "Competition": "0x58A6C0c948430dC4C025F866BAbE3BA932AA990b"
   },
   "config": {
     "uniswapV2Router": "0xC532a74256D3Db42D0Bf7a0400fEFDbad7694008",
