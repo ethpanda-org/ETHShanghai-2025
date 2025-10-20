@@ -1,0 +1,24 @@
+{
+  "name": "251011",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "hardhat build",
+    "test": "hardhat test",
+    "export-abis": "hardhat build && tsx scripts/export-abis.ts"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ignition": "^3.0.3",
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.0",
+    "@openzeppelin/contracts": "^5.4.0",
+    "@types/node": "^22.18.11",
+    "forge-std": "github:foundry-rs/forge-std#v1.9.4",
+    "hardhat": "^3.0.7",
+    "tsx": "^4.20.6",
+    "typescript": "~5.8.0",
+    "viem": "^2.38.3"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  }
+}

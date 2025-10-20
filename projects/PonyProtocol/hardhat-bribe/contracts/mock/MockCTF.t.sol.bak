@@ -1,0 +1,332 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.28;
+
+import {Test} from "forge-std/Test.sol";
+import {MockCTF} from "./MockCTF.sol";
+import {MockERC20} from "./MockERC20.sol";
+
+contract MockCTFTest is Test {
+    MockCTF public ctf;
+    MockERC20 public usdc;
+
+    address public oracle = address(0x1);
+    address public alice = address(0x2);
+    address public bob = address(0x3);
+
+    bytes32 public questionId = keccak256("Will ETH reach $10k by 2025?");
+    bytes32 public conditionId;
+
+    function setUp() public {
+        // Deploy USDC mock
+        usdc = new MockERC20("USD Coin", "USDC", 6);
+
+        // Deploy CTF with 1,000,000 USDC liquidity for AMM
+        ctf = new MockCTF(address(usdc), 1_000_000e6);
+
+        // Prepare condition with initial 50/50 price (no end time)
+        vm.prank(oracle);
+        ctf.prepareCondition(oracle, questionId, 2, 0.5 ether, 0, 0);
+
+        conditionId = ctf.getConditionId(oracle, questionId, 2);
+
+        // Mint USDC to alice and bob
+        usdc.mint(alice, 1000e6);
+        usdc.mint(bob, 1000e6);
+    }
+
+    function test_PrepareCondition() public view {
+        (address _oracle, uint256 outcomeSlotCount, uint256 yesPrice, uint256[] memory payouts,,) =
+            ctf.getCondition(conditionId);
+
+        assertEq(_oracle, oracle);
+        assertEq(outcomeSlotCount, 2);
+        assertEq(yesPrice, 0.5 ether);
+        assertEq(payouts.length, 0); // Not resolved yet
+    }
+
+    function test_SplitPosition() public {
+        uint256 amount = 100e6;
+        uint256 initialVaultBalance = usdc.balanceOf(address(ctf));
+
+        vm.startPrank(alice);
+        usdc.approve(address(ctf), amount);
+        ctf.splitPosition(conditionId, amount);
+        vm.stopPrank();
+
+        uint256 yesTokenId = ctf.getTokenId(conditionId, 1);
+        uint256 noTokenId = ctf.getTokenId(conditionId, 0);
+
+        // Alice should have both YES and NO tokens
+        assertEq(ctf.balanceOf(alice, yesTokenId), amount);
+        assertEq(ctf.balanceOf(alice, noTokenId), amount);
+
+        // CTF should hold initial liquidity + Alice's collateral
+        assertEq(usdc.balanceOf(address(ctf)), initialVaultBalance + amount);
+    }
+
+    function test_MergePositions() public {
+        uint256 amount = 100e6;
+
+        // Alice splits position first
+        vm.startPrank(alice);
+        usdc.approve(address(ctf), amount);
+        ctf.splitPosition(conditionId, amount);
+
+        uint256 initialBalance = usdc.balanceOf(alice);
+
+        // Alice merges half back
+        uint256 mergeAmount = 50e6;
+        ctf.mergePositions(conditionId, mergeAmount);
+        vm.stopPrank();
+
+        uint256 yesTokenId = ctf.getTokenId(conditionId, 1);
+        uint256 noTokenId = ctf.getTokenId(conditionId, 0);
+
+        // Alice should have half of the tokens left
+        assertEq(ctf.balanceOf(alice, yesTokenId), amount - mergeAmount);
+        assertEq(ctf.balanceOf(alice, noTokenId), amount - mergeAmount);
+
+        // Alice should get USDC back
+        assertEq(usdc.balanceOf(alice), initialBalance + mergeAmount);
+    }
+
+    function test_ReportPayouts_YesWins() public {
+        // Oracle resolves: YES wins (100%), NO loses (0%)
+        uint256[] memory payouts = new uint256[](2);
+        payouts[0] = 0;          // NO gets 0%
+        payouts[1] = 1 ether;    // YES gets 100%
+
+        vm.prank(oracle);
+        ctf.reportPayouts(questionId, payouts);
+
+        (,,,uint256[] memory storedPayouts,,) = ctf.getCondition(conditionId);
+        assertEq(storedPayouts[0], 0);
+        assertEq(storedPayouts[1], 1 ether);
+    }
+
+    function test_RedeemPositions_YesWins() public {
+        uint256 amount = 100e6;
+
+        // Alice buys YES and NO tokens
+        vm.startPrank(alice);
+        usdc.approve(address(ctf), amount);
+        ctf.splitPosition(conditionId, amount);
+        vm.stopPrank();
+
+        // Oracle resolves: YES wins
+        uint256[] memory payouts = new uint256[](2);
+        payouts[0] = 0;          // NO gets 0%
+        payouts[1] = 1 ether;    // YES gets 100%
+
+        vm.prank(oracle);
+        ctf.reportPayouts(questionId, payouts);
+
+        // Alice redeems YES tokens
+        uint256[] memory indexSets = new uint256[](1);
+        indexSets[0] = 1; // YES
+
+        uint256 initialBalance = usdc.balanceOf(alice);
+
+        vm.prank(alice);
+        ctf.redeemPositions(conditionId, indexSets);
+
+        // Alice should get full payout for YES tokens
+        assertEq(usdc.balanceOf(alice), initialBalance + amount);
+
+        // Alice's YES tokens should be burned
+        uint256 yesTokenId = ctf.getTokenId(conditionId, 1);
+        assertEq(ctf.balanceOf(alice, yesTokenId), 0);
+    }
+
+    function test_RedeemPositions_NoWins() public {
+        uint256 amount = 100e6;
+
+        // Bob buys YES and NO tokens
+        vm.startPrank(bob);
+        usdc.approve(address(ctf), amount);
+        ctf.splitPosition(conditionId, amount);
+        vm.stopPrank();
+
+        // Oracle resolves: NO wins
+        uint256[] memory payouts = new uint256[](2);
+        payouts[0] = 1 ether;    // NO gets 100%
+        payouts[1] = 0;          // YES gets 0%
+
+        vm.prank(oracle);
+        ctf.reportPayouts(questionId, payouts);
+
+        // Bob redeems NO tokens
+        uint256[] memory indexSets = new uint256[](1);
+        indexSets[0] = 0; // NO
+
+        uint256 initialBalance = usdc.balanceOf(bob);
+
+        vm.prank(bob);
+        ctf.redeemPositions(conditionId, indexSets);
+
+        // Bob should get full payout for NO tokens
+        assertEq(usdc.balanceOf(bob), initialBalance + amount);
+
+        // Bob's NO tokens should be burned
+        uint256 noTokenId = ctf.getTokenId(conditionId, 0);
+        assertEq(ctf.balanceOf(bob, noTokenId), 0);
+    }
+
+    function test_RevertWhen_RedeemBeforeResolution() public {
+        uint256 amount = 100e6;
+
+        vm.startPrank(alice);
+        usdc.approve(address(ctf), amount);
+        ctf.splitPosition(conditionId, amount);
+
+        uint256[] memory indexSets = new uint256[](1);
+        indexSets[0] = 1;
+
+        vm.expectRevert("Condition not resolved");
+        ctf.redeemPositions(conditionId, indexSets);
+        vm.stopPrank();
+    }
+
+    function test_RevertWhen_NonOracleReports() public {
+        uint256[] memory payouts = new uint256[](2);
+        payouts[0] = 0;
+        payouts[1] = 1 ether;
+
+        vm.prank(alice);
+        vm.expectRevert("Only oracle can report");
+        ctf.reportPayouts(questionId, payouts);
+    }
+
+    function test_RevertWhen_InvalidPayouts() public {
+        uint256[] memory payouts = new uint256[](2);
+        payouts[0] = 0.3 ether;
+        payouts[1] = 0.5 ether; // Sum is 0.8, not 1.0
+
+        vm.prank(oracle);
+        vm.expectRevert("Payouts must sum to 1 ether");
+        ctf.reportPayouts(questionId, payouts);
+    }
+
+    function test_TransferTokens() public {
+        uint256 amount = 100e6;
+
+        // Alice buys tokens
+        vm.startPrank(alice);
+        usdc.approve(address(ctf), amount);
+        ctf.splitPosition(conditionId, amount);
+
+        uint256 yesTokenId = ctf.getTokenId(conditionId, 1);
+
+        // Alice transfers YES tokens to Bob
+        ctf.safeTransferFrom(alice, bob, yesTokenId, 50e6, "");
+        vm.stopPrank();
+
+        assertEq(ctf.balanceOf(alice, yesTokenId), 50e6);
+        assertEq(ctf.balanceOf(bob, yesTokenId), 50e6);
+    }
+
+    function test_BuyYes_At50Percent() public {
+        uint256 amount = 100e6;
+
+        // At 50% price, 100 YES tokens cost 50 USDC
+        uint256 expectedCost = 50e6;
+
+        vm.startPrank(alice);
+        usdc.approve(address(ctf), expectedCost);
+        ctf.buyYes(conditionId, amount);
+        vm.stopPrank();
+
+        uint256 yesTokenId = ctf.getTokenId(conditionId, 1);
+        assertEq(ctf.balanceOf(alice, yesTokenId), amount);
+        assertEq(usdc.balanceOf(alice), 1000e6 - expectedCost);
+    }
+
+    function test_BuyNo_At50Percent() public {
+        uint256 amount = 100e6;
+
+        // At 50% NO price, 100 NO tokens cost 50 USDC
+        uint256 expectedCost = 50e6;
+
+        vm.startPrank(alice);
+        usdc.approve(address(ctf), expectedCost);
+        ctf.buyNo(conditionId, amount);
+        vm.stopPrank();
+
+        uint256 noTokenId = ctf.getTokenId(conditionId, 0);
+        assertEq(ctf.balanceOf(alice, noTokenId), amount);
+        assertEq(usdc.balanceOf(alice), 1000e6 - expectedCost);
+    }
+
+    function test_SetPrice() public {
+        // Oracle changes YES price to 70%
+        uint256 newYesPrice = 0.7 ether;
+
+        vm.prank(oracle);
+        ctf.setPrice(conditionId, newYesPrice);
+
+        (uint256 yesPrice, uint256 noPrice) = ctf.getPrices(conditionId);
+        assertEq(yesPrice, 0.7 ether);
+        assertEq(noPrice, 0.3 ether);
+    }
+
+    function test_BuyYes_At70Percent() public {
+        // Oracle sets YES price to 70%
+        vm.prank(oracle);
+        ctf.setPrice(conditionId, 0.7 ether);
+
+        uint256 amount = 100e6;
+        // At 70% price, 100 YES tokens cost 70 USDC
+        uint256 expectedCost = 70e6;
+
+        vm.startPrank(alice);
+        usdc.approve(address(ctf), expectedCost);
+        ctf.buyYes(conditionId, amount);
+        vm.stopPrank();
+
+        uint256 yesTokenId = ctf.getTokenId(conditionId, 1);
+        assertEq(ctf.balanceOf(alice, yesTokenId), amount);
+        assertEq(usdc.balanceOf(alice), 1000e6 - expectedCost);
+    }
+
+    function test_BuyNo_At30Percent() public {
+        // Oracle sets YES price to 70%, so NO is 30%
+        vm.prank(oracle);
+        ctf.setPrice(conditionId, 0.7 ether);
+
+        uint256 amount = 100e6;
+        // At 30% price, 100 NO tokens cost 30 USDC
+        uint256 expectedCost = 30e6;
+
+        vm.startPrank(alice);
+        usdc.approve(address(ctf), expectedCost);
+        ctf.buyNo(conditionId, amount);
+        vm.stopPrank();
+
+        uint256 noTokenId = ctf.getTokenId(conditionId, 0);
+        assertEq(ctf.balanceOf(alice, noTokenId), amount);
+        assertEq(usdc.balanceOf(alice), 1000e6 - expectedCost);
+    }
+
+    function test_RevertWhen_NonOracleSetsPrice() public {
+        vm.prank(alice);
+        vm.expectRevert("Only oracle can set price");
+        ctf.setPrice(conditionId, 0.6 ether);
+    }
+
+    function test_RevertWhen_BuyAfterResolution() public {
+        // Resolve market first
+        uint256[] memory payouts = new uint256[](2);
+        payouts[0] = 0;
+        payouts[1] = 1 ether;
+
+        vm.prank(oracle);
+        ctf.reportPayouts(questionId, payouts);
+
+        // Try to buy YES
+        vm.startPrank(alice);
+        usdc.approve(address(ctf), 100e6);
+        vm.expectRevert("Market resolved");
+        ctf.buyYes(conditionId, 100e6);
+        vm.stopPrank();
+    }
+}
