@@ -11,9 +11,6 @@
 
 [Demo Video](#-demo-video) • [Documentation](#-documentation) • [Quick Start](#-quick-start) • [Architecture](#-architecture)
 
-        <video src="[CAI × ERC-8004 Security & Verification Framework](https://youtu.be/nhD_7KJaWXk)" controls>
-</video>
-
 
 ---
 
@@ -573,6 +570,7 @@ in the Software without restriction...
 **Star ⭐ this repo if you find it useful!**
 
 </div>
+
 
 
 
