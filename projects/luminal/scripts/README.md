@@ -312,7 +312,7 @@ echo "VITE_STATE_SERVICE_URL=http://localhost:3001" >> client/.env.local
 ./scripts/check-pool-state.sh
 
 # 2. 如果输出正常，打开浏览器 DevTools Console：
-localStorage.getItem('luminial.pool-state-cache.v1')
+localStorage.getItem('luminal.pool-state-cache.v1')
 
 # 3. 如果返回 null，说明缓存为空
 #    解决方法：清空缓存 + 重新部署

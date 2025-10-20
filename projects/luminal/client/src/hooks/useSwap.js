@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useWalletClient, useWaitForTransactionReceipt, usePublicClient } from "wagmi";
 import { useQueryClient } from "@tanstack/react-query";
 import { privacyAmmAbi } from "../abis/privacyAmm";
 import { appConfig } from "../lib/config";
@@ -7,6 +7,7 @@ import { calculateMinimumOut, calculatePriceImpactBps, calculateSwap, formatBigi
 import { buildCircuitInput } from "../lib/witness";
 import { generateSwapProof, packProofForContract } from "../lib/prover";
 import { cachePoolState } from "../lib/state";
+import { addShieldedBalance } from "../lib/balances";
 import { hexFromBigInt } from "../lib/commitment";
 const formatError = (error) => error instanceof Error
     ? error.message
@@ -15,7 +16,8 @@ const formatError = (error) => error instanceof Error
         : "Unknown error";
 export const useSwap = (poolState) => {
     const queryClient = useQueryClient();
-    const { writeContractAsync } = useWriteContract();
+    const publicClient = usePublicClient();
+    const { data: walletClient } = useWalletClient();
     const [phase, setPhase] = useState("idle");
     const [error, setError] = useState(null);
     const [result, setResult] = useState(null);
@@ -47,6 +49,10 @@ export const useSwap = (poolState) => {
         if (!appConfig.ammAddress) {
             throw new Error("AMM contract address not configured");
         }
+        if (!walletClient || !walletClient.account) {
+            throw new Error("Wallet client not connected");
+        }
+        const account = walletClient.account;
         try {
             setPhase("calculating");
             setError(null);
@@ -65,8 +71,8 @@ export const useSwap = (poolState) => {
             const circuitInput = buildCircuitInput(computation);
             const proof = await generateSwapProof(circuitInput);
             const packed = await packProofForContract(proof);
-            setPhase("awaitingSignature");
-            const tx = await writeContractAsync({
+            const { request } = await publicClient.simulateContract({
+                account,
                 address: appConfig.ammAddress,
                 abi: privacyAmmAbi,
                 functionName: "swap",
@@ -78,7 +84,10 @@ export const useSwap = (poolState) => {
                     computation.stateOld.nonce
                 ]
             });
-            const resolvedTxHash = tx;
+            setPhase("awaitingSignature");
+            const { nonce: _ignored, ...txRequest } = request;
+            const txHashValue = await walletClient.writeContract(txRequest);
+            const resolvedTxHash = txHashValue;
             setTxHash(resolvedTxHash);
             setPhase("pending");
             setResult((prev) => prev
@@ -94,12 +103,13 @@ export const useSwap = (poolState) => {
             computationRef.current = null;
             throw swapError;
         }
-    }, [poolState, writeContractAsync]);
+    }, [poolState, walletClient, publicClient]);
     useEffect(() => {
         if (!isConfirmed || !computationRef.current)
             return;
         const computation = computationRef.current;
         cachePoolState(computation.commitmentNew, computation.stateNew);
+        addShieldedBalance("USDC", computation.amountOut);
         queryClient
             .invalidateQueries({ queryKey: ["pool-state"] })
             .catch((err) => console.warn("Failed to invalidate query", err));

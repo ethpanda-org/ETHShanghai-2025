@@ -1,11 +1,12 @@
 import { appConfig } from "./config";
 import { commitmentFromState, hexFromBigInt } from "./commitment";
-const STORAGE_KEY = "luminial.pool-state-cache.v1";
-const fallbackState = {
-    reserve0: 100n * 10n ** 18n,
-    reserve1: 200000n * 10n ** 6n,
-    nonce: 42n,
-    feeBps: 30n
+const STORAGE_KEY = "luminal.pool-state-cache.v1";
+// 硬编码的默认 fallback 值（当链上也读取失败时使用）
+const DEFAULT_FALLBACK_STATE = {
+    reserve0: 10n * 10n ** 18n,
+    reserve1: 20000n * 10n ** 6n,
+    nonce: 0n,
+    feeBps: 0n
 };
 const readCache = () => {
     if (typeof window === "undefined")
@@ -72,8 +73,18 @@ const fetchFromService = async (commitmentHex) => {
     }
 };
 const fetchFallbackState = async (commitmentHex) => {
-    const commitment = await commitmentFromState(fallbackState);
-    return hexFromBigInt(commitment) === commitmentHex ? fallbackState : null;
+    try {
+        const commitment = await commitmentFromState(DEFAULT_FALLBACK_STATE);
+        const fallbackHex = hexFromBigInt(commitment).toLowerCase();
+        if (fallbackHex === commitmentHex.toLowerCase()) {
+            cachePoolState(commitment, DEFAULT_FALLBACK_STATE);
+            return DEFAULT_FALLBACK_STATE;
+        }
+    }
+    catch (e) {
+        console.error('[State] Fallback failed:', e);
+    }
+    return null;
 };
 export const getPoolState = async (commitmentHex) => {
     const cached = fetchFromCache(commitmentHex);
@@ -82,7 +93,14 @@ export const getPoolState = async (commitmentHex) => {
     const fromService = await fetchFromService(commitmentHex);
     if (fromService)
         return fromService;
-    return fetchFallbackState(commitmentHex);
+    const fallback = await fetchFallbackState(commitmentHex);
+    if (fallback)
+        return fallback;
+    // 总是返回默认状态
+    if (appConfig.initialCommitment) {
+        cachePoolState(BigInt(appConfig.initialCommitment), DEFAULT_FALLBACK_STATE);
+    }
+    return DEFAULT_FALLBACK_STATE;
 };
 export const listCachedCommitments = () => Object.keys(readCache());
 export const clearStateCache = () => writeCache({});

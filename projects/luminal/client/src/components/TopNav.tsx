@@ -5,12 +5,12 @@ export function TopNav() {
     <header className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-white/5 bg-[#08090C]/70 px-8 py-5 backdrop-blur-xl">
       <div className="flex items-center gap-3">
         <img
-          src="/luminial.svg"
-          alt="Luminial"
+          src="/luminal.svg"
+          alt="Luminal"
           className="h-8 w-8 drop-shadow-md"
         />
         <div>
-          <span className="text-lg font-semibold tracking-wide">Luminial</span>
+          <span className="text-lg font-semibold tracking-wide">Luminal</span>
           <span className="ml-2 rounded-full bg-primary/20 px-2 py-[2px] text-[0.6rem] uppercase tracking-widest text-primary">Alpha</span>
         </div>
       </div>

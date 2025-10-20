@@ -17,7 +17,7 @@ import { chains, wagmiConfig } from "./wallet";
 const Disclaimer: DisclaimerComponent = ({ Text, Link }) => (
   <Text>
     Zero-knowledge swap prototype. Review docs before committing funds.{" "}
-    <Link href="https://github.com/luminial">Learn more</Link>
+    <Link href="https://github.com/luminal">Learn more</Link>
   </Text>
 );
 
@@ -27,7 +27,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider theme={midnightTheme()} chains={chains} coolMode
           appInfo={{
-            appName: "Luminial AMM",
+            appName: "Luminal Swap",
             disclaimer: Disclaimer
           }}
         >

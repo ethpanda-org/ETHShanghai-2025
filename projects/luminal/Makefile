@@ -98,13 +98,13 @@ dev: ## Run complete development environment (requires tmux or separate terminal
 dev-tmux: ## Run full stack in tmux session
 	@command -v tmux >/dev/null 2>&1 || { echo "$(RED)❌ tmux is required but not installed$(NC)"; exit 1; }
 	@echo "$(BLUE)�� Starting full stack in tmux...$(NC)"
-	@tmux new-session -d -s luminial -n anvil 'cd $(ROOT_DIR) && make anvil'
+	@tmux new-session -d -s luminal -n anvil 'cd $(ROOT_DIR) && make anvil'
 	@sleep 3
-	@tmux new-window -t luminial -n deploy 'cd $(ROOT_DIR) && make deploy-local && read -p "Press enter to close..."'
+	@tmux new-window -t luminal -n deploy 'cd $(ROOT_DIR) && make deploy-local && read -p "Press enter to close..."'
 	@sleep 10
-	@tmux new-window -t luminial -n client 'cd $(CLIENT_DIR) && npm run dev'
-	@tmux attach-session -t luminial
-	@echo "$(GREEN)✅ Full stack started in tmux session 'luminial'$(NC)"
+	@tmux new-window -t luminal -n client 'cd $(CLIENT_DIR) && npm run dev'
+	@tmux attach-session -t luminal
+	@echo "$(GREEN)✅ Full stack started in tmux session 'luminal'$(NC)"
 
 ##@ Testing
 
@@ -204,16 +204,16 @@ check-pool: ## Check current pool state from blockchain
 docker-build: ## Build Docker image (if Dockerfile exists)
 	@if [ -f "$(ROOT_DIR)/Dockerfile" ]; then \
 		echo "$(BLUE)🐳 Building Docker image...$(NC)"; \
-		docker build -t luminial:latest $(ROOT_DIR); \
+		docker build -t luminal:latest $(ROOT_DIR); \
 		echo "$(GREEN)✅ Docker image built$(NC)"; \
 	else \
 		echo "$(YELLOW)⚠️  No Dockerfile found$(NC)"; \
 	fi
 
 docker-run: ## Run in Docker container
-	@if docker images luminial:latest -q | grep -q .; then \
+	@if docker images luminal:latest -q | grep -q .; then \
 		echo "$(BLUE)🐳 Running Docker container...$(NC)"; \
-		docker run -p 3000:3000 -p 8545:8545 luminial:latest; \
+		docker run -p 3000:3000 -p 8545:8545 luminal:latest; \
 	else \
 		echo "$(RED)❌ Docker image not found. Run 'make docker-build' first$(NC)"; \
 	fi

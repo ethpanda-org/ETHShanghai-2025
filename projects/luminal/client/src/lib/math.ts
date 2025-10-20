@@ -46,8 +46,10 @@ export const computeSwapState = (state: PoolState, amountIn: bigint) => {
     throw new Error("Amount out is zero. Pool may lack liquidity.");
   }
 
+  // 重要：reserve0 使用原始 amountIn，和电路逻辑保持一致
+  // 电路中: reserveNew0 <== reserveOld0 + amountIn
   const newState: PoolState = {
-    reserve0: state.reserve0 + amountInAfterFee,
+    reserve0: state.reserve0 + amountIn,
     reserve1: state.reserve1 - amountOut,
     nonce: state.nonce + 1n,
     feeBps: state.feeBps

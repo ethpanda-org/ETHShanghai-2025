@@ -9,7 +9,7 @@ type StoredPoolState = {
   feeBps: string;
 };
 
-const STORAGE_KEY = "luminial.pool-state-cache.v1";
+const STORAGE_KEY = "luminal.pool-state-cache.v1";
 
 // 硬编码的默认 fallback 值（当链上也读取失败时使用）
 const DEFAULT_FALLBACK_STATE: PoolState = {

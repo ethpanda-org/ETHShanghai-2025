@@ -43,6 +43,10 @@ contract DeployScript is Script {
     uint256 public constant INITIAL_WETH = 10 ether;           // 10 WETH
     uint256 public constant INITIAL_USDC = 20000 * 10**6;       // 20,000 USDC (6 decimals)
     
+    // 默认 Poseidon 承诺（Poseidon(INITIAL_WETH, INITIAL_USDC, 0, 0)）
+    bytes32 public constant DEFAULT_INITIAL_COMMITMENT =
+        0x17596af29b3e8e9043d30b0fad867684c480ebf73e262bd870c94e00988fe1a1;
+
     // 测试账户初始余额
     uint256 public constant TEST_WETH_AMOUNT = 100 ether;       // 100 WETH
     uint256 public constant TEST_USDC_AMOUNT = 100000 * 10**6;  // 100,000 USDC
@@ -177,10 +181,8 @@ contract DeployScript is Script {
             initialCommitment = initialCommitmentOverride;
             console.log("  Using override commitment from env:", vm.toString(initialCommitment));
         } else {
-            initialCommitment = keccak256(
-                abi.encodePacked(INITIAL_WETH, INITIAL_USDC, uint256(0), uint256(0))
-            );
-            console.log("  Using fallback keccak commitment:", vm.toString(initialCommitment));
+            initialCommitment = DEFAULT_INITIAL_COMMITMENT;
+            console.log("  Using default Poseidon commitment:", vm.toString(initialCommitment));
         }
         
         // 通过 AMM 初始化池子

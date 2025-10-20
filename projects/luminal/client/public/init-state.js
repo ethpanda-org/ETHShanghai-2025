@@ -1,6 +1,6 @@
 // 自动初始化池子状态缓存 - 从链上读取实际的池子储备量
 (async function() {
-  const CACHE_KEY = 'luminial.pool-state-cache.v1';
+  const CACHE_KEY = 'luminal.pool-state-cache.v1';
 
   // 从 meta 标签读取部署配置
   const commitment = document.querySelector('meta[name="initial-commitment"]')?.content;

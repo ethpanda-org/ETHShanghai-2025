@@ -12,7 +12,8 @@ const toField = (value: bigint) => {
 export async function poseidonHash(inputs: readonly bigint[]) {
   const normalized = inputs.map(toField) as bigint[];
   const result = Poseidon.hash(normalized);
-  return BigInt(Poseidon.F.toString(result));
+  const raw = BigInt(Poseidon.F.toString(result));
+  return toField(raw);
 }
 
 export async function commitmentFromState(state: PoolState) {

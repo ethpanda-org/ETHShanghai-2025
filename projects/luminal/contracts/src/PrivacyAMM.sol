@@ -101,8 +101,8 @@ contract PrivacyAMM is IPrivacyAMM {
         
         // 3. 验证 ZK 证明
         uint[2] memory pubSignals = [
-            uint256(commitmentOld),
-            uint256(commitmentNew)
+            uint256(commitmentNew),
+            uint256(commitmentOld)
         ];
         
         bool isValid = VERIFIER.verifyProof(pA, pB, pC, pubSignals);

@@ -36,6 +36,15 @@ export const usePoolState = () => {
     }
   });
 
+  const { data: merkleRoot } = useReadContract({
+    abi: globalVaultAbi,
+    address: vaultAddress,
+    functionName: "getRoot",
+    query: {
+      enabled: Boolean(vaultAddress)
+    }
+  });
+
   const commitmentHex = useMemo(
     () => (commitment as `0x${string}` | undefined)?.toLowerCase(),
     [commitment]
@@ -86,6 +95,7 @@ export const usePoolState = () => {
   return {
     vaultAddress,
     commitment: commitmentHex,
+    merkleRoot: merkleRoot as `0x${string}` | undefined,
     poolState: poolStateQuery.data,
     isLoadingState: false,
     error: null

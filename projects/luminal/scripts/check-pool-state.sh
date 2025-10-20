@@ -78,7 +78,7 @@ echo ""
 # 检查本地缓存
 echo -e "${BLUE}💾 Checking local cache (localStorage)...${NC}"
 
-CACHE_KEY="luminial.pool-state-cache.v1"
+CACHE_KEY="luminal.pool-state-cache.v1"
 
 if command -v node &> /dev/null; then
     # 尝试读取 localStorage（需要浏览器环境，这里只是示例）

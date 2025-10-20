@@ -31,7 +31,7 @@ VITE_PUBLIC_RPC_URL=https://sepolia.infura.io/v3/<key>
 VITE_WALLETCONNECT_PROJECT_ID=<walletconnect_project_id>
 VITE_VIEWING_KEY=public-development-viewing-key-not-for-production
 # Optional: serve decrypted pool states from a service
-VITE_STATE_SERVICE_URL=https://state.luminial.xyz
+VITE_STATE_SERVICE_URL=https://state.luminal.xyz
 # Optional: target a different chain ("anvil" selects http://127.0.0.1:8545)
 VITE_CHAIN=anvil
 # Optional: bypass WalletConnect entirely (use injected wallets only)
