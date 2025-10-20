@@ -33,6 +33,34 @@
 ![CoinMonitor.png](TheTrewth%2Fdocs%2FCoinMonitor.png)
 ![Agent.png](TheTrewth%2Fdocs%2FAgent.png)
 
+```
+Trewth-Interaction/
+├── public/                 # 静态资源文件
+├── src/                    # 源代码目录
+│   ├── components/         # React 组件
+│   │   ├── Trading/        # 交易相关组件
+│   │   │   ├── TokenInfo.tsx        # 代币信息展示
+│   │   │   ├── TokenPrice.tsx       # 代币价格图表
+│   │   │   └── EventCoinTading.tsx  # 事件币交易
+│   │   ├── TokenLaunch/    # 代币发行组件
+│   │   │   └── TokenMetadata.tsx    # 代币元数据配置
+│   │   ├── AgentInteraction/  # AI代理交互组件
+│   │   │   ├── Session.tsx          # 会话管理
+│   │   │   └── Agent_setting.tsx    # 代理设置
+│   │   ├── EventCoinMonitor/  # 事件币监控组件
+│   │   │   ├── NewlyListToken.tsx   # 新上市代币
+│   │   │   └── CoinLiquity.tsx      # 代币流动性
+│   │   └── TabNavigation.tsx   # 标签导航
+│   ├── App.tsx             # 主应用组件
+│   ├── App.css             # 应用样式
+│   ├── index.tsx           # 应用入口
+│   └── index.css           # 全局样式
+├── package.json            # 项目依赖配置
+├── tsconfig.json           # TypeScript 配置
+└── README.md               # 项目文档
+
+```
+
 - **关键模块**：
   - 前端：React
   - 后端：Flask
