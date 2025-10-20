@@ -209,7 +209,7 @@
 - DigitalOcean Spaces 或任何 S3 兼容存储桶
 - HTTPS 证书（开发环境可使用 mkcert 生成自签名证书）
 
-#### 环境变量配置
+#### 环境变量配置(可以联系团队获取)
 
 **1. MediaWiki MCP Server (.mcp.env)**
 
@@ -245,7 +245,6 @@ DASHSCOPE_API_KEY="sk-your-dashscope-api-key"           # 阿里云 Qwen
 CLAUDE_API_KEY="sk-or-v1-your-claude-api-key"           # Claude (OpenRouter)
 GEMINI_API_KEY="sk-or-v1-your-gemini-api-key"           # Gemini (OpenRouter)
 OPENAI_API_KEY="sk-your-openai-api-key"                 # OpenAI (可选)
-DEEPSEEK_API_KEY="sk-your-deepseek-api-key"             # DeepSeek (可选)
 
 # 对象存储配置
 DO_SPACE_ENDPOINT="https://nyc3.digitaloceanspaces.com"
@@ -307,11 +306,11 @@ mkcert -install
 mkcert localhost 127.0.0.1 ::1
 
 # 重命名证书文件
-ren localhost+2-key.pem key.pem
-ren localhost+2.pem cert.pem
+ren localhost+2-key.pem cert/key.pem
+ren localhost+2.pem cert/cert.pem
 
 # 方案二：使用 OpenSSL
-# openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/CN=localhost"
+# openssl req -x509 -newkey rsa:4096 -keyout cert/key.pem -out cert/cert.pem -days 365 -nodes -subj "/CN=localhost"
 ```
 
 **步骤 4: 启动 Wikihelper Chat**
