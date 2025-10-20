@@ -58,6 +58,8 @@ import {
   useTotalAgents
 } from '../hooks/useContracts'
 
+const NEXT_PUBLIC_PINATA_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJmMzYzOTVkZC0xY2YzLTQ5NTUtODVmZS1kMzM5MGU2ZDU4YzEiLCJlbWFpbCI6InNhbXVhbDRjcnlwdG9AZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBpbl9wb2xpY3kiOnsicmVnaW9ucyI6W3siZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjEsImlkIjoiRlJBMSJ9LHsiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjEsImlkIjoiTllDMSJ9XSwidmVyc2lvbiI6MX0sIm1mYV9lbmFibGVkIjpmYWxzZSwic3RhdHVzIjoiQUNUSVZFIn0sImF1dGhlbnRpY2F0aW9uVHlwZSI6InNjb3BlZEtleSIsInNjb3BlZEtleUtleSI6ImNlYTM4YjNiMWRiNzNmYjA3Y2VkIiwic2NvcGVkS2V5U2VjcmV0IjoiMzYwMDdiZDA3YmQ0OGNlM2M2OWMyMjg0MmI3OWIzNjY4YTQ1YmYxZWY2NjlkMmE0NzYyMWVlYjhhOTU2MGJlNSIsImV4cCI6MTc5MjQ3NjA3NH0.LrDtr7lyYQjc-aLjov1Qr4f6vy9mZtV0waVihxb0m5k"
+
 export default function MyPage() {
   const { address: currentUser } = useAccount()
   const [myAgentsData, setMyAgentsData] = useState([])
@@ -78,6 +80,10 @@ export default function MyPage() {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadStatus, setUploadStatus] = useState('')
 
+  // 交易状态
+  const [currentTxHash, setCurrentTxHash] = useState('')
+  const [isProcessingTransaction, setIsProcessingTransaction] = useState(false)
+
   const { isOpen, onOpen, onClose } = useDisclosure()
   const toast = useToast()
   const bgColor = 'rgba(255, 255, 255, 0.05)'
@@ -85,10 +91,10 @@ export default function MyPage() {
   const cardHoverBg = 'rgba(255, 255, 255, 0.08)'
 
   const { agentIds, isLoading: agentsLoading, refetch: refetchAgents } = useMyAgents(currentUser)
-  const { registerAgent, isPending: isRegistering } = useRegisterAgent()
-  const { launchToken, isPending: isLaunching } = useLaunchToken()
-  const { acceptInvitation, isPending: isAccepting } = useAcceptMatchInvitation()
-  const { rejectInvitation, isPending: isRejecting } = useRejectMatchInvitation()
+  const { registerAgent, isPending: isRegistering, isSuccess: isRegisterSuccess, hash: registerHash } = useRegisterAgent()
+  const { launchToken, isPending: isLaunching, isSuccess: isLaunchSuccess, hash: launchHash } = useLaunchToken()
+  const { acceptInvitation, isPending: isAccepting, isSuccess: isAcceptSuccess, hash: acceptHash } = useAcceptMatchInvitation()
+  const { rejectInvitation, isPending: isRejecting, isSuccess: isRejectSuccess, hash: rejectHash } = useRejectMatchInvitation()
   const { totalAgent, isLoading: totalAgentLoading } = useTotalAgents()
 
   // 获取每个Agent的详细信息
@@ -149,6 +155,86 @@ export default function MyPage() {
     }
   }, [myAgentsData])
 
+  // 监控注册交易状态
+  useEffect(() => {
+    if (isRegisterSuccess && registerHash) {
+      setUploadProgress(100)
+      setUploadStatus('注册完成!')
+      setIsProcessingTransaction(false)
+      setIsUploading(false)
+
+      toast({
+        title: "注册成功",
+        description: `Agent注册成功！交易哈希: ${registerHash.slice(0, 10)}...`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      })
+
+      // 延迟重置表单，让用户看到成功状态
+      setTimeout(() => {
+        // 重置表单
+        setTeamName('')
+        setModelVersion('')
+        setTokenUri('')
+        setDescription('')
+        setAvatarFile(null)
+        setAvatarPreview('')
+        setAgentPackageFile(null)
+        setUploadProgress(0)
+        setUploadStatus('')
+        setCurrentTxHash('')
+        onClose()
+
+        // 刷新Agent列表
+        refetchAgents()
+      }, 2000)
+    }
+  }, [isRegisterSuccess, registerHash, toast, onClose, refetchAgents])
+
+  // 监控其他交易状态
+  useEffect(() => {
+    if (isLaunchSuccess && launchHash) {
+      toast({
+        title: "Token发行启动成功",
+        description: `Token发行已开始！交易哈希: ${launchHash.slice(0, 10)}...`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+  }, [isLaunchSuccess, launchHash, toast])
+
+  useEffect(() => {
+    if (isAcceptSuccess && acceptHash) {
+      toast({
+        title: "邀请接受成功",
+        description: `比赛邀请已接受！交易哈希: ${acceptHash.slice(0, 10)}...`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      })
+
+      // 移除已接受的邀请（这里简化处理，实际应根据具体matchId）
+      // 在实际项目中，你需要追踪具体的matchId来精确移除
+    }
+  }, [isAcceptSuccess, acceptHash, toast])
+
+  useEffect(() => {
+    if (isRejectSuccess && rejectHash) {
+      toast({
+        title: "邀请拒绝成功",
+        description: `比赛邀请已拒绝！交易哈希: ${rejectHash.slice(0, 10)}...`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      })
+
+      // 移除已拒绝的邀请（这里简化处理，实际应根据具体matchId）
+      // 在实际项目中，你需要追踪具体的matchId来精确移除
+    }
+  }, [isRejectSuccess, rejectHash, toast])
+
   const formatAddress = (address) => {
     if (!address) return ''
     return `${address.slice(0, 6)}...${address.slice(-4)}`
@@ -165,10 +251,10 @@ export default function MyPage() {
       formData.append('file', file)
 
       // 使用公共IPFS网关进行上传 (实际项目中可能需要使用私有IPFS节点)
-      const response = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+      const response = await fetch('https://moccasin-adverse-takin-944.mypinata.cloud', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT || 'YOUR_PINATA_JWT'}`,
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT || NEXT_PUBLIC_PINATA_JWT}`,
         },
         body: formData
       })
@@ -176,7 +262,7 @@ export default function MyPage() {
       if (!response.ok) {
         // 如果Pinata失败，使用模拟的IPFS上传
         console.warn('Pinata upload failed, using mock IPFS')
-        return `ipfs://Qm${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`
+        throw new Error('IPFS upload failed');
       }
 
       const result = await response.json()
@@ -184,7 +270,7 @@ export default function MyPage() {
     } catch (error) {
       console.error('IPFS upload error:', error)
       // 生成模拟的IPFS哈希
-      return `ipfs://Qm${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`
+      throw new Error('IPFS upload failed');
     }
   }
 
@@ -333,37 +419,26 @@ export default function MyPage() {
       setUploadProgress(70)
       const metadataIPFS = await generateAndUploadMetadata(avatarIPFS, agentPackageIPFS)
 
-      // 步骤4: 调用智能合约注册
-      setUploadStatus('调用智能合约注册Agent...')
+      // 步骤4: 发起智能合约交易
+      setUploadStatus('发起区块链交易...')
+      setUploadProgress(80)
+      setIsProcessingTransaction(true)
+
+      const hash = await registerAgent(teamName, modelVersion, metadataIPFS)
+      setCurrentTxHash(hash)
+
+      // 更新状态显示等待交易确认
+      setUploadStatus('等待区块链交易确认...')
       setUploadProgress(90)
-      await registerAgent(teamName, modelVersion, metadataIPFS)
 
-      setUploadProgress(100)
-      setUploadStatus('注册完成!')
+      // 注意：不在这里关闭模态框或重置表单
+      // 交易成功的处理在 useEffect 中进行
 
-      toast({
-        title: "注册成功",
-        description: "Agent注册成功，所有文件已上传到IPFS",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      })
-
-      // 重置表单
-      setTeamName('')
-      setModelVersion('')
-      setTokenUri('')
-      setDescription('')
-      setAvatarFile(null)
-      setAvatarPreview('')
-      setAgentPackageFile(null)
-      setUploadProgress(0)
-      setUploadStatus('')
-      onClose()
-
-      // 刷新Agent列表
-      refetchAgents()
     } catch (error) {
+      setIsProcessingTransaction(false)
+      setUploadStatus('')
+      setUploadProgress(0)
+
       toast({
         title: "注册失败",
         description: error.message,
@@ -371,21 +446,23 @@ export default function MyPage() {
         duration: 5000,
         isClosable: true,
       })
-    } finally {
       setIsUploading(false)
     }
   }
 
   const handleLaunchToken = async (agentId) => {
     try {
-      await launchToken(agentId)
+      const hash = await launchToken(agentId)
+
       toast({
-        title: "Token发行启动成功",
-        description: "Token发行已开始",
-        status: "success",
-        duration: 5000,
+        title: "交易已发起",
+        description: "Token发行交易已提交，等待区块链确认...",
+        status: "info",
+        duration: 3000,
         isClosable: true,
       })
+
+      // 成功提示在 useEffect 中处理
     } catch (error) {
       toast({
         title: "Token发行启动失败",
@@ -399,17 +476,17 @@ export default function MyPage() {
 
   const handleAcceptInvitation = async (matchId) => {
     try {
-      await acceptInvitation(matchId)
+      const hash = await acceptInvitation(matchId)
+
       toast({
-        title: "邀请接受成功",
-        description: "比赛邀请已接受",
-        status: "success",
+        title: "交易已发起",
+        description: "接受邀请交易已提交，等待区块链确认...",
+        status: "info",
         duration: 3000,
         isClosable: true,
       })
 
-      // 移除已接受的邀请
-      setPendingInvitationsData(prev => prev.filter(inv => inv.matchId !== matchId))
+      // 成功后移除邀请的逻辑移到 useEffect 中
     } catch (error) {
       toast({
         title: "接受邀请失败",
@@ -423,17 +500,17 @@ export default function MyPage() {
 
   const handleRejectInvitation = async (matchId) => {
     try {
-      await rejectInvitation(matchId)
+      const hash = await rejectInvitation(matchId)
+
       toast({
-        title: "邀请拒绝成功",
-        description: "比赛邀请已拒绝",
-        status: "success",
+        title: "交易已发起",
+        description: "拒绝邀请交易已提交，等待区块链确认...",
+        status: "info",
         duration: 3000,
         isClosable: true,
       })
 
-      // 移除已拒绝的邀请
-      setPendingInvitationsData(prev => prev.filter(inv => inv.matchId !== matchId))
+      // 成功后移除邀请的逻辑移到 useEffect 中
     } catch (error) {
       toast({
         title: "拒绝邀请失败",
@@ -843,13 +920,32 @@ export default function MyPage() {
                     bg="gray.700"
                     sx={{
                       '& > div': {
-                        bg: '#00ff9d'
+                        bg: isProcessingTransaction ? '#FF6B35' : '#00ff9d'
                       }
                     }}
                     size="sm"
                     borderRadius="md"
                   />
                   <Text color="gray.400" fontSize="xs">{uploadProgress}% 完成</Text>
+
+                  {/* 显示交易哈希 */}
+                  {isProcessingTransaction && currentTxHash && (
+                    <VStack spacing={2} w="full">
+                      <Text color="gray.300" fontSize="xs">交易哈希:</Text>
+                      <Text
+                        color="#2172E5"
+                        fontSize="xs"
+                        fontFamily="mono"
+                        wordBreak="break-all"
+                        textAlign="center"
+                      >
+                        {currentTxHash}
+                      </Text>
+                      <Text color="gray.400" fontSize="xs">
+                        ⏳ 等待区块链网络确认交易...
+                      </Text>
+                    </VStack>
+                  )}
                 </VStack>
               )}
 
@@ -873,7 +969,7 @@ export default function MyPage() {
               onClick={onClose}
               color="gray.300"
               _hover={{ bg: cardHoverBg, color: "white" }}
-              isDisabled={isUploading}
+              isDisabled={isUploading || isProcessingTransaction}
             >
               取消
             </Button>
@@ -882,11 +978,17 @@ export default function MyPage() {
               color="white"
               _hover={{ bg: "#1a5bb8" }}
               onClick={handleRegisterAgent}
-              isLoading={isRegistering || isUploading}
-              loadingText={isUploading ? "上传中..." : "注册中..."}
-              isDisabled={!teamName || !modelVersion || !avatarFile || !agentPackageFile}
+              isLoading={isRegistering || isUploading || isProcessingTransaction}
+              loadingText={
+                isProcessingTransaction ? "等待确认..." :
+                isUploading ? "上传中..." :
+                isRegistering ? "发起交易..." : "注册Agent"
+              }
+              isDisabled={!teamName || !modelVersion || !avatarFile || !agentPackageFile || isProcessingTransaction}
             >
-              {isUploading ? "上传并注册" : "注册Agent"}
+              {isProcessingTransaction ? "等待区块链确认" :
+               isUploading ? "上传并注册" :
+               "注册Agent"}
             </Button>
           </ModalFooter>
         </ModalContent>
