@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <title>NomadPay TG Demo</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="tg-app">
+      <header class="tg-header">
+        <div class="title">NomadPay</div>
+      </header>
+
+      <!-- 首页：钱包与入口按钮 -->
+      <section id="screen-home" class="screen active">
+        <div class="card portfolio">
+          <div class="row space-between">
+            <div class="label">Total Assets (<span id="unit-label">CNY</span>)</div>
+            <div class="segmented" id="unit-seg">
+              <button class="seg" data-unit="CNY">CNY</button>
+              <button class="seg" data-unit="USD">USD</button>
+              <button class="seg" data-unit="USDT">USDT</button>
+              <button class="seg" data-unit="ETH">ETH</button>
+            </div>
+          </div>
+          <div id="portfolio-total" class="total">—</div>
+          <div class="row space-between">
+            <div class="label">Yesterday's Earnings</div>
+            <div id="portfolio-income" class="value">—</div>
+          </div>
+          <div class="divider"></div>
+          <div class="row space-between">
+            <div class="label">Balance Interest</div>
+            <div id="asset-earn" class="value">—</div>
+          </div>
+          <div class="row space-between">
+            <div class="label">Mainstream Cryptocurrencies</div>
+            <div id="asset-mainstream" class="value">—</div>
+          </div>
+          <div class="row space-between">
+            <div class="label">Yield farm</div>
+            <div id="asset-yield" class="value">—</div>
+          </div>
+          <div class="row space-between">
+            <div class="label subtle">More Asset Services</div>
+            <button id="btnExploreAssets" class="btn">Explore</button>
+          </div>
+        </div>
+
+        <div class="card actions">
+          <button id="btnFiat24" class="btn primary">Card Payment (Powered by Fiat24)</button>
+          <button id="btnQRPay" class="btn">QR Payment (Available in Vietnam, Philippines, Indonesia, Brazil; Powered by Aeon Pay)</button>
+          <button id="btnStartRisk" class="btn accent">Start Risk Assessment</button>
+        </div>
+
+        <div id="qr-overlay" class="overlay hidden">
+          <div class="overlay-content">
+            <div class="overlay-title">QR Payment (demo)</div>
+            <div class="qr-box">QR Code Placeholder</div>
+            <button id="btnCloseQR" class="btn">Close</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Risk Assessment (DeFi Risk Profile) -->
+      <section id="screen-risk" class="screen">
+        <div class="card">
+          <div class="card-title">DeFi Risk Profile Assessment (based on available products)</div>
+          <form id="risk-form" class="form">
+            <div class="q">
+              <div class="q-title">1. Smart contract risk tolerance (audits, history, bug bounty)</div>
+              <label><input type="radio" name="r1" value="low" checked /> Only blue-chip, mainnet, long-running, fully-audited protocols</label>
+              <label><input type="radio" name="r1" value="medium" /> Accept mature L2 or new protocols (audited, with risk controls)</label>
+              <label><input type="radio" name="r1" value="high" /> Willing to try new/experimental protocols; understand potential contract risks</label>
+            </div>
+            <div class="q">
+              <div class="q-title">2. Liquidity / lock-up acceptance</div>
+              <label><input type="radio" name="r2" value="low" checked /> Redeem anytime; prefer no lock-up</label>
+              <label><input type="radio" name="r2" value="medium" /> Accept 7–14 day unbond or periodic claim</label>
+              <label><input type="radio" name="r2" value="high" /> Accept ≥30 day lock-up or ve model</label>
+            </div>
+            <div class="q">
+              <div class="q-title">3. Stablecoin / depeg risk tolerance</div>
+              <label><input type="radio" name="r3" value="low" checked /> Only top stablecoins (USDC/USDT)</label>
+              <label><input type="radio" name="r3" value="medium" /> Accept decentralized stablecoins (DAI/FRAX)</label>
+              <label><input type="radio" name="r3" value="high" /> Use more volatile stable assets or restaked assets</label>
+            </div>
+            <div class="q">
+              <div class="q-title">4. Price volatility tolerance (major crypto)</div>
+              <label><input type="radio" name="r4" value="low" checked /> Mostly stable; avoid price exposure</label>
+              <label><input type="radio" name="r4" value="medium" /> Small exposure (e.g., portion in LP)</label>
+              <label><input type="radio" name="r4" value="high" /> Accept long-term DCA and larger volatility</label>
+            </div>
+            <div class="q">
+              <div class="q-title">5. Impermanent loss (IL) tolerance</div>
+              <label><input type="radio" name="r5" value="low" checked /> Do not accept IL (prefer lending/staking)</label>
+              <label><input type="radio" name="r5" value="medium" /> Accept IL on stable or low-volatility pairs</label>
+              <label><input type="radio" name="r5" value="high" /> Accept IL on volatile pairs (for higher yield)</label>
+            </div>
+            <div class="q">
+              <div class="q-title">6. Leverage / collateral ratio tolerance</div>
+              <label><input type="radio" name="r6" value="low" checked /> No leverage or high collateral safety margin</label>
+              <label><input type="radio" name="r6" value="medium" /> Light leverage; monitor health factor</label>
+              <label><input type="radio" name="r6" value="high" /> Accept higher leverage and liquidation risk</label>
+            </div>
+            <div class="q">
+              <div class="q-title">7. Management frequency and strategy complexity</div>
+              <label><input type="radio" name="r7" value="low" checked /> Near zero-maintenance (lending/staking; auto-compound)</label>
+              <label><input type="radio" name="r7" value="medium" /> Weekly/biweekly checks (yield farms; position adjustments)</label>
+              <label><input type="radio" name="r7" value="high" /> Active management; frequent operations</label>
+            </div>
+            <div class="q">
+              <div class="q-title">8. Cross-chain / protocol diversity</div>
+              <label><input type="radio" name="r8" value="low" checked /> Mainnet blue-chip only</label>
+              <label><input type="radio" name="r8" value="medium" /> Mainnet + top L2; curated protocols</label>
+              <label><input type="radio" name="r8" value="high" /> Open to new chains and new protocols</label>
+            </div>
+          </form>
+          <button id="btnRiskSubmit" class="btn accent">Submit Assessment</button>
+        </div>
+      </section>
+
+      <!-- 推荐方案（以太坊链 DeFi） -->
+      <section id="screen-recommend" class="screen">
+        <div class="card">
+          <div class="card-title">Recommended Solutions (example APY, high to low)</div>
+          <div id="defi-list" class="list"></div>
+          <button id="btnChooseInvest" class="btn primary">Choose Investment</button>
+        </div>
+      </section>
+
+      <!-- 投入流程 -->
+      <section id="screen-invest" class="screen">
+        <div class="card">
+          <div class="card-title">Investment Amount</div>
+          <div class="row">
+            <label>Amount (USD): <input id="investAmount" type="number" min="1" value="1000" /></label>
+          </div>
+          <button id="btnConfirmInvest" class="btn primary">Confirm</button>
+        </div>
+      </section>
+
+      <!-- 签名模拟 -->
+      <section id="screen-sign" class="screen">
+        <div class="card">
+          <div class="card-title">Signature Confirmation (simulated)</div>
+          <p>Will use the connected Ethereum wallet for signing (demo).</p>
+          <button id="btnDoSign" class="btn accent">Sign</button>
+          <button id="btnCancelSign" class="btn">Cancel</button>
+        </div>
+      </section>
+
+      <!-- 成功页 -->
+      <section id="screen-success" class="screen">
+        <div class="card">
+          <div class="success">Investment completed, congratulations! 🎉</div>
+          <button id="btnBackHome" class="btn primary">Return to Homepage</button>
+        </div>
+      </section>
+    <!-- 我的：钱包链接及余额 -->
+      <section id="screen-me" class="screen">
+        <div class="card">
+          <div class="row space-between">
+            <div>
+              <div class="label">Ethereum Wallet</div>
+              <div id="wallet-address" class="mono">Not connected</div>
+            </div>
+            <button id="wallet-connect-btn" class="btn primary">WalletConnect</button>
+          </div>
+          <div class="divider"></div>
+          <div class="row">
+            <div class="label">Balances (USDC/USDT/ETH)</div>
+            <div id="wallet-balance" class="balance">
+              <div id="bal-eth">ETH: —</div>
+              <div id="bal-usdc">USDC: —</div>
+              <div id="bal-usdt">USDT: —</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 底部导航 -->
+      <nav class="tabbar">
+        <button id="tab-home" class="tab active">Home</button>
+        <button id="tab-finance" class="tab">Wealth Management</button>
+        <button id="tab-me" class="tab">My</button>
+      </nav>
+    </div>
+
+    <script src="./app.v2.js"></script>
+  </body>
+</html>

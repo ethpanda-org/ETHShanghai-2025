@@ -1,0 +1,65 @@
+/* Telegram 风格移动端 */
+:root {
+  --bg: #ffffff;
+  --text: #0b0f14;
+  --muted: #667085;
+  --primary: #3390ec;
+  --accent: #2fb67c;
+  --line: #e6eaf0;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Noto Sans', Arial, sans-serif; }
+
+.tg-app { max-width: 480px; margin: 0 auto; min-height: 100vh; background: var(--bg); padding-bottom: 72px; }
+.tg-header { padding: 12px 16px; background: linear-gradient(180deg, #47a6f7, #3390ec); color: #fff; }
+.tg-header .title { font-weight: 600; font-size: 18px; }
+.tg-header .subtitle { opacity: 0.9; font-size: 12px; }
+
+.screen { display: none; padding: 12px; }
+.screen.active { display: block; }
+
+.card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); margin: 12px 0; }
+.card-title { font-weight: 600; margin-bottom: 8px; }
+.divider { height: 1px; background: var(--line); margin: 8px 0; }
+.row { display: flex; align-items: center; gap: 8px; }
+.space-between { justify-content: space-between; }
+.label { color: var(--muted); font-size: 12px; }
+.label.subtle { color: #9aa5b1; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace; font-size: 12px; }
+.balance { font-size: 18px; font-weight: 600; }
+.value { font-size: 16px; font-weight: 600; }
+
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.actions .btn.accent { grid-column: span 2; }
+
+.btn { padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: #f7fafc; color: var(--text); cursor: pointer; }
+.btn:hover { background: #eef4fb; }
+.btn.primary { background: var(--primary); color: #fff; border-color: #2d79c8; }
+.btn.accent { background: var(--accent); color: #fff; border-color: #2aa46f; }
+
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; }
+.overlay.hidden { display: none; }
+.overlay-content { width: 90%; max-width: 420px; background: #fff; border-radius: 16px; padding: 16px; }
+.overlay-title { font-weight: 600; margin-bottom: 10px; }
+.q { margin: 10px 0; }
+.q-title { font-weight: 500; margin-bottom: 6px; }
+.q label { display: block; padding: 6px 8px; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 6px; }
+
+.list { display: grid; gap: 8px; }
+.item { display: flex; align-items: center; justify-content: space-between; padding: 8px; border: 1px solid var(--line); border-radius: 12px; }
+.item .name { font-weight: 600; }
+.item .apy { color: var(--primary); font-weight: 700; }
+
+.success { font-size: 18px; font-weight: 700; text-align: center; margin: 8px 0; color: var(--accent); }
+
+/* 新增：总资产卡与单位切换 */
+.portfolio .total { font-size: 36px; font-weight: 800; letter-spacing: 0.5px; margin: 6px 0 8px; }
+.segmented { display: flex; gap: 6px; background: #f3f6fa; border: 1px solid var(--line); padding: 4px; border-radius: 12px; }
+.segmented .seg { padding: 6px 8px; border-radius: 8px; border: none; background: transparent; cursor: pointer; font-size: 12px; }
+.segmented .seg.active { background: #fff; border: 1px solid var(--line); }
+
+/* 新增：底部导航 */
+.tabbar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #fff; border-top: 1px solid var(--line); display: flex; justify-content: space-around; padding: 8px 12px; }
+.tabbar .tab { flex: 1; padding: 8px; border-radius: 10px; border: none; background: transparent; color: var(--muted); font-weight: 600; }
+.tabbar .tab.active { color: var(--primary); background: #eef4fb; }

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NomadPay 黑客松 Demo</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>NomadPay 黑客松 Demo</h1>
+      <p>基于您提供的流程图，演示存款、风险评估、策略拆分、支付触发与再平衡等核心流程。</p>
+    </header>
+
+    <main>
+      <section class="layout">
+        <div class="left">
+          <h2>流程图</h2>
+          <div id="flowchart" class="flowchart"></div>
+        </div>
+        <div class="right">
+          <h2>交互模拟</h2>
+
+          <div class="card">
+            <h3>1) 存款与风险画像</h3>
+            <div class="row">
+              <label>存入金额（USD）：<input id="depositAmount" type="number" min="0" value="1000" /></label>
+            </div>
+            <div class="row">
+              <label>缓冲层比例（5-20%）：<input id="bufferPercent" type="number" min="5" max="20" value="10" /></label>
+            </div>
+            <div class="row">
+              <label>风险画像：
+                <select id="riskProfile">
+                  <option value="conservative">保守型</option>
+                  <option value="balanced" selected>均衡型</option>
+                  <option value="aggressive">进取型</option>
+                </select>
+              </label>
+            </div>
+            <button id="btnDeposit">确认存入并分配策略</button>
+            <div id="depositResult" class="result"></div>
+          </div>
+
+          <div class="card">
+            <h3>2) 生成 Fiat24 U-Card + Visa 虚拟卡</h3>
+            <button id="btnGenerateCard">生成 U-Card / Visa 虚拟卡</button>
+            <div id="cardStatus" class="result"></div>
+          </div>
+
+          <div class="card">
+            <h3>3) 支付触发</h3>
+            <div class="row">
+              <label>支付金额（USD）：<input id="paymentAmount" type="number" min="0" value="25" /></label>
+            </div>
+            <button id="btnPay">发起支付</button>
+            <div id="paymentResult" class="result"></div>
+          </div>
+
+          <div class="card">
+            <h3>4) 资金再平衡</h3>
+            <button id="btnRebalance">执行再平衡</button>
+            <div id="rebalanceResult" class="result"></div>
+          </div>
+
+          <div class="card">
+            <h3>5) AI 监控与策略建议</h3>
+            <div id="aiMetrics" class="metrics"></div>
+            <button id="btnStrategyUpdate">应用策略更新建议（需用户确认）</button>
+            <div id="strategyUpdateResult" class="result"></div>
+          </div>
+
+          <div class="card">
+            <h3>资金状态</h3>
+            <ul id="fundStatus" class="status"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="disclaimer">
+        <p><strong>风险披露：</strong>保守/均衡/进取策略对应的收益与风险不同，演示仅为产品流程模拟，非财务建议。</p>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
