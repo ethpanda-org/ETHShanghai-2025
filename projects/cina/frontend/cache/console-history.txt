@@ -1,0 +1,2 @@
+taskkill /F /IM node.exe
+npx hardhat run test-contract.js --network localhost

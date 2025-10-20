@@ -1,0 +1,37 @@
+[
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ],
+    "name": "proposeAI",
+    "inputs": [
+      {
+        "components": [
+          {
+            "type": "string",
+            "name": "title"
+          },
+          {
+            "type": "string",
+            "name": "description"
+          },
+          {
+            "type": "uint256",
+            "name": "fundAmount"
+          }
+        ],
+        "type": "tuple",
+        "name": "data"
+      },
+      {
+        "type": "address",
+        "name": "target"
+      }
+    ]
+  }
+]

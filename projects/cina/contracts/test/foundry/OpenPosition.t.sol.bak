@@ -1,0 +1,218 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.26;
+
+import "forge-std/Test.sol";
+import "contracts/interfaces/IPoolManager.sol";
+import "contracts/core/pool/AaveFundingPool.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+contract OpenPositionTest is Test {
+    // Sepolia addresses
+    address constant POOL_MANAGER = 0xBb644076500Ea106d9029B382C4d49f56225cB82;
+    address constant AAVE_FUNDING_POOL = 0xAb20B978021333091CA307BB09E022Cec26E8608;
+    address constant USDC = 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238;
+    address constant FXUSD = 0x085a1b6da46aE375b35Dea9920a276Ef571E209c;
+    
+    IPoolManager poolManager;
+    AaveFundingPool aavePool;
+    IERC20 usdc;
+    IERC20 fxUSD;
+    
+    address user;
+    uint256 userPrivateKey;
+    
+    function setUp() public {
+        // Use Sepolia fork
+        string memory sepoliaRpc = vm.envOr("SEPOLIA_RPC_URL", string("https://rpc2.sepolia.org"));
+        vm.createSelectFork(sepoliaRpc);
+        
+        // Setup contracts
+        poolManager = IPoolManager(POOL_MANAGER);
+        aavePool = AaveFundingPool(AAVE_FUNDING_POOL);
+        usdc = IERC20(USDC);
+        fxUSD = IERC20(FXUSD);
+        
+        // Setup user
+        userPrivateKey = vm.envUint("PRIVATE_KEY");
+        user = vm.addr(userPrivateKey);
+        
+        console.log("===========================================");
+        console.log("Open Position Test Setup");
+        console.log("===========================================");
+        console.log("User:", user);
+        console.log("USDC Balance:", usdc.balanceOf(user));
+        console.log("");
+    }
+    
+    function testCheckContracts() public view {
+        console.log("===========================================");
+        console.log("Test 1: Check Contracts");
+        console.log("===========================================");
+        
+        // Check if contracts exist
+        uint256 poolManagerSize;
+        uint256 aavePoolSize;
+        assembly {
+            poolManagerSize := extcodesize(POOL_MANAGER)
+            aavePoolSize := extcodesize(AAVE_FUNDING_POOL)
+        }
+        
+        console.log("PoolManager code size:", poolManagerSize);
+        console.log("AaveFundingPool code size:", aavePoolSize);
+        
+        assertGt(poolManagerSize, 0, "PoolManager should have code");
+        assertGt(aavePoolSize, 0, "AaveFundingPool should have code");
+        
+        console.log("OK: All contracts exist");
+        console.log("");
+    }
+    
+    function testCheckPoolRegistration() public view {
+        console.log("===========================================");
+        console.log("Test 2: Check Pool Registration");
+        console.log("===========================================");
+        
+        try poolManager.getPoolInfo(AAVE_FUNDING_POOL) returns (
+            address rewarder,
+            address gauge,
+            uint256 collateralCapacity,
+            uint256 debtCapacity
+        ) {
+            console.log("Pool registered:");
+            console.log("  Rewarder:", rewarder);
+            console.log("  Gauge:", gauge);
+            console.log("  Collateral Capacity:", collateralCapacity);
+            console.log("  Debt Capacity:", debtCapacity);
+            
+            assertGt(debtCapacity, 0, "Debt capacity should be set");
+            console.log("OK: Pool is registered");
+        } catch {
+            console.log("FAIL: Pool not registered or call failed");
+            revert("Pool not registered");
+        }
+        
+        console.log("");
+    }
+    
+    function testCheckPriceOracle() public view {
+        console.log("===========================================");
+        console.log("Test 3: Check Price Oracle");
+        console.log("===========================================");
+        
+        try aavePool.priceOracle() returns (address oracle) {
+            console.log("Price Oracle:", oracle);
+            
+            if (oracle == address(0)) {
+                console.log("WARNING: Price Oracle not set!");
+            } else {
+                console.log("OK: Price Oracle is set");
+                
+                // Try to get price
+                try aavePool.getPrice() returns (uint256 price, bool isValid) {
+                    console.log("  Price:", price);
+                    console.log("  Valid:", isValid);
+                    
+                    if (isValid) {
+                        console.log("OK: Oracle returns valid price");
+                    } else {
+                        console.log("WARNING: Oracle price is invalid");
+                    }
+                } catch {
+                    console.log("WARNING: Cannot get price from oracle");
+                }
+            }
+        } catch {
+            console.log("FAIL: Cannot read price oracle");
+        }
+        
+        console.log("");
+    }
+    
+    function testOpenPosition() public {
+        console.log("===========================================");
+        console.log("Test 4: Open Position");
+        console.log("===========================================");
+        
+        uint256 usdcBalance = usdc.balanceOf(user);
+        console.log("User USDC balance:", usdcBalance);
+        
+        if (usdcBalance == 0) {
+            console.log("SKIP: No USDC balance");
+            return;
+        }
+        
+        // Test with small amount
+        uint256 collateralAmount = 1e6; // 1 USDC
+        uint256 debtAmount = 5e17;      // 0.5 fxUSD
+        uint256 positionId = 1;
+        
+        console.log("Test parameters:");
+        console.log("  Collateral:", collateralAmount);
+        console.log("  Debt:", debtAmount);
+        console.log("  Position ID:", positionId);
+        console.log("");
+        
+        vm.startPrank(user);
+        
+        // Approve USDC
+        console.log("Approving USDC...");
+        usdc.approve(POOL_MANAGER, type(uint256).max);
+        console.log("OK: USDC approved");
+        
+        // Try to open position
+        console.log("");
+        console.log("Opening position...");
+        
+        try poolManager.operate(
+            AAVE_FUNDING_POOL,
+            positionId,
+            int256(collateralAmount),
+            int256(debtAmount)
+        ) {
+            console.log("SUCCESS: Position opened!");
+            
+            // Check position
+            try poolManager.getPosition(AAVE_FUNDING_POOL, positionId) returns (
+                uint256 collateral,
+                uint256 debt
+            ) {
+                console.log("");
+                console.log("Position created:");
+                console.log("  Collateral:", collateral);
+                console.log("  Debt:", debt);
+                
+                assertEq(collateral, collateralAmount, "Collateral should match");
+                assertEq(debt, debtAmount, "Debt should match");
+            } catch {
+                console.log("WARNING: Cannot read position");
+            }
+            
+            // Check balances
+            uint256 fxUSDBalance = fxUSD.balanceOf(user);
+            console.log("");
+            console.log("User balances after:");
+            console.log("  USDC:", usdc.balanceOf(user));
+            console.log("  fxUSD:", fxUSDBalance);
+            
+            assertGt(fxUSDBalance, 0, "Should have received fxUSD");
+            
+        } catch Error(string memory reason) {
+            console.log("FAIL: Position opening failed");
+            console.log("Reason:", reason);
+            revert(reason);
+        } catch (bytes memory lowLevelData) {
+            console.log("FAIL: Position opening failed");
+            console.log("Low level error:");
+            console.logBytes(lowLevelData);
+            revert("Low level error");
+        }
+        
+        vm.stopPrank();
+        
+        console.log("");
+        console.log("===========================================");
+        console.log("Test completed");
+        console.log("===========================================");
+    }
+}
+

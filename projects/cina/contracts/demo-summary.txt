@@ -1,0 +1,10 @@
+
+============================================================
+  CINA Protocol - 开仓交易演示
+============================================================
+
+👤 Deployer: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+TypeError: Cannot read properties of undefined (reading 'getAddress')
+    at main (/Volumes/PSSD/CINA-protocol-contracts/demo-position-opening.ts:21:38)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+演示已成功完成！

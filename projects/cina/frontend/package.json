@@ -1,0 +1,47 @@
+{
+  "name": "ai-proposal-assistant-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "setup-walletconnect": "node setup-walletconnect.js",
+    "hardhat": "hardhat",
+    "hardhat:node": "hardhat node",
+    "hardhat:compile": "hardhat compile",
+    "hardhat:deploy": "hardhat run scripts/deploy.js --network localhost",
+    "hardhat:test": "hardhat test"
+  },
+  "dependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/contracts": "^5.4.0",
+    "@splinetool/react-spline": "^4.1.0",
+    "@tanstack/react-query": "5.51.11",
+    "autoprefixer": "10.4.19",
+    "clsx": "2.1.1",
+    "gsap": "^3.13.0",
+    "hardhat": "^2.19.0",
+    "html-to-image": "^1.11.13",
+    "lightweight-charts": "^4.1.3",
+    "next": "14.2.5",
+    "postcss": "8.4.38",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-router-dom": "^7.9.4",
+    "react-use-websocket": "^4.13.0",
+    "tailwindcss": "3.4.10",
+    "viem": "2.9.20",
+    "wagmi": "2.12.7",
+    "zustand": "4.5.2"
+  },
+  "devDependencies": {
+    "@types/node": "20.11.30",
+    "@types/react": "18.2.66",
+    "@types/react-dom": "18.2.22",
+    "eslint": "8.57.0",
+    "eslint-config-next": "14.2.5",
+    "typescript": "5.4.5"
+  }
+}
