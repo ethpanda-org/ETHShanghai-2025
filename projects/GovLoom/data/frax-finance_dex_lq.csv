@@ -1,0 +1,21 @@
+DEX,Pair,Liquidity,Vol 24h,Pair Address
+[ethereum  ] fraxswap        | FXS/FRAX       | Liquidity: $7,742,069 | Vol 24h: $202,066 | Pair: 0x03B59Bd1c8B9F6C265bA0c3421923B93f15036Fa
+[ethereum  ] uniswap         | FXS/WETH       | Liquidity: $165,241 | Vol 24h: $7,823 | Pair: 0xCD8286b48936cDAC20518247dBD310ab681A9fBf
+[pulsechain] 0x43eC799eAdd63848443E2347C49f5f52e8Fe0F6f | FXS/FRAX       | Liquidity: $53,529 | Vol 24h: $3 | Pair: 0x03B59Bd1c8B9F6C265bA0c3421923B93f15036Fa
+[pulsechain] uniswap         | FXS/FRAX       | Liquidity: $19,970 | Vol 24h: $43 | Pair: 0xE1573B9D29e2183B1AF0e743Dc2754979A40D237
+[ethereum  ] uniswap         | FXS/WETH       | Liquidity: $14,806 | Vol 24h: $2,928 | Pair: 0xecBa967D84fCF0405F6b32Bc45F4d36BfDBB2E81
+[ethereum  ] curve           | FXS/WETH       | Liquidity: $10,680 | Vol 24h: $503 | Pair: 0x941Eb6F616114e4Ecaa85377945EA306002612FE
+[polygon   ] quickswap       | FXS/FRAX       | Liquidity: $10,614 | Vol 24h: $84 | Pair: 0x4756FF6A714AB0a2c69a566E548B59c72eB26725
+[moonriver ] sushiswap       | FXS/FRAX       | Liquidity: $5,430 | Vol 24h: $275 | Pair: 0xC5147A6E773343aFE527249a26EF16AFc6a0013F
+[bsc       ] apeswap         | FXS/WBNB       | Liquidity: $3,670 | Vol 24h: $390 | Pair: 0x8210D92a8951d50de3D46AC0ee39cb5E2C14e18A
+[polygon   ] sushiswap       | FXS/FRAX       | Liquidity: $3,051 | Vol 24h: $24 | Pair: 0xd53a56AE0f48c9a03660cd36c2E4ae20493a1Eca
+[polygon   ] sushiswap       | FXS/FRAX       | Liquidity: $2,623 | Vol 24h: $4 | Pair: 0xDf45B5B68d9dC84173DD963c763AeA8CAD3E24A6
+[arbitrum  ] uniswap         | FXS/WETH       | Liquidity: $2,095 | Vol 24h: $27 | Pair: 0xfEAA137F43f88b7F767F5A67978FfF8EC11Cc6Ef
+[arbitrum  ] sushiswap       | FXS/FRAX       | Liquidity: $2,061 | Vol 24h: $15 | Pair: 0xfb5DB4f55Bb97A608f6EE50864104457FA04DA4f
+[ethereum  ] curve           | FXS/crvUSD     | Liquidity: $1,969 | Vol 24h: $13 | Pair: 0xfb8b95Fb2296a0Ad4b6b1419fdAA5AA5F13e4009
+[pulsechain] pulsex          | FXS/WPLS       | Liquidity: $1,887 | Vol 24h: $60 | Pair: 0x37Fc73D555f109203f8F4261c274464a1f62cbB0
+[moonriver ] 0x056973F631A5533470143bB7010C9229C19C04d2 | FXS/FRAX       | Liquidity: $1,160 | Vol 24h: $48 | Pair: 0xBc51B555E43Ff2ded8FCd4f011C147eacF5B9d97
+[avalanche ] traderjoe       | FXS/WAVAX      | Liquidity: $1,086 | Vol 24h: $0 | Pair: 0x53942Dcce5087f56cF1D68F4e017Ca3A793F59a2
+[arbitrum  ] fraxswap        | FXS/FRAX       | Liquidity: $1,074 | Vol 24h: $9 | Pair: 0x90FF2b6b6a2eb3C68D883bc276F6736b1262fa50
+[pulsechain] pulsex          | FXS/WPLS       | Liquidity: $491 | Vol 24h: $6 | Pair: 0xff6aA2704c66c3Ee78D7d2457eFA450E8BC7287C
+[optimism  ] velodrome       | FXS/FRAX       | Liquidity: $268 | Vol 24h: $3 | Pair: 0xE2EA57FDF87624f4384EF6Da5f3844e8E9e5d878

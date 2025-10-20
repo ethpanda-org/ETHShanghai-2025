@@ -1,0 +1,23 @@
+{
+  "name": "eth-shanghai-voting",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "hardhat compile",
+    "test": "hardhat test",
+    "clean": "hardhat clean",
+    "deploy:stake": "hardhat run scripts/deployStakeToken.js",
+    "deploy:voting": "hardhat run scripts/deployVotingSystem.js",
+    "verify:stake": "hardhat run scripts/verifyStakeToken.js --network bsctestnet",
+    "verify:voting": "hardhat run scripts/verifyVotingSystem.js --network bsctestnet",
+    "create:proposal": "hardhat run scripts/createProposal.js --network bsctestnet"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "dotenv": "^17.2.3",
+    "hardhat": "^2.22.5",
+    "prettier": "^3.1.1",
+    "prettier-plugin-solidity": "^1.3.1",
+    "solhint": "^3.6.2"
+  }
+}

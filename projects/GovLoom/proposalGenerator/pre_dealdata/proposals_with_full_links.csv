@@ -1,0 +1,507 @@
+﻿title,votes,quorum,proposal_link
+[FIP - 436] EchoMarket Growth Grant Proposal,10,370%,https://snapshot.box/#/s:frax.eth/proposal/0x49332b4740e4601177d066f0c1eadb3fb341c921a6a9d0ef07f629e34160de50
+[FIP - 435] Allow the use of Stake DAO OnlyBoost for sfrxUSD Curve AMOs,12,390%,https://snapshot.box/#/s:frax.eth/proposal/0xe444d5453ef1b2332e8e5dcd2cceef1124f0b5f2b2c34bb6b966701ddbb44833
+[TEMP-CHECK] Project Progress Tracking Platform for Frax Finance,9,393%,https://snapshot.box/#/s:frax.eth/proposal/0x5689d9d931357624929e5926d92f5ae13519ca3c6475fbe1ab85014d6f1daa16
+[FIP - 434] sfrxUSD AMO Deployments & Future Strategies,14,394%,https://snapshot.box/#/s:frax.eth/proposal/0xf82c0687e36b14db012b74c2cda40405fc681635f83727117fb9045a835e8333
+[FIP - 433] Add a new market into Fraxlend on Ethereum (OGN/frxUSD),8,404%,https://snapshot.box/#/s:frax.eth/proposal/0xa47fa2c7a757a078760ccea511978c7938171451c8036ebdc4992eb02a10dc39
+[FIP-432] Transfer of Compliance & Collateral Management of frxUSD to FRAX Inc,8,409%,https://snapshot.box/#/s:frax.eth/proposal/0x261a34f3875479eff45fe653eb11e591fe94b908c80574dcaee880964cb4111a
+[Revised FIP-431] dTRINITY x Frax Joint Expansion on Sonic,14,400%,https://snapshot.box/#/s:frax.eth/proposal/0x57bf925ac995c400e80cce5833c2e0cd13ae561969e51925df202cf8beaa70a5
+[FIP-431] dTRINITY x Frax Joint Expansion on Sonic,7,0.897%,https://snapshot.box/#/s:frax.eth/proposal/0x5ec8b38df6b703b78e7561fbb8873783ae482953a97b6768ecbc0cea750bab60
+[FIP - 430] Preparation for frxUSD Payment Stablecoin Charter Compliance,9,411%,https://snapshot.box/#/s:frax.eth/proposal/0x4c51c5899aaf0d243b410af24b7358decdfcc6216b63271268599bb4c1ef49a7
+[FIP-429] Incentivize a joint Frax / Zivoe pool on Curve,18,151%,https://snapshot.box/#/s:frax.eth/proposal/0xfb512bdad61a0498f3b5413ba782f3e245308cb5df5a0f09c26c48b7dad6d613
+[FIP - 428] Frax North Star Proposal - V2,38,424%,https://snapshot.box/#/s:frax.eth/proposal/0xc81e2268834ec1243e08c5d616c98c8e91e2304f7b38ee1d932f450efb18eb8a
+[FIP - 427] WTGXX as reserve asset for Frax USD,17,503%,https://snapshot.box/#/s:frax.eth/proposal/0xb52b6bbd860e68ea141296868ad1558e814fd7fa21d394fe683643a16876d9f9
+[FIP - 426] JTRSY as a Custodian Asset for frxUSD & Launching Centrifuge on Fraxtal,10,426%,https://snapshot.box/#/s:frax.eth/proposal/0x74e3ed37b97f58c0966097049ca0f7c4262891add7614287301006b691c3cbd2
+[FIP - 425] AUSD as Collateral and Custodian Asset for frxUSD,12,432%,https://snapshot.box/#/s:frax.eth/proposal/0xe76fa4b9389e2956f71c077d84cfa40e172ea5022cef2097571eae36496ed636
+[FIP - 424] Leviathan News Partnership Proposal,16,452%,https://snapshot.box/#/s:frax.eth/proposal/0xb025376d08b28e97a95b192fc7c90d99071737ff46491c36b272e61729352a43
+[FIP - 423] Proposal to add a new pair to Fraxlend AMO (ynETH/frxETH),8,438%,https://snapshot.box/#/s:frax.eth/proposal/0x6525bce21e08810efe0f6ba2f67a0ad9c83957a1c8a94206e3fcdbaab54c148d
+[FIP - 422] Proposal to add a new pair to Fraxlend AMO (ynETH/FRAX),8,438%,https://snapshot.box/#/s:frax.eth/proposal/0x3bace45658082ad97e99f7fa1e4109f2fddb91c120ee38dd4ff6ecddde481fbe
+[FIP - 421] USTB as Collateral and Custodian Asset for frxUSD,53,519%,https://snapshot.box/#/s:frax.eth/proposal/0x2612007bb91ae6ccbc4d0160615e88ca544db7ebad38fde3506d4d8c3f7259ac
+[FIP - 420] USCC as Collateral and Custodian Asset for frxUSD,59,520%,https://snapshot.box/#/s:frax.eth/proposal/0x26eec3914a507c3c8f3ed20a254a7c8ae85dc0136a765f4ea6148450d861fad9
+[FIP - 419] Launch Frax USD & Provide Upgrade Path to Frax Stablecoin,57,520%,https://snapshot.box/#/s:frax.eth/proposal/0xb360e93cf73c4c66636f0b349ab8a2948c1319286895dc9719b8d2173c508bbb
+[FIP - 418] BUIDL as a backing asset for Frax USD,86,546%,https://snapshot.box/#/s:frax.eth/proposal/0x77562982f577db75ad2392a84cd00e4e16d585ab3c97ce51229962b756842f15
+[FIP - 417] Create new ynETH/frxETH Fraxlend Pair,8,0.0129%,https://snapshot.box/#/s:frax.eth/proposal/0x404cf3c7df30bd90e119ddfb9bcdd5a17e6dce394cc8f52cfd24a5d66c8efaec
+[FIP - 416] Authorizing FRAX Curve AMO for a new pair on Fraxtal (FRAX/dUSD),15,446%,https://snapshot.box/#/s:frax.eth/proposal/0xe5cec17118983ef80f83d21765637a90f3140ed98bbab2d047feafa19b062d4f
+[FIP - 415] Creating Frax Borrow AMO,13,468%,https://snapshot.box/#/s:frax.eth/proposal/0xbb3bd2c832dc915b11cdefbd229e273eaf05a9d90e03f91e4d35705679e1e142
+[FIP - 414] Supply Liquidity for Ionic Protocol,12,426%,https://snapshot.box/#/s:frax.eth/proposal/0xc2c10aea2c1eaeb9bb67e4b7831c52b805bb764b4d7e7900874b2863794c7b19
+[FIP -413] Liquidity Creation for sfrxETH/AsfrxETH Pair,6,0.0112%,https://snapshot.box/#/s:frax.eth/proposal/0x866a65b3afbc825ef644d03f6168a339ea180534d64594ef4ae6020c9f4cb320
+[FIP - 412] Liquidity Creation for FRAX/AFRAX Pair,6,0.0112%,https://snapshot.box/#/s:frax.eth/proposal/0xc3918cc4a1c8bb63208f745690ed61805a5c4a2e8b9383b696e2dfe1b168e966
+[FIP - 411] Liquidity Creation for FXS/AFXS Pair,6,0.0112%,https://snapshot.box/#/s:frax.eth/proposal/0x9aac39e7280819b3fcd8940e3141b1129b0c5cb4e80d58bc06b713e1eb1489ec
+[FIP - 410] Update FXS Allocation on Symbiotic,12,431%,https://snapshot.box/#/s:frax.eth/proposal/0xf34df1c95441029b6c7a7c36ec086e8c986a724595b9e2ad30acdec1d5762f01
+[FIP - 409] Karak Restaing AMO on Fraxtal,12,431%,https://snapshot.box/#/s:frax.eth/proposal/0x8491c78306a6c0b41783685aabb12c318302497944de4ef74051963967620ab8
+Test Vote #2,12,433%,https://snapshot.box/#/s:frax.eth/proposal/0x85706913ec9797f19ce6dab4638a21761d43beab90fffaf662039c9eb764fed3
+Fraxtal Test Vote,15,1.02%,https://snapshot.box/#/s:frax.eth/proposal/0x39e43756b133cc04eb2a5396c136b8d05ced96ba1946d3007e2efc3c7e25affd
+[FIP - 408] Migrate the Snapshot voting process from the Ethereum mainnet to the Fraxtal network,11,397%,https://snapshot.box/#/s:frax.eth/proposal/0x60ce169bce5174b399fa09ccc35c14e692a6bb19229d5957e44940f58e89efbc
+[FIP - 407] Allocate FXS to Symbiotic,8,397%,https://snapshot.box/#/s:frax.eth/proposal/0x4f973673cd658a7a003a084b9f4dcb6a9b0e4368f1948a38d3ee6094d37cb340
+[FIP - 406] Allocate tBTC/WBTC towards the Convex Curve WBTC + tBTC pool,7,0.231%,https://snapshot.box/#/s:frax.eth/proposal/0xf63ea87427f46a11516955b0e6954a309e1daccec0eb4054b96de17f5dd24c83
+[FIP - 405] Significantly downsize PyUSD Position,7,397%,https://snapshot.box/#/s:frax.eth/proposal/0x136f1ebca7c23a9bf1bf6523718531737aec4b2d735020d69c6530528e3111ab
+[FIP - 404] Create new wBTC/sFRAX Fraxlend Pair,8,398%,https://snapshot.box/#/s:frax.eth/proposal/0xea1600c495d95ae7f32c7ef6c40654b9a2fe5d6291049ae6026248400f39c6e4
+[FIP - 403] Create new sfrxEth/sFRAX Fraxlend Pair,6,398%,https://snapshot.box/#/s:frax.eth/proposal/0x007fcffc52504cce987c59124fb7c5d3f383ba539e6065634c2e32caea342618
+[FIP - 402] Create new ETH+ Fraxlend pairs,8,23.2%,https://snapshot.box/#/s:frax.eth/proposal/0x69d344acb496f5afaa8f8aca882b1d5b803eb0bc8e6d417b1a488e520375e3db
+[FIP - 401] Create a new Fraxlend pair (ENS/FRAX) on Ethereum Mainnet,6,399%,https://snapshot.box/#/s:frax.eth/proposal/0x9a5cc8393de064ae2260e8ad5a9d8ea784a1afe965ee3692b052afad84cacf19
+[FIP - 400] Create a new Fraxlend pair (GRT/FRAX) on Ethereum Mainnet,5,399%,https://snapshot.box/#/s:frax.eth/proposal/0xe8634e7624343194160d221c2aeafae517b40644b1a7b09ea61c6a17589903a3
+"[FIP - 399] A Frax Shopping Experience, Powered by Moso",10,404%,https://snapshot.box/#/s:frax.eth/proposal/0x34d771686cf04cb0b4c7787aa0d434a0986dca186e3ecbf0c8684b5ba419427e
+[FIP-398] Frax AMO Integration on Morpho with USD0++/FRAX and Curve LP USD0/USD0++/FRAX as available markets,13,428%,https://snapshot.box/#/s:frax.eth/proposal/0xcdf89f15b222a0a8cd87d8f9706e2d378d61f0ba15039baaa8de29e97638ee12
+[FIP - 397] Frax Finance Annual Budget Request (2024 - 2025),10,405%,https://snapshot.box/#/s:frax.eth/proposal/0x99fa92785d09d732ad89c34875976420d794f581f72ccfcc8ab6d9adf40ee8fd
+[FIP - 396] Adding LFXB2027 as an Option for Locked Liquidity Exit,11,405%,https://snapshot.box/#/s:frax.eth/proposal/0xc46f5759b4684eb8cfd024344c3a9b43e5d5a16a203bc523ac3ee1e15b91376d
+[FIP - 395] Add new market to Fraxlend (sfrxETH/USDC),9,409%,https://snapshot.box/#/s:frax.eth/proposal/0x0fdabb464587e8a6cab671745c111850a38891682523c7102d8f327d1055a49e
+[FIP - 394] Add new market to Fraxlend (sfrxETH/DOLA),7,406%,https://snapshot.box/#/s:frax.eth/proposal/0x0b179d85e85d280a17e2a9ed64047594e05b56428d7ce60b0272a7b48a772f0f
+[FIP - 393] Add new market to Fraxlend (sfrxETH/crvUSD),8,406%,https://snapshot.box/#/s:frax.eth/proposal/0xe51edcab97443a7069a1021865d8c07cf960fca43eb26d0f4539636582675d81
+[FIP - 392] Add new market to Fraxlend (sfrxETH/GHO),8,406%,https://snapshot.box/#/s:frax.eth/proposal/0xc45b6193270af0ad370b19954031566baa287ed2abe9971a9a2f966963130e29
+[FIP - 391] Add new market to Fraxlend (sfrxETH/DAI),8,406%,https://snapshot.box/#/s:frax.eth/proposal/0xfa33317d0c7aab0967fe01efa5b9f91b088465d69795e855c2e62309fd9c4d6c
+[FIP - 390] Add new market to Fraxlend (sfrxETH/USDT),7,406%,https://snapshot.box/#/s:frax.eth/proposal/0x6ad0962dfa350b84d1740f9e562cf57a721cf84f4cbbd311005f43c1f2064160
+[FIP - 389] Authorize Fraxlend AMO for new pair on Fraxtal (ezETH/FRAX),7,406%,https://snapshot.box/#/s:frax.eth/proposal/0x99c773823de0c9b29232a2c3f96c65b5453f3d370c92dd44ea4fbe00f1ee41eb
+[FIP - 388] Authorize Fraxlend AMO for new pair on Fraxtal (FPI/FRAX),6,406%,https://snapshot.box/#/s:frax.eth/proposal/0x3cffd59b6a38ae96e0e9ea5dfa875251a7e3b3cb90707335526aa141700cf141
+[FIP - 387] Create ezETH/FRAX Fraxlend Pair on Ethereum Mainnet and Authorize AMO Allocation,10,411%,https://snapshot.box/#/s:frax.eth/proposal/0x00a4bd53a5af6fa87b6b185a492b07fd35dc10ae15b802bf7547bd8937cf9aa0
+[FIP - 386] Add FXS/frxETH LP Pool on Ra to FXS Gauge Controller on Fraxtal,9,408%,https://snapshot.box/#/s:frax.eth/proposal/0x7f1a4ef4384493703836a3c94fb3a921f4a533fbdd266cc03c8a321e4ce001ad
+[FIP - 385] Deploy Fraxferry for a new chain ( TRON ),9,410%,https://snapshot.box/#/s:frax.eth/proposal/0xccdbe736cd70ba9e736eabec93505d61c1750765c8d2b0e8a0a562865bab964f
+[FIP - 384] Launching new FXB and Authorizing Fraxlend AMO for a new pair ( FXB20271231),8,410%,https://snapshot.box/#/s:frax.eth/proposal/0xa258da9b3a5e6b0c2294bdcf89e48ba1f2111f536307a9a42dcc44e0fcdbeb2f
+[FIP - 383] Update frxETH Curve AMO,14,434%,https://snapshot.box/#/s:frax.eth/proposal/0x449be4f7af6ebc021de7cb7ea1b025e94aa64859f5082a99f6c642c693cce6fa
+[FIP - 382] Head of Community Development,32,450%,https://snapshot.box/#/s:frax.eth/proposal/0xd65c3074f7b68e84e41b30d4c7cb3a289c0a15d30798e7db8c82e2fe2ef51621
+[FIP - 381] Create PEPE/FRAX Fraxlend Pair on Ethereum Mainnet and Authorize AMO Allocation,17,411%,https://snapshot.box/#/s:frax.eth/proposal/0xf48c1b172991cf82cc1e0cb18b8f15bc6dd9627d55599273571475ddc4843711
+[FIP - 380] Create weETH/FRAX Fraxlend Pair on Ethereum Mainnet and Authorize AMO Allocation,17,437%,https://snapshot.box/#/s:frax.eth/proposal/0x102a7456e222c33447b36914f9e5f11ba62f0d5e25fe7fa9ac51d94ede032ca6
+[FIP - 379] Locked Liquidity Standard Exit,23,417%,https://snapshot.box/#/s:frax.eth/proposal/0xa709628a6d667596a7a8d4fd677369ba6bafdaea4a8d034317e1d8c22119fa79
+[FIP - 378] Aave AMO,16,412%,https://snapshot.box/#/s:frax.eth/proposal/0xe958855a6de8aa1cb66945802ee1a0f6450e2cb697d431f35baeed6efdfadae5
+[FIP - 377] Change veFXS Reward Distribution Token,17,417%,https://snapshot.box/#/s:frax.eth/proposal/0x3eaa035f8addff3bc3afb915ba4de3b096743abc4ff9963ffed58f3d1db95f39
+[FIP - 376] Enhancing Security and Trust with ChainPatrol,13,413%,https://snapshot.box/#/s:frax.eth/proposal/0x6fd4ce059c7c93e9e3fcdc583f6d16a953d2bc5da221471c2c7ddec7dcf15e45
+[FIP - 375] Create a new Fraxlend pair (WETH/FRAX) on Ethereum Mainnet,13,413%,https://snapshot.box/#/s:frax.eth/proposal/0x8586cd7b0a6f8f89d03ca079a4433c92987a5e99709573fb4af22ec918995a40
+[FIP - 374] Authorize Fraxlend AMO for a new pair (wBTC/FRAX),12,413%,https://snapshot.box/#/s:frax.eth/proposal/0xe8b9431bf92912d9254ec6a691ebd7c92592c3d1587aa309e27b3f810d6775a6
+[FIP - 373]  Allocate 260k FRAX as initial liquidity for Octopool (Symbiosis cross-chain pool) #2,13,413%,https://snapshot.box/#/s:frax.eth/proposal/0xda5962e2850b11e1f383ec9330e7e07296d7a8185c95aa4143223fb645621543
+[FIP - 372] Authorize Fraxlend AMO for new pair on Fraxtal ( FXB20261231/FRAX ),12,414%,https://snapshot.box/#/s:frax.eth/proposal/0x5e7aba10b92217bb7b490e6f6c9f462e92e800968b3515d12ede52ce1876e412
+[FIP - 371] Authorize Fraxlend AMO for new pair on Fraxtal ( FXB20241231/FRAX ),12,414%,https://snapshot.box/#/s:frax.eth/proposal/0x87742932bcdae4e40b70b3ab2adf610de636dd10adcdd25e58ee178a5f01ab1e
+[FIP - 370] Authorize Fraxlend AMO for new pair on Fraxtal ( sfrxETH/FRAX ),13,414%,https://snapshot.box/#/s:frax.eth/proposal/0xd8bb3b7abd0ecd575e27c73e9624bad4db76a03397cbf5956aed53f7f5b896e9
+[FIP - 369] Authorize Fraxlend AMO for new pair on Fraxtal ( FXS/FRAX ),13,414%,https://snapshot.box/#/s:frax.eth/proposal/0x505fac412172cd89d98b4fc563e5e5a5b7af8acaa5b24df4a06c79b44fec3e7a
+[FIP - 368] Create Balancer AMO on Fraxtal,15,102%,https://snapshot.box/#/s:frax.eth/proposal/0xf13d165cd6ee7eeebe6c43dd8d1316b1994e076499080f6436e3867aca650ab0
+[FIP - 367] Authorize Fraxlend AMO for a new pair ( cbETH/FRAX ),9,397%,https://snapshot.box/#/s:frax.eth/proposal/0x8097c20a38596910d9a3b4a1235c3ab153b1b4df899477c8213649adb8213d86
+[FIP - 366] Authorize Fraxlend AMO for a new pair ( MATIC/FRAX ),11,397%,https://snapshot.box/#/s:frax.eth/proposal/0x4c12ed1c9b036ba95ca61d0fc0378b369426654c5b3952b3f1dea253d149d194
+[FIP - 365] Allocate FRAX as initial liquidity for Octopool (Symbiosis cross-chain pool),14,0.0521%,https://snapshot.box/#/s:frax.eth/proposal/0xbcab3e5db0347169c33f5188a11f7ae8f340b59d715aff9107fa5a0b73e6c1e7
+[FIP - 364] Add a new market into Fraxlend on Ethereum (wOETH/frxETH),17,422%,https://snapshot.box/#/s:frax.eth/proposal/0x54a5576389dcd8b807c0f90bcd22c7e1a192b37a1aaabb5aa508cf12fcb717a7
+[FIP - 363] Fraxlend Pilot Program with Oval on sUSDe/FRAX and USDe/FRAX,17,401%,https://snapshot.box/#/s:frax.eth/proposal/0x2a3bc0a1bf1f2787e8d6ebb7464bd8cf31baf3b429d7f5849ba006d486c0f00b
+[FIP - 362] Velodrome on Fraxtal - Proposal for Incentives for Liquidity Growth,30,404%,https://snapshot.box/#/s:frax.eth/proposal/0x93ea9828a74a4b70bab70b1f0e352bb4c20e69f71a87cdaa5708927e198a2957
+[FIP - 361] Integrate RedStone sfrxETH / ETH Price Feed into Fraxlend on Ethereum,17,402%,https://snapshot.box/#/s:frax.eth/proposal/0xe394dfa5754cd95061d4902d43bbef130b881029d3d24862d3f3f917b25ba77d
+[FIP - 360] Authorize Fraxlend AMO for a new pair (sDOLA/FRAX - Variable Rate),24,403%,https://snapshot.box/#/s:frax.eth/proposal/0x1d6433afd71f8bcb06c831cb9248df4592a40eb6dc34a2075e3c459ed0a48575
+[FIP - 359] Add Re7 FRAX on Ethereum to the FXS Gauge Controller,21,405%,https://snapshot.box/#/s:frax.eth/proposal/0x93b39a7741add8bbac610489d20cc41f269f52ecf3ca8307e89e4acd09c5fa5c
+[FIP - 358] Authorize Strategic POL frxETH/ETH L1 Allocation to YieldNest's ynETH 7x booster vault,15,423%,https://snapshot.box/#/s:frax.eth/proposal/0x9b58407d3ff44afb0c4ed6f69d031b6c9d0719f949e2a50a677ecf41f2c2a70b
+[FIP - 357] Launching a new FXB and Authorizing Fraxlend AMO for new pair ( FXB_20551231 ),11,410%,https://snapshot.box/#/s:frax.eth/proposal/0x902dc2af6042557d8eb791028e8bbbc028dc686ce05a7160cb87bb3fc15e5ad6
+[FIP - 356] Launching a new FXB and Authorizing Fraxlend AMO for new pair ( FXB_20291231 ),10,410%,https://snapshot.box/#/s:frax.eth/proposal/0x2860986087e9ecd3539bd8f82080270eb87ff5cb65124d4601e9e02fc9dc4f86
+[FIP - 355] Launching a new FXB and Authorizing Fraxlend AMO for new pair ( FXB_20251231 ),10,410%,https://snapshot.box/#/s:frax.eth/proposal/0x59d4d2c7bb5d4f4f2701122340687bacae05733971f344cbf85ffcc8cf527df4
+[FIP - 354] Add Aave V3 aEthFRAX on Ethereum to the FXS Gauge Controller,29,0.723%,https://snapshot.box/#/s:frax.eth/proposal/0xa0214dea71b73b9ed4b99d40d03f274bd4cb424f7ca7d5105457c867f0acd1fd
+"[FIP - 353] Shut down Convex rETH/frxETH for an 8,300 FRAX fee",24,411%,https://snapshot.box/#/s:frax.eth/proposal/0xe4a23182e186a769eb45bed5eef6f5c12271b7dec38025fce72efe7d411fba45
+"[FIP - 352] Authorize lending AMO for new pairs on Morpho Blue ( sUSDe/FRAX, USDe/FRAX )",29,411%,https://snapshot.box/#/s:frax.eth/proposal/0x3c3400cd2623b4fad836072bcab96068999d1bf78a61e9387e5f1f8e872546b6
+[FIP - 351] Add a new markets into Fraxlend on Ethereum & Fraxtal (rsETH/frxETH),34,416%,https://snapshot.box/#/s:frax.eth/proposal/0xc39d662e0df69eb0d98adb48f10e27dc2bf09e249fd100bf28d4f2d13c58ea2c
+[FIP - 350] Add a new markets into Fraxlend on Ethereum & Fraxtal (ezETH/frxETH),29,413%,https://snapshot.box/#/s:frax.eth/proposal/0xf45f9ca9b2c0bdc3f3aff43685963561741df76cfa7930ef858bc09ad11bb6f3
+[FIP - 349] Authorize Fraxlend AMO for new pairs ( USDe/FRAX ),25,520%,https://snapshot.box/#/s:frax.eth/proposal/0x84e07420df434304b278748904a1565259873461995721640702e9c5bfc11c4f
+[FIP - 348] Authorize Fraxlend AMO for new pairs ( sUSDe/FRAX ),22,520%,https://snapshot.box/#/s:frax.eth/proposal/0xb4e48c59985d7ab199fb02577fa9578e209bee8804225938b4d1720c15534c5c
+[FIP - 347] Add Squid/wfrxETH to FXS gauge controller on Fraxtal,24,135%,https://snapshot.box/#/s:frax.eth/proposal/0xa1a8f02aaa3f576cb2d92deb6623bf57e04b110970f8301378e97b7e99d91846
+[FIP - 346] Add zunETH/frxETH to FXS gauge controller,24,439%,https://snapshot.box/#/s:frax.eth/proposal/0x842bc1415734097c8977d6eccac5fe414ac087667acb4c578e4f09eda3a88a5f
+[FIP - 345] Add a new market into Fraxlend on Ethereum (rsETH/frxETH),14,1.95%,https://snapshot.box/#/s:frax.eth/proposal/0xf216e3acb78213611f23302935b160a3b4128e8cef64ad8e74f87c23b81d0bf2
+[FIP - 344] Add a new market into Fraxlend on Ethereum (ezETH/frxETH),17,2%,https://snapshot.box/#/s:frax.eth/proposal/0xc422a65dfa062b411d3496a1a73357fd7302857e686101efcb03d9f4bc9d8730
+[FIP - 343] Unlock staked XAIFRAXBP3CRV-f due to XAI sunsetting with 0% fee,11,0.0707%,https://snapshot.box/#/s:frax.eth/proposal/0xc7f0f1ab23dc9ab52fcbef429ad1336a47a020b1265e3a0828d4de8072d68847
+[FIP - 342] Ragequit rETH/frxETH with a 4% fee,23,420%,https://snapshot.box/#/s:frax.eth/proposal/0xc8a7d2ded098c2a3ae0f8f4a747595c5ea6eb05bc9e9b84c617ae26d03794718
+[FIP - 341] Frax Singularity Roadmap Part 1,173,582%,https://snapshot.box/#/s:frax.eth/proposal/0x9ec68015d6f6fd185f600a255e494f4ff926bbdd9b268f4bd712983a6e68fb5a
+[FIP - 340] Proposal for retiring of the Harmony canFRAX and canFXS,45,490%,https://snapshot.box/#/s:frax.eth/proposal/0x814093af769a693f2c0d8c97157f2d1b8e562e4a6cc29125db6a9b1e47c60e7f
+[FIP - 339] Add the Curve CVG/FRAXBP pool to the FXS gauge controller,18,435%,https://snapshot.box/#/s:frax.eth/proposal/0x12934a12766e93197720870909ff084e6274504d3f11c7be6b03c520c85f1afb
+[FIP - 338] Implement sdFrax3CRV-f Gauge ragequit function with 7.5% withdrawal fee,33,456%,https://snapshot.box/#/s:frax.eth/proposal/0x2a5dfe2d7b9913613385893aee76850d85fd9832ff21c00b8100e0abe5126ec0
+"[FIP - 337] Use 100,000.00 vlCVX to vote for fxUSD/FRAX LP gauge on Curve Finance for 6 months",38,437%,https://snapshot.box/#/s:frax.eth/proposal/0x7ccad1489bc722c666096250c929e1f7b7c2ae66430aaa1c1e8386a1c482bd8c
+[FIP - 336] Add Curve DOLA/FRAXPYUSD to the FXS gauge controller,37,409%,https://snapshot.box/#/s:frax.eth/proposal/0xe59b9484806fd883c276db53ebf1f8ffcd3fba9ec7d23d7a5d32a81fe77c992e
+[FIP - 335] Add FRAX/sfrxETH Fraxswap Pool on Fraxtal to the FXS gauge controller,33,428%,https://snapshot.box/#/s:frax.eth/proposal/0xf590986f7986b73d30ed5f6d9e67ff35bc7b29bf9a517882fd5d0dce3bdf5af5
+[FIP - 334] Add FRAX/FPIS Fraxswap Pool on Fraxtal to the FXS gauge controller,28,427%,https://snapshot.box/#/s:frax.eth/proposal/0xc6db615a5822ba57616c00f4e540943d0283c51eb18d9850eb98ecb49f44e99c
+[FIP - 333] Add FRAX/FPI Fraxswap Pool on Fraxtal to the FXS gauge controller,25,427%,https://snapshot.box/#/s:frax.eth/proposal/0x05555ea5798586847c8991110b121935f45b433702310f4f8d1cd9ebe4fe352d
+[FIP - 332] Add FRAX/FXS Fraxswap Pool on Fraxtal to the FXS gauge controller,26,427%,https://snapshot.box/#/s:frax.eth/proposal/0xf897bd656b550a58fa03778bf0634b8592d15fc82d54f6a478ef944276057714
+[FIP - 331] Add FRAX/wfrxETH Fraxswap Pool on Fraxtal to the FXS gauge controller,25,427%,https://snapshot.box/#/s:frax.eth/proposal/0x141ce39c7c47fe0f9fd6a85d08d35a1cc7635662bc1a04a2329b39e3f963dc5e
+[FIP - 330] Add Curve HFXB/Frax to the FXS gauge controller on Arbitrum [Updated Pool/Gauge],20,109%,https://snapshot.box/#/s:frax.eth/proposal/0xdc119fdd6aea88ead6f2eb1bc360b8066212c1840d80633301152c8a3a844e23
+[FIP-329] Whitelist Alchemix to Stake veFXS,33,431%,https://snapshot.box/#/s:frax.eth/proposal/0xe71ec9feeacce5770d9b8e630d67d22925d74ec00d7e003f466c61ede2806b8f
+[FIP - 328] Add Curve HFXB/Frax to the FXS gauge controller on Arbitrum,30,2.74%,https://snapshot.box/#/s:frax.eth/proposal/0x4e614ff8269718a9730e5aae49a5a33de2474fd4dd27ec9ac6099413fd0185a8
+[FIP - 327] Onboarding Frax to tfBILL,24,403%,https://snapshot.box/#/s:frax.eth/proposal/0x6a28b9ea378463ea9b43dfe2b58f362dd5fab689ae9d78f5345783a9997963c0
+[FIP - 326] Proposal for Implementing a 10% Protocol Fee on Fraxlend,21,419%,https://snapshot.box/#/s:frax.eth/proposal/0xa18abf213cc13a66e26753d0bd37b2101bda0d2f0ec4c1eb93650119ebbf4903
+[FIP - 325] Add a new markets into Fraxlend on Ethereum (sFRAX/sfrxETH),39,414%,https://snapshot.box/#/s:frax.eth/proposal/0x3dae5c906c8b22e45a2836669c54e45259bafc2230dad61ac4a0f609750f2a7b
+[FIP - 324] Deploy frxETH via Fraxferry on Eclipse Mainnet,36,8.26%,https://snapshot.box/#/s:frax.eth/proposal/0x6482a7af3ebaccef77fbd86b455654933c8df28418305fd13f7229b05cdd0eb1
+[FIP - 323] Deploy FRAX via Fraxferry on Eclipse Mainnet,35,6.77%,https://snapshot.box/#/s:frax.eth/proposal/0xee1ea2db645c5f0bb0ba9bbe2895044911c7601533faab318b9b86a6d0ad73d2
+[FIP-322] Flywheel Funding For 2024,72,694%,https://snapshot.box/#/s:frax.eth/proposal/0x2b173824c3e5d372782128bfedbc35b6f75ec8de32236d746ed7e31dd25e97f1
+[FIP - 321] Add a new markets into Fraxlend on Ethereum (sFRAX/WETH),38,416%,https://snapshot.box/#/s:frax.eth/proposal/0x6b255b11e7baeb0a9da2e188ac88ec6217b73c4f4cfd9f160deed13f5a616ab5
+[FIP - 320] Add a new markets into Fraxlend on Ethereum (sFRAX/WBTC),39,416%,https://snapshot.box/#/s:frax.eth/proposal/0x8489cfbfbcfae1dcebe8aa5b57ff89c2da35264283d7eb5caeb8a16a4fdf3b38
+[FIP 319] Add Aave V3 aFRAX on Arbitrum to the FXS Gauge Controller,36,411%,https://snapshot.box/#/s:frax.eth/proposal/0xed9d253c50b61f7fe6fcd5e9f20354c3312bb28f5cd162d5d877ad1aced2cffa
+[FIP - 318] Whitelisting FXBs for Frax Curve AMO,26,408%,https://snapshot.box/#/s:frax.eth/proposal/0x28a7d7696a5bdd88794291d7aa182195b0b4988b6cdd24c9bb943e999344a787
+[FIP - 317] Add Balancer pxETH/frxETH to FXS Gauge Controller,27,126%,https://snapshot.box/#/s:frax.eth/proposal/0x8772c6b42eb678e6f58ad35ed84d10c0709955f8d3f68dbe9675ef003712e3b8
+"[FIP - 316] Let VST/FRAX LP's ""rage quit"" at 20% fee",26,404%,https://snapshot.box/#/s:frax.eth/proposal/0x8a9cb9d7db0a9f6eeda459b2061a141057ff1bed89c986d0ebda68e796faf9f6
+[FIP - 315] Add Curve FRAX/FXB_20261231 on Ethereum to the FXS gauge controller,25,404%,https://snapshot.box/#/s:frax.eth/proposal/0x7452d459c5bba3fc6e8526462ade3f8793834b7c0a5d0360b6c2f4db6eaf262a
+[FIP - 314] Add Curve FRAX/FXB_20241231 on Ethereum to the FXS gauge controller,24,404%,https://snapshot.box/#/s:frax.eth/proposal/0xb90e021f7d8a0e51c66ce095780764efd44cffab31e29c5ae0030977bacfd316
+[FIP - 313] Add Curve FRAX/FXB_20240630 on Ethereum to the FXS gauge controller,23,404%,https://snapshot.box/#/s:frax.eth/proposal/0x9d98545a5ac87ffd64c79645615b974e5ff1f57d74494f63535c7faa61afa817
+[FIP - 312] Add Curve FRAX/FXB_20261231 on Arbitrum to the FXS gauge controller,26,404%,https://snapshot.box/#/s:frax.eth/proposal/0xb9de234738e054b7c308871267244bbbad15e960301775a91e6b23571b58770c
+[FIP - 311] Add Curve FRAX/FXB_20241231 on Arbitrum to the FXS gauge controller,27,404%,https://snapshot.box/#/s:frax.eth/proposal/0x0711603563df0708fc43a6a145c9816fe4dde1ba2a02b8095bbc4a6941162ff0
+[FIP - 310] Add Curve pxETH/frxETH to FXS Gauge Controller,29,145%,https://snapshot.box/#/s:frax.eth/proposal/0xa216b18b2a3dcaf6f1f025a353bd83905259037f629b105d889cd1953b30b372
+[FIP - 309] Add TricryptoFRAX to FXS Gauge Controller,22,421%,https://snapshot.box/#/s:frax.eth/proposal/0x96141f67ade4b4e237bacbc010702fe4b917ed6deffb68af9efc40d360c551c8
+[FIP - 308] Onboard Frax to Centrifuge Prime,18,423%,https://snapshot.box/#/s:frax.eth/proposal/0x63c1816b90e9b05e4f801feee8d87070aded7318c5fbc5b947034ef3d7ad43f4
+[FIP - 307] Whitelisting PYUSD for Frax Curve AMO,22,408%,https://snapshot.box/#/s:frax.eth/proposal/0x6b29ba10ac8de0c16343510b6e9f1fa6f7697e9e58308b8f9beece84d5829870
+[FIP - 306] Authorize Fraxlend AMO for new pair ( FXB_20260101 ),19,408%,https://snapshot.box/#/s:frax.eth/proposal/0xd1c8c80b677df7bccd9900185d227b6af00dc68986d915e9ac5192811add0406
+[FIP - 305] Authorize Fraxlend AMO for new pair ( FXB_20250101 ),20,486%,https://snapshot.box/#/s:frax.eth/proposal/0x73813747cf9d0497d0be7d6787770a84bcf0376e102bb97406a728422cb5eee3
+[FIP - 304] Authorize Fraxlend AMO for new pair ( FXB_20240601 ),20,486%,https://snapshot.box/#/s:frax.eth/proposal/0xc8227b15625fcd7b3fe83fae28595911d7f0291e70f7f37d3d52f636e0daba36
+[FIP - 303] Implement ragequit function for VST-FRAX Gauge locker with 7% fee,21,484%,https://snapshot.box/#/s:frax.eth/proposal/0x1383e77cdbb30541b24af05e461ee1c02545b4bc128b1fa113abbc9aa41262b4
+[FIP - 302] Add Curve frxETH/WETH on Arbitrum to the FXS gauge controller,24,404%,https://snapshot.box/#/s:frax.eth/proposal/0x16af651fc44ae40145f0cb3fedbd933591dcde13556e6930e3ae17262fd19a8c
+[FIP - 301] Add Curve FRAX/USDC.e on Arbitrum to the FXS gauge controller,17,404%,https://snapshot.box/#/s:frax.eth/proposal/0xaa396f04bf42112ac649fba72c871cf78b71129cb6c9c027b8e5cea9423f5efd
+[FIP - 300] Frax Finance and Axelar network,20,423%,https://snapshot.box/#/s:frax.eth/proposal/0x2417e41ced125b666a56ef8187980f2bc56e1c1a3c86dd99eec2744d7dca5602
+[FIP - 299] Deploy Fraxferry for sFRAX ( Avalanche ),20,423%,https://snapshot.box/#/s:frax.eth/proposal/0xef6ba0a05921493c416347a9eda96df9d742deda20121a1e45245e4b26cefa25
+[FIP - 298] Deploy Fraxferry for sFRAX ( BSC ),20,423%,https://snapshot.box/#/s:frax.eth/proposal/0xac9b276bd91e308b823875f589b1bcbeb7d925ce280760723e1ea5e0fac5944a
+[FIP - 297] Deploy Fraxferry for sFRAX ( Polygon zkEVM ),20,423%,https://snapshot.box/#/s:frax.eth/proposal/0x6d8ceca85bfadadbbf1eee032312df81b8b2517400a746dc09f7ad3342a66365
+[FIP - 296] Deploy Fraxferry for sFRAX ( Optimism ),20,423%,https://snapshot.box/#/s:frax.eth/proposal/0xb89a7eb496cb5f53fdafb55f67370270758fe015aeeb418f830574dd7971b13e
+[FIP - 295] Deploy Fraxferry for sFRAX ( Arbitrum ),21,423%,https://snapshot.box/#/s:frax.eth/proposal/0xbd5db34c5cd0690ca6e3cf90bb5e3ddd848859bea64ba06edf9c9dd73fbf8f84
+[FIP - 294] Add pETH-frxETH to FXS Gauge Controller,20,463%,https://snapshot.box/#/s:frax.eth/proposal/0x24a0663144ba866a28d7a62779e347c6217161feab4c99e9a569e8dce9076bd6
+[FIP-293] Add USD+/FraxBP curve pool on Arbitrum to FXS gauge controller,54,422%,https://snapshot.box/#/s:frax.eth/proposal/0x2dd14d5f28c839f29e954c44c1a588f4611e2c98ba306a57197353c9af156e4e
+[FIP - 292] Implement ragequit function for VST-FRAX Gauge locker with 0 fee,38,527%,https://snapshot.box/#/s:frax.eth/proposal/0xdb2985a08722dc4e21c298eb0876f2838583a672e9d3f817c4bfbccf17889ce1
+[FIP - 291] Add triSDT to the gauge controller,27,414%,https://snapshot.box/#/s:frax.eth/proposal/0x88548b302d3a9b856212427232897ad320ae41b7d6abf8499f87e75b6c13400e
+[FIP-290] Add Arrakis LST Vaults of frxETH/FRAX (Arbitrum) to FXS Gauge Controller,27,415%,https://snapshot.box/#/s:frax.eth/proposal/0xac50d24196c5358dd3cc6f227c9007e6ba15d36eee8b19843bc7aff92c876db5
+[FIP-289] Add Arrakis LST Vaults of frxETH/FRAX (Mainnet) to FXS Gauge Controller,27,415%,https://snapshot.box/#/s:frax.eth/proposal/0x4c3f381b7c7b74f6208d3bf9c1ab4a10006580617c1f0c6e135af018a1cc662a
+[FIP-288] Add Curve mkUSD/FRAXBP to the FXS gauge controller,18,399%,https://snapshot.box/#/s:frax.eth/proposal/0x9cc62867f0c21f2a21683091a2ac53f6c7fe3d891e20de83f32b121fcab82359
+[FIP - 287] FRAX <> Accumulated Finance – Invite to a private round,20,466%,https://snapshot.box/#/s:frax.eth/proposal/0x6b7f517c3510ab5981396be022f1fbf50b294752e4a69720d1d55a82c522f4d6
+[FIP - 286] Sticker MVP Proposal,26,404%,https://snapshot.box/#/s:frax.eth/proposal/0x33108bcda13cc7156eda6341112cf68b6d88c5bb454225fb05ab3ce767a7b01d
+[FIP - 285] sFRAX Governance Proposal,28,449%,https://snapshot.box/#/s:frax.eth/proposal/0xf3ba05931b821973807baa99af0b9ab0aafbf3dd40ddf32d5ccec1ac05d94a5e
+[FIP-284] Flywheel Website Subsidy,29,117%,https://snapshot.box/#/s:frax.eth/proposal/0xf42cd6542eb39fd73d9362ef545ce00bb385dc7418e0a61c65bc0414704d4844
+[FIP - 283] Sunset Fraxferry for FRAX ( EVMOS ),21,399%,https://snapshot.box/#/s:frax.eth/proposal/0x1b63952f602704a6307b023f9d589643fffdd7273bd36b5e2fbc13610911de39
+[FIP - 282] Sunset Fraxferry for FRAX ( Aurora ),18,399%,https://snapshot.box/#/s:frax.eth/proposal/0x797735f816d6113fd9a0a617dfeaeedc39849af4616900f68587095598a2b119
+[FIP - 281] Sunset Fraxferry for FRAX ( Boba ),17,399%,https://snapshot.box/#/s:frax.eth/proposal/0x82cc7f6bc01980041573e0ff7e2c545025ae1fc08ae84c625bdda4f66a044db8
+[FIP - 280] Implement Saddle L2D4 Gauge ragequit function with 20% fee,19,478%,https://snapshot.box/#/s:frax.eth/proposal/0x41a2ef2d68725654b73ea5ac05410822f32ef2473a61ef7b7c4827b9705400d4
+[FIP - 279] Add Curve frxETH/WETH to the FXS gauge controller,22,482%,https://snapshot.box/#/s:frax.eth/proposal/0xd361c2ab6af4fe8e2805cee69a14abee3a9246b592e38a7fbde2f6588c878274
+[FIP-278] Acquire CRV with DAO treasury funds,46,146%,https://snapshot.box/#/s:frax.eth/proposal/0xd8e256987215edc365f8500ef28481395e666854892ac7f04d474523693b8ac7
+[FIP - 277] Onboard FinresPBC as FRAX v3's Offchain RWA Partner,48,487%,https://snapshot.box/#/s:frax.eth/proposal/0x45be90edd0fd3a0c0d919defcb392dff5d22935daefa1a22169bae3ebdd7231d
+[FIP - 276] Add a new market into Fraxlend on Ethereum (FRAX/WETH),21,403%,https://snapshot.box/#/s:frax.eth/proposal/0xeb4b60bde608d516672cc234b197188a634e2678f17129cd3dbc07bdd044e931
+[FIP - 275] Add a new market into Fraxlend on Ethereum (FRAX/WBTC),18,403%,https://snapshot.box/#/s:frax.eth/proposal/0x20f8dca5ada6b6c656049d6a9c87f7cdb61e51b00eba96994ee87098151f9d81
+[FIP - 274] Whitelist Flywheel DeFi to Stake veFXS,20,403%,https://snapshot.box/#/s:frax.eth/proposal/0x8d395e883318b9f4593b8df35e4099390817054951a21da795f6acf049cdda4b
+[FIP - 273] Add zETH/frxETH to FXS gauge controller,16,396%,https://snapshot.box/#/s:frax.eth/proposal/0x14385409eade6eda98e015641a234393358aab28b96d27433396bd285fe962ce
+[FIP - 272] Deploy Fraxferry for sfrxETH ( Base ),16,474%,https://snapshot.box/#/s:frax.eth/proposal/0x6829c62b568e840236f35d4a9aa02aad9e2f67561124015b05b1a8d0a3da2127
+[FIP - 271] Deploy Fraxferry for frxETH ( Base ),15,467%,https://snapshot.box/#/s:frax.eth/proposal/0xfc48c6c2fe49ad819ba54cee039f088d63026a9c9473d3e1d56ce58672fd15d8
+[FIP - 270] Deploy Fraxferry for FXS ( Base ),11,393%,https://snapshot.box/#/s:frax.eth/proposal/0xbd8d1dbd3f19670cdec1b36ccf75ffc3473afe8f3afe68f1b2532395c94203e1
+[FIP - 269] Deploy Fraxferry for FRAX ( Base ),11,393%,https://snapshot.box/#/s:frax.eth/proposal/0x1e0a598f49be908c934a46d238d8be8b914669a1d6cb9f96194a180aa0a37e69
+[FIP 268] Add GRAI/FraxBP to FXS gauge controller,21,380%,https://snapshot.box/#/s:frax.eth/proposal/0x56d8a114d6fd4a3c98115dac66f8ef49ccbb06b31b6b59b2eda51aa216670573
+[FIP - 267] Authorize Fraxlend AMO to Share Allocations Between v1 and v3 Lending Pairs,19,395%,https://snapshot.box/#/s:frax.eth/proposal/0x2edf3f06ec8e90fdfc812bcc2b5c302fa654b7ac342bd9853a6062fa8957b42a
+[FIP-266] Add Curve GHO/FRAXBP to the FXS gauge controller,18,399%,https://snapshot.box/#/s:frax.eth/proposal/0xb46177b4d48361464834732c953ab3b2a913e46475d14efe7e378ae775aff270
+[FIP - 265] Add the Fraximal Vault Token to FXS Gauge Controller,18,380%,https://snapshot.box/#/s:frax.eth/proposal/0x0efde07bd4eba662f0d66282272a021a3970ab2ee92713a70ab759d635073e67
+[FIP - 264] Add a new market into Fraxlend on Ethereum (sfrxETH/stETH - Variable Rate V2),20,380%,https://snapshot.box/#/s:frax.eth/proposal/0xc526022aabc3841988c2e03c66fd41c35ae450bee9412906c83c9785234c12aa
+[FIP - 263] Deploy Fraxferry for sfrxETH ( Fantom ),17,378%,https://snapshot.box/#/s:frax.eth/proposal/0x0506af3dca9cd567dff9c221a08ad85711b81284607cf59afd3a67a6bfc05930
+[FIP - 262] Authorize Fraxlend AMO for new pair on Arbitrum ( GMX/FRAX - Variable Rate V2 ),19,383%,https://snapshot.box/#/s:frax.eth/proposal/0xac2ed471b25f14f073296d101575e40973e24e89bda086f93252c2498d943911
+[FIP - 261] Authorize Fraxlend AMO for new pair on Arbitrum ( WBTC/FRAX - Variable Rate V2 ),18,383%,https://snapshot.box/#/s:frax.eth/proposal/0x849ac28c419c0758cf2e18faa8dd9ee057adfea499be20da402ffdd06baedf13
+[FIP - 260] Implement FRAX/DAI Gelato Uniswap pool ragequit function with 20% fee,29,395%,https://snapshot.box/#/s:frax.eth/proposal/0x4ebec90410c4328441c5721ebe63710d7da0ce916e0fbd20a17e2981ac30cef0
+[FIP-259] Add msETH/frxETH to FXS gauge controller,35,449%,https://snapshot.box/#/s:frax.eth/proposal/0xc1246e265474812b6d6b4ec4f240401599c078356f789204f32d93ad7da1e2e2
+[FIP-258] Flywheel Grant Amendments,29,151%,https://snapshot.box/#/s:frax.eth/proposal/0x4b5d13690207bf5a145b3c817b1bab3e39fb7dcfdf8e0805421d3778f9ac43fe
+[FIP - 257] Authorize frxETH Curve AMO for a new pair ( frxETH-stETH ),29,153%,https://snapshot.box/#/s:frax.eth/proposal/0xf2a927df8ed6a736fb25f17c47e1aa678b16588ad3e8a47148590cc054e976fe
+"[FIP - 40] [Revote] Funding Frax Core Development, Community Outreach, and Grants",28,452%,https://snapshot.box/#/s:frax.eth/proposal/0x0d8973c145aed1d3a2bbe994c39f9391c5e29ff1ef8875e9f4f2a9bf8da8cfe7
+[FIP -256] Optimizing FIP-77’s TWAMM Parameters,22,453%,https://snapshot.box/#/s:frax.eth/proposal/0xb0318154a2cd9a89fe4aa4dee58246581002abfa5c4d8855ac6344bc04873bd5
+[FIP - 255] Set Fees at 50% for All Sunset Pairs on Fraxlend,21,377%,https://snapshot.box/#/s:frax.eth/proposal/0xe5eb1c7567103e3f766c6fff5a6b74a6db9dbe889303fc4bde62e94881209fc2
+[FIP- 254] Frax Ecosystem Educational Incentives Program Amendments,26,189%,https://snapshot.box/#/s:frax.eth/proposal/0x09c5015d193d3c2adeab07958dbd8a7248e183e6d3ca946b8b7ae16a26482086
+[FIP - 253] Add rETH/frxETH(StaFi protocol) to FXS gauge controller,26,387%,https://snapshot.box/#/s:frax.eth/proposal/0xeb487ca7307463f131d1099643c12f906499eadaa97bf461221567edf74b1628
+[FIP - 252] Add the future FRAX/ETH pool on Swaap v2 to FXS gauge controller,28,199%,https://snapshot.box/#/s:frax.eth/proposal/0x0d3a4625b28dd5261544684508dd9652513b41c16bdff349d8ee293eade39ec4
+[FIP - 251] Add ZUSD/FRAXBP to FXS gauge controller,18,386%,https://snapshot.box/#/s:frax.eth/proposal/0x6f5bd385602db206352f14b12b1910c5eeb0918d6257f2562422a03dc3793fb5
+[FIP - 250] Axelar <> Frax: Match $5k per month worth of bribes towards  axlUSDC-FRAXBP Curve pool on Arbitrum,18,386%,https://snapshot.box/#/s:frax.eth/proposal/0x03b31c0da21da1b61e14c667ab01b0efe59f71a9a3d443355cf1cd3e7dac4c77
+[FIP - 249] Axelar <> Frax: Add axlUSDC-FRAXBP Curve pool on Arbitrum to the FXS gauge controller,18,386%,https://snapshot.box/#/s:frax.eth/proposal/0xb949fa383b782e7b5c55e5e48cd72af55f43577bac4ac8460b2f5665df30dac8
+[FIP - 248] Add frxETH-CRV Curve Pool to FXS gauge controller,22,179%,https://snapshot.box/#/s:frax.eth/proposal/0x27d8a18f92c157151c4b708829eaf0d1f356e37c3637f4aece5d97a677faeeff
+[FIP - 247] Add frxETH-alETH Curve Pool to FXS gauge controller,19,179%,https://snapshot.box/#/s:frax.eth/proposal/0x59e619b9d0acb4ae05ca56dfa471db8bf0af3ba296aecae97113c2a0ebc47fbb
+[FIP - 246] Add frxETH-ankrETH Curve Pool to FXS gauge controller,20,179%,https://snapshot.box/#/s:frax.eth/proposal/0xddc030d6ae8f3ea16c6af39aabe1a8aec920c270917e32f38221eeefce8a72b4
+[FIP - 245] Add frxETH-CVX Curve Pool to FXS gauge controller,15,121%,https://snapshot.box/#/s:frax.eth/proposal/0x3094635b7a4082fe26181c98137fe67c7438efd68b7cf6959f568a1c7a9d1946
+[FIP - 244] Add frxETH-sETH Curve Pool to FXS gauge controller,13,103%,https://snapshot.box/#/s:frax.eth/proposal/0x4d45037882f8299939a3b26639647560f758f9e439418d32a1928976c2d8a68b
+[FIP - 243] Add frxETH-cbETH Curve Pool to FXS gauge controller,12,77.3%,https://snapshot.box/#/s:frax.eth/proposal/0x65697dbd234b2d8224ffd3cc4001e003cadd14eb473b1e406d9bfad043c0b399
+[FIP - 242] Add frxETH-rETH Curve Pool to FXS gauge controller,11,103%,https://snapshot.box/#/s:frax.eth/proposal/0x4f702dd0d4a5a0d4f462b5c26927f217efb677cf2f2bc3f46921689a26b2f087
+[FIP - 241] Add frxETH-stETH Curve Pool to FXS gauge controller,11,139%,https://snapshot.box/#/s:frax.eth/proposal/0x1cf21fabe845617ce9ff3f619c76ee3ae761de09be7e9290214522aed9d87626
+[FIP - 240] FX Protocol <> Frax Finance,10,383%,https://snapshot.box/#/s:frax.eth/proposal/0xdf753431a4be5685b75e2966fb05203d2e694102d013d6f27f5c2e5406916c79
+[FIP - 239] FRAX <> Convergence - Seed investment proposal,23,399%,https://snapshot.box/#/s:frax.eth/proposal/0x5f916e176c982b0e1d0709b26938fe0519f591f1c96f4d631bc92ad21b832cc5
+[FIP - 238] Frax Lend ITB Risk Management Tools,19,370%,https://snapshot.box/#/s:frax.eth/proposal/0x704bf7a019283caf2b3fa531d2af03b94f21a1f5f3de37798f0cddc9208ba6c5
+[FIP - 237] Authorize Fraxlend AMO for a new pair ( rETH/FRAX - Variable Rate ),32,419%,https://snapshot.box/#/s:frax.eth/proposal/0xae47a1d541341671d323804f2cd711561cac7d89d2c643be58f93a63943ba29c
+[FIP - 236] Authorize Fraxlend AMO for a new pair ( stETH/FRAX - Variable Rate ),26,419%,https://snapshot.box/#/s:frax.eth/proposal/0x17eb0f55fba85aa83e74edf60d430bd24ecb6c55137d2f8d3f35029070aaeae7
+[FIP - 235] Add crvUSD/Frax pool to the FXS gauge controller,25,415%,https://snapshot.box/#/s:frax.eth/proposal/0xd33c945e078ab54fbe3f7601640b8b733aa2f07f580b799bd79f93aea51e2fb7
+[FIP - 234] Add swETH/frxETH Curve pool to FXS gauge controller,23,377%,https://snapshot.box/#/s:frax.eth/proposal/0x4c5d511713fe09c0721830589619d84ad950813556adea91b7f1462bde3248af
+[FIP - 233] Authorize Fraxlend AMO for new pair on BSC ( sfrxETH/FRAX - Variable Rate V2 ),25,494%,https://snapshot.box/#/s:frax.eth/proposal/0xc2a5aa2899e9029532cbe1581bee1283f88155cf183e00adb6938affb7fe14b1
+[FIP - 232] Authorize Fraxlend AMO for new pair on Optimism ( sfrxETH/FRAX - Variable Rate V2 ),21,494%,https://snapshot.box/#/s:frax.eth/proposal/0xd8c621c5c9a140788e0e8af6c5653a1930419317045bea7eca5b86851c781e9b
+[FIP - 231] Authorize Fraxlend AMO for new pair on Arbitrum ( sfrxETH/FRAX - Variable Rate V2 ),21,494%,https://snapshot.box/#/s:frax.eth/proposal/0xd7d49c8856f071047ba2aeaf594f5545a7f39619025be31140cf9095fd869904
+[FIP - 230] Frax Finance Comprehensive Annual Budget Request (2023 - 2024),33,466%,https://snapshot.box/#/s:frax.eth/proposal/0x7a9b3956628d54323a5e905f5b7f367402dbb7b857a43259b26a611f7bed0382
+[FIP - 229] Expand eligibility for FXS gauge to include pools/vaults with frxETH as underlying token,31,466%,https://snapshot.box/#/s:frax.eth/proposal/0x25c4aeb3e82ff45ea07b9eb3f6ee586942a33ba4adb0ec571afe8c1edd9eb7b3
+[FIP - 228] Add FRAX/USDP Curve pool to FXS gauge controller,26,385%,https://snapshot.box/#/s:frax.eth/proposal/0x4944be1be986e62d314b29dcd5e37a115120a9b44bd04345821a1969bbc511f7
+[FIP - 227] FRAX <> Prisma Finance pre-launch raise participation,37,486%,https://snapshot.box/#/s:frax.eth/proposal/0x792e399c30b6217f7f0157d7653a432c730cdaac573b872dbf74de55990a00cd
+[FIP - 226] Anthias.xyz x FraxLend Liquidation Health Tooling Grant Proposal,29,373%,https://snapshot.box/#/s:frax.eth/proposal/0x8e532221f9c7e4b4550c0e5a0c7f483994a847b6dbb05c9f95e04302ea3c4085
+[FIP - 225] Deploy Fraxferry for sfrxETH ( Avalanche ),32,463%,https://snapshot.box/#/s:frax.eth/proposal/0x3c065ff497cc907ba73f49a2bbb739dce0c8bc032c9d9689cdc781e9b812a6c5
+[FIP - 224] Deploy Fraxferry for frxETH ( Avalanche ),29,463%,https://snapshot.box/#/s:frax.eth/proposal/0x2dfd3e7eb88de7ce4d2cd2e6002e7e26e8f056dc8036644a910af1304eda5a53
+[FIP - 223] Add COIL/FraxBP to FXS gauge controller,28,463%,https://snapshot.box/#/s:frax.eth/proposal/0x254de9b800481b73cfce96ed1eb27ae0811ede9ff1566a358231ce02dc89b48c
+[FIP - 222] TAX/FEE (deprecated) StakeDAO Frax-Eth Put Pool Unlock,34,485%,https://snapshot.box/#/s:frax.eth/proposal/0xa3344616d6cc55fd28cfc6924f756f39af550bd83152ada8095aaa052f2b5a97
+[FIP - 221] Contributing to the 4626 Alliance,38,111%,https://snapshot.box/#/s:frax.eth/proposal/0xd703be9e56d9972ee0b0c54b9005662c470d3b4756bfc2ac1d575794eb257223
+[FIP - 220] Add rETH/frxETH (StaFi protocol) to FXS gauge controller,33,420%,https://snapshot.box/#/s:frax.eth/proposal/0xc70e91c53cb38ea5386c025274a3884e7d27fe96ae702aef26762e03d34ca838
+[FIP - 219] Increase Fraxlend AMO allocation for a pair ( sfrxETH/FRAX - Variable Rate V2 ),37,416%,https://snapshot.box/#/s:frax.eth/proposal/0xb926620bda1a420dae2ef971e5d6339946ec1862e05dc1bbd495d79666f3cd34
+[FIP - 218] Fraxbuild Hackathon Funding,40,133%,https://snapshot.box/#/s:frax.eth/proposal/0xf1c595a8fcf4f3b3cfd9eb33dc0c885aeb1d7d8de3204ec50213839c0a2e364d
+[FIP - 217] Deploy Fraxferry for sfrxETH ( Polygon ),34,378%,https://snapshot.box/#/s:frax.eth/proposal/0x2acfc68d8253e0c3269c204b3f787b1b223381595df342fbe64acbf9c7c39470
+[FIP - 216] Activate AMO that lends FRAX to Flux Finance,30,368%,https://snapshot.box/#/s:frax.eth/proposal/0x11e285e59830fe2a6dec50138e335d7ba69036da2f915db465b38a64623b3717
+[FIP - 215] Add UZD/FraxBP to FXS gauge controller,24,368%,https://snapshot.box/#/s:frax.eth/proposal/0xa47c83748f0e8e8af85c967bc876bd62a40fa5f109b1b923feb42155ff3c4fdb
+[FIP - 214] Unlock the StakeDAO sdETH-FraxPut Gauge,56,642%,https://snapshot.box/#/s:frax.eth/proposal/0x6ac91764eb38b5269c07123629506677faf40cf6238378747e25a7fa0c503f2a
+[FIP - 213] Authorize Fraxlend AMO for a new pair on Arbitrum ( ARB/FRAX - Variable Rate V2 ),42,452%,https://snapshot.box/#/s:frax.eth/proposal/0xf497fe1a6d283d92e31a5401d3e121942b7805551c8d0a8cfdb8060c1364418c
+[FIP - 212] Deploy Fraxferry for sfrxETH ( Polygon zkEVM ),45,532%,https://snapshot.box/#/s:frax.eth/proposal/0x484024caf65884499876d0ea450ffc9369c37713862d693e1ba130b078712e97
+[FIP - 211] Deploy Fraxferry for frxETH ( Polygon zkEVM ),38,532%,https://snapshot.box/#/s:frax.eth/proposal/0x8deca160a2afeac92bdc22a8126f9314de47a73df756271299e09be87e6984a4
+[FIP - 210] Deploy Fraxferry for FXS ( Polygon zkEVM ),36,528%,https://snapshot.box/#/s:frax.eth/proposal/0x06552edbbb92c6cf3c2211528563866cbfc1130bd7b9d66f7045cf2b48d756ae
+[FIP - 209] Deploy Fraxferry for FRAX ( Polygon zkEVM ),36,529%,https://snapshot.box/#/s:frax.eth/proposal/0x91bdcd042513ada5c77ec478d4a0cbb7066d97998cccb63c7f8ca72a47b3e0cb
+[FIP - 208] Frax Ecosystem Educational Incentives,28,534%,https://snapshot.box/#/s:frax.eth/proposal/0x68628a9da164d3653ecdfe515822a3f9af4f603ed0df11621094bd43b3a138fd
+[FIP - 207] Authorize matching FRAX from the FXS buyback fund with Frax's ARB airdrop to create ARB-FRAX liquidity,25,82.4%,https://snapshot.box/#/s:frax.eth/proposal/0xf55dd75e3276ae4b9d891c0e3d5b70ed8efa4e9ea5ace2d522915452f35aec94
+[FIP - 206] Enabling Bunni-LP frxETH/WETH Gauges on Frax Finance Staking,38,178%,https://snapshot.box/#/s:frax.eth/proposal/0x89c780d95a50e41e8a58f6fca3351b66595fdbfcb29ff710637cedc06380469d
+[FIP - 205] Enabling Bunni-LP FRAX/USDC Gauge on Frax Finance Staking,37,175%,https://snapshot.box/#/s:frax.eth/proposal/0xfec18de7cdcf7d9df7102b8e581b8054fc9c3b804e2dcb663d92f6c99f458995
+[FIP - 204] Deploy Fraxferry for sfrxETH ( zkSync ),42,461%,https://snapshot.box/#/s:frax.eth/proposal/0x90bdc9d38f95dc1075097a80d785c5a4b55902c2e4b68901bcd24d44135927a1
+[FIP - 203] Deploy Fraxferry for frxETH ( zkSync ),36,461%,https://snapshot.box/#/s:frax.eth/proposal/0x42c1625d8d23c01ce5ffee4c8de06177c0bd56673d0383998c16007e2aa86f05
+[FIP - 202] Deploy Fraxferry for FXS ( zkSync ),35,456%,https://snapshot.box/#/s:frax.eth/proposal/0x5e1e7258cd891388bcbc72139d26e222ed5f09349f6e32d4b99cb4a5561ecf5d
+[FIP - 201] Deploy Fraxferry for FRAX ( zkSync ),36,456%,https://snapshot.box/#/s:frax.eth/proposal/0x02a84e3a2117beabf60f99e57c51c461c9a0ed37a68f33f17ae985dd0c30ba7a
+[FIP -200] Add eUSD-FRAXBP,36,461%,https://snapshot.box/#/s:frax.eth/proposal/0xd9c7310812136692b34d217d1f7e1d3955698535f4edc306b9226188d95fe725
+[FIP - 199] REVISED: Metronome <> Frax: Partnership and Incentives Strategy,47,462%,https://snapshot.box/#/s:frax.eth/proposal/0xb7eef90646edddd5d96c928dec908e1737abd55620fdb9825655f8c6d7ce7976
+[FIP -198] Increase Fraxlend AMO allocation for a pair ( sfrxETH/FRAX - Variable Rate V2 ),33,463%,https://snapshot.box/#/s:frax.eth/proposal/0xdba8251a33ddee3d25bcd4aa9de3ab4984a3fd024bd9f8a5bb396961a94d84d7
+[FIP - 197] Add frxETH/WETH (Polygon) to the FXS gauge controller,39,163%,https://snapshot.box/#/s:frax.eth/proposal/0x30f07adde0872b25d410d127537c484ca13c9c9989b31c7f5d619fcec5eb3629
+[FIP - 196] Implement FRAX/mUSD pool ragequit function with 20% fee,44,462%,https://snapshot.box/#/s:frax.eth/proposal/0x206884236b6d568ddb3f7cbff5be8556d92bef7ff5cfc5713de39891491d7aad
+[FIP - 195] Move Locks Back to 3 Years for 3x Boost,55,633%,https://snapshot.box/#/s:frax.eth/proposal/0xe6a925a1fedc1ab3f5349fe0b405c7ed89cc3e720ad7dc26570e8e9245f11e93
+[FIP - 194] Authorize Fraxlend AMO for a new pair ( stkcvxfrxETHCRV/FRAX - Variable Rate V2 ),44,506%,https://snapshot.box/#/s:frax.eth/proposal/0x6fc17d995e620ccd9af812da7354d620a8cfb543b649d28fb829d814cb45e26e
+[FIP-193] Add USV/FraxBP to FXS gauge controller,39,2.54%,https://snapshot.box/#/s:frax.eth/proposal/0xd7a869e60d7302c821637f88527db3a4cc927a75566095d2eee1baa01d74c0e3
+[FIP - 192] Metronome <> Frax: Partnership and Incentives Strategy,33,0.262%,https://snapshot.box/#/s:frax.eth/proposal/0xda26f181df9014367a1dfeb597c376e17c7b4d1b92fd7555cc3d010cb37b1be2
+[FIP - 191] Boosted FRAX-USDC Balancer Euler boosted pool pilot bribe program,35,7.32%,https://snapshot.box/#/s:frax.eth/proposal/0x4c4ad066cb34571872d71c2b4be4a184e300d1326569b571a91065a3f57c6ed0
+[FIP - 190] Boosted FRAX-USDC Balancer Euler boosted pool FXS Gauge,35,9.51%,https://snapshot.box/#/s:frax.eth/proposal/0xd5b4f9a9bcf72e50487e476ef7ef36fff86f70b20659cf875034fd988d339f32
+[FIP - 189] Boosted FRAX-USDC Balancer Euler boosted pool AMO,37,10.2%,https://snapshot.box/#/s:frax.eth/proposal/0x05888e106ea31cfc1af09dcccbe9012a6cd394dccc0e1bc5ef3587f70b08e483
+[FIP - 188] Increase CR to 100%,54,594%,https://snapshot.box/#/s:frax.eth/proposal/0x6d43531f54de3d52ad439dcb6c56e3eae1b833fceb4d484dcb3b20be070ca25d
+[FIP - 187] Implementation of a ragequit function FRAX/mUSD (8% /year),48,523%,https://snapshot.box/#/s:frax.eth/proposal/0xa688bcc33398fcb2b7543993962f2049513154fc337646b6433e3f38d84dedc5
+[FIP - 186] Deploy Fraxferry for FRAX (Aurora),44,470%,https://snapshot.box/#/s:frax.eth/proposal/0x1c844e1bd646e9545564b0a731f845cfb6c386fba2fe4932eddc8a9ad69b796b
+[FIP -185] Add Sentiment FRAX Lending Pool to FXS gauge controller,44,470%,https://snapshot.box/#/s:frax.eth/proposal/0x1127ca8206adbce95004ed0496defd1b25ee8bbd542757c73b77cc3ee6f058c7
+[FIP - 184] Add VST/FraxBP to FXS gauge controller,36,386%,https://snapshot.box/#/s:frax.eth/proposal/0x8f497b3efdb082b236f3a1f6ee3284a5652a72f84223b19d03e386522bb2a44d
+[FIP - 183] Deploy Fraxferry for FXS ( Moonriver ),31,370%,https://snapshot.box/#/s:frax.eth/proposal/0x9547dee11379b25e7de9ad0884b6e4d7a0b4e6b049abc848b26e9279db5162bc
+[FIP - 182] frxETHBP & WETHR Program,55,576%,https://snapshot.box/#/s:frax.eth/proposal/0x1272233285b3b4ce026173ec4e2a59d6c8daba3d64b41e67ba160cc526fc5c7d
+[FIP - 181] Add Metronome msUSD/FraxBP to FXS gauge controller,29,559%,https://snapshot.box/#/s:frax.eth/proposal/0x9cc997cf19f797919e40d87e17c7eed87aefa10279fbeef89761cb1717ac56b8
+[FIP - 180] Add clevUSD/FraxBP to FXS gauge controller,28,558%,https://snapshot.box/#/s:frax.eth/proposal/0x02aa360090c273c1218b84fe4b25e2be1d6a0210be1419087832da3ac15c38eb
+[FIP - 179] Add STG/FraxBP to FXS gauge controller,27,561%,https://snapshot.box/#/s:frax.eth/proposal/0xe53269e838ab2ca0d8e09f8326d2a4ffb3425ecb1b39dfe89b72b7178b486614
+[FIP - 178] Flywheel Grant Renewal For 2023,48,163%,https://snapshot.box/#/s:frax.eth/proposal/0xece8d5be8b180b54350c4bddee190e24e2849d233f8aac11e0ef0aa7d658ae2a
+[FIP - 177] Allocate 300000 $vlCVX votes for clevUSD/FraxBP for the next 6 epochs,37,435%,https://snapshot.box/#/s:frax.eth/proposal/0x08c3ef926a87e408b964fd46b9548bdaa453e3cc5fc774ed6fe8fff4c2f63b36
+[FIP - 176] Deploy Fraxferry for sfrxETH ( BSC ),36,470%,https://snapshot.box/#/s:frax.eth/proposal/0xb2c5a0ab807170214f5abed40634562e0527f02a2d00ea4d75e75388c578a436
+[FIP - 175] Implement FRAX/mUSD pool ragequit function,36,507%,https://snapshot.box/#/s:frax.eth/proposal/0xb69cd11062f257c106d2fac75f30fae50dd41f3f7ad8845a3fa1e0d051618e7a
+[FIP - 174] Deploy Fraxferry for FXS ( Optimism ),39,431%,https://snapshot.box/#/s:frax.eth/proposal/0x52d8c99612897b198873277899dfb2a9e9daf46c877dca32a920e385961508f3
+[FIP - 173] Deploy Fraxferry for FXS ( Avalanche ),32,515%,https://snapshot.box/#/s:frax.eth/proposal/0xca4f422870c8bd1d24c37ff2c635d22f3bd9782f3b62ed7d38876230e48032ec
+[FIP - 172] Deploy Fraxferry for FXS ( Moonbeam ),31,514%,https://snapshot.box/#/s:frax.eth/proposal/0x6208d2b22e13e511fe32907b7679958d4b5bc40b04533170b4d6960bf7df528d
+[FIP - 171] Deploy Fraxferry for FXS ( Fantom ),27,513%,https://snapshot.box/#/s:frax.eth/proposal/0xa2fad6f288a8d404f0e86df56dc07d08fd1c18d5b160a3c524b44b0d78868f0d
+[FIP - 170] Deploy Fraxferry for FXS ( BSC ),28,514%,https://snapshot.box/#/s:frax.eth/proposal/0x8fedeab2ddebeb0bb40f536c95223b80890e9f4e4951e9c0bd6f72f4aaae930e
+[FIP - 169] Deploy Fraxferry for FXS ( Polygon ),29,514%,https://snapshot.box/#/s:frax.eth/proposal/0x0f0fb695660d7733488797dc13f75a72b7c8b614dd3e67c49cafdaef9ed63262
+[FIP - 168] Deploy Fraxferry for FXS ( Arbitrum ),32,514%,https://snapshot.box/#/s:frax.eth/proposal/0xc4257d3c751fec54dc0ae002640824b973c02e5e98cfca5fe2828f8232f05132
+[FIP - 149] [Revote] Deploy Fraxferry for a new chain ( Moonriver ),31,513%,https://snapshot.box/#/s:frax.eth/proposal/0x68920a166bf0aa127485c486a0e20cb0ae26cba55e4efa1e50c5c28a4cfaeb36
+[FIP - 167] Add L2D4 Gauge,31,156%,https://snapshot.box/#/s:frax.eth/proposal/0x48375091672230d45b1bf1184dccc2ae4f8393f7291818e3172e8a651468dd80
+[FIP - 166] Increase Fraxlend AMO allocation for a pair ( FPI/FRAX - Variable Rate - 12),30,14.4%,https://snapshot.box/#/s:frax.eth/proposal/0x9727168834bf7463f0d60858181249fad60031cc00066e032f93aa61006f6113
+[FIP - 165] Authorize Fraxlend AMO for a new pair ( MKR/FRAX - Variable Rate V2 ),30,506%,https://snapshot.box/#/s:frax.eth/proposal/0x0117a2186f81140d2add8a9172510712cd2073438e9fc3ffc95253e337025efb
+[FIP - 164] Authorize Fraxlend AMO for a new pair ( AAVE/FRAX - Variable Rate V2 ),26,421%,https://snapshot.box/#/s:frax.eth/proposal/0xabcbe9d858646378468a10974e2e0f070f776fe026092f082b68c3ac3810452c
+[FIP - 163] Authorize Fraxlend AMO for a new pair ( UNI/FRAX - Variable Rate V2 ),24,421%,https://snapshot.box/#/s:frax.eth/proposal/0xec593d6479785fa03f8f49be3422670916d2fa6ed6f1b91d48b606bf0bdc8cec
+[FIP - 162] Authorize Fraxlend AMO for a new pair ( LDO/FRAX - Variable Rate V2 ),26,421%,https://snapshot.box/#/s:frax.eth/proposal/0xec0f8408112d35d9f5fee1a454423b53897f84384cc1f3d3da80c0c81b53b3f9
+[FIP - 161] Authorize Fraxlend AMO for a new pair ( LINK/FRAX - Variable Rate V2 ),25,428%,https://snapshot.box/#/s:frax.eth/proposal/0x889caff2a60c5abffa5666b2584f9810bb49605533d14143cac499d714ce63e2
+[FIP - 160] Authorize Fraxlend AMO for a new pair ( APE/FRAX - Variable Rate V2 ),25,422%,https://snapshot.box/#/s:frax.eth/proposal/0xc41bc22f39c7b25959fed911330b5a99a4c941c758f1b99b5dde1052d3828981
+[FIP - 159] FIP Revoting Guidlines,31,120%,https://snapshot.box/#/s:frax.eth/proposal/0x8b2ac1a9d67e22200bef73dcecc7f921c336acbed07fb53ea0e3bbbb1e832523
+[FIP - 158] Deploy Fraxferry for sfrxETH ( Optimism ),33,435%,https://snapshot.box/#/s:frax.eth/proposal/0xb9fe6ef374e566eae0c10242add737be28a5e3bdc0f908ade0343d7f58923fff
+[FIP - 157] Deploy Fraxferry for sfrxETH ( Arbitrum ),34,435%,https://snapshot.box/#/s:frax.eth/proposal/0x32da9f34e135aa28a942e11e1177eabd1566eefff47066d0d4baef4b85d83d9e
+[FIP - 156] Deploy Fraxferry for frxETH ( Moonbeam ),30,435%,https://snapshot.box/#/s:frax.eth/proposal/0xd84ed9341ccf2c9cb4d7cc5b318f380b0d3bbecdc40372f30aa7acf34ea1a95b
+[FIP - 155] Deploy Fraxferry for frxETH ( Fantom ),30,431%,https://snapshot.box/#/s:frax.eth/proposal/0xd7271b056242d71923ceae35f46e35027a24b8a12cde0b12489f45d4046d6630
+[FIP - 154] Deploy Fraxferry for frxETH ( BSC ),31,435%,https://snapshot.box/#/s:frax.eth/proposal/0x08fe38d252c6d16caa75c5a1374f7e2dee8a8cad6ac704affff9129826eb171f
+[FIP - 153] Deploy Fraxferry for frxETH ( Polygon ),27,434%,https://snapshot.box/#/s:frax.eth/proposal/0x3f15e065ace9b85ee3e2557fabf03a481d3fd1aa7cd7e2f9b1f2aeb037004838
+[FIP - 152] Deploy Fraxferry for frxETH ( Optimism ),30,435%,https://snapshot.box/#/s:frax.eth/proposal/0x28a0f9fc40672393b27cb3348674cc8b1fb2c0b796abcb703008f8ce0200bbeb
+[FIP - 151] Deploy Fraxferry for frxETH ( Arbitrum ),32,435%,https://snapshot.box/#/s:frax.eth/proposal/0xa32b8a6a20a2452e9918136379829a28c7b34cdb36a274c6837c07040a6cccea
+[FIP - 150] Deploy Fraxferry for a new chain ( Avalanche ),41,561%,https://snapshot.box/#/s:frax.eth/proposal/0x665aed064dc7d1d9b948fe6adde13544a07f64dfe4d26123226400607e60230d
+[FIP - 149] Deploy Fraxferry for a new chain ( Moonriver ),19,137%,https://snapshot.box/#/s:frax.eth/proposal/0xaeb2f478d8d84e4ce1eb8f421e5ea002f5f021a9967b8fec8fe96ba4b97a9ab9
+[FIP - 148] Add OHM/FraxBP gauge to the gauge controller,23,378%,https://snapshot.box/#/s:frax.eth/proposal/0x4540ed68b553a414e22e090f4e28a05792b7035e2e973c0cc6b714b4ff7fc397
+[FIP - 147] Deploy Fraxferry for a new chain ( Boba ),23,378%,https://snapshot.box/#/s:frax.eth/proposal/0x5d2e624f88f46bfa431eaca63ce3d6f84e8472c1964ec226370b550c297ab638
+[FIP - 146] Deploy Fraxferry for a new chain ( Evmos ),21,378%,https://snapshot.box/#/s:frax.eth/proposal/0xc44bf396cb10b6ef65b24688418752dccac9db64bb362d5f2b44d82957929f5b
+[FIP-145] Allow only individual Gauge Controller proposals,28,472%,https://snapshot.box/#/s:frax.eth/proposal/0x24fbae463f67782a8e1d9cd02d8f5a18cca57df5d1f5647e894e403a324300c5
+[FIP - 144] Deploy Fraxferry for a new chain (Polygon),26,443%,https://snapshot.box/#/s:frax.eth/proposal/0xe0612875c1647d133ea5cb1767fa4dc7db7b1704571336d0c1fab5ec88662db1
+[FIP - 143] Add SDT/FraxBP gauge to the gauge controller,23,470%,https://snapshot.box/#/s:frax.eth/proposal/0x85f899b6159b311f85f91fd7cc8118df201045ee4b1ef59c93ac239c6bf4ad79
+"[FIP - 142] Frax Gauges on KyberSwap Elastic Ethereum, Polygon, Arbitrum and Optimism",38,846%,https://snapshot.box/#/s:frax.eth/proposal/0xd1153d6aafc469d0ddb7621f9789ba4afa82961aa0a54b51b325ade0c030715a
+[FIP - 141] Deploy Fraxferry for a new chain ( BSC ),23,471%,https://snapshot.box/#/s:frax.eth/proposal/0xaa0c47ea8b8ed36c8dc8924fd1747ab20ed8107b091eb4c89a97b6b9840c602f
+[FIP - 140] Deploy Fraxferry for a new chain ( Fantom ),16,376%,https://snapshot.box/#/s:frax.eth/proposal/0x9464dc7af1f02be398da8f8c97367297c560d4c3f439aa81695ea4d1e390e33e
+[FIP - 139] Authorize Fraxlend AMO for a new pair ( cvxcrvFRAX/FRAX - Variable Rate V2 ),27,556%,https://snapshot.box/#/s:frax.eth/proposal/0x40e711bda5d32e4b9d5e467074baf27acf785b46ca7222fc319368ea5d1183b1
+[FIP - 138] Authorize Fraxlend AMO for a new pair ( sfrxETH/FRAX - Variable Rate V2 ),28,563%,https://snapshot.box/#/s:frax.eth/proposal/0x68c141f6a3625a9fb5072f98cfbb662142d8d935e35e92d26029a410185990a1
+[FIP - 137] Authorize Fraxlend AMO for a new pair ( FPI/FRAX - Variable Rate V2 ),28,563%,https://snapshot.box/#/s:frax.eth/proposal/0x0cb25547141a7d3e5ff169349e57ec01415b3f109662e834c8b5113f162031a0
+[FIP - 136] Deploy Fraxferry for a new chain ( Optimism ),24,476%,https://snapshot.box/#/s:frax.eth/proposal/0x97b89ad96fb1568e460e98fcf3268bb382a5ec274fd7db39d8844f91da423747
+[FIP - 135] Deploy Fraxferry for a new chain ( Arbitrum ),27,477%,https://snapshot.box/#/s:frax.eth/proposal/0x6b79deb2ddd87ebcef7ea8d36f74873cb155b24ad312ce2cb0f2cbb07f1e8dec
+[FIP - 134] Add RSR-FRAXBP Gauge,48,488%,https://snapshot.box/#/s:frax.eth/proposal/0xb712a88b45e3f560c674e424ecfc90b36ca8813b079d4cded2296a652cce848c
+[FIP - 133] Add XAI-FRAXBP Gauge,46,489%,https://snapshot.box/#/s:frax.eth/proposal/0x93f1ba12c39f703eb1860ad0c7f076d4cde3997196af5d3e92c8bb49fe8fa136
+[FIP - 132] Deploy Fraxferry for a new chain ( Moonbeam ),27,479%,https://snapshot.box/#/s:frax.eth/proposal/0x29a57f42e2d4402f73af614d03bddae902962d8d07a61875cad06e748e0472ad
+[FIP - 131] Increase Fraxlend AMO allocation for a pair ( WBTC/FRAX - Variable Rate ),19,484%,https://snapshot.box/#/s:frax.eth/proposal/0xa2f245f284df5503ab6d58ebc8400344507f4bc07286fffaebd7adedc4040bf7
+[FIP - 130] Increase Fraxlend AMO allocation for a pair ( WETH/FRAX - Variable Rate ),14,484%,https://snapshot.box/#/s:frax.eth/proposal/0x964f7cd7d71e19737e0a0681e3ceab00c10a716b066999d78bcded82a4579b03
+[FIP - 129] Increase Fraxlend AMO allocation for a pair ( CVX/FRAX - Variable Rate ),14,399%,https://snapshot.box/#/s:frax.eth/proposal/0x35e2b7341f52317220a5b04fcc4a00a86ebf7095e5fba21e46015aba3ad2041f
+[FIP - 128] Increase Fraxlend AMO allocation for a pair ( CRV/FRAX - Variable Rate ),14,389%,https://snapshot.box/#/s:frax.eth/proposal/0x277bc9862b522496c6f0a75198a86deb1a0235baad1fff7e8010bd656ba6285b
+[FIP - 127] Fraxlend FXS-FRAX Pair Gauge,24,432%,https://snapshot.box/#/s:frax.eth/proposal/0x6118caf877bc2a548512d33cc7dd5f1eebfbec3c5c915bf9765a049759a96021
+[FIP - 126] Authorize Fraxlend AMO for a new pair ( FPIS ),24,527%,https://snapshot.box/#/s:frax.eth/proposal/0x7e97352313c5a796d465e641ad51c41b4792d9116ae9dff8115b2458a7410eb2
+[FIP-125] Exploratory Partnership to Pursue Propfi (RWA) AMO,25,429%,https://snapshot.box/#/s:frax.eth/proposal/0x87a34f3f4f057beba2dd0d3b3bbbb6384617ff3711784a9f7ca4ee70fa81785a
+[FIP - 124] Authorize Fraxlend AMO for a new pair ( gOHM ),22,386%,https://snapshot.box/#/s:frax.eth/proposal/0xcbee9b4761d74e66adc03640258b35c692df3d5c2023d794de1e538b4e41349e
+[FIP - 123] Introduce 20% [RageQuit] function for TEMPLE/FRAX gauge,58,781%,https://snapshot.box/#/s:frax.eth/proposal/0xdeef82080b089699f3cc3f2eda504e8e5c80d738bb961320db9a34ea1ab52565
+[FIP - 119] Create Gearbox AMO,39,496%,https://snapshot.box/#/s:frax.eth/proposal/0x3b1509fd9347e5b409f2623a1ad84ae50b6a02da2bc7b69805c474ee3497ec32
+[FIP - 122] frxETH Protocol Fee Structure,52,590%,https://snapshot.box/#/s:frax.eth/proposal/0x3b781b741c958f2494d6ae0d20150d20266dd016623df5f840623b1fdc0cb687
+[FIP - 121] Authorize Fraxlend AMO for a new pair ( FPI ),35,502%,https://snapshot.box/#/s:frax.eth/proposal/0xeccc46cadebf1b1e2ef98de7d8a39c07daac196e05798bb347699a8d7de81ea1
+[FIP - 120] Deploy stkcvxfrxETH-ETH Curve Gauge,37,509%,https://snapshot.box/#/s:frax.eth/proposal/0xa06487550a88973a4a40d8466d7a2d5bffab539b62d1cb5d221bbf418637f2bf
+[FIP - 118] Authorize Fraxlend AMO for a new pair ( CRV ),26,578%,https://snapshot.box/#/s:frax.eth/proposal/0xd76e874cc23f84d87312f98b858c086fba035a722a73e420abc53669ee44f1c0
+[FIP - 117] Authorize Fraxlend AMO for a new pair ( FXS ),25,583%,https://snapshot.box/#/s:frax.eth/proposal/0xdee388a9db31cfd449c9f3bd24113ab192c386bf417c0189ff6d59290c72779e
+[FIP - 116] Authorize Fraxlend AMO for a new pair ( CVX ),28,584%,https://snapshot.box/#/s:frax.eth/proposal/0x163e893e7432760147b6a091b700c498d0d099cbbc39e4d49cdafe0ba1029859
+[FIP - 114] Badger Fraxbp Gauge,23,492%,https://snapshot.box/#/s:frax.eth/proposal/0x42717a0e0047e61ebd540494d8d31dcda54306a20f90b26edf92b35c09ae389a
+[FIP - 115] Join The Tie's Institutional Pilot Program,38,115%,https://snapshot.box/#/s:frax.eth/proposal/0xa8a6c013f2f406151b5b378d96f51253477a931549d7e662debbc08c50638e50
+[FIP - 113] Integrate UniV3staker and add gauge for UniV3 FXS/FRAX,31,367%,https://snapshot.box/#/s:frax.eth/proposal/0x6f45c4a81024da62429b4c0f149a326e34ef86c6621169ccb6a4c9c5518f6a50
+[FIP - 112] Migrate Temple/Frax gauge,41,659%,https://snapshot.box/#/s:frax.eth/proposal/0x175b23d7f04eac5e0d4a6cc0acd8d5d62e580da391059856c20299464a940cb4
+[FIP - 111] Participate in Gitcoin Funding Round,31,275%,https://snapshot.box/#/s:frax.eth/proposal/0xebb6ece0b23e19b068c5b1cb85e3512565acad1691cc931f013e458fd44657fd
+[FIP - 110] Add FraxBP metapool gauges,34,581%,https://snapshot.box/#/s:frax.eth/proposal/0x377b422913cfc178a56adb1f4d5653399b9ece5e4b73fda4ecf25dc1a6482d84
+[FIP - 109] Create Fraxlend AMO,42,480%,https://snapshot.box/#/s:frax.eth/proposal/0xaec7653c850adfd02c11201baa6d673c970e40f9bbf2d843a6c4278062a0964a
+"[FIP - 108] New FraxBP metapool gauges (pusd, mai)",26,386%,https://snapshot.box/#/s:frax.eth/proposal/0x8ec747739271a3ca6b6ca7e3f589bc16cca697f3a303620f6b362968fa7f0c0c
+[FIP - 103] [Revised] Development of Liquidity Risk Profile Dashboard for Frax Finance,14,6.58%,https://snapshot.box/#/s:frax.eth/proposal/0x0f3db371ac1afb1ed17d3908e98753879a66dba9bab9ba3ac51e48bf63b369f8
+[FIP107] Redeploy imbalanced agEUR/Frax gauge as agEUR/FraxBP metapool,33,400%,https://snapshot.box/#/s:frax.eth/proposal/0x3f1e4499cdc6c1b411959fa24d19f4100ff644d85c8a8d96a9e5f21847c6aaa4
+"[FIP 105] Allocate $5,000 to seek legal advice regarding the FEI situation",29,379%,https://snapshot.box/#/s:frax.eth/proposal/0xdf7685848eb716f79875599e934bbca1be1f26e86bc44f688fa1005a33df2602
+[FIP 96] [Revote] FRAX-SDL Fraxswap Gauge,25,229%,https://snapshot.box/#/s:frax.eth/proposal/0x5e1010a32bf5a5da81b1a74a5b06a630463d54df852b437f9a011fa5d5c8a8a3
+[FIP - 104] Creating a video for Frax Finance with DeFi Teller,20,20.8%,https://snapshot.box/#/s:frax.eth/proposal/0xb44b7c92d53d27db0e16d49b1ce999711815ca613c02c43718b0616a7aa55b4a
+[FIP - 102] Authorization for revotes of FIPs,23,372%,https://snapshot.box/#/s:frax.eth/proposal/0x97d007adadae0c0b371b40873fc9584cae86254e0e44ef5a276816b99db59d10
+[FIP - 101] Make FRAX stablecoins only redeemable on PoS ETH,29,379%,https://snapshot.box/#/s:frax.eth/proposal/0x27a9a6615e1036e69863264d93dad2042eb56326790789afb492fcc55a073659
+[FIP -100] Remove all canFRAX/canFXS swaps between bridges & remove bridge FRAX/FXS POL,28,469%,https://snapshot.box/#/s:frax.eth/proposal/0x8d97adfad37b4c148b4a6670a58ad54c5d79f892b2f33b01436fb67f51860d5f
+[FIP - 103] Development of Liquidity Risk Profile Dashboard for Frax Finance,32,463%,https://snapshot.box/#/s:frax.eth/proposal/0xc8072492bdc65307c75a32aab076624379ccdf980f2c4fac995cef807b327f90
+FIP 99 - Flywheel Sponsorship Proposal,40,519%,https://snapshot.box/#/s:frax.eth/proposal/0x9650bf9a7e292d1d7692ed0b068ba082c504b0246c4cc1002939ff17a3184234
+FIP 98 - Arable arUSD Stability Fund Gauge,28,371%,https://snapshot.box/#/s:frax.eth/proposal/0x72550d5c224a34ed351e4ec88075d47c806181511521740bcd0bd35e3dd7b638
+FIP 97 - Initial FRAXBP Metapool Gauges,27,462%,https://snapshot.box/#/s:frax.eth/proposal/0xe644fb69a5cef6add7152646d998bbc0353153f8dc4d30145c0d183084078d99
+FIP 96 - FRAX-SDL Fraxswap Gauge,22,99.4%,https://snapshot.box/#/s:frax.eth/proposal/0x83ba7cc4a38814bac173ba058858b5bb4b7946033f2de7c9b4a678003cd65730
+FIP 83 - Capital Efficiency Funded Airdrop,25,456%,https://snapshot.box/#/s:frax.eth/proposal/0x5c90069097521e90a86d01fea7f5714f138b1e0739178138130f1756b5c70d28
+FIP 95 - FRAXBP Revenue and Incentives Strategy,34,396%,https://snapshot.box/#/s:frax.eth/proposal/0xd4cda7880b314cadc8cb3960aeefa25770c736dcb23af591d329a2ddbcfed345
+FIP 94 - Approve OHM-FRAX Fraxswap Gauge,46,408%,https://snapshot.box/#/s:frax.eth/proposal/0x77167c26edf85be7194a48ca3eb18b227ec854edcf5fe20a76485d4bb69dcd6e
+FIP 93 - Add FRAX-SYN Fraxswap Gauge,39,106%,https://snapshot.box/#/s:frax.eth/proposal/0x7f68139cc9b4ca0bda4df80b3bf8f2d7209ff75346591d5af5759eca8e001c92
+FIP 92 - Add FRAX-FPIS Fraxswap Gauge,41,112%,https://snapshot.box/#/s:frax.eth/proposal/0x93bac185478e36fd1e0d58a711bed02557e0b1e2e5473e7295173a76cadd84bc
+FIP 84 - FRAX <> Gamma Strategies,32,372%,https://snapshot.box/#/s:frax.eth/proposal/0x0370bcc9bc750fd4073735f48549cb1f9ea8e3d2810f929ed02a155b937d642d
+FIP 91 - Set gauge max lock limit to 1 year and 2x time boost,42,384%,https://snapshot.box/#/s:frax.eth/proposal/0x5517cdf87db1be6ff19f8951669eeb790cb6c39e8c62d8a0206304567c179f28
+FIP 90 - Add FRAX/USDC Curve pool as a Convex position to the Gauge Controller,36,382%,https://snapshot.box/#/s:frax.eth/proposal/0x695c938083e6ea8a939bca96a7cffae33fa4400c1694c2ef85279cb66c948b57
+FIP 77 - $20m FXS buyback program using TWAMM,91,568%,https://snapshot.box/#/s:frax.eth/proposal/0x404a20b59d2ac5ae6b46dd8433c3189f0f7f7503be81085b0c593ef0a6067127
+FIP 81 - Whitelist STAX Finance to stake FXS (Revised),48,626%,https://snapshot.box/#/s:frax.eth/proposal/0x8b5a81210a372d9a58c21b6b7820da3d2a2162118f0574796a1051d2f46077fd
+FIP-85-Protocol Research Unit Grant Proposal,22,99%,https://snapshot.box/#/s:frax.eth/proposal/0x778886d424df630ec178f958a693cdd04efcdf058cc29b25e6aec245bab93266
+FIP-88-Create dAMM AMO,27,453%,https://snapshot.box/#/s:frax.eth/proposal/0x87ee4e2c98f50468c3c7c8d5c9715aa313e58535b991670b4f747c7d04f76b32
+FIP-89-Adopt Commonwealth.im for Frax Governance Forum,29,460%,https://snapshot.box/#/s:frax.eth/proposal/0x7e4deb3a545a136bca61860e27e2607feeae895b324b1caf0f3ebd595af4a9da
+FIP-87- Centrifuge <> Frax AMO,32,476%,https://snapshot.box/#/s:frax.eth/proposal/0x0df59cf7cd0d4fd7491c6be594f954c19d4e21155329b4efa8071c50cfe7be34
+FIP 78 - Annual Security Budget Allocation,44,482%,https://snapshot.box/#/s:frax.eth/proposal/0xa59fe1a3a4390c934b84fc709491937afeacd821794b6f05bc9d7eaed826ea63
+FIP-80- Podcast and Media Grant,39,482%,https://snapshot.box/#/s:frax.eth/proposal/0xf37329e98b5e7db6088eb53d8363cd7735a737d0c144a73aff10139df36ea3ca
+FIP 79 - Unlock+Move FRAX-FXS LP to gauges,78,525%,https://snapshot.box/#/s:frax.eth/proposal/0xc41b1c1dcb2d9b91cd15319f4a5d6757aa5cb16c970465ae9d5e53ae6f28a4f4
+FIP 76 - Allocate a portion of CRV farmed to create a staked cvxCRV holdings,55,382%,https://snapshot.box/#/s:frax.eth/proposal/0xe54f6e951a72f4bca8c2100bed0e0b22ea1f07639cc382e7632864f7a4a21041
+FIP - 77 - FRAX x Arable Protocol,26,5.59%,https://snapshot.box/#/s:frax.eth/proposal/0x035eda83cd5b494c6412300e6291544b774128200e9367ee058298925527d474
+FIP - 75 - Add Transak´s fiat on-ramp service on Frax,31,112%,https://snapshot.box/#/s:frax.eth/proposal/0xca582b5ced160f7435f4fe5b5942dc377418ae8eaf85afc11c869a2c35238f8e
+FIP - 65 - Kill D4 Saddle pool staking rewards and move it to gauge,36,453%,https://snapshot.box/#/s:frax.eth/proposal/0x37ec9198d4c74ca7080cf61623908ecd2b84fad0f9193687b43e19223a81abb5
+FIP - 73 - Use part of our farmed CRV to vote for our pools through the Stake DAO CRV liquid locker,35,450%,https://snapshot.box/#/s:frax.eth/proposal/0x5755ed9747367ab3d81ecd43c0dd731970acf5fbdb935b7a373fd28698b9181b
+FIP - 67 - Kill mStable FRAX/mUSD pool staking rewards and remove from gauge,44,487%,https://snapshot.box/#/s:frax.eth/proposal/0x060b910af7ffeda06779bfe16db4739a6a672d99a618cde7e3b6d65d31ec9d70
+FIP - 62 - FRAX-IQ Pool modifications,34,392%,https://snapshot.box/#/s:frax.eth/proposal/0xd988da5727eb67b626e736d38d4c035a743e1a5398653afa16f1b12215731960
+"FIP - 70 - Ozys (KLAYswap, Meshswap) x FRAX partnership Proposal - including liquidity provision",23,442%,https://snapshot.box/#/s:frax.eth/proposal/0x9359274bac499f851debe470d05bacf142255e801a53f8e297da158a0551fcf1
+FIP - 69 - DDDX.io & Frax Finance: Partnership Proposal,24,448%,https://snapshot.box/#/s:frax.eth/proposal/0x8e4b514bdaae940015fd71210abb0f5d74f9baf72371a2a53fce2b5518d1d3e8
+FIP - 66 - Tightening the Partnership between Frax <>Sifchain,17,92.5%,https://snapshot.box/#/s:frax.eth/proposal/0x289e3536c460c710973e3fd7ccd0ba97377744a3800148083bf7e5fe69521358
+FPI-61-Remove FRAX-SUSHI gauge,39,386%,https://snapshot.box/#/s:frax.eth/proposal/0x87f561014068e937dc49cd17e96774e19676a5cef6294e7d4974c5ae93643d9f
+FIP-60 - Goldfinch Senior Pool AMO,39,149%,https://snapshot.box/#/s:frax.eth/proposal/0xf7518989cb987db4f86d6ab39c56545697ce209b88eb9c2ddc1806efd99453ad
+FIP-63- Frax <> Lend Flare Partnership Update,26,3.65%,https://snapshot.box/#/s:frax.eth/proposal/0xab9d87ea330408bc1e4abd3eb50f71e29e110e7c02205b44d50c4391b56ced64
+FIP 58 - Deprecate Buybacks/Recollateralizations for Fraxswap TWAMMs,49,472%,https://snapshot.box/#/s:frax.eth/proposal/0xc4a00d1feedf813ce8c6f11d38f5e6a7bb0ff44a3255341a55bfc63d9474dc01
+FIP 59: Pitch x Frax Comprehensive Partnership,53,536%,https://snapshot.box/#/s:frax.eth/proposal/0xd66c76e43aefea98a946bc0b614cde108e5d40c8f3d70ee0e9a9c4c2afb50adc
+FIP 56 - TrueFi AMO,34,103%,https://snapshot.box/#/s:frax.eth/proposal/0xaff19363a0159c422c124ab948d52891a35791cfe666de7e69b0acb8426b3819
+FIP-57: Add FPI/FRAX Curve pool as a Convex position to the Gauge Controller,38,374%,https://snapshot.box/#/s:frax.eth/proposal/0x2b75c061877bd69cc6934c6e9236aa1eecb94d605b0a3da12d15d4d9e81fa3bb
+Create Thetanuts AMO to Provide Liquidity Directly to Options Vaults,49,159%,https://snapshot.box/#/s:frax.eth/proposal/0x7667f9f38304cc85736badd81b16392ae4ce66814b15de8d846943f625f2f109
+Biswap & Frax Finance: Partnership Proposal,49,6.07%,https://snapshot.box/#/s:frax.eth/proposal/0x39331d6f34022607a77c81a25a12737c9702e5a62de3480a0d4282a13f211d04
+FIP 54- FRAX + Citadel: Bringing BTC to Frax,73,536%,https://snapshot.box/#/s:frax.eth/proposal/0x3638c5c7b2e64317eafe93f26ee56bf96ea999c244bb7d9e9656fe3043958e28
+Whitelist STAX Finance to Stake veFXS,66,493%,https://snapshot.box/#/s:frax.eth/proposal/0xfb86bc1e4d1c1c7bbc6d0dfab24407fb56f3ea01b5f1ca801df11fdc8d1c0089
+Retrograde Partnership,36,105%,https://snapshot.box/#/s:frax.eth/proposal/0x3aedf4f139f1bfd6c4403b386de7c00f5fdd2344124d6641d28737e189ae3aa4
+Frax <> Eternity Seed Round and Partnership,39,102%,https://snapshot.box/#/s:frax.eth/proposal/0xb6be0295401d062af0c251f71e131a95f689bdb5adb622c5927af7a9e13e5a23
+FRAX x Across Protocol,34,9.96%,https://snapshot.box/#/s:frax.eth/proposal/0x9fc14137554f812f79b9c2debf5f54b104fe2838b1833a39f5fca91b8e1463ea
+Frax x Perp Pt 2,45,456%,https://snapshot.box/#/s:frax.eth/proposal/0x9585cd92929f50db518932d6fc950909665516c3d19dc40d80720795bb47ba75
+Frax + Lend Flare Partnership,37,459%,https://snapshot.box/#/s:frax.eth/proposal/0x663c0b312f2b898aa7f60b92c365c3de1e227c8f5b15d81dea9102c9b5a97af2
+FRAX x Across Protocol,未找到,0%,https://snapshot.box/#/s:frax.eth/proposal/0x4ec67e7d68b046e786fcc2f2b533daebb3771efdbfd31427e8871f7b391712db
+FIP 50 - Frax + Futureswap Revised,27,447%,https://snapshot.box/#/s:frax.eth/proposal/0x1793308da36a7c047b72b435d575d2b8c3237de2bb76b5b8d647c1266244c9ab
+FRAXswap Early Liquidity Budget,52,8.23%,https://snapshot.box/#/s:frax.eth/proposal/0xbb69aa1882541251465712371a90d0c10c28bdc2f7556df54341813b7f68226d
+FIP-51 Add OHM-FRAX Uni v3 Gauge,60,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xaf3b289376e46586eaf5327c0c92aca091ca2432bd5dd6fac4b21dba7ba44c90
+FIP 50 - Frax + Futureswap,27,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xcb2e0fcb30571d1c9e6a3b364f0b521466b229d774b31e0c2a5cb433214c7339
+FIP 44 Hop AMO - FRAX Expansion,33,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xf495f895753e917252279aab76f7eaa8a23a5dc46ad1fc15c4f0c1d3575df19b
+Proposal,28,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xceb979ce2456aed4a797cccd2dae93e22f01737fcdd87c572c83600aada91ebd
+FIP 48 - Dynamic Buyback/Recollateralize Functions,22,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x1eb1ac44b39b293cd118a648cb1afcabdb9d80f0e5e21dee6684bcd08a875caf
+Additional TOKE Accumulation,43,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xbe125fd057cf87e4fc088df4ef3972528d8c11580cb3bce9ef56cc0e79cb7033
+Frax x Perp,30,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x736d591b367cf2c3f18bee3f87a17d553b986087847c020f837dc75a620eebab
+BTC Accumulation.,25,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x4ce15fcdf2005a299f42179afec07ae5f2e442d929c529245c6c401e3dae5eb4
+FIP 47 - Frax Proposal Process Update,35,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x2fe26fe037f1a226c39d082a2f7a15093f7724768f2c945a403d839eda5652ea
+FIP 49 - Renaissance Labs Partnership+Seed Round,18,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xc55ae4a5f0a91dfb22dae3146add21284c5533201e054dca212f19df35ee01e2
+CVX Acquisition fund 2nd vote.,33,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x8d7173fceeeb2e778f04e1ea324ec9983321181daec9ddaf7cd1d4b704f88816
+Anzen seed round & partnership,40,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x73c3734fe763eaf77c1854924597cdf2e91e66dabc51921ef8b01c796575c30c
+Sifchain <> Frax Partnership,22,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x8fa0a222b770c05addc460f617514b007d932f9de0f2222d4425c92a2ee9ee30
+FIP 43 - Curvance Partnership+Seed Round,41,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x3f1b255d68605a2b30d21b05570500f45169bd36bd839878fa2b8db4d1e97c3a
+FIP 46 - Vesta Gauge on Arbitrum (FRAX-VST),29,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x23be3eb8a19f20f104df8590f6029c56f27b83f05976a3318703023585ada0c4
+AMO to dForce Lending Markets,30,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x9d188150507fa0a9b11bb7d1603a995be6c39709c6a3c5c1f96da467bfb75b76
+Frax analytics and protocol expansion grant,47,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x3b3162354d6437a454e0ad8801ebd2ff4525a649a9c777c639668f373350d532
+FIP 44 - Hop AMO,37,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x9cacd23e1860182d7231dc59274acfb00def41228e0024c2c9fb1a411ac59369
+FRAX $25m war chest,31,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x28619ac2133d6bc7667affe6ae6c45f6f8e330bca49c9977fc585118ef1cfda7
+$25m CVX Acquisition,46,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x2fcc989e459a21253e8067bd2833effcb3468d35aeb5fa5c4aeefc0ad05d689e
+FRAX Asset Acquisition Monthly Vote.,33,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x7146557fa92fda7831a63d2b111093deaa420d79e9fe20347b50bf1c9d0e2684
+FIP 43 - FRAX <> RenaissanceDAO Partnership,15,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xda0ca1be9599fdab07404db1e035058b2de65b92bde50a5b2f31622945db0273
+Update FRAX governance process,25,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xeb98c84145a88601930cde3bfcd3c50589cc2c7531072037b31498736c9dd518
+Allocate up to $10m worth of FXS to Votium for the bi-weekly Convex Gauge-Weight Vote,36,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x606e06ce600e8f652ee04e2fdfb0ec11b09c78547d0eae3bf5bf8c9c5e214b28
+Bootstrap Lobis partnership with token swap,27,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xdc697ed3dbdf7b882f7d5e916aff5ce62161c48d9940b04c37eed91f33635231
+FIP 42 - FRAX & Themis partnership,26,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x755127e5739706be013416847525fa26bb64210357dffd8e12ca2ff18414f01a
+Delegation Test #2,22,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x8b74a78c4f6d557b47f644e6737e67e42779a122b2871198342c7a7c2fd054cb
+Increase Our $TEMPLE Holdings,103,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x094df580786121a6408aaf592685ae2cd5e575fe05b471fda708d372f73f4443
+QiDao Protocol Partnership,48,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x35eaeb204b8c740908a5d9f76a8fae6a4db97e52db0584d2df6f1c293576fb65
+FIP-40: Funding Frax Core Development,62,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x9f2a821579795a658f6d0bd1e802221865a6c79dbac4e7310988cd8f62ccc432
+FIP - 41 FRAX <> PrometheusDAO Partnership,29,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x29784d051bb457cee1a8ace45e2a19f3e659657558577f8579379d30d44534fa
+Use AMO to allocate $FRAX to Tokemak base pair reactor?,61,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xaacb544719462e4101fd5b94eaf7ca3418247c7efe24c966aa777dd8216491fe
+PhantomDAO <> FRAX Partnership,41,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x43d3b17043c0cd78f20906d6d2eb8d83ab383b89848babdf640198677c71f3c2
+Add Fuse to cross chain AMO whitelist,33,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x8370afe1f52d37e39f41cacc562af34f6afa1efb0df56dadb73a43f5ac51669a
+Compensation for Dune dashboard,40,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xd19b82fb7f277003f4c4efdc09bdfe43bc389452561961f4c29cdeb2b28cc99d
+Governance power in other protocols phase 2,20,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x20091ef83e10bea3e3eb5f962e1792106845c0f522816dee2c20107e3015ff4d
+Grant funding for mutual growth in GameFi and Metaverse,39,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x6c51e698d46d93048604cffba31a404999d214859cf56c2940a4e7c77db8bcd7
+Multichain FRAX AMOs [Update],39,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xe4d66128f474add8b62a7093d68fbd960e801c5c5f5d30cc2dff03e8d1419475
+FIP 25 - FRAX x Temple DAO Comprehensive Partnership,49,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x0e066b0b4f070908e4e99b7b4039496265046d7e85550b1268e8ca58bee50dc1
+FIP 25 - FRAX - Temple Gauge Pair,44,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xb6502c686addf204d210ad49190ca638cca372c13764abc49254ebeb9ab4daa9
+FIP 34 - TEMPLE <> FXS Swap + Whitelist,42,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x61191afb1c36f12933e81a1494c13bb7f74f20e81136000c65b92fcdb4b6f982
+Whitelist [REDACTED],90,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x2513624da5b893a704ead9fc9c872887e50aba932d7ac5b3b8b02b89cabe3c36
+FIP-38: Frax and Ondo Partnership,42,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x8dbda75a6539182e2daef15265b7ecfd06226fed34e2658da9f03e29c20e65be
+FIP-37: Frax x debt DAO partnership,34,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x48f85c452603efc3a2ec45dfddbcb36b2d1105c8b08e4d5aeff4595dc2707253
+Add OlympusDAO to veFXS whitelist,46,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xcd1ba26f2389b18b7d6a37e5153d1530be0c48d0cad60629d43e87e6dcd75918
+Governance power in other protocols,74,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xc5d46dd859f1ab7dee2ee3c94373467fac038a6c0e96bff1c42a171de31e1606
+Allocate up to $5m worth of FXS to Votium for the bi-weekly Convex Gauge-Weight Vote,38,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x8737e0e042417632e5baa67d4e81a5924babd766156d0890427eb18d52551458
+Add Gauge for Vesper vaFRAX Pool,37,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x56ea84e1c217140850373cb1488f25cb55f75dbdb1f7fe33af65e8027835e892
+LOBIS DAO - DAO swap,26,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x0a5b26180faf76f77831ee3f44d74e23f1d1c569043cd3fa6b2c5a522e87d2d2
+FIP-36 – Frax x Zigzag Partnership,23,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x500a42c1c28c1b0fedb2ba3e75e77a0c452a7b0aed446e30588f551dc265fc77
+OIP-51 OHM vote (ends within 2 days),13,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xf2e4f4e9247fdf91549cadc8947afb955130e3963f1a7e5f4af15ee2ae713677
+Frax & OlympusDAO Token Swap,51,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xfb4718b4bbfa683fc63041718cf7dae4dbdab30033420c300b6604619f32b30f
+Add Gauge for UniV3 FRAX/agEUR Pair,20,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x163136fb6914df026106f5f66a479b10506615276aef1fc64ffb2a238c163c22
+Migrate FXS/FRAX to V3 Uniswap and the gauge,29,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x9dbe48cee0ede09b6670fb0ff30d258a7e89235bfe3684e3f474e54f78494437
+FIP-33 Whitelist Convex to stake veFXS,49,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xbba0ed314d2f3733b64c02c01d470025bcfdbc256c986a1c735fc88a4db8c7a2
+FIP-35 Whitelist Lobis to stake veFXS,65,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x054fff58dacf8d0ec57a0bfffbc16cc95b5ba2806c420271975bd6e6a3218190
+都质押了多久,5,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xe052e731866057a44803a38dcb6d4d682af0fb16cac6a9b6b0b01e70adcb99c0
+FIP 32 - FRAX to participate in Vesq Token Launch,21,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x870e75f753a17d1ca889e276a9d77441d7010e68e43fe2e90bf2786cafa9c5db
+Vote for Temple in TOKEMAK core 3,28,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x1ae7ff1c74c2ace998cb86c01d7d40fe7e8b37c1ae7e91137d0ac2a55caf22f0
+FRAX <> [REDACTED],64,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x6f424f50cb41301e9b219aa002b7cca4b0751140373abba985f38323461accd1
+Bribe $150k worth of FXS to Votemak for TempleDAO in the Tokemak Core Reactor 2 Vote,36,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x8f010733d15c16392a0c18e15127f55f97b5003ecb0513ba75539b28468edd1d
+Vote for Temple in the TOKEMAK vote,28,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xda3a240980d57528d8a0f533205e82cb8afaf9c62bca201736ab95e48333f54f
+Allocate up to $2.5m worth of FXS to Votium for the bi-weekly Convex Gauge-Weight Vote,43,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x170e5aec43640529a83aa7df05515e47094c0a9b512f5c6c3f38ef47e4e85603
+Create a gauge for ETH/Frax put selling strategy?,6,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x05f79f4449f0c228ca818e9a642f43f5c780902039e84d44339cc7cb73c05dcd
+Allocate 1m FXS tokens for Cross-chain Liquidity,21,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x342b72c8459925c223200a486d164c0911175325789063ae9f5027c4d1f0dc4d
+Allocate $10m worth of FXS to Votium for the bi-weekly Convex Gauge-Weight Vote,21,未找到,https://snapshot.box/#/s:frax.eth/proposal/0x0c1f7d194dfa64adf5c63aeedca3d8fbfc537d67be586d9652c9ec2745e98be2
+Protocol investment in TOKE,16,未找到,https://snapshot.box/#/s:frax.eth/proposal/0xc84fc50071e54bee80fa835f02d4163914e4c700e2a2e7d7b29b16bd6d7ad4f4
+Do preliminary research to port/implement/bridge FRAX to the Casper Network,15,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmPvPvJwLFT97mipCeaT8MHfWxe3NyAyZauTadWEDDMFMX
+FIP 28 veFXS rewards change,14,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmX5w6pZstQpSGqkociRyiBNnPgNfyEhtTfRPDJMUvLg6A
+​ Move 100% of FXS1559 to veFXS Yield,31,未找到,https://snapshot.box/#/s:frax.eth/proposal/Qme9dSFWogE5icNAhx95wGyG2fHPwKjC9qQjzXwBLH7WW3
+Execute Toke/FXS token swap as part of launching FXS's Tokemak reactor,30,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmacbKvU4sA2ww1MfhUTk5tebCiVbTsb7FgcTk3UPEUrFt
+Allocate $200k-$500k worth of FXS to Votium for the bi-weekly Convex Gauge-Weight Vote,18,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmcgCqGengdFaFqKzsCp4KsjzbzzyDt1xFftZdXmhFSRG1
+"Can we make pools like spiritswap ftm/frax , fxs/frax inactive ?",8,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmSRTJvPmkjDC4nkX7EF7CK6Jze5vaziEaDegHoKD4awhq
+Can we give www.cryptoinvestor.ca Liquidity?,19,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmchMfuPpMpBcyAD2DKjxGYK6bF7hf4XQLTcACdFNnnpjZ
+FIP 26 - Multichain FRAX AMOs,24,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmaQQKJ4yBDKeB23ozM3nCQU4773BcnSeewq8BKQc61WrL
+Follow up to FIP-21: Approve FRAX-DAI as first G-Uni pool,16,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmSfQgtRe3GFYVweXrDgbNM7kajL4yyXP1PS8kZUzHgXBh
+FIP 22 - Olympus Bond Program with FXS,21,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmcBYpiAiYpDisC3r5g3adMNNQqJZnM4TCPtHR2Pe2h3kX
+FIP 21: Add Gauges for G-UNI Frax Stablecoin Pairs,22,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmY1YtoDrk4BvQi8Muz2btPNSTHmGbQVfiAVCmFDF7njK9
+EIP-14 Extension vote,30,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmdGkwXeKr2928ecuc8CfpbMtnrGcgvnGriAgnhdZfL16g
+Update veFXS boost to catch up with rising FXS price,34,未找到,https://snapshot.box/#/s:frax.eth/proposal/Qmced5VUkb6RUHQsAfmzkAJmzx5yQAFZvviouRaWFvBkpa
+Allocate $200k worth of FXS on Votium for the FRAX3CRV Gauge,18,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmWir8DMA2pusGnamYYoDvNff2Wav2Kzsr3p6f3q4BFD72
+Update FraxPool to match AMO Specifications,12,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmQyHndC8HkWxgFgW2aThLqkDHGesm2Bdek8q2bgxcfwjo
+Enable Variant Curve AMO Strategies,17,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmWV4HYogPhMwYYBFrKsvxH1Wynt4AUHfnxNF6PUYHT7B2
+FIP-20: Add Stake DAO veFXS Gauge,12,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmdecaX4hJzvHKTYbhSQMYMBtYzE5Cuk7oPneVuUh651GA
+FIP-20: Whitelist Pickle Finance to stake veFXS,6,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmSWkxahdtbEQupeycYpVa4hz5RY1vKvoH3c2EvuuY3wP3
+Unlock Frax/ETH Pool and Shift Rewards to Gauge System,22,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmdrRidmR7FAeosgjDDY3HyuPHUhgts7Cvk5vRrW6z1uNm
+FIP 18 Grant for Perpetual Leverage Pool AMO by Dennis,22,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmWjDygUgNcmUreJH2QjjfQyp8Jsf1DLFT1uQCu1iSWg7Q
+FIP 15 - Update Protocol Buyback Function,25,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmWVe7X1JNMxS5ykSst8QZerA3NZdshJMzwKPSaWBRUnPf
+Activate Uni v3 AMO,20,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmUmjR5nmQDsfFZJGWx3aLqYYyoUyHM2gpY1citxbSFa9F
+FIP-17: Add FRAX-SUSHI veFXS Gauge,16,未找到,https://snapshot.box/#/s:frax.eth/proposal/Qmei5vQ1TpcZRC6X7e24rq8JHi1cL58ad8wh5rJjroqnK4
+test,未找到,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmejCdozPcUaz6b5natToHmb2KMTr3NC9FGnpsJuo3hPbt
+FIP-16: veFXS Gauges,39,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmTfMXihSRxM8oMxsaic2hSunoBUdKnroWUMqg4bpXXJNZ
+FIP - 14 - Re-propose prior FIP for purchasing ETH with AMO profits when FXS price trades above $1.50,15,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmUUmxEEGGr5fzoffZdtnwHgDTR52YkfhsVtVYrgu81Wsw
+FIP-6 Comptrollers and AMO Decentralization,23,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmZuSjSViHrVpJU6X2ptk8M25jcrs2g4VvQL5ZUy4SmJjo
+FIP-13: Incentivize Saddle D4 Pool,33,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmTfv1AGYQ9KeYMa4NbCHi8rhcyjjKgMJ3v2kscp2fgZcE
+Authorize Buyback with Pre-1559 Protocol Profit,35,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmZaUkwZGNAKAGjDFG447xDWcKgfbAji2r4bLbGmynnBoV
+Re-vote: FIP-9 Grant Successful FIP Proposers a Bounty,15,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmedxQVzSTvoqXRhYEbVh6bRRDcmAtqn627V9A53XT1jvz
+OlympusDAO Partnership [re-vote],41,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmVH9VyHs42L3M7eWWqtsyh1VB42ySfRT5Cxa1DpRjWW9Q
+OlympusDAO Partnership,15,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmQf6vzZBJQFfg2T4nbye2jRA8Dcg5FiM5KoPFnWP5hriy
+test3,2,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmVeakWyURvFQtMtsVtv3JdFHtXg7sA5aVutwaip2HNjEe
+Redirect FXS1559 Burns to Purchase ETH,14,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmfFk48Sw8nSRiD6uDbPfqvPyg3N9HMuv5kgYGCZ3Ka4MY
+test2,未找到,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmTST5vz5NhiUZTSE3z2dwL7KxaZAzSzpciJDUrEWrKKzZ
+test,未找到,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmQziZpSquVUbWK12pYdAmxiokRWtRhsMmpRDrGvMiQcmq
+FIP-9: Grant Sucessful FIP Proposers a Bounty,6,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmQVBSpWuMtnN9czD8wUSRtvqfKSXB9TTyP1PpRbUHt8MZ
+Redirect Part of AMO Profits to veFXS holders,未找到,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmRY3EPki9WX4WgGib6A6kuFQmMWo1keQgxtiRq3N2J945
+veFXS: Single-Asset FXS Staking,未找到,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmWg1pp2dLK1RH8UiBgBLNR3sLBtFrWJ2cZtHvpKD8B4dE
+Frax Governance Process,未找到,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmUdpd4F6k9KXc6MEUvWGKLhBDLZbDj2XDRNZC8cNmjNTa
+Implement Strategy to Increase Frax's Curve Gauge Weight,未找到,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmWzhRk4dquCjKaj96eJbw4JUviWTuV4oviQniyefxcHnB
+Add (USDT) as a collateral asset,未找到,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmUqCZRyqofVek6EAe3nnvAytZYJWpiKXYdj8PjUyrkcsi
+Change CR Boost on FXS Farming Rewards,未找到,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmVeg2BF6GffyXszre57k398cjMuxvsSLaLxGKgmKEWLhw
+Frequency of USDC collateral profit disbursement,未找到,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmPyybsDvYPKjt9tmA8P4MW9iC7BjG45ecjSt75ZvdUcTL
+Farming Pool with Apollo Protocol,47,未找到,https://snapshot.box/#/s:frax.eth/proposal/QmVvX9HyfEM66Ff8YHWMzxkHa57Zj6ASpcX43se8h23Ui5

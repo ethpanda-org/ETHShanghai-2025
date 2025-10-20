@@ -1,0 +1,101 @@
+/* src/pages/DAOHomepage/components/DAOHeader/DAOHeader.css */
+
+.dao-header-wrapper {
+  margin-top: 2rem; /* 与顶部导航栏的间距 */
+  position: relative;
+}
+
+.dao-banner {
+  height: 280px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--border-color, #e5e7eb);
+  border-radius: 16px;
+  position: relative;
+}
+/* 新增: banner 上的渐变叠加层，增加深度 */
+.dao-banner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.3) 100%);
+}
+
+.dao-header-content {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.dao-logo-container {
+  margin-top: -88px; /* 调整 logo 的上移距离 */
+  position: relative;
+  display: inline-block;
+}
+
+.dao-main-logo {
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  border: 5px solid var(--card-background, #fff);
+  background-color: var(--card-background, #fff);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.dao-main-name {
+  font-size: 2.75rem;
+  font-weight: 800;
+  margin: 1rem 0 0.5rem;
+  color: var(--primary-text);
+}
+
+.dao-short-description {
+  font-size: 1.1rem;
+  color: var(--secondary-text);
+  margin: 0 auto 1.5rem;
+  max-width: 600px;
+}
+
+.dao-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* 改进: 按钮视觉层级 */
+.join-button, .proposal-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+/* 主操作按钮 */
+.join-button {
+  background-color: var(--primary-accent, #4f46e5);
+  color: #fff;
+}
+.join-button:hover {
+  background-color: var(--primary-accent-hover, #4338ca);
+}
+
+/* 次操作按钮 (轮廓/幽灵样式) */
+.proposal-button {
+  background-color: var(--card-background, #fff);
+  color: var(--primary-text, #111827);
+  border-color: var(--border-color, #e5e7eb);
+}
+.proposal-button:hover {
+  background-color: var(--background-color);
+  border-color: #d1d5db;
+}

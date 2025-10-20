@@ -1,0 +1,47 @@
+/* src/components/DAORow/DAORow.css */
+.dao-row-component {
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+.dao-row-component:hover {
+  background-color: #f9fafb; /* Slightly off-white */
+}
+.dao-row-component td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  vertical-align: middle;
+}
+.cell-dao-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.dao-logo-row {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dao-name-row {
+  font-weight: 600;
+  color: var(--primary-text, #111827);
+}
+.dao-description-row {
+  font-size: 0.9rem;
+  color: var(--secondary-text, #6b7280);
+  margin-top: 2px;
+}
+.cell-proposals, .cell-members {
+  font-weight: 500;
+  text-align: right;
+  min-width: 120px;
+}
+.dao-row-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  height: 100%;
+}

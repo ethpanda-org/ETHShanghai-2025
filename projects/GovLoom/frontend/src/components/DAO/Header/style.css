@@ -1,0 +1,92 @@
+/* src/components/Header/Header.css */
+.header-component {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2.5rem;
+  background-color: var(--card-background, #ffffff);
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+.header-component .header-left {
+  display: flex;
+  align-items: center;
+}
+.header-component .logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-right: 2.5rem;
+  color: var(--primary-text, #111827);
+}
+.header-component .navigation {
+  display: flex;
+  gap: 2rem;
+}
+.header-component .nav-link {
+  text-decoration: none;
+  color: var(--secondary-text, #6b7280);
+  font-weight: 600;
+  padding: 0.5rem 0;
+  position: relative;
+  transition: color 0.2s ease-in-out;
+}
+.header-component .nav-link:hover {
+  color: var(--primary-text, #111827);
+}
+.header-component .nav-link.active {
+  color: var(--primary-text, #111827);
+}
+.header-component .nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary-accent, #4f46e5);
+}
+.header-component .header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.header-component .search-container {
+  position: relative;
+}
+.header-component .search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: var(--secondary-text, #6b7280);
+}
+.header-component .search-input {
+  padding: 0.6rem 0.75rem 0.6rem 2.5rem;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  background-color: #f3f4f6;
+  font-size: 0.9rem;
+  font-family: inherit;
+  width: 280px;
+  transition: all 0.2s ease-in-out;
+}
+.header-component .search-input:focus {
+  outline: none;
+  border-color: var(--primary-accent, #4f46e5);
+  background-color: var(--card-background, #ffffff);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+}
+.header-component .wallet-button-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.header-component .wallet-button-wrapper w3m-button {
+  --w3m-font-family: inherit;
+}

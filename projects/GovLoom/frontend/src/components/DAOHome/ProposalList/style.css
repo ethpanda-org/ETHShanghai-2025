@@ -1,0 +1,67 @@
+/* src/pages/DAOHomepage/components/ProposalList/ProposalList.css */
+
+.proposal-list-component h3 {
+  padding: 0 0 1rem; /* 调整标题内边距 */
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.proposal-items {
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  background-color: var(--card-background, #fff);
+  overflow: hidden; /* 确保内部元素的边框不会超出圆角 */
+}
+
+.proposal-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.proposal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem; /* 增加垂直内边距 */
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  transition: all 0.2s ease-out;
+}
+.proposal-link:hover .proposal-item {
+  background-color: #f9fafb;
+  transform: translateX(5px); /* 悬停时轻微右移，增加动感 */
+}
+.proposal-link:last-child .proposal-item {
+  border-bottom: none;
+}
+.proposal-info {
+  display: flex;
+  flex-direction: column;
+}
+.proposal-title {
+  font-weight: 600;
+  color: var(--primary-text);
+  font-size: 1.05rem; /* 稍微增大标题字号 */
+}
+.proposal-author {
+  font-size: 0.85rem;
+  color: var(--secondary-text);
+  margin-top: 4px;
+  font-family: 'monospace'; /* 地址使用等宽字体 */
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  flex-shrink: 0;
+}
+/* ... 状态颜色保持不变 ... */
+.status-badge.status-active { background-color: #dbeafe; color: #1e40af; }
+.status-badge.status-passed { background-color: #d1fae5; color: #065f46; }
+.status-badge.status-failed { background-color: #fee2e2; color: #991b1b; }
+.status-badge.status-executed { background-color: #e5e7eb; color: #4b5563; }
