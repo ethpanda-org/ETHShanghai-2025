@@ -39,8 +39,10 @@
   ```
   0x7D2830214a90d7aBb5A2290d3E5374878F0B9035
   ```
+### 4) Demo 与关键用例 (Demo & Key Flows)
+- 视频链接（≤3 分钟，中文）：[http://we3.codecat.studio/video]
 
-### 8) 团队与联系 (Team & Contacts)
+### 5) 团队与联系 (Team & Contacts)
 
 - **团队名**：喵软
 - **成员与分工**：
