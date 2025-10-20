@@ -1,0 +1,36 @@
+[package]
+name = "grid-trading-bot"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "grid-trading-bot"
+path = "src/main.rs"
+
+[lints.clippy]
+unused_variables = "allow"
+dead_code = "allow"
+
+[dependencies]
+config = "0.15.13"
+tokio = { version = "1.0", features = ["full"] }
+ethers = { version = "2.0", features = ["rustls"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+rust_decimal = { version = "1", features = ["serde"] }
+axum = { version = "0.7", features = ["ws"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors"] }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+dotenv = "0.15"
+async-trait = "0.1"
+rand = "0.8"
+hex = "0.4"
+futures-util = "0.3.31"
+reqwest = {version="0.12.22", features = ["json", "gzip", "brotli", "deflate", "rustls-tls"]}
+openssl = { version = "0.10", features = ["vendored"] }
+sqlx = { version = "0.8", features = ["runtime-tokio", "postgres", "uuid", "chrono", "json", "rust_decimal"] }

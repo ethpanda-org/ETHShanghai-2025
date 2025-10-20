@@ -1,0 +1,30 @@
+# EasyTrader 后端配置文件
+
+[server]
+host = "127.0.0.1"
+port = 8081
+
+[database]
+url = "mysql://username:password@localhost:3306/easytrader"
+max_connections = 10
+min_connections = 1
+acquire_timeout = 30
+idle_timeout = 600
+
+[security]
+encryption_key = "your-32-character-encryption-key-here"
+jwt_secret = "your-jwt-secret-key-here"
+
+[api]
+rate_limit = 100
+max_concurrent_strategies = 10
+price_update_interval = 5
+
+[exchanges]
+binance_base_url = "https://api.binance.com"
+okx_base_url = "https://www.okx.com"
+uniswap_base_url = "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3"
+
+[logging]
+level = "info"
+format = "json"
