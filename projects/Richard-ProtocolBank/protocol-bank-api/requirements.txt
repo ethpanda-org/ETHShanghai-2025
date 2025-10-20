@@ -1,0 +1,10 @@
+Flask==2.0.3
+Flask-SQLAlchemy==2.5.1
+Flask-Cors==3.0.10
+Flask-Caching==1.10.1
+redis==4.3.4
+PyJWT==2.6.0
+psycopg2-binary # For PostgreSQL, if used
+solders==0.17.0 # For Solana client (adjust version if needed)
+web3==6.0.0 # For Ethereum client (adjust version if needed)
+
