@@ -1,0 +1,54 @@
+{
+    "proposal_id": "EVIP-101",
+    "title": "Establish Off-Chain Emergency Governance Committee",
+    "proposer": "Player Alice",
+    "date_of_submission": "03/29/2025",
+    "summary": "This proposal suggests delegating emergency protocol upgrades and legal compliance decisions to a 5-member off-chain developer committee, allowing faster crisis response while maintaining on-chain governance for routine matters. The committee would have time-bound authority during emergencies (e.g., hacks, regulatory actions).",
+    "rationale": {
+      "point_1": "Accelerated crisis response: On-chain voting delays (avg. 7-14 days) risk protocol integrity during exploits or regulatory deadlines. The committee could act within 48 hours.",
+      "point_2": "Legal compliance necessity: Requires expert coordination with regulators/lawyers—tasks incompatible with fully transparent on-chain processes.",
+      "point_3": "Trusted expertise: Committee members (elected annually) have proven technical/legal track records to make high-stakes decisions under pressure."
+    },
+    "proposed_change": {
+      "current_governance_model": "Fully on-chain voting for all decisions",
+      "proposed_hybrid_model": {
+        "committee_scope": "Emergency protocol upgrades, regulatory compliance actions",
+        "committee_size": "5 members (3 devs, 1 legal advisor, 1 community-elected delegate)",
+        "decision_window": "48-hour fast-track authority during declared emergencies",
+        "oversight_mechanism": "Post-action transparency report + retrospective community vote to ratify/revoke"
+      }
+    },
+    "impact_assessment": {
+      "positive_effects": [
+        "Reduced protocol downtime during critical events (estimated 60% faster response)",
+        "Lower legal risk through specialized compliance handling",
+        "Preserves on-chain governance for 92% of non-urgent proposals"
+      ],
+      "potential_risks_challenges": [
+        "Centralization creep: Potential committee overreach into non-emergency matters",
+        "Transparency gaps during emergency execution",
+        "Community backlash from perceived power asymmetry"
+      ],
+      "mitigating_measures": [
+        "Mandatory committee member rotation every 6 months",
+        "Real-time decision logs (with redacted sensitive info)",
+        "Automatic sunset clause: Hybrid model expires in 18 months unless re-approved"
+      ]
+    },
+    "voting_process": {
+      "voting_period": {
+        "start_date": "10/22/2024",
+        "end_date": "11/05/2024"
+      },
+      "minimum_voting_threshold": "Quorum: 15% of circulating governance tokens (1.2M tokens)",
+      "voting_options": [
+        "Approve hybrid governance model with emergency committee",
+        "Reject and maintain fully on-chain governance"
+      ]
+    },
+    "conclusion": "This balanced approach protects protocol resilience without abandoning decentralization ideals. The sunset clause ensures community control over long-term governance evolution.",
+    "references": [
+      "Snapshot of successful hybrid models: [link]",
+      "Post-mortem analysis of Protocol X's hack due to delayed response: [link]"
+    ]
+  }

@@ -1,0 +1,63 @@
+{
+  "proposal_id": "EVIP-001",
+  "title": "Additional Airdrop of ECHO Tokens to the Community",
+  "proposer": "Player Alice",
+  "date_of_submission": "03/29/2025",
+  "summary": "This proposal seeks to distribute an additional airdrop of ECHO tokens to the EchoVote community to further incentivize engagement, attract new users, and ensure that a broader segment of the community has access to ECHO tokens for governance participation. The airdrop will serve as an opportunity to reward loyal participants and encourage further growth within the ecosystem.",
+  "rationale": {
+    "point_1": "Expand community engagement: The additional airdrop will incentivize more participants to join the EchoVote platform, helping to grow the user base and boost participation in governance processes.",
+    "point_2": "Promote adoption of ECHO tokens: Distributing more tokens to a wider audience will encourage active usage of ECHO for voting, staking, and governance, creating a stronger ecosystem.",
+    "point_3": "Reward early supporters: The airdrop will provide an additional incentive for users who have been engaged with the platform since its inception, recognizing their contributions and encouraging continued participation.",
+    "point_4": "Increase network liquidity: By distributing ECHO tokens to more users, it will help increase the liquidity of the token within the market and the broader ecosystem."
+  },
+  "proposed_change": {
+    "airdrop_details": {
+      "total_amount_to_be_airdropped": "100,000,000 ECHO",
+      "distribution_method": [
+        "Snapshot-based distribution for existing holders.",
+        "Claimable airdrop for new users who join and complete necessary onboarding steps."
+      ],
+      "eligible_users": [
+        "Existing token holders who meet a minimum threshold of ECHO tokens (e.g., 100 ECHO).",
+        "New users who register and complete basic participation actions, such as verifying their wallet or staking a minimum amount of ECHO tokens."
+      ],
+      "distribution_schedule": {
+        "snapshot_date": "[Snapshot Date]",
+        "claim_period_start": "[Claim Start Date]",
+        "claim_period_end": "[Claim End Date]"
+      },
+      "airdrop_criteria": "The additional airdrop will prioritize active community members, users who have engaged with governance, and new participants who contribute to the ecosystem."
+    }
+  },
+  "impact_assessment": {
+    "positive_effects": [
+      "Increased community participation and engagement with EchoVote governance.",
+      "Expansion of the token holder base and broader distribution of ECHO tokens.",
+      "Enhanced liquidity and market visibility of the ECHO token.",
+      "Incentives for new users to participate and engage with EchoVote."
+    ],
+    "potential_risks_challenges": [
+      "Possible market dilution due to the sudden influx of new tokens into circulation.",
+      "Increased price volatility if a large number of tokens are dumped onto the market.",
+      "Potential for abuse of the airdrop mechanism by malicious actors seeking to claim tokens without contributing to the ecosystem."
+    ],
+    "mitigating_measures": [
+      "Implement claim caps or limits to prevent large-scale token hoarding or abuse.",
+      "Provide staking or vesting mechanisms to encourage users to hold tokens for the long term rather than selling them immediately.",
+      "Monitor the airdrop process to ensure it is distributed fairly and in line with EchoVote's community values."
+    ]
+  },
+  "voting_process": {
+    "voting_period": {
+      "start_date": "03/29/2025 9:00 UST+8",
+      "end_date": "03/31/2025 12:00 UST+8"
+    },
+    "minimum_voting_threshold": "A proposal will pass if it receives a majority vote and meets the quorum requirement (currently 600,000 tokens or as per the active quorum policy).",
+    "voting_options": [
+      "Approve the additional airdrop of ECHO tokens to the community.",
+      "Reject the additional airdrop (keep the current token distribution strategy)."
+    ]
+  },
+  "conclusion": "The additional airdrop of ECHO tokens represents a strategic effort to further engage the EchoVote community and incentivize broader participation in governance. By distributing tokens to a wider audience, we aim to strengthen the ecosystem, encourage more active involvement, and ensure the continued success and growth of EchoVote. We encourage all token holders to review this proposal and vote accordingly.",
+  "references": "[Any relevant links or documentation about tokenomics, governance models, airdrop mechanisms, etc.]"
+}

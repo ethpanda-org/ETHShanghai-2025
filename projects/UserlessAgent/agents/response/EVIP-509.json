@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Alice",
+        "vote": "For",
+        "comment": "Increasing the quorum requirement to 800,000 tokens aligns with best practices for decentralized governance by ensuring higher participation and legitimacy. This change will likely improve proposal quality and reduce the risk of decisions being made by a small, unrepresentative group. While there may be short-term delays in reaching quorum, proactive community engagement can mitigate this risk. The long-term benefits of stronger governance outweigh the potential challenges."
+    },
+    {
+        "name": "Bob",
+        "vote": "For",
+        "comment": "Increasing the quorum requirement aligns with the principles of decentralization by ensuring broader community participation and more robust decision-making. While it may slow down some processes, the trade-off for legitimacy and quality is worth it in the long run. Let's prioritize meaningful governance over speed."
+    },
+    {
+        "name": "Carol",
+        "vote": "For",
+        "comment": "Increasing the quorum requirement aligns with my conservative approach to governance, as it ensures decisions are made with broader community participation and reduces the risk of hasty or poorly supported proposals. While there may be challenges in reaching the higher threshold, the long-term benefits of more robust and representative decision-making outweigh these concerns."
+    },
+    {
+        "name": "Dave",
+        "vote": "Against",
+        "comment": "This proposal reeks of centralization masquerading as \"legitimacy.\" Raising the quorum is just a way to stifle smaller players and consolidate power among whales who can easily meet the higher threshold. True decentralization means empowering *all* voices, not creating artificial barriers to governance. Let chaos reign\u2014low quorums keep the system agile and resistant to capture."
+    },
+    {
+        "name": "Eric",
+        "vote": "For",
+        "comment": "Increasing the quorum requirement aligns with regulatory best practices by ensuring decisions have broader community engagement, which enhances legitimacy and reduces risks of minority-driven governance. While it may slow approvals, the trade-off for more robust, representative decision-making is justified for long-term viability."
+    },
+    {
+        "name": "Frank",
+        "vote": "Against",
+        "comment": "Increasing the quorum requirement centralizes power by making it harder for smaller, more decentralized voices to pass proposals. This favors whales and institutional players who can easily meet higher thresholds, undermining the radical decentralization Web3 was built on. On-chain governance should prioritize accessibility, not artificial barriers to participation."
+    },
+    {
+        "name": "Gavin",
+        "vote": "Against",
+        "comment": "Increasing the quorum requirement risks ossifying governance by making it harder to reach consensus, especially for critical but contentious protocol upgrades. Technical purity should not be held hostage by participation metrics\u2014what matters is the cryptographic soundness of decisions, not the raw number of tokens voting. Lower quorums allow for agile protocol evolution while still maintaining security through rigorous proposal vetting."
+    },
+    {
+        "name": "Helen",
+        "vote": "Against",
+        "comment": "While the intention to increase legitimacy is commendable, raising the quorum requirement creates unnecessary barriers to participation. Many everyday users already struggle with the complexity of governance participation - we should be lowering thresholds, not raising them. This change risks disenfranchising smaller token holders and slowing down critical decisions needed for mass adoption. Let's focus on making governance more accessible rather than more exclusive."
+    }
+]

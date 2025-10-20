@@ -1,0 +1,82 @@
+[
+    {
+      "id": 1,
+      "question": "DAOs must fully comply with the financial regulatory laws of their respective countries, even if it requires sacrificing anonymity."
+    },
+    {
+      "id": 2,
+      "question": "It is acceptable to temporarily authorize a core developer team to urgently repair the protocol in the event of a hack."
+    },
+    {
+      "id": 3,
+      "question": "Requiring governance token holders to complete KYC verification is a necessary cost to secure partnerships with mainstream financial institutions."
+    },
+    {
+      "id": 4,
+      "question": "Users should manage their own private keys (even if they may lose them) rather than adopt 'centralized' solutions like social recovery wallets."
+    },
+    {
+      "id": 5,
+      "question": "To attract billions of users, protocols should support direct fiat purchases of tokens (e.g., credit card gateways), even if it relies on centralized custodians."
+    },
+    {
+      "id": 6,
+      "question": "Layer 2 scaling solutions should prioritize the most secure technology (e.g., ZK-Rollup), even if ordinary users struggle to understand the principles behind them."
+    },
+    {
+      "id": 7,
+      "question": "DAO treasuries should prioritize token buybacks and burns to boost token prices rather than funding long-term ecosystem development."
+    },
+    {
+      "id": 8,
+      "question": "Even if it may result in losses, funding non-profit social impact projects like anti-censorship communication tools is essential."
+    },
+    {
+      "id": 9,
+      "question": "High-APY liquidity mining is the best way to attract users, even if it leads to token inflation."
+    },
+    {
+      "id": 10,
+      "question": "All on-chain transactions should hide sender/receiver addresses by default, visible only to participants."
+    },
+    {
+      "id": 11,
+      "question": "Regulators have the right to require DeFi protocols to disclose the source of funds for transactions exceeding $100,000."
+    },
+    {
+      "id": 12,
+      "question": "Privacy coins (e.g., Monero, Zcash) are indispensable infrastructure for the Web3 ecosystem."
+    },
+    {
+      "id": 13,
+      "question": "Complex technical decisions (e.g., consensus algorithm upgrades) should be delegated to core developer teams rather than community voting."
+    },
+    {
+      "id": 14,
+      "question": "Whales holding over 100,000 tokens should have additional voting weight, as they are more invested in the protocol's long-term success."
+    },
+    {
+      "id": 15,
+      "question": "All governance proposals must undergo full community voting, even if it slows decision-making."
+    },
+    {
+      "id": 16,
+      "question": "Protocols should encourage rapid deployment of unaudited innovative DeFi projects, even with potential vulnerabilities."
+    },
+    {
+      "id": 17,
+      "question": "It is better to halt all new feature development for a year to ensure absolute security and stability of existing systems."
+    },
+    {
+      "id": 18,
+      "question": "Protocol forks are a sign of a healthy ecosystem, even if they may fragment community cohesion."
+    },
+    {
+      "id": 19,
+      "question": "The future of Web3 depends on balancing idealism with practical feasibility."
+    },
+    {
+      "id": 20,
+      "question": "True decentralization means accepting inefficiency, high costs, and high risks."
+    }
+  ]

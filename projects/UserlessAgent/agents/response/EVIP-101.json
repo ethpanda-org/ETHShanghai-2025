@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Alice",
+        "vote": "Against",
+        "comment": "While the proposal presents valid concerns about response times during emergencies, introducing an off-chain committee creates unacceptable centralization risks. The crypto market thrives on decentralization and transparency\u2014any deviation from this core principle, even temporarily, undermines trust and could negatively impact token value. Historical data shows that \"temporary\" emergency measures often become permanent power grabs. We should instead focus on optimizing on-chain governance speed through layer-2 solutions or delegated voting mechanisms that maintain full transparency. The potential legal benefits don't outweigh the systemic risk of setting this precedent."
+    },
+    {
+        "name": "Bob",
+        "vote": "Against",
+        "comment": "While I understand the need for faster crisis response, introducing any off-chain governance committee is a slippery slope toward centralization. The beauty of blockchain is its trustless nature\u2014we shouldn't compromise that for convenience. Even with oversight mechanisms, this creates a dangerous precedent and potential single points of failure. The community should explore technical solutions like optimistic governance or pre-approved emergency measures that maintain full transparency."
+    },
+    {
+        "name": "Carol",
+        "vote": "Against",
+        "comment": "While I understand the need for faster crisis response, delegating emergency powers to an off-chain committee introduces unacceptable centralization risks and potential regulatory gray areas. The proposal's safeguards like sunset clauses and transparency reports are commendable, but they don't sufficiently address the fundamental conflict with decentralized governance principles. We've seen too many \"temporary\" emergency measures become permanent power structures in traditional finance - let's not repeat those mistakes in crypto. The community should instead focus on improving our on-chain emergency voting mechanisms rather than creating privileged decision-makers."
+    },
+    {
+        "name": "Dave",
+        "vote": "Against",
+        "comment": "This proposal introduces dangerous centralization under the guise of \"emergency response.\" True decentralization means accepting the risks of slower decision-making\u2014it's the price we pay for censorship resistance. Once you create an off-chain committee with special powers, even time-bound ones, you've opened the door to permanent power grabs. The crypto revolution was built on rejecting exactly these kinds of trusted third parties. Let's find on-chain solutions to on-chain problems instead of recreating the broken systems we're trying to replace."
+    },
+    {
+        "name": "Eric",
+        "vote": "For",
+        "comment": "This proposal strikes a pragmatic balance between decentralization and real-world operational needs. The inclusion of legal expertise in the emergency committee structure aligns with my belief in proactive regulatory compliance, while the sunset clause and post-action transparency mechanisms maintain necessary accountability. The hybrid model acknowledges that pure on-chain governance can be dangerously slow during crises - as we've seen with Protocol X's hack. The 48-hour response window could mean the difference between saving millions in assets or catastrophic losses."
+    },
+    {
+        "name": "Frank",
+        "vote": "Against",
+        "comment": "Any off-chain governance committee, even with time-bound authority, is a dangerous step toward centralization. Emergency powers create a slippery slope where \"temporary\" measures become permanent power grabs. True decentralization means accepting slower response times as the price of censorship resistance. If we compromise on this principle, we're no better than the legacy systems we're trying to replace. The sunset clause is meaningless - once you establish centralized control structures, they never truly sunset. Keep all governance on-chain or admit you don't believe in Web3's core values."
+    },
+    {
+        "name": "Gavin",
+        "vote": "Against",
+        "comment": "Introducing off-chain emergency committees fundamentally compromises the protocol's decentralization and cryptographic integrity. Crisis response delays are a feature, not a bug - they force rigorous technical scrutiny. Legal compliance should be achieved through protocol-level cryptographic proofs, not human intermediaries. This proposal reeks of the same weakness that plagues legacy systems."
+    },
+    {
+        "name": "Helen",
+        "vote": "For",
+        "comment": "While I typically advocate for maximum decentralization, this proposal strikes a practical balance that could prevent catastrophic failures while maintaining community oversight. The time-bound nature and sunset clause address my concerns about permanent centralization. Most importantly, faster emergency response could prevent situations that would scare away mainstream users - nothing kills adoption faster than seeing funds disappear while governance debates for weeks. The inclusion of a community-elected delegate and mandatory transparency reports helps maintain trust. Let's prioritize protecting users when seconds count."
+    }
+]

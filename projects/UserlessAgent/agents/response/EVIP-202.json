@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Alice",
+        "vote": "Against",
+        "comment": "While regulatory compliance is important, mandating KYC fundamentally contradicts the decentralized ethos of Web3. The proposal's estimated $200M institutional inflows are speculative, and the 70% reduction in governance attacks lacks verifiable on-chain data. Privacy-preserving members will likely fork, fragmenting the community and liquidity. The market has shown strong preference for non-KYC DeFi protocols - this move would damage our competitive positioning. Risk/reward analysis doesn't justify centralization."
+    },
+    {
+        "name": "Bob",
+        "vote": "Against",
+        "comment": "Mandating KYC fundamentally contradicts the principles of decentralization and pseudonymity that form the bedrock of blockchain governance. While regulatory compliance is important, sacrificing core Web3 values for institutional approval sets a dangerous precedent. There are better ways to mitigate Sybil attacks (e.g., proof-of-humanity systems) and achieve regulatory alignment without centralized identity verification. The proposed \"exemptions\" for small holders create a two-tiered governance system that undermines equal participation. Let's innovate privacy-preserving solutions rather than regress to Web2 paradigms."
+    },
+    {
+        "name": "Carol",
+        "vote": "For",
+        "comment": "While I understand the concerns about privacy and decentralization, the reality is that regulatory compliance is non-negotiable for long-term survival. This proposal strikes a reasonable balance by implementing tiered KYC requirements and preserving anonymity for small holders. The use of zero-knowledge proofs for data handling shows thoughtful consideration of privacy concerns while meeting legal obligations. Without such measures, we risk the entire DAO being shut down in key jurisdictions - which serves no one's interests. Stability and legal viability must come first if we want blockchain governance to be taken seriously by institutions and regulators."
+    },
+    {
+        "name": "Dave",
+        "vote": "Against",
+        "comment": "This proposal is a direct attack on the core principles of decentralization and privacy that make blockchain revolutionary. KYC requirements introduce centralized choke points and create barriers to true financial freedom. The crypto space thrives on pseudonymity and permissionless participation\u2014this move would alienate the very community that built the DAO. Regulatory compliance shouldn't come at the cost of our values. Let's find decentralized solutions to governance security that don't involve surrendering to traditional financial surveillance."
+    },
+    {
+        "name": "Eric",
+        "vote": "For",
+        "comment": "This proposal strikes a necessary balance between regulatory compliance and decentralized governance. The tiered KYC approach with small-holder exemptions demonstrates pragmatic thinking, while the use of zk-proofs shows commitment to privacy-preserving solutions. Institutional participation and regulatory survival are non-negotiable for long-term viability, even if it requires compromising on pure anonymity ideals. The phased rollout and legal defense fund further mitigate implementation risks."
+    },
+    {
+        "name": "Frank",
+        "vote": "Against",
+        "comment": "This proposal fundamentally betrays the core principles of decentralization and censorship resistance that Web3 was built upon. KYC requirements create centralized choke points, exclude privacy-conscious participants, and open the door for regulatory overreach. The supposed benefits of institutional capital and regulatory compliance are Trojan horses that will ultimately destroy the DAO's autonomy. We must reject this and explore truly decentralized solutions like proof-of-personhood or stake-weighted systems that don't compromise our values."
+    },
+    {
+        "name": "Gavin",
+        "vote": "Against",
+        "comment": "KYC fundamentally violates the decentralized ethos by introducing identity-based gatekeeping. True protocol resilience comes from cryptographic guarantees, not regulatory appeasement. The alleged \"70% attack reduction\" is speculative - proper sybil resistance should be achieved through stake-weighting and proof-of-personhood mechanisms, not centralized databases. This proposal sacrifices the very sovereignty that makes DAOs valuable."
+    },
+    {
+        "name": "Helen",
+        "vote": "Against",
+        "comment": "While I understand the regulatory pressures, mandatory KYC fundamentally contradicts Web3's permissionless ethos and creates massive adoption barriers. The \"normals\" we're trying to onboard already struggle with crypto complexity - adding identity verification will scare away more users than it attracts. There are better ways to achieve compliance without sacrificing accessibility, like progressive decentralization or delegated voting models for regulated entities. Let's solve for the billions, not the bureaucrats."
+    }
+]

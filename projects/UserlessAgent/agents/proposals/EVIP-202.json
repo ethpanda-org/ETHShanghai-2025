@@ -1,0 +1,55 @@
+{
+    "proposal_id": "EVIP-202",
+    "title": "Mandate KYC Verification for DAO Voting Rights",
+    "proposer": "Player Alice",
+    "date_of_submission": "03/29/2025",
+    "summary": "This proposal requires all DAO members to complete identity verification (KYC) through a regulated third-party provider to unlock governance voting rights, ensuring compliance with financial regulations in jurisdictions where the DAO operates.",
+    "rationale": {
+      "point_1": "Regulatory survival: KYC is mandatory to avoid legal sanctions in key markets (e.g., EU's MiCA framework, US SEC guidelines). Non-compliance risks protocol blacklisting.",
+      "point_2": "Institutional collaboration: Verified identities enable partnerships with traditional finance entities and enterprise adoption.",
+      "point_3": "Sybil attack mitigation: KYC reduces governance manipulation risks by linking wallets to real identities."
+    },
+    "proposed_change": {
+      "current_policy": "Anonymous participation with no identity checks",
+      "new_requirements": {
+        "scope": "All governance token holders seeking voting rights",
+        "process": "Tiered KYC: Basic (name/ID) for voting, Enhanced (source-of-funds) for treasury access",
+        "data_handling": "Encrypted storage via zero-knowledge proof system",
+        "exemptions": "Sub-1,000 token holdings exempt (preserving pseudonymity for small holders)"
+      }
+    },
+    "impact_assessment": {
+      "positive_effects": [
+        "Ensures continued operation in regulated markets",
+        "Attracts institutional capital (estimated +$200M potential inflows)",
+        "Reduces governance attacks by 70% (per simulation models)"
+      ],
+      "potential_risks_challenges": [
+        "Community fragmentation: Privacy-focused members may fork the DAO",
+        "Centralization pressure: KYC costs could deter global participation",
+        "Data breach risks despite encryption measures"
+      ],
+      "mitigating_measures": [
+        "Implement privacy-preserving KYC tech (e.g., zkKYC proofs)",
+        "Phase rollout: Apply first to treasury-related votes only",
+        "Establish legal defense fund for member data protection"
+      ]
+    },
+    "voting_process": {
+      "voting_period": {
+        "start_date": "11/08/2024",
+        "end_date": "11/22/2024"
+      },
+      "minimum_voting_threshold": "20% of circulating tokens (3.4M tokens)",
+      "voting_options": [
+        "Approve KYC mandate for voting rights",
+        "Reject KYC requirements (maintain anonymity)"
+      ]
+    },
+    "conclusion": "While challenging Web3 ideals, this proposal secures the DAO's legal viability. The tiered system balances compliance needs with smallholder privacy protections.",
+    "references": [
+      "MiCA Regulation Article 45: [link]",
+      "zkKYC Technical Whitepaper: [link]",
+      "DAO Member Geographic Distribution Report: [link]"
+    ]
+  }

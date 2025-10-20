@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Alice",
+        "vote": "Against",
+        "comment": "While incentivizing engagement is important, the proposed airdrop risks significant token dilution and short-term price volatility without clear long-term utility. The data suggests similar airdrops often lead to sell pressure rather than sustained participation. A more targeted approach with vesting or staking rewards would better align incentives."
+    },
+    {
+        "name": "Bob",
+        "vote": "For",
+        "comment": "This proposal aligns with the principles of decentralization by broadening token distribution and incentivizing community engagement. A well-structured airdrop can strengthen governance participation and ecosystem growth, provided safeguards against abuse are in place. The focus on rewarding active users and onboarding new participants is a positive step for long-term sustainability."
+    },
+    {
+        "name": "Carol",
+        "vote": "Against",
+        "comment": "While incentivizing community engagement is important, this proposal risks significant token dilution and market volatility without clear long-term benefits. Airdrops should be carefully structured to avoid abuse and ensure sustainable growth, rather than simply flooding the market with new tokens."
+    },
+    {
+        "name": "Dave",
+        "vote": "For",
+        "comment": "This airdrop is exactly the kind of radical wealth redistribution that crypto was made for\u2014breaking the stranglehold of early whales and putting power directly into the hands of the community. More tokens in circulation means more voices in governance, more liquidity, and less centralization. The risks of volatility or dumping are just growing pains on the path to true decentralization. Let\u2019s flood the zone with ECHO and watch the ecosystem thrive. No guts, no glory."
+    },
+    {
+        "name": "Eric",
+        "vote": "For",
+        "comment": "While I generally advocate for compliance-focused approaches, this airdrop proposal includes sufficient safeguards (claim caps, staking incentives) to mitigate risks while expanding participation. The emphasis on rewarding engaged community members aligns with sustainable growth objectives. However, I strongly recommend implementing KYC verification for new claimants to prevent abuse and ensure regulatory clarity around token distribution."
+    },
+    {
+        "name": "Frank",
+        "vote": "Against",
+        "comment": "This proposal introduces unnecessary token inflation and risks centralizing influence by rewarding onboarding steps that could lead to KYC creep. True decentralization means organic growth, not artificial incentives that dilute existing holders and potentially compromise anonymity. Let the market decide token distribution, not governance-manipulated airdrops."
+    },
+    {
+        "name": "Gavin",
+        "vote": "Against",
+        "comment": "Airdrops dilute token value and attract mercenary capital rather than genuine protocol engagement. True decentralization is built through organic participation, not artificial distribution schemes that compromise tokenomics integrity."
+    },
+    {
+        "name": "Helen",
+        "vote": "For",
+        "comment": "This airdrop proposal aligns perfectly with mass adoption goals by lowering entry barriers for new users while rewarding existing participants. The claimable airdrop for completing basic onboarding steps is particularly valuable - it creates a frictionless onboarding funnel that converts curious newcomers into token-holding participants. Though purists may balk at the semi-custodial elements, these pragmatic distribution mechanisms are exactly what's needed to transition Web3 from niche to mainstream. My only suggestion would be to pair this with even simpler wallet recovery options to prevent new users from losing their airdropped tokens."
+    }
+]
