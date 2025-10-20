@@ -12,7 +12,7 @@
 [Demo Video](#-demo-video) • [Documentation](#-documentation) • [Quick Start](#-quick-start) • [Architecture](#-architecture)
 
 
-<iframe src="(https://youtu.be/nhD_7KJaWXk)" width="640" height="360" frameborder="0" allowfullscreen></iframe>
+<iframe src="https://youtu.be/nhD_7KJaWXk" width="640" height="360" frameborder="0" allowfullscreen></iframe>
 ---
 
 **🏆 Built for ETH Shanghai 2025 Hackathon**
@@ -571,4 +571,5 @@ in the Software without restriction...
 **Star ⭐ this repo if you find it useful!**
 
 </div>
+
 
