@@ -117,7 +117,35 @@ window.i18n = {
             'transaction_successful': 'Transaction successful',
             'transaction_failed': 'Transaction failed',
             'network_error': 'Network error',
-            'unknown_error': 'Unknown error'
+            'unknown_error': 'Unknown error',
+            
+            // 新增翻译
+            'wallet.title': 'Wallet Information',
+            'wallet.accountAddress': 'Account Address',
+            'wallet.notConnected': 'Not Connected',
+            'wallet.copyAddress': 'Copy Address',
+            'wallet.accountBalance': 'Account Balance',
+            'wallet.workStats': 'Work Statistics',
+            'wallet.publishedTasks': 'Published Tasks',
+            'wallet.submittedTasks': 'Submitted Tasks',
+            'wallet.completedTasks': 'Completed Tasks',
+            'wallet.taskRewards': 'Task Rewards',
+            'wallet.refreshBalance': 'Refresh Balance',
+            'wallet.balanceUpdated': 'Balance updated successfully',
+            'wallet.balanceUpdateFailed': 'Failed to update balance',
+            
+            'publish.gasLimit': 'Gas Limit',
+            'publish.gasPrice': 'Gas Price (Gwei)',
+            'publish.gasLimitHint': 'Estimated: 1000000',
+            'publish.gasPriceHint': 'Current: 20 Gwei',
+            'publish.publisherNote': '💡 Note: Publisher address will automatically use your connected wallet address',
+            
+            'payment.gasLimit': 'Gas Limit',
+            'payment.gasPrice': 'Gas Price (Gwei)',
+            'payment.gasLimitHint': 'Estimated: 500000',
+            'payment.gasPriceHint': 'Current: 20 Gwei',
+            'payment.estimatedValue': 'Estimated Value',
+            'payment.currentValue': 'Current Value'
         }
     },
     
