@@ -1,10 +1,86 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { AppStateSchema, type AppState, type User, type TimelockContractItem } from './schema';
+import type { Chain } from '@/types';
 import { zodMiddleware } from './zodMiddleware';
 import { cookieUtil } from '../utils/cookieUtil';
-import axios from 'axios';
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+const DEFAULT_TIMESTAMP = '2024-01-01T00:00:00Z';
+const DEFAULT_LOGO = 'https://raw.githubusercontent.com/timelock-labs/assets/main/chains/eth-mainnet.png';
+
+const STATIC_CHAINS = [
+	{
+		id: 1,
+		chain_id: 1,
+		chain_name: 'Ethereum Mainnet',
+		display_name: 'Ethereum Mainnet',
+		logo_url: DEFAULT_LOGO,
+		native_token: 'Ether',
+		native_currency_symbol: 'ETH',
+		is_testnet: false,
+		is_active: true,
+		created_at: DEFAULT_TIMESTAMP,
+		updated_at: DEFAULT_TIMESTAMP,
+		block_explorer_urls: 'https://etherscan.io',
+	},
+	{
+		id: 56,
+		chain_id: 56,
+		chain_name: 'BNB Smart Chain',
+		display_name: 'BNB Smart Chain',
+		logo_url: 'https://raw.githubusercontent.com/timelock-labs/assets/main/chains/bsc-mainnet.png',
+		native_token: 'BNB',
+		native_currency_symbol: 'BNB',
+		is_testnet: false,
+		is_active: true,
+		created_at: DEFAULT_TIMESTAMP,
+		updated_at: DEFAULT_TIMESTAMP,
+		block_explorer_urls: 'https://bscscan.com',
+	},
+	{
+		id: 177,
+		chain_id: 177,
+		chain_name: 'HashKey Chain',
+		display_name: 'HashKey Chain',
+		logo_url: 'https://raw.githubusercontent.com/timelock-labs/assets/main/chains/hashkey-mainnet.jpg',
+		native_token: 'HSK',
+		native_currency_symbol: 'HSK',
+		is_testnet: false,
+		is_active: true,
+		created_at: DEFAULT_TIMESTAMP,
+		updated_at: DEFAULT_TIMESTAMP,
+		block_explorer_urls: 'https://hashkeyscan.io',
+	},
+	{
+		id: 11155111,
+		chain_id: 11155111,
+		chain_name: 'Ethereum Sepolia Testnet',
+		display_name: 'Sepolia Testnet',
+		logo_url: 'https://raw.githubusercontent.com/timelock-labs/assets/main/chains/eth-sepolia.png',
+		native_token: 'Ether',
+		native_currency_symbol: 'ETH',
+		is_testnet: true,
+		is_active: true,
+		created_at: DEFAULT_TIMESTAMP,
+		updated_at: DEFAULT_TIMESTAMP,
+		block_explorer_urls: 'https://sepolia.etherscan.io',
+	},
+	{
+		id: 97,
+		chain_id: 97,
+		chain_name: 'BNB Smart Chain Testnet',
+		display_name: 'BNB Testnet',
+		logo_url: 'https://raw.githubusercontent.com/timelock-labs/assets/main/chains/bsc-testnet.png',
+		native_token: 'BNB',
+		native_currency_symbol: 'tBNB',
+		is_testnet: true,
+		is_active: true,
+		created_at: DEFAULT_TIMESTAMP,
+		updated_at: DEFAULT_TIMESTAMP,
+		block_explorer_urls: 'https://testnet.bscscan.com',
+	},
+] satisfies Chain[];
 
 // 定义 Store 的 actions (方法)
 type AppActions = {
@@ -61,20 +137,7 @@ export const useAuthStore = create<AppState & AppActions>()(
 				});
 			},
 			fetchChains: async () => {
-				try {
-					const response = await axios.post(`${baseURL}/api/v1/chain/list`);
-					if (response.data.success) {
-						if (response.data.data && Array.isArray(response.data.data.chains)) {
-							set({ chains: response.data.data.chains });
-						} else {
-							set({ chains: [] }); // Ensure chains is always an array
-						}
-					} else {
-						set({ chains: [] }); // Ensure chains is always an array on error
-					}
-				} catch  {
-					set({ chains: [] }); // Ensure chains is always an array on error
-				}
+				set({ chains: STATIC_CHAINS.map(chain => ({ ...chain })) });
 			},
 			refreshAccessToken: async () => {
 				const state = get();

@@ -32,7 +32,7 @@ const nextConfig = {
 		return [
 			{
 				source: '/api/:path*',
-				destination: 'https://test.timelock.live/api/:path*',
+				destination: 'https://test.timelock.tech/api/:path*',
 			},
 		];
 	},
