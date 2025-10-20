@@ -1,4 +1,6 @@
 一、团队介绍
+团队名：easy trader
+
 @LMX    【李蒙西(3262370263@qq.com)】
 
 @theo   【刘志超（kennyharris@163.com）】
