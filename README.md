@@ -1,9 +1,14 @@
 一、团队介绍
 @LMX    【李蒙西(3262370263@qq.com)】
+
 @theo   【刘志超（kennyharris@163.com）】
+
 @喻天宇  【hejunlbbc@gmail.com】
+
 @jiaxin 【赖嘉欣( x: @cara_data)】
+
 @Rick(伍韬) 【Rick(伍韬) t.observe@outlook.com】
+
 
 二、产品简介
 CEX内置机器人的核心痛点：
