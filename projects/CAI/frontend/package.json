@@ -1,0 +1,42 @@
+{
+  "name": "cai-cai-service",
+  "version": "1.0.0",
+  "description": "CAI × ERC-8004 unified Next.js application (frontend dashboard + API services)",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.0.0",
+    "@tanstack/react-query": "^5.17.0",
+    "clsx": "^2.1.0",
+    "date-fns": "^3.0.0",
+    "ethers": "^6.9.0",
+    "joi": "^17.11.0",
+    "lucide-react": "^0.263.1",
+    "next": "14.0.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "recharts": "^2.10.0",
+    "uuid": "^9.0.1",
+    "viem": "^2.7.0",
+    "wagmi": "^2.5.0",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.10.0",
+    "@types/uuid": "^9.0.7",
+    "@types/react": "18.2.45",
+    "@types/react-dom": "18.2.18",
+    "autoprefixer": "10.4.16",
+    "eslint": "8.56.0",
+    "eslint-config-next": "14.0.4",
+    "postcss": "8.4.32",
+    "tailwindcss": "3.4.0",
+    "typescript": "5.3.3"
+  }
+}

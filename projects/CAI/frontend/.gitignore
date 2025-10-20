@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+.pnp.*
+
+# Build output
+.next/
+out/
+dist/
+
+# Logs & diagnostics
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+
+# Testing
+coverage/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Keep example envs committed
+!.env.example
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Next.js cache
+.vercel/
+.turbo/
+
+# TypeScript
+*.tsbuildinfo

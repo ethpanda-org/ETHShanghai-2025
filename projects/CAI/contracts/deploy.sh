@@ -1,0 +1,1 @@
+forge script script/ERC8004Agent.s.sol  --fork-url https://eth-sepolia.api.onfinality.io/public --broadcast
