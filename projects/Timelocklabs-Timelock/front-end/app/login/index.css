@@ -1,0 +1,24 @@
+.currentSection-item {
+    display: flex;
+    padding: var(--spacing-3, 12px) var(--spacing-0, 0);
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex: 1 0 0;
+    align-self: stretch;
+    border-radius: var(--border-radius-rounded-md, 8px);
+    background: linear-gradient(90deg, rgba(13, 13, 13, 0.00) 0%, #000 51.92%, rgba(13, 13, 13, 0.00) 100%);
+
+}
+
+.currentSection-item-button {
+    display: flex;
+    width: var(--width-w-9, 36px);
+    height: var(--height-h-9, 136px);
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-2, 8px);
+    flex-shrink: 0;
+    border-radius: var(--border-radius-rounded-md, 8px);
+    background: #222;
+}
