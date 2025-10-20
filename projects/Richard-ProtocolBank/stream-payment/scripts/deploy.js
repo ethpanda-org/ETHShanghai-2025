@@ -1,4 +1,5 @@
-const hre = require("hardhat");
+import hre from "hardhat";
+import fs from "fs";
 
 async function main() {
   console.log("🚀 Deploying StreamPayment contract...");
@@ -26,7 +27,6 @@ async function main() {
   console.log("   Block:", await hre.ethers.provider.getBlockNumber());
   
   // 保存部署信息
-  const fs = require("fs");
   const deploymentInfo = {
     network: hre.network.name,
     contractAddress: contractAddress,
@@ -41,23 +41,12 @@ async function main() {
   );
   
   console.log("\n💾 Deployment info saved to deployment.json");
-  
-  // 等待几个区块确认后验证
-  if (hre.network.name !== "hardhat" && hre.network.name !== "localhost") {
-    console.log("\n⏳ Waiting for block confirmations...");
-    await streamPayment.deploymentTransaction().wait(5);
-    
-    console.log("\n🔍 Verifying contract on Etherscan...");
-    try {
-      await hre.run("verify:verify", {
-        address: contractAddress,
-        constructorArguments: [],
-      });
-      console.log("✅ Contract verified successfully");
-    } catch (error) {
-      console.log("❌ Verification failed:", error.message);
-    }
-  }
+  console.log("\n🎉 Deployment completed!");
+  console.log("\n📝 Next steps:");
+  console.log("1. Update VITE_STREAM_PAYMENT_CONTRACT in .env:");
+  console.log(`   VITE_STREAM_PAYMENT_CONTRACT=${contractAddress}`);
+  console.log("\n2. View on Sepolia Etherscan:");
+  console.log(`   https://sepolia.etherscan.io/address/${contractAddress}`);
   
   return contractAddress;
 }
