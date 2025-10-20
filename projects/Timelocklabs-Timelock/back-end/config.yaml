@@ -24,7 +24,7 @@ jwt:
 # RPC配置
 rpc:
   # RPC提供商配置
-  alchemy_api_key: "7JGar3dcq0bHQa9vMk9zSS15hdFCmVHa"
+  alchemy_api_key: "xxx"
   # 是否包含测试网
   include_testnets: true
 
@@ -33,7 +33,7 @@ email:
   smtp_host: "smtp.zoho.com"
   smtp_port: 587
   smtp_username: "zem@timelock.live"  # 发送邮件的邮箱地址
-  smtp_password: "iE4yPjtquwfY"     # 邮箱应用密码
+  smtp_password: "xxx"     # 邮箱应用密码
   from_name: "TimeLock Notification"   # 发件人名称
   from_email: "zem@timelock.live"     # 发件人邮箱（通常与smtp_username相同）
   
