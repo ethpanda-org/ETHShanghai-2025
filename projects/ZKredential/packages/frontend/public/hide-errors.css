@@ -1,0 +1,26 @@
+/* 隐藏 Next.js 开发环境的错误提示框 */
+[data-nextjs-dialog-overlay],
+[data-nextjs-dialog],
+[data-nextjs-toast],
+nextjs-portal,
+#__next-build-watcher,
+.__next-build-watcher {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+/* 隐藏左下角的错误计数器 */
+button[aria-label*="error"],
+button[aria-label*="unhandled"],
+[data-nextjs-errors-dialog-left-right-close-button] {
+  display: none !important;
+}
+
+/* 隐藏所有 Next.js 错误相关的元素 */
+div[style*="position: fixed"][style*="bottom"][style*="left"],
+div[style*="position: fixed"][style*="bottom"][style*="right"] {
+  display: none !important;
+}
+

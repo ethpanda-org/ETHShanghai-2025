@@ -1,0 +1,16 @@
+{
+  "name": "zkredential-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter frontend dev",
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev:zk-server": "cd packages/zk-proof-server && node server.js",
+    "build": "pnpm --filter frontend build",
+    "build:all": "pnpm -r build",
+    "install:all": "pnpm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}

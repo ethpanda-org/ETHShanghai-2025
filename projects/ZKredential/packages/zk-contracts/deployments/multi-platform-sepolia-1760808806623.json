@@ -1,0 +1,52 @@
+{
+  "network": "sepolia",
+  "chainId": 11155111,
+  "timestamp": "2025-10-18T17:33:26.623Z",
+  "deployer": "0x6C29b9dA4A53236dc46DbE0BEFb6b4358e982E26",
+  "architecture": "Registry + Adapter (Two-Step)",
+  "contracts": {
+    "verifiers": {
+      "propertyfy": {
+        "address": "0xe0c16bDE095DD8C2794881b4a7261e2C0Fc9d2dc",
+        "publicSignals": 12,
+        "modules": [
+          "KYC",
+          "ASSET"
+        ]
+      },
+      "realt": {
+        "address": "0x71dE2f8cD0b5483DAB7dc7064e82156DFd966257",
+        "publicSignals": 12,
+        "modules": [
+          "KYC",
+          "AML"
+        ]
+      },
+      "realestate": {
+        "address": "0xaa276B0729fEAa83530e5CC1Cd387B634A6c45d6",
+        "publicSignals": 16,
+        "modules": [
+          "KYC",
+          "ASSET",
+          "AML"
+        ]
+      }
+    },
+    "core": {
+      "zkRegistry": {
+        "address": "0x2dF31b4814dff5c99084FD93580FE90011EE92b2",
+        "description": "Multi-platform identity registry"
+      },
+      "complianceModule": {
+        "address": "0x4512387c0381c59D0097574bAAd7BF67A8Cc7B81",
+        "description": "ERC-3643 plug-and-play compliance module"
+      }
+    }
+  },
+  "integrationGuide": {
+    "step1": "User generates ZK proof for their chosen platform",
+    "step2": "User calls zkRegistry.registerIdentity(platform, proof...)",
+    "step3": "RWA project: rwaToken.setComplianceModule(complianceModule.address)",
+    "step4": "Users can trade RWA tokens anonymously"
+  }
+}
