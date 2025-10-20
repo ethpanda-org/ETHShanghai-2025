@@ -28,6 +28,8 @@
 
 **核心公式**: `1 RWA = 1 AqToken = 1P + 1C + 1S`
 
+![AquaFlux Structure Page](./docs/structure_page.png)
+
 ---
 
 ## 2) 架构与实现 (Architecture & Implementation)
@@ -156,8 +158,8 @@ VITE_ENABLE_TESTNETS=true
 
 ```bash
 # 1. 克隆仓库
-git clone <repo-url>
-cd projects/AquaFlux
+git clone https://github.com/AquafluxPro/ETHShanghai-2025.git
+cd ETHShanghai-2025/projects/AquaFlux
 
 # 2. 启动后端服务
 cd backend
