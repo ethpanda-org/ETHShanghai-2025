@@ -91,9 +91,10 @@ class BlockchainClient:
             with open(abi_path, 'r') as f:
                 contract_abi = json.load(f)
             
-            # 创建合约实例
+            # 创建合约实例（使用checksum地址）
+            checksum_address = self.w3.to_checksum_address(self.contract_address)
             self.contract = self.w3.eth.contract(
-                address=self.contract_address,
+                address=checksum_address,
                 abi=contract_abi
             )
             
