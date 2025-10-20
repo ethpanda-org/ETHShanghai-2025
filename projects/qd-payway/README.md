@@ -15,7 +15,7 @@
 ### 1) 项目概述 (Overview)
 
 - **项目名称**：PayWay
-- **一句话介绍**：为中小外贸企业设计的，无需区块链技术背景即可使用的、基于智能合约的稳定币安全支付与自动结算平台。
+- **一句话介绍**：基于智能合约的稳定币安全付款与自动结算平台
 - **目标用户**：中小外贸企业/自由职业者、从事跨境电商和数字服务外包的中小企业
 - **核心问题与动机（Pain Points）**：
   - **技术门槛高**：尽管 USDT 等稳定币在结算方面有巨大优势（高效、低成本），但非技术背景的企业在安全使用钱包、管理私钥、理解链上操作等方面存在巨大困难和风险。
@@ -112,7 +112,7 @@ NEXT_PUBLIC_RELEASE_EMAIL_ADDRESS=oreply@official.mcppayway.com
 **后端环境变量** (Supabase Secrets - 用于 Edge Functions)：
 ```bash
 # SendGrid 邮件服务
-SENDGRID_API_KEY=SG....
+SENDGRID_API_KEY=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
 SENDGRID_FROM_EMAIL=oreply@official.mcppayway.com
 
 # 区块链配置
@@ -159,7 +159,7 @@ npm run dev
 
 - **测试准备**：
   1. **获取 Sepolia ETH**：访问 [Sepolia Faucet](https://sepoliafaucet.com/) 领取测试 ETH
-  2. **获取测试 USDT**：部署测试 USDT 合约或联系项目方
+  2. **获取测试 USDT**：uniswap获取
   3. **配置钱包**：在 MetaMask 中添加 Sepolia 测试网
   4. **SendGrid 配置**：按照 `doc/EMAIL_SETUP_GUIDE.md` 配置邮件服务
 
