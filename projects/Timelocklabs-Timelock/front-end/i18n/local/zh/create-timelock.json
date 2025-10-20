@@ -1,0 +1,44 @@
+{
+	"CreateTimelock": {
+		"createTimelock": "创建合约",
+		"createTimelockDescription": "选择合适的标准创建属于您的 Timelock。",
+		"selectChain": "选择链",
+		"selectChainPlaceholder": "请选择链",
+		"minDelay": "最小延迟时间（秒）",
+		"minDelayPlaceholder": "请输入最小延迟时间",
+		"proposers": "提议者地址（以逗号分隔）",
+		"proposersPlaceholder": "请输入提议者地址",
+		"executors": "执行者地址（以逗号分隔）",
+		"executorsPlaceholder": "请输入执行者地址",
+		"admin": "管理员地址",
+		"adminPlaceholder": "请输入管理员地址",
+		"deployContract": "部署",
+		"deploying": "部署中...",
+		"firstTimeUser": {
+			"title": "第一次使用 Timelock Protocol？",
+			"description": "Timelock Protocol 提供了全套的基于 Timelock 机制的工具，用户可以在平台上创建一个..."
+		},
+		"actions": {
+			"learnMore": "了解更多",
+			"cancel": "取消",
+			"confirm": "确认"
+		},
+		"dialogTitle": "确认添加 Timelock",
+		"remark": "备注",
+		"remarkPlaceholder": "请输入备注",
+		"details": "详情",
+		"confirmAdd": "添加",
+		"selectContractStandard": "选择合约标准",
+		"compoundStandardLabel": "Compound 标准 Timelock 合约",
+		"compoundStandardDescription": "经过长期验证的开源合约规范",
+		"openzeppelinStandardLabel": "OpenZeppelin 标准 Timelock 合约",
+		"openzeppelinStandardDescription": "适合成长型企业的高级功能",
+		"contractRemarkPlaceholder": "请输入备注",
+		"contractRemarkRequired": "备注为必填项",
+		"success": "Timelock 创建成功！",
+		"failed": "创建 Timelock 失败: {message}",
+		"pleaseSelectNetwork": "请选择网络",
+		"chainNotSupported": "链 ID {chainId} 不支持。请使用支持的网络。",
+		"failedToDeployTimelock": "部署 Timelock 失败: {message}"
+	}
+}

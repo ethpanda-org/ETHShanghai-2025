@@ -1,0 +1,91 @@
+{
+	"HomePage": {
+		"title": "首页",
+		"create_new": "创建",
+		"create_new_contract": "创建新合约"
+	},
+	"home_page": {
+		"how_it_works": {
+			"title": "Timelock 工作原理",
+			"description": "时间锁（Timelock）是一种智能合约机制，它为特定的区块链操作强制执行一个时间延迟。通过设定一个未来的解锁时间，它确保了指定操作在该时间到达前无法被执行。该机制通过防止即时、未经授权的变更并提供一个审查期来增强安全性。",
+			"read_more": "了解更多"
+		},
+		"how_to_use": {
+			"title": "如何使用时间锁协议？",
+			"description": "时间锁协议提供了一整套基于时间锁机制的工具集。您可以在平台上创建新的时间锁合约，或导入现有的兼容合约，以实现对链上资产和操作的安全、延迟管理。",
+			"read_more": "了解更多"
+		},
+		"whos_using": {
+			"title": "谁在用",
+			"description": "查看当前用户或管理您的方案。"
+		},
+		"feature_cards": {
+			"aave": {
+				"title": "AAVE",
+				"description": "一个去中心化的借贷协议。"
+			},
+			"compound": {
+				"title": "Compound",
+				"description": "一个领先的、允许用户赚取利息的算法货币市场协议。"
+			},
+			"gitcoin": {
+				"title": "Gitcoin",
+				"description": "一个为开源软件开发者提供资金支持的平台。"
+			},
+			"lido": {
+				"title": "Lido",
+				"description": "以太坊的流动性质押解决方案。"
+			},
+			"eigenlayer": {
+				"title": "EigenLayer",
+				"description": "以太坊的再质押协议。"
+			},
+			"ethena": {
+				"title": "Ethena",
+				"description": "一种合成美元协议。"
+			},
+			"uniswap": {
+				"title": "Uniswap",
+				"description": "一个领先的去中心化交易协议。"
+			},
+			"makerdao": {
+				"title": "MakerDAO",
+				"description": "DAI 稳定币背后的去中心化自治组织。"
+			},
+			"morpho": {
+				"title": "Morpho",
+				"description": "一个优化的借贷协议。"
+			},
+			"pendle": {
+				"title": "Pendle",
+				"description": "一个创新的收益率交易协议。"
+			}
+		},
+		"create_protocol_title": "创建协议",
+		"waitingTransaction": "等待交易",
+		"readyTransaction": "就绪交易",
+		"executedTransaction": "已执行交易",
+		"expiredTransaction": "已过期交易",
+		"cancelledTransaction": "已取消交易"
+	},
+	"dashboard": {
+		"welcome": "欢迎使用时间锁界面",
+		"connect_to_start": "连接您的钱包开始跨多链管理时间锁合约。",
+		"active_timelocks": "活跃时间锁",
+		"total_value_locked": "总锁定价值",
+		"chains_supported": "支持的链",
+		"supported_networks": "支持的网络："
+	},
+	"wallet": {
+		"noTimelockWallet": "你还没有 Timelock 钱包",
+		"description": "直接从您的项目读取和写入数据库和存储。",
+		"createNew": "创建"
+	},
+	"assetList": {
+		"chain":"链",
+		"asset": "资产",
+		"namePrice": "名称/价格",
+		"amountValue": "数量/价值",
+		"totalAssetValue": "总资产价值"
+	}
+} 

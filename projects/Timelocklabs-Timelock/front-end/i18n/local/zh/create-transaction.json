@@ -1,0 +1,72 @@
+{
+	"CreateTransaction": {
+		"title": "创建交易",
+		"encodingTransaction": {
+			"title": "编码交易",
+			"description": "将您填写的参数进行编码，生成交易数据",
+			"selectTimelock": "选择时间锁",
+			"selectTimelockMethod": "选择时间锁方法",
+			"timelockAddress": "时间锁地址 *",
+			"target": "目标地址",
+			"value": "数值",
+			"formDescription": "描述",
+			"descriptionPlaceholder": "使用英文描述该笔交易的用途，该描述将上链",
+			"noTimelocksAvailable": "未发现 Timelock 合约，请先添加",
+			"selectTimelockPlaceholder": "请选择时间锁合约",
+			"selectTimelockMethodPlaceholder": "请选择方法",
+			"targetPlaceholder": "请输入目标地址",
+			"valuePlaceholder": "请输入数值（单位：wei）",
+			"selectTimelockFirstPlaceholder": "请先选择时间锁合约",
+			"loadingTimelockDetails": "正在加载时间锁详情...",
+			"calldata": "编码数据",
+			"calldataPlaceholder": "将自动获取编码数据",
+			"timePlaceholder": "请输入时间（单位：秒）"
+		},
+		"preview": {
+			"title": "编码预览",
+			"description": "在提交前预览您的交易编码",
+			"noData": "暂无预览数据"
+		},
+		"mailbox": {
+			"title": "监听邮箱",
+			"description": "下列邮箱将全程追踪该笔交易",
+			"selectLabel": "选择已配置邮箱",
+			"selectPlaceholder": "请选择已配置邮箱",
+			"option1": "邮箱 1",
+			"option2": "邮箱 2",
+			"noMailbox": "暂无邮箱，请到通知页面添加"
+		},
+		"targetABI": {
+			"label": "目标 ABI",
+			"placeholder": "请选择 ABI",
+			"function": "函数",
+			"selectFunction": "选择函数",
+			"time": "预期执行时间"
+		},
+		"submitting": "提交中...",
+		"sendTransactionButton": "发送交易",
+		"fetchABIError": "获取ABI列表失败：{message}",
+		"pleaseConnectWallet": "请先连接钱包",
+		"pleaseSelectNetwork": "请选择网络",
+		"pleaseFillInAllRequiredFields": "请填写所有必填字段",
+		"success": "交易创建成功！",
+		"failed": "创建交易失败: {message}",
+		"abiAddedSuccessfully": "ABI 添加成功！",
+		"failedToAddABI": "添加 ABI 失败: {message}",
+		"estimatingGas": "估算 gas...",
+		"gasEstimationFailed": "估算 gas 失败",
+		"sendingTransaction": "发送交易...",
+		"transactionSentSuccessfully": "交易发送成功！",
+		"transactionFailed": "交易失败",
+		"invalidTargetAddress": "无效的目标地址",
+		"invalidCalldataFormat": "无效的编码数据",
+		"invalidTransactionValue": "无效的交易数值",
+		"invalidParameters": "无效的参数: {message}",
+		"pleaseConfirmTransactionInYourWallet": "请在钱包中确认交易...",
+		"transactionSent": "交易发送: {hash}...",
+		"transactionConfirmed": "交易确认！",
+		"transactionRejectedByUser": "交易被用户拒绝",
+		"insufficientFundsForTransaction": "交易资金不足",
+		"transactionFailedDueToGasIssues": "交易因 gas 问题失败。请尝试增加 gas 限制。"
+	}
+}

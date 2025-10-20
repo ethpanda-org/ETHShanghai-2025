@@ -1,0 +1,49 @@
+{
+	"ABI-Lib": {
+		"title": "ABI 库",
+		"abiName": "ABI 名称",
+		"addressUser": "地址用户",
+		"addedTime": "添加时间",
+		"operations": "操作",
+		"viewABI": "查看 ABI",
+		"delete": "删除",
+		"storedABI": "已存储 ABI",
+		"storedABIDescription": "该页面提供 ABI 的存储，供发起交易时选择 ABI。",
+		"new": "新建",
+		"abiType": "ABI 类型",
+		"platformShared": "平台共享",
+		"userImported": "用户导入",
+		"fetchAbiListSuccess": "ABI 列表获取成功。",
+		"fetchAbiListError": "获取 ABI 列表失败：{message}",
+		"addAbiSuccess": "ABI 添加成功。",
+		"addAbiError": "添加 ABI 失败：{message}",
+		"validateAbiError": "ABI 验证失败：{message}",
+		"viewAbiSuccess": "{name} 的 ABI 详情获取成功。",
+		"viewAbiError": "获取 ABI 详情失败：{message}",
+		"deleteAbiSuccess": "ABI 删除成功。",
+		"deleteAbiError": "删除 ABI 失败：{message}",
+		"validateAbiSuccess": "ABI 验证成功。",
+		"addForm": {
+			"title": "添加新 ABI",
+			"description": "输入新 ABI 的详细信息。",
+			"nameLabel": "ABI 名称",
+			"descriptionLabel": "描述",
+			"contentLabel": "ABI 内容 (JSON)",
+			"cancelButton": "取消",
+			"addButton": "添加"
+		},
+		"viewForm": {
+			"title": "查看 ABI 详情",
+			"nameLabel": "ABI 名称",
+			"descriptionLabel": "描述",
+			"interfaceDetails": "接口详情",
+			"closeButton": "关闭"
+		},
+		"deleteDialog": {
+			"title": "删除 ABI",
+			"description": "确定要删除 ABI \"{name}\" 吗？此操作无法撤销。",
+			"confirmText": "删除",
+			"cancelText": "取消"
+		}
+	}
+} 

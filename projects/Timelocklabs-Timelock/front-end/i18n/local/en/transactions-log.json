@@ -1,0 +1,20 @@
+{
+    "Transactions_log": {
+        "title": "Transaction details",
+        "transactionDetails": "Transaction details from chain logs, with a 1～2 minute delay.",
+        "chain": "Chain",
+        "remark": "Timelock Remark",
+        "timelockAddress": "Timelock Address",
+        "txHash": "Transaction Hash",
+        "createdAt": "Create Time",
+        "eta": "ETA",
+        "expiredAt": "Expire Time",
+        "status": "Status",
+        "actions": "Actions",
+        "call_data_hex": "Call Data Hex",
+        "value": "Value",
+        "function_signature": "Function Signature",
+        "functionSignature":"Function Signature",
+        "callDataHex":"Call Data Hex"
+    }
+}

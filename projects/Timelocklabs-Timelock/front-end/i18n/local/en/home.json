@@ -1,0 +1,92 @@
+{
+	"HomePage": {
+		"title": "Home",
+		"create_new": "Create new",
+		"create_new_contract": "Create New Contract"
+	},
+	"home_page": {
+		"how_it_works": {
+			"title": "How Timelock Works",
+			"description": "A Timelock is a smart contract mechanism that enforces a time delay on specific blockchain operations. By setting a future 'unlock time,' it ensures that designated actions cannot be executed until that time has passed. This feature enhances security by preventing immediate, unauthorized changes and allowing for a review period.",
+			"read_more": "Read more"
+		},
+		"how_to_use": {
+			"title": "How to Use the Timelock Protocol",
+			"description": "The Timelock Protocol offers a comprehensive suite of tools built upon the timelock mechanism. You can create a new timelock contract on the platform or import an existing, compatible one to securely manage and delay on-chain assets and operations.",
+			"read_more": "Read more"
+		},
+		"whos_using": {
+			"title": "Who's Using",
+			"description": "See current users or manage your plan."
+		},
+		"feature_cards": {
+			"aave": {
+				"title": "AAVE",
+				"description": "A decentralized lending and borrowing protocol."
+			},
+			"compound": {
+				"title": "Compound",
+				"description": "A leading algorithmic money market protocol for earning interest."
+			},
+			"gitcoin": {
+				"title": "Gitcoin",
+				"description": "A platform for funding open-source software development."
+			},
+			"lido": {
+				"title": "Lido",
+				"description": "Liquid staking solution for Ethereum."
+			},
+			"eigenlayer": {
+				"title": "EigenLayer",
+				"description": "A restaking protocol for Ethereum."
+			},
+			"ethena": {
+				"title": "Ethena",
+				"description": "A synthetic dollar protocol."
+			},
+			"uniswap": {
+				"title": "Uniswap",
+				"description": "A leading decentralized exchange protocol."
+			},
+			"makerdao": {
+				"title": "MakerDAO",
+				"description": "The decentralized autonomous organization behind the DAI stablecoin."
+			},
+			"morpho": {
+				"title": "Morpho",
+				"description": "An optimized lending and borrowing protocol."
+			},
+			"pendle": {
+				"title": "Pendle",
+				"description": "An innovative yield-trading protocol."
+			}
+		},
+		"create_protocol_title": "Create Protocol",
+		"waitingTransaction": "Waiting Transaction",
+		"readyTransaction": "Ready Transaction",
+		"executedTransaction": "Executed Transaction",
+		"expiredTransaction": "Expired Transaction",
+		"cancelledTransaction": "Cancelled Transaction"
+	},
+	"dashboard": {
+		"welcome": "Welcome to Timelock UI",
+		"connect_to_start": "Connect your wallet to start managing timelock contracts across multiple chains.",
+		"active_timelocks": "Active Timelocks",
+		"total_value_locked": "Total Value Locked",
+		"chains_supported": "Chains Supported",
+		"supported_networks": "Supported Networks:"
+	},
+	"wallet": {
+		"noTimelockWallet": "You don't have a Timelock wallet yet",
+		"description": "Read and write directly to databases and stores from your projects.",
+		"createNew": "Create new"
+	},
+	"assetList": {
+		"chain":"Chain",
+		"asset": "Asset",
+		"namePrice": "Name/Price",
+		"amountValue": "Amount/Value",
+		"totalAssetValue": "Total Asset Value"
+	}
+	
+} 

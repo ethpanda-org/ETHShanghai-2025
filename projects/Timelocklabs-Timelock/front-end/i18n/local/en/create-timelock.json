@@ -1,0 +1,44 @@
+{
+	"CreateTimelock": {
+		"createTimelock": "Create Contract",
+		"createTimelockDescription": "Select the appropriate standard to create your Timelock.",
+		"selectChain": "Select Chain",
+		"selectChainPlaceholder": "Please select a chain",
+		"minDelay": "Minimum Delay (seconds)",
+		"minDelayPlaceholder": "Enter minimum delay",
+		"proposers": "Proposer Addresses",
+		"proposersPlaceholder": "Enter proposer addresses",
+		"executors": "Executor Addresses",
+		"executorsPlaceholder": "Enter executor addresses",
+		"admin": "Admin Address",
+		"adminPlaceholder": "Enter admin address",
+		"deployContract": "Deploy",
+		"deploying": "Deploying...",
+		"firstTimeUser": {
+			"title": "First time using Timelock Protocol?",
+			"description": "Timelock Protocol provides a full suite of timelock-based tools. You can create a timelock contract on the platform..."
+		},
+		"actions": {
+			"learnMore": "Learn more",
+			"cancel": "Cancel",
+			"confirm": "Confirm"
+		},
+		"dialogTitle": "Confirm Add Timelock",
+		"remark": "Remark",
+		"remarkPlaceholder": "Enter remark",
+		"details": "Details",
+		"confirmAdd": "Add",
+		"selectContractStandard": "Select Contract Standard",
+		"compoundStandardLabel": "Compound Standard Timelock Contract",
+		"compoundStandardDescription": "Long-proven open source contract specifications",
+		"openzeppelinStandardLabel": "OpenZeppelin Standard Timelock Contract",
+		"openzeppelinStandardDescription": "Advanced features for growing businesses",
+		"contractRemarkPlaceholder": "Enter remark",
+		"contractRemarkRequired": "Contract remark is required",
+		"success": "Timelock created successfully!",
+		"failed": "Failed to create timelock record: {message}",
+		"pleaseSelectNetwork": "Please select a network",
+		"chainNotSupported": "Chain ID {chainId} is not supported. Please use a supported network.",
+		"failedToDeployTimelock": "Failed to deploy timelock: {message}"
+	}
+}

@@ -1,0 +1,67 @@
+{
+	"loginPage": {
+		"title": "Login",
+		"usernameLabel": "Username",
+		"passwordLabel": "Password",
+		"submitButton": "Sign In",
+		"registerLink": "Don't have an account? Register"
+	},
+	"registerPage": {
+		"title": "Register",
+		"emailLabel": "Email",
+		"passwordLabel": "Password",
+		"confirmPasswordLabel": "Confirm Password",
+		"submitButton": "Sign Up",
+		"loginLink": "Already have an account? Login"
+	},
+	"Login": {
+		"title": "Login",
+		"username": "Username",
+		"password": "Password",
+		"submit": "Login",
+		"error": "{error, select, CredentialsSignin {Invalid username or password} other {Unknown error}}"
+	},
+	"LocaleSwitcher": {
+		"en": "EN",
+		"zh": "ZH"
+	},
+	"walletLogin": {
+		"motto1": "SECURITY FIRST",
+		"motto2": "TIME PROTECTS",
+		"whyTimelock": "Why use Timelock?",
+		"features": {
+			"preventUnauthorized": "Prevent unauthorized instant transaction execution",
+			"avoidRisks": "Avoid security risks from improper operations",
+			"earlyWarning": "Give community and users early warning time",
+			"industryStandard": "Leading protocols use it to manage funds and permissions"
+		},
+		"whyProtocol": "Why choose Timelock Protocol?",
+		"protocolSubtitle": "Both a security strategy and a wallet",
+		"protocolFeatures": {
+			"importExisting": "Support importing existing standard-compliant Timelock contracts without recreating",
+			"readableEncoding": "More readable encoding strategy, comprehensively reducing Timelock usage difficulty",
+			"eventManagement": "Complete event management, historical events at a glance",
+			"comprehensiveMonitoring": "Comprehensive monitoring, timely push to your and security department's email accounts"
+		},
+		"getStarted": "Get started",
+		"connectWalletDescription": "Connect your wallet to create a new Timelock Account or import an existing one.",
+		"errorSigningIn": "Error signing in:{error}",
+		"welcomeMessage": "welcome to Timelock!",
+		"signToLogin": "Sign to Login",
+		"retrySignature": "Retry Signature",
+		"signing": "Signing...",
+		"loginSuccess": "Connect Success",
+		"pleaseConnectWallet": "Please connect your wallet first",
+		"clickToSign": "Click the button to sign and complete the login",
+		"signatureFailedRetry": "Signature failed, please try again",
+		"autoSigning": "Automatically signing in...",
+		"connectWallet": "Connect Wallet",
+		"initializing": "Initializing...",
+		"redirecting": "Redirecting...",
+		"safeWalletSignatureError": "Safe wallet signature error",
+		"safeWalletSignatureRejected": "Safe wallet signature rejected",
+		"safeWalletSignatureTimeout": "Safe wallet signature timeout",
+		"safeWalletSDKError": "Safe wallet SDK error",
+		"safeWalletStrategyTimeout": "Safe wallet strategy timeout"
+	}
+}

@@ -1,0 +1,72 @@
+{
+	"CreateTransaction": {
+		"title": "Create Transaction",
+		"encodingTransaction": {
+			"title": "Encode Transaction",
+			"description": "Encode the parameters you fill in and generate transaction data.",
+			"selectTimelock": "Select Timelock",
+			"selectTimelockMethod": "Select Timelock Method",
+			"timelockAddress": "Timelock Address *",
+			"target": "Target",
+			"value": "Value",
+			"formDescription": "Description",
+			"descriptionPlaceholder": "Describe the purpose of the transaction in English. This description will be uploaded to the blockchain.",
+			"noTimelocksAvailable": "No timelock contracts available. Please add some timelock contracts first.",
+			"selectTimelockPlaceholder": "Select a timelock contract",
+			"selectTimelockMethodPlaceholder": "Select a method",
+			"targetPlaceholder": "Enter target address",
+			"valuePlaceholder": "Enter value in wei",
+			"selectTimelockFirstPlaceholder": "Please select a timelock contract first",
+			"loadingTimelockDetails": "Loading timelock details...",
+			"calldata": "Calldata",
+			"calldataPlaceholder": "Will automatically obtain the encoded data",
+			"timePlaceholder": "Enter time in seconds"
+		},
+		"preview": {
+			"title": "Encoding Preview",
+			"description": "Preview your transaction encoding before submission.",
+			"noData": "No data to preview."
+		},
+		"mailbox": {
+			"title": "Listening Mailbox",
+			"description": "The following email address will track the transaction throughout the entire process",
+			"selectLabel": "Select Configured Mailbox",
+			"selectPlaceholder": "Select configured mailbox",
+			"option1": "Mailbox 1",
+			"option2": "Mailbox 2",
+			"noMailbox": "No mailbox, please add it to the notification page"
+		},
+		"targetABI": {
+			"label": "Target ABI",
+			"placeholder": "Select ABI",
+			"function": "Function",
+			"selectFunction": "Select Function",
+			"time": "Expected execution time"
+		},
+		"submitting": "Submitting...",
+		"sendTransactionButton": "Send Transaction",
+		"fetchABIError": "Failed to fetch ABI list: {message}",
+		"pleaseConnectWallet": "Please connect your wallet first",
+		"pleaseSelectNetwork": "Please select a network",
+		"pleaseFillInAllRequiredFields": "Please fill in all required fields",
+		"success": "Transaction created successfully!",
+		"failed": "Failed to create transaction: {message}",
+		"abiAddedSuccessfully": "ABI added successfully!",
+		"failedToAddABI": "Failed to add ABI: {message}",
+		"estimatingGas": "Estimating gas...",
+		"gasEstimationFailed": "Gas estimation failed",
+		"sendingTransaction": "Sending transaction...",
+		"transactionSentSuccessfully": "Transaction sent successfully!",
+		"transactionFailed": "Transaction failed",
+		"invalidTargetAddress": "Invalid target address",
+		"invalidCalldataFormat": "Invalid calldata format",
+		"invalidTransactionValue": "Invalid transaction value",
+		"invalidParameters": "Invalid parameters: {message}",
+		"pleaseConfirmTransactionInYourWallet": "Please confirm transaction in your wallet...",
+		"transactionSent": "Transaction sent: {hash}...",
+		"transactionConfirmed": "Transaction confirmed!",
+		"transactionRejectedByUser": "Transaction was rejected by user",
+		"insufficientFundsForTransaction": "Insufficient funds for transaction",
+		"transactionFailedDueToGasIssues": "Transaction failed due to gas issues. Try increasing gas limit."
+	}
+}

@@ -1,0 +1,53 @@
+{
+	"ImportTimelock": {
+		"title": "Import Contract",
+		"description": "Add your existing Timelock contract",
+		"selectChain": "Select Chain",
+		"selectChainPlaceholder": "Select Chain",
+		"contractAddress": "Contract Address",
+		"contractAddressPlaceholder": "0x...",
+		"contractStandard": "Contract Standard",
+		"contractStandardPlaceholder": "Select Standard",
+		"remarks": "Remarks",
+		"remarksPlaceholder": "Remarks",
+		"nextStep": "Next Step",
+		"detecting": "Detecting...",
+		"errors": {
+			"selectChain": "Please select a chain",
+			"enterContractAddress": "Please enter contract address",
+			"selectContractStandard": "Please select contract standard",
+			"invalidContractAddress": "Invalid contract address or not a contract",
+			"failedToDetectParameters": "Failed to detect valid timelock parameters",
+			"detectionFailed": "Detection failed: {message}",
+			"invalidTimelockParameters": "Invalid timelock parameters",
+			"contractExists": "Timelock contract already exists",
+			"validationFailed": "Parameter validation failed",
+			"invalidStandard": "Invalid contract standard",
+			"invalidRequest": "Invalid request parameters",
+			"importFailed": "Failed to import timelock"
+		},
+		"success": {
+			"importSuccess": "Timelock imported successfully!"
+		},
+		"defaultRemark": "Imported Timelock",
+		"modal": {
+			"title": "Check Parameters",
+			"chain": "Chain",
+			"isValid": "Is Valid",
+			"yes": "Yes",
+			"no": "No",
+			"contractStandard": "Contract Standard",
+			"contractAddress": "Contract Address",
+			"minDelay": "Min Delay",
+			"admin": "Admin",
+			"gracePeriod": "Grace Period",
+			"minimumDelay": "Minimum Delay",
+			"maximumDelay": "Maximum Delay",
+			"seconds": " seconds",
+			"abi": "ABI",
+			"cancel": "Cancel",
+			"confirm": "Import"
+		},
+		"failedToImportTimelock": "Failed to import timelock"
+	}
+}

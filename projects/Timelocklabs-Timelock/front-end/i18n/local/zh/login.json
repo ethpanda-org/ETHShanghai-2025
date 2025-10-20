@@ -1,0 +1,67 @@
+{
+	"loginPage": {
+		"title": "登录",
+		"usernameLabel": "用户名",
+		"passwordLabel": "密码",
+		"submitButton": "登录",
+		"registerLink": "没有账户？注册"
+	},
+	"registerPage": {
+		"title": "注册",
+		"emailLabel": "邮箱",
+		"passwordLabel": "密码",
+		"confirmPasswordLabel": "确认密码",
+		"submitButton": "注册",
+		"loginLink": "已有账户？登录"
+	},
+	"Login": {
+		"title": "登陆",
+		"username": "用户名",
+		"password": "密码",
+		"submit": "登录",
+		"error": "{error, select, CredentialsSignin {用户名或密码无效} other {未知错误}}"
+	},
+	"LocaleSwitcher": {
+		"en": "英",
+		"zh": "中"
+	},
+	"walletLogin": {
+		"motto1": "安全无捷径",
+		"motto2": "时间即防线",
+		"whyTimelock": "为什么要使用 Timelock ?",
+		"features": {
+			"preventUnauthorized": "防止未经授权的即时执行交易",
+			"avoidRisks": "避免操作不当带来的安全风险",
+			"earlyWarning": "给社区和用户预警时间",
+			"industryStandard": "头部协议都在用其来管理资金和权限"
+		},
+		"whyProtocol": "为什么要选择 Timelock Protocol？",
+		"protocolSubtitle": "既是安全策略，也是钱包",
+		"protocolFeatures": {
+			"importExisting": "支持导入符合标准的 Timelock合约，无需重新创建",
+			"readableEncoding": "更可读的编码策略，全面降低 Timelock 的使用难度",
+			"eventManagement": "完备的事件管理，历史事件一览无余",
+			"comprehensiveMonitoring": "全方位的监听，及时推送到您和安全部门的邮箱账号"
+		},
+		"getStarted": "开始使用",
+		"connectWalletDescription": "连接您的钱包以创建新的时间锁账户或导入现有账户。",
+		"errorSigningIn": "登录错误：{error}",
+		"welcomeMessage": "欢迎使用 Timelock！",
+		"signToLogin": "签名登录",
+		"retrySignature": "重新签名",
+		"signing": "签名中...",
+		"loginSuccess": "连接成功",
+		"pleaseConnectWallet": "请先连接您的钱包",
+		"clickToSign": "点击按钮进行签名以完成登录",
+		"signatureFailedRetry": "签名失败，请重新尝试",
+		"autoSigning": "自动登录中...",
+		"connectWallet": "连接钱包",
+		"initializing": "初始化中...",
+		"redirecting": "跳转中...",
+		"safeWalletSignatureError": "安全钱包签名错误",
+		"safeWalletSignatureRejected": "安全钱包签名已拒绝",
+		"safeWalletSignatureTimeout": "安全钱包签名超时",
+		"safeWalletSDKError": "安全钱包 SDK 错误",
+		"safeWalletStrategyTimeout": "安全钱包策略超时"
+	}
+} 

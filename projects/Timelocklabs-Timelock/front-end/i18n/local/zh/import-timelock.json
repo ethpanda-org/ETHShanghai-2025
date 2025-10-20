@@ -1,0 +1,52 @@
+{
+	"ImportTimelock": {
+		"title": "导入合约",
+		"description": "新增您已有的 Timelock 合约",
+		"selectChain": "选择所在链",
+		"selectChainPlaceholder": "选择所在链",
+		"contractAddress": "合约地址",
+		"contractAddressPlaceholder": "0x...",
+		"contractStandard": "合约标准",
+		"contractStandardPlaceholder": "选择标准",
+		"remarks": "备注",
+		"remarksPlaceholder": "备注信息",
+		"nextStep": "下一步",
+		"detecting": "检测中...",
+		"errors": {
+			"selectChain": "请选择一个链",
+			"enterContractAddress": "请输入合约地址",
+			"selectContractStandard": "请选择合约标准",
+			"invalidContractAddress": "无效的合约地址或不是合约",
+			"failedToDetectParameters": "检测有效的 timelock 参数失败",
+			"detectionFailed": "检测失败",
+			"invalidTimelockParameters": "无效的 timelock 参数",
+			"contractExists": "Timelock 合约已存在",
+			"validationFailed": "参数校验失败",
+			"invalidStandard": "无效的合约标准",
+			"invalidRequest": "请求参数错误",
+			"importFailed": "导入 Timelock 失败"
+		},
+		"success": {
+			"importSuccess": "Timelock 导入成功！"
+		},
+		"defaultRemark": "导入的 Timelock",
+		"modal": {
+			"title": "请检查参数",
+			"chain": "所在链",
+			"isValid": "是否有效",
+			"yes": "是",
+			"no": "否",
+			"contractStandard": "合约标准",
+			"contractAddress": "合约地址",
+			"minDelay": "最小延迟",
+			"admin": "管理员",
+			"gracePeriod": "宽限期",
+			"minimumDelay": "最小延迟",
+			"maximumDelay": "最大延迟",
+			"seconds": "秒",
+			"abi": "ABI",
+			"cancel": "取消",
+			"confirm": "添加"
+		}
+	}
+}

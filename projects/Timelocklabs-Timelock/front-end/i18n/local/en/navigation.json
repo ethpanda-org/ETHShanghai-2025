@@ -1,0 +1,53 @@
+{
+	"sidebar": {
+		"logo": "Timelock",
+		"nav": {
+			"timelock_contracts": "Timelock",
+			"abi_library": "ABI Library",
+			"notifications": "Notifications",
+			"ecosystem": "Ecosystem",
+			"home": "Home",
+			"transactions": "Transactions",
+			"transactions_log": "Logs",
+			"create_transaction": "Create Transaction"
+		},
+		"projects": {
+			"title": "Projects",
+			"multisig_wallet": "Multisignature Wallet",
+			"token_vesting": "Token Vesting Schedule",
+			"governance": "Governance"
+		}
+	},
+	"nav": {
+		"timelock_management": "Timelock Management",
+		"dashboard": "Dashboard",
+		"create_timelock": "Create Timelock",
+		"active_timelocks": "Active Timelocks",
+		"history": "History",
+		"token_management": "Token Management",
+		"token_lists": "Token Lists",
+		"approvals": "Approvals",
+		"transfers": "Transfers",
+		"analytics": "Analytics",
+		"reports": "Reports",
+		"statistics": "Statistics",
+		"settings": "Settings",
+		"general": "General",
+		"security": "Security",
+		"notifications": "Notifications",
+		"account": "Account",
+		"billing": "Billing",
+		"logout": "Log out",
+		"upgrade_to_pro": "Upgrade to Pro"
+	},
+	"projects": {
+		"multi_sig_wallet": "Multi-Sig Wallet",
+		"token_vesting": "Token Vesting",
+		"governance": "Governance"
+	},
+	"teams": {
+		"timelock_ui": "Timelock UI",
+		"multi_chain": "Multi-Chain",
+		"defi_tools": "DeFi Tools"
+	}
+} 

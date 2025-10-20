@@ -1,0 +1,53 @@
+{
+	"sidebar": {
+		"logo": "Timelock",
+		"nav": {
+			"timelock_contracts": "时间锁合约",
+			"abi_library": "ABI 库",
+			"notifications": "通知",
+			"ecosystem": "生态系统",
+			"home": "首页",
+			"transactions": "交易管理",
+			"transactions_log": "交易日志",
+			"create_transaction": "创建交易"
+		},
+		"projects": {
+			"title": "项目",
+			"multisig_wallet": "多签钱包",
+			"token_vesting": "代币归属计划",
+			"governance": "治理"
+		}
+	},
+	"nav": {
+		"timelock_management": "时间锁管理",
+		"dashboard": "仪表板",
+		"create_timelock": "创建时间锁",
+		"active_timelocks": "活跃时间锁",
+		"history": "历史记录",
+		"token_management": "代币管理",
+		"token_lists": "代币列表",
+		"approvals": "授权管理",
+		"transfers": "转账记录",
+		"analytics": "数据分析",
+		"reports": "报告",
+		"statistics": "统计",
+		"settings": "设置",
+		"general": "通用",
+		"security": "安全",
+		"notifications": "通知",
+		"account": "账户",
+		"billing": "账单",
+		"logout": "退出登录",
+		"upgrade_to_pro": "升级至专业版"
+	},
+	"projects": {
+		"multi_sig_wallet": "多签钱包",
+		"token_vesting": "代币释放",
+		"governance": "治理"
+	},
+	"teams": {
+		"timelock_ui": "时间锁界面",
+		"multi_chain": "多链",
+		"defi_tools": "DeFi 工具"
+	}
+} 

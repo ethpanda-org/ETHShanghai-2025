@@ -1,0 +1,20 @@
+{
+    "Transactions_log": {
+        "title": "交易明细",
+        "transactionDetails": "获取链上解码信息，会存在 1～2 分钟延迟",
+        "chain": "链",
+        "remark": "备注",
+        "timelockAddress": "Timelock地址",
+        "txHash": "交易哈希",
+        "createdAt": "创建时间",
+        "eta": "预期执行时间",
+        "expiredAt": "过期时间",
+        "status": "状态",
+        "actions": "操作",
+        "call_data_hex": "调用数据",
+        "value": "值",
+        "function_signature": "函数签名",
+        "functionSignature":"函数签名",
+        "callDataHex":"调用数据"
+    }
+}
