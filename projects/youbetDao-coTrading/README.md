@@ -34,7 +34,7 @@ Your AI Copilot for Smarter Crypto Trading
 - 执行接口：0xSwap
 
 
-![项目预览](./pic.jpg)
+![项目预览](./CoTrading/pic.jpg)
 
 ## 系统架构（草图）
 ```
