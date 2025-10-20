@@ -1,0 +1,54 @@
+{
+  "poolId": "f2814f8d7a0549927a073cff1bad94f8d83b00b7e0fd36dc477c899d0355c91d",
+  "tokenAddress": "0xC203579E4b725C31908755C70E1eE182bfccB49a",
+  "tokenPublisher": "0x34D0090678C55E5B965e7a88728b97F03c3c6AaD",
+  "tokenMetadata": {
+    "geoTag": "NYC",
+    "weatherTag": "Sunny",
+    "eventTypes": [
+      "Crypto Related",
+      "Prediction",
+      "RWA",
+      "Layer1"
+    ],
+    "eventDescription": "The Trewth Network live event on June 15, 2024 in NYC, featuring keynotes from industry leaders discussing the future of decentralized truth verification and its impact on global information integrity.",
+    "supplementLink": "https://example.com/info",
+    "eventTime": 0,
+    "publisherAllocationBps": 800,
+    "txHash": "71d114909fe43842966b6cc827edd4e3d8d9d9724b956f769b06e2c9f6cf24a9",
+    "block": 84,
+    "blockTime": 1759484028
+  },
+  "deploymentInfo": {
+    "fee": 3000,
+    "nativeLiquidity": "1000000000000000000",
+    "liquidityTokens": "1000000000000000000",
+    "liquidityAdded": true,
+    "txHash": "71d114909fe43842966b6cc827edd4e3d8d9d9724b956f769b06e2c9f6cf24a9",
+    "block": 84,
+    "blockTime": 1759484028
+  },
+  "poolInit": {
+    "currency0": "0x0000000000000000000000000000000000000000",
+    "currency1": "0xC203579E4b725C31908755C70E1eE182bfccB49a",
+    "fee": 3000,
+    "tickSpacing": 60,
+    "hooks": "0x0000000000000000000000000000000000000000",
+    "sqrtPriceX96": "79228162514264337593543950336",
+    "tick": 0,
+    "txHash": "71d114909fe43842966b6cc827edd4e3d8d9d9724b956f769b06e2c9f6cf24a9",
+    "block": 84,
+    "blockTime": 1759484028,
+    "initialPrice_token1_per_token0": "1"
+  },
+  "tags": [
+    "Crypto Related",
+    "Layer1",
+    "Prediction",
+    "RWA",
+    "NYC",
+    "Sunny"
+  ],
+  "createdAtBlock": 84,
+  "createdAtTime": 1759484028
+}

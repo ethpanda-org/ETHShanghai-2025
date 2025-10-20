@@ -1,0 +1,226 @@
+[
+  {
+    "createdatblock": 111,
+    "createdattime": 1759999776,
+    "deploymentinfo": {
+      "block": 111,
+      "blockTime": 1759999776,
+      "fee": 3000,
+      "liquidityAdded": true,
+      "liquidityTokens": "1000000000000000000",
+      "nativeLiquidity": "1000000000000000000",
+      "txHash": "421e77ab5fce56d1c3dd5f2227293b16cd9caebf73ded9b3a4eab69a0385d214"
+    },
+    "poolid": "37fd053bda54b05e044bf50ccd17fe02ba6bb53eaae93a6aff275ffb19e70d28",
+    "poolinit": {
+      "block": 111,
+      "blockTime": 1759999776,
+      "currency0": "0x0000000000000000000000000000000000000000",
+      "currency1": "0x6888Ef11e619b376B49016612D2B2b2D1f26E79d",
+      "fee": 3000,
+      "hooks": "0x0000000000000000000000000000000000000000",
+      "initialPrice_token1_per_token0": "1",
+      "sqrtPriceX96": "79228162514264337593543950336",
+      "tick": 0,
+      "tickSpacing": 60,
+      "txHash": "421e77ab5fce56d1c3dd5f2227293b16cd9caebf73ded9b3a4eab69a0385d214"
+    },
+    "tags": [
+      "H",
+      "F",
+      "SH",
+      "E",
+      "Sunny",
+      "G"
+    ],
+    "tokenaddress": "0x6888Ef11e619b376B49016612D2B2b2D1f26E79d",
+    "tokenmetadata": {
+      "block": 111,
+      "blockTime": 1759999776,
+      "eventDescription": "DEMO5",
+      "eventTime": 0,
+      "eventTypes": [
+        "E",
+        "F",
+        "G",
+        "H"
+      ],
+      "fullname": "DEMO5",
+      "geoTag": "SH",
+      "publisherAllocationBps": 800,
+      "supplementLink": "https://example.com/DEMO5",
+      "ticker": "DEMO5",
+      "txHash": "421e77ab5fce56d1c3dd5f2227293b16cd9caebf73ded9b3a4eab69a0385d214",
+      "weatherTag": "Sunny"
+    },
+    "tokenpublisher": "0x34D0090678C55E5B965e7a88728b97F03c3c6AaD"
+  },
+  {
+    "createdatblock": 110,
+    "createdattime": 1759999742,
+    "deploymentinfo": {
+      "block": 110,
+      "blockTime": 1759999742,
+      "fee": 3000,
+      "liquidityAdded": true,
+      "liquidityTokens": "1000000000000000000",
+      "nativeLiquidity": "1000000000000000000",
+      "txHash": "04651dea324b5dae7b17e03702daec3398b86b30f82b7d4ad11777c91ae02d81"
+    },
+    "poolid": "6f76e5ec5d949b9d38fde21423404267b03d2f8fa4fa20b0f711bf540df89f70",
+    "poolinit": {
+      "block": 110,
+      "blockTime": 1759999742,
+      "currency0": "0x0000000000000000000000000000000000000000",
+      "currency1": "0x53235A0516b6baB469DeF9ce5dC2bEEEB87C0615",
+      "fee": 3000,
+      "hooks": "0x0000000000000000000000000000000000000000",
+      "initialPrice_token1_per_token0": "1",
+      "sqrtPriceX96": "79228162514264337593543950336",
+      "tick": 0,
+      "tickSpacing": 60,
+      "txHash": "04651dea324b5dae7b17e03702daec3398b86b30f82b7d4ad11777c91ae02d81"
+    },
+    "tags": [
+      "D",
+      "F",
+      "SH",
+      "E",
+      "Sunny",
+      "G"
+    ],
+    "tokenaddress": "0x53235A0516b6baB469DeF9ce5dC2bEEEB87C0615",
+    "tokenmetadata": {
+      "block": 110,
+      "blockTime": 1759999742,
+      "eventDescription": "DEMO4",
+      "eventTime": 0,
+      "eventTypes": [
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "fullname": "DEMO4",
+      "geoTag": "SH",
+      "publisherAllocationBps": 800,
+      "supplementLink": "https://example.com/DEMO4",
+      "ticker": "DEMO4",
+      "txHash": "04651dea324b5dae7b17e03702daec3398b86b30f82b7d4ad11777c91ae02d81",
+      "weatherTag": "Sunny"
+    },
+    "tokenpublisher": "0x34D0090678C55E5B965e7a88728b97F03c3c6AaD"
+  },
+  {
+    "createdatblock": 108,
+    "createdattime": 1759999626,
+    "deploymentinfo": {
+      "block": 108,
+      "blockTime": 1759999626,
+      "fee": 3000,
+      "liquidityAdded": true,
+      "liquidityTokens": "1000000000000000000",
+      "nativeLiquidity": "1000000000000000000",
+      "txHash": "1daecc90250127a2c8f4f2e6334f35340883f09c4458663b724750bafbb5052c"
+    },
+    "poolid": "c028fd18f8d2af98ddcc574193ccfab41ddcbc642898e8568be1a3cbb3bbe5cb",
+    "poolinit": {
+      "block": 108,
+      "blockTime": 1759999626,
+      "currency0": "0x0000000000000000000000000000000000000000",
+      "currency1": "0xC91F57907F7dad4085CAC979Ef7d52dbaA6f4f34",
+      "fee": 3000,
+      "hooks": "0x0000000000000000000000000000000000000000",
+      "initialPrice_token1_per_token0": "1",
+      "sqrtPriceX96": "79228162514264337593543950336",
+      "tick": 0,
+      "tickSpacing": 60,
+      "txHash": "1daecc90250127a2c8f4f2e6334f35340883f09c4458663b724750bafbb5052c"
+    },
+    "tags": [
+      "D",
+      "SH",
+      "E",
+      "B",
+      "Sunny",
+      "C"
+    ],
+    "tokenaddress": "0xC91F57907F7dad4085CAC979Ef7d52dbaA6f4f34",
+    "tokenmetadata": {
+      "block": 108,
+      "blockTime": 1759999626,
+      "eventDescription": "DEMO2",
+      "eventTime": 0,
+      "eventTypes": [
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "fullname": "DEMO2",
+      "geoTag": "SH",
+      "publisherAllocationBps": 800,
+      "supplementLink": "https://example.com/DEMO2",
+      "ticker": "DEMO2",
+      "txHash": "1daecc90250127a2c8f4f2e6334f35340883f09c4458663b724750bafbb5052c",
+      "weatherTag": "Sunny"
+    },
+    "tokenpublisher": "0x34D0090678C55E5B965e7a88728b97F03c3c6AaD"
+  },
+  {
+    "createdatblock": 109,
+    "createdattime": 1759999656,
+    "deploymentinfo": {
+      "block": 109,
+      "blockTime": 1759999656,
+      "fee": 3000,
+      "liquidityAdded": true,
+      "liquidityTokens": "1000000000000000000",
+      "nativeLiquidity": "1000000000000000000",
+      "txHash": "4973db5b97d2e721e48e06b15d04dd9dac1097fe9eb5c9e38ace8750aa22996d"
+    },
+    "poolid": "2a774251f08edbddad15c861c31c5731bf5bbdcce937624532587dbf6c50fc02",
+    "poolinit": {
+      "block": 109,
+      "blockTime": 1759999656,
+      "currency0": "0x0000000000000000000000000000000000000000",
+      "currency1": "0xCf6C9E296e39ED4EeDE7D2f81A8465f2c3e50950",
+      "fee": 3000,
+      "hooks": "0x0000000000000000000000000000000000000000",
+      "initialPrice_token1_per_token0": "1",
+      "sqrtPriceX96": "79228162514264337593543950336",
+      "tick": 0,
+      "tickSpacing": 60,
+      "txHash": "4973db5b97d2e721e48e06b15d04dd9dac1097fe9eb5c9e38ace8750aa22996d"
+    },
+    "tags": [
+      "D",
+      "F",
+      "SH",
+      "E",
+      "Sunny",
+      "C"
+    ],
+    "tokenaddress": "0xCf6C9E296e39ED4EeDE7D2f81A8465f2c3e50950",
+    "tokenmetadata": {
+      "block": 109,
+      "blockTime": 1759999656,
+      "eventDescription": "DEMO3",
+      "eventTime": 0,
+      "eventTypes": [
+        "C",
+        "D",
+        "E",
+        "F"
+      ],
+      "fullname": "DEMO3",
+      "geoTag": "SH",
+      "publisherAllocationBps": 800,
+      "supplementLink": "https://example.com/DEMO3",
+      "ticker": "DEMO3",
+      "txHash": "4973db5b97d2e721e48e06b15d04dd9dac1097fe9eb5c9e38ace8750aa22996d",
+      "weatherTag": "Sunny"
+    },
+    "tokenpublisher": "0x34D0090678C55E5B965e7a88728b97F03c3c6AaD"
+  }
+]

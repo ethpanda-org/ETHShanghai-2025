@@ -1,0 +1,146 @@
+[
+    {
+        "latest_reserve0": "6000000000000000000",
+        "poolid": "0dcd32d1d02b84411119417e4589c0e862fa6d15c617a1cdcd23fa4e3e6b9715",
+        "reserve0_ratio": 0.012,
+        "tokenmetadata": {
+            "block": 21,
+            "blockTime": 1760344998,
+            "eventDescription": "DEMO3",
+            "eventTime": 0,
+            "eventTypes": [
+                "C",
+                "D",
+                "E",
+                "F"
+            ],
+            "fullname": "DEMO3",
+            "geoTag": "SH",
+            "publisherAllocationBps": 800,
+            "supplementLink": "https://example.com/DEMO3",
+            "ticker": "DEMO3",
+            "txHash": "d558ceb21f9100854e7998138c23c8820301bc1126a6a751884cc007be5b54a9",
+            "weatherTag": "Sunny"
+        }
+    },
+    {
+        "latest_reserve0": "16000000000000000000",
+        "poolid": "9f22d0ef64fa5b88c6703e23607edc92f7a511f43206cce3b38a3943b2a69fa4",
+        "reserve0_ratio": 0.032,
+        "tokenmetadata": {
+            "block": 20,
+            "blockTime": 1760344972,
+            "eventDescription": "DEMO2",
+            "eventTime": 0,
+            "eventTypes": [
+                "B",
+                "C",
+                "D",
+                "E"
+            ],
+            "fullname": "DEMO2",
+            "geoTag": "SH",
+            "publisherAllocationBps": 800,
+            "supplementLink": "https://example.com/DEMO2",
+            "ticker": "DEMO2",
+            "txHash": "63cfa5e6ee781b3b9f17506c0c0f5be75babfe73a47e293ef985c4bdde279421",
+            "weatherTag": "Sunny"
+        }
+    },
+    {
+        "latest_reserve0": "76000000000000000000",
+        "poolid": "b1729be833ceca2fd04e159678e7263498baeeb07690cb7c8630e0b9ec58dffa",
+        "reserve0_ratio": 0.152,
+        "tokenmetadata": {
+            "block": 22,
+            "blockTime": 1760345032,
+            "eventDescription": "DEMO4",
+            "eventTime": 0,
+            "eventTypes": [
+                "D",
+                "E",
+                "F",
+                "G"
+            ],
+            "fullname": "DEMO4",
+            "geoTag": "SH",
+            "publisherAllocationBps": 800,
+            "supplementLink": "https://example.com/DEMO4",
+            "ticker": "DEMO4",
+            "txHash": "680a14a2808c6bbe37d295a1161ffd4e44ccbcf8b463c14c50bae856e9ca5aca",
+            "weatherTag": "Sunny"
+        }
+    },
+    {
+        "latest_reserve0": "246000000000000000000",
+        "poolid": "915586350c01eab190b672057402a5582a7c18cc32d105e59e60d0fba59f434b",
+        "reserve0_ratio": 0.492,
+        "tokenmetadata": {
+            "block": 23,
+            "blockTime": 1760345083,
+            "eventDescription": "DEMO5",
+            "eventTime": 0,
+            "eventTypes": [
+                "E",
+                "F",
+                "G",
+                "H"
+            ],
+            "fullname": "DEMO5",
+            "geoTag": "NYC",
+            "publisherAllocationBps": 800,
+            "supplementLink": "https://example.com/DEMO5",
+            "ticker": "DEMO5",
+            "txHash": "878d4762f847da43b80aa623c673f11c6366c277acd1d8861d72fd141deff2c7",
+            "weatherTag": "Sunny"
+        }
+    },
+    {
+        "latest_reserve0": "156000000000000000000",
+        "poolid": "bea4b0f5b94ba58781605e66c2cbef6b62e46349de2d69c8406db9e5e6d4c207",
+        "reserve0_ratio": 0.312,
+        "tokenmetadata": {
+            "block": 19,
+            "blockTime": 1760344898,
+            "eventDescription": "DEMO1",
+            "eventTime": 0,
+            "eventTypes": [
+                "A",
+                "B",
+                "C",
+                "D"
+            ],
+            "fullname": "DEMO1",
+            "geoTag": "SH",
+            "publisherAllocationBps": 800,
+            "supplementLink": "https://example.com/DEMO1",
+            "ticker": "DEMO1",
+            "txHash": "1e5036c486f83067abf979eec00d653195120812833f468a614c60577eb22010",
+            "weatherTag": "Sunny"
+        }
+    },
+    {
+        "latest_reserve0": "0",
+        "poolid": "a040d4338c5f06774521bd2960871743aa2277b9e79a4f08d43f216cb129d746",
+        "reserve0_ratio": 0.0,
+        "tokenmetadata": {
+            "block": 24,
+            "blockTime": 1760345109,
+            "eventDescription": "DEMO6",
+            "eventTime": 0,
+            "eventTypes": [
+                "F",
+                "G",
+                "H",
+                "I"
+            ],
+            "fullname": "DEMO6",
+            "geoTag": "NYC",
+            "publisherAllocationBps": 800,
+            "supplementLink": "https://example.com/DEMO6",
+            "ticker": "DEMO6",
+            "txHash": "e00826b678109335ba0bcf0d78cf23ac429c7d5098bbc72645ac3b90412916ee",
+            "weatherTag": "Sunny"
+        }
+    }
+]

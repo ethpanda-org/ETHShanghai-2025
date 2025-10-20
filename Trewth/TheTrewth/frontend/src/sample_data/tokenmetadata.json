@@ -1,0 +1,78 @@
+[
+  {
+    "block": 37,
+    "blockTime": 1760804275,
+    "eventDescription": "我们很高兴邀请到 @ezklxyz 的优秀开发者 @henlojseam 加入，成为 #ETHShanghai 2025 黑客松的导师之一！\n\n他精通 Rust、Solidity、OCaml、JavaScript、C++ 等多种技术。如果大家在这些领域遇到问题，相信他会非常乐意提供指导～\n\nETHShanghai 2025 黑客松\n2025 年 10 月 18 日 – 21 日\n中国·上海 ",
+    "eventTime": 0,
+    "eventTypes": [
+      "ETHShanghai",
+      "Hackathon",
+      "Ethereum Ecosystem",
+      "Sponsors"
+    ],
+    "fullname": "henlojseam Attend",
+    "geoTag": "SH",
+    "publisherAllocationBps": 800,
+    "supplementLink": "https://x.com/1460090749647667202/status/1978695609499652155",
+    "ticker": "HENLOJSEAM",
+    "txHash": "cf29be01acf746f21dd99c4ef3b7107ead5a3db5738dc8537a1fb6e3648e6e38",
+    "weatherTag": "Sunny"
+  },
+  {
+    "block": 40,
+    "blockTime": 1760804912,
+    "eventDescription": "Lumiterra’s mainnet progress is perfectly aligned with Monad’s — both are expected to launch simultaneously.\n\n▰▰▰▰▰▰\n\nFounded in 2023, Lumiterra is a highly capable team that won the ETHShanghai 2023 Hackathon, showcasing strong technical depth.\n\nUnlike typical blockchain games, Lumiterra stands out with its innovative integration of AI technology. It uses machine learning algorithms to transform player behavior — such as farming routes, combat strategies, and trading preferences — into autonomous on-chain AI agents.\n\nThese agents operate in a continuous “Perceive–Think–Act–Learn” cycle:\n\t•\tPerceive: Observe the game environment and market data\n\t•\tThink: Use the “LumiPad” brain to plan optimal strategies\n\t•\tAct: Execute on-chain actions (e.g., resource gathering, market participation) and manage NFTs via ERC-6551 wallets\n\t•\tLearn: Continuously evolve from feedback and outcomes — even while the player is offline\n\nThis model could represent the future direction of blockchain gaming.\nWith AI’s involvement, gameplay becomes more engaging and unpredictable, increasing player immersion and retention.\n\nFor creators and gamers, joining @LumiterraGame might also be a great opportunity to earn token rewards while contributing to this emerging ecosystem.",
+    "eventTime": 0,
+    "eventTypes": [
+      "ETHShanghai",
+      "Layer1",
+      "Prediction",
+      "Crypto Related"
+    ],
+    "fullname": "Lumiterra thought",
+    "geoTag": "SG",
+    "publisherAllocationBps": 800,
+    "supplementLink": "https://x.com/congge918/status/1975586345667252727",
+    "ticker": "LT",
+    "txHash": "b8bcc0b472fdbbcb10b3a1e8af37279ba8f8a4ee47e921450ede092ed6678b6c",
+    "weatherTag": "Rainy"
+  },
+  {
+    "block": 41,
+    "blockTime": 1760805206,
+    "eventDescription": "Говорят, что Виталик Бутерин собирается приехать в материковый Китай как гость мероприятия ETHShanghai.\n\nИнтересно, правда ли это 😃\n\nЕсли вдруг его арестуют — рынок, наверное, снова рухнет.",
+    "eventTime": 0,
+    "eventTypes": [
+      "Crypto Related",
+      "Prediction",
+      "Ethereum Ecosystem",
+      "ETHShanghai"
+    ],
+    "fullname": "Виталик Бутерин посетил ETHS в Шанхае",
+    "geoTag": "NYC",
+    "publisherAllocationBps": 800,
+    "supplementLink": "https://x.com/1455870402572341252/status/1971605618160226331",
+    "ticker": "BE",
+    "txHash": "acb27ce84c4933b7e469bb70d71e14f3d08521f14ab49c043189702b7ffed4eb",
+    "weatherTag": "Sunny"
+  },
+  {
+    "block": 38,
+    "blockTime": 1760804490,
+    "eventDescription": "金秋十月，ETHShanghai 2025即将于2025年10月18日至22日在上海隆重举行。整场活动以为期五天的黑客松和峰会为核心，集结亚太区最活跃的开发者和研究者，将创意从代码带到用户实践。",
+    "eventTime": 0,
+    "eventTypes": [
+      "ETHShanghai",
+      "Ethereum Ecosystem",
+      "RWA",
+      "Hackathon"
+    ],
+    "fullname": "ETHShanghai 2025",
+    "geoTag": "SH",
+    "publisherAllocationBps": 800,
+    "supplementLink": "https://www.panewslab.com/zh/articles/9d4f9637-83df-4bbd-a8e2-4e5b4f7e59f7",
+    "ticker": "ETHSH2025",
+    "txHash": "96518bcc8d84abbaba342f5a4706eee2fc115b11ae29cae21372d2c5c067b78c",
+    "weatherTag": "Sunny"
+  }
+]

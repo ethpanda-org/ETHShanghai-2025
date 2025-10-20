@@ -1,0 +1,6 @@
+rw_url = ""
+RPC_URL = ''
+POOL_MANAGER_ADDRESS = ""
+SWAP_ROUTER = ''
+ENENT_ROUTER_ADDRESS = ""
+

@@ -1,0 +1,21 @@
+{
+  "poolId": "f2814f8d7a0549927a073cff1bad94f8d83b00b7e0fd36dc477c899d0355c91d",
+  "txHash": "0853c23e41ebd911a3cba2828da6eb1e3fa68418cf195c109c5667498a271308",
+  "block": 87,
+  "timestamp": 1759485259,
+  "completedAt": 1759485259,
+  "completedAtISO": "2025-10-03T09:54:19Z",
+  "amount0": -10000000000000000,
+  "amount1": 9491202929295111,
+  "sqrtPriceX96": 76927267930464154725698313773,
+  "price_token1_per_token0": 0.9427606562251888,
+  "liquidity": 1000000000000000000,
+  "tick": -590,
+  "fee": 3000,
+  "reserve0": 4050000000000000000,
+  "reserve1": 980449830382179345,
+  "nativeGlobalBalance": 4050000000000000000,
+  "direction": "token0_for_token1",
+  "hasSwap": true,
+  "hasReserves": true
+}
