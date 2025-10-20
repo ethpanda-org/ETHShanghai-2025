@@ -1,0 +1,321 @@
+package changeset_test
+
+import (
+	"bytes"
+	"encoding/json"
+	"testing"
+
+	"github.com/ethereum/go-ethereum/common"
+	chain_selectors "github.com/smartcontractkit/chain-selectors"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	cldf_chain "github.com/smartcontractkit/chainlink-deployments-framework/chain"
+	"github.com/smartcontractkit/chainlink-deployments-framework/engine/test/environment"
+	"github.com/smartcontractkit/chainlink-deployments-framework/engine/test/runtime"
+
+	"github.com/smartcontractkit/chainlink-deployments-framework/datastore"
+
+	cldf "github.com/smartcontractkit/chainlink-deployments-framework/deployment"
+
+	commonchangeset "github.com/smartcontractkit/chainlink/deployment/common/changeset"
+	"github.com/smartcontractkit/chainlink/deployment/cre/ocr3"
+	"github.com/smartcontractkit/chainlink/deployment/keystone/changeset"
+	"github.com/smartcontractkit/chainlink/deployment/keystone/changeset/internal"
+	"github.com/smartcontractkit/chainlink/deployment/keystone/changeset/test"
+)
+
+func TestDeployOCR3(t *testing.T) {
+	t.Parallel()
+
+	registrySel := chain_selectors.TEST_90000001.Selector
+	otherSel := chain_selectors.TEST_90000002.Selector
+	rt, err := runtime.New(t.Context(), runtime.WithEnvOpts(
+		environment.WithEVMSimulated(t, []uint64{registrySel, otherSel}),
+	))
+	require.NoError(t, err)
+
+	qualifier := "test-ocr3-qualifier"
+
+	err = rt.Exec(
+		runtime.ChangesetTask(cldf.CreateLegacyChangeSet(changeset.DeployOCR3V2), &changeset.DeployRequestV2{
+			ChainSel:  registrySel,
+			Qualifier: qualifier,
+		}),
+	)
+	require.NoError(t, err)
+
+	// OCR3 should be deployed on registry chain
+	addrs, err := rt.State().AddressBook.AddressesForChain(registrySel)
+	require.NoError(t, err)
+	require.Len(t, addrs, 1)
+
+	dsAddrs := rt.State().DataStore.Addresses().Filter(datastore.AddressRefByQualifier(qualifier), datastore.AddressRefByChainSelector(registrySel))
+	require.Len(t, dsAddrs, 1)
+
+	// nothing on other chain
+	require.NotEqual(t, registrySel, otherSel)
+	oaddrs, _ := rt.State().AddressBook.AddressesForChain(otherSel)
+	assert.Empty(t, oaddrs)
+}
+
+func TestConfigureOCR3(t *testing.T) {
+	t.Parallel()
+
+	nWfNodes := 4
+	c := ocr3.OracleConfig{
+		MaxFaultyOracles:     1,
+		DeltaProgressMillis:  12345,
+		TransmissionSchedule: []int{nWfNodes},
+	}
+
+	t.Run("no mcms", func(t *testing.T) {
+		te := test.SetupContractTestEnv(t, test.EnvWrapperConfig{
+			WFDonConfig:     test.DonConfig{Name: "wfDon", N: nWfNodes},
+			AssetDonConfig:  test.DonConfig{Name: "assetDon", N: 4},
+			WriterDonConfig: test.DonConfig{Name: "writerDon", N: 4},
+			NumChains:       1,
+		})
+
+		wfNodes := te.GetP2PIDs("wfDon").Strings()
+		registrySel := te.Env.BlockChains.ListChainSelectors(cldf_chain.WithFamily(chain_selectors.FamilyEVM))[0]
+		existingContracts, err := te.Env.ExistingAddresses.AddressesForChain(registrySel)
+		require.NoError(t, err)
+
+		// Find existing OCR3 contract
+		var existingOCR3Addr string
+		for addr, tv := range existingContracts {
+			if tv.Type == internal.OCR3Capability {
+				existingOCR3Addr = addr
+				break
+			}
+		}
+
+		w := &bytes.Buffer{}
+		addr := common.HexToAddress(existingOCR3Addr)
+		cfg := changeset.ConfigureOCR3Config{
+			ChainSel:             te.RegistrySelector,
+			NodeIDs:              wfNodes,
+			OCR3Config:           &c,
+			WriteGeneratedConfig: w,
+			Address:              &addr,
+		}
+
+		csOut, err := changeset.ConfigureOCR3Contract(te.Env, cfg)
+		require.NoError(t, err)
+		var got ocr3.OCR2OracleConfig
+		err = json.Unmarshal(w.Bytes(), &got)
+		require.NoError(t, err)
+		assert.Len(t, got.Signers, 4)
+		assert.Len(t, got.Transmitters, 4)
+		assert.Nil(t, csOut.MCMSTimelockProposals)
+	})
+
+	t.Run("success multiple OCR3 contracts", func(t *testing.T) {
+		te := test.SetupContractTestEnv(t, test.EnvWrapperConfig{
+			WFDonConfig:     test.DonConfig{Name: "wfDon", N: nWfNodes},
+			AssetDonConfig:  test.DonConfig{Name: "assetDon", N: 4},
+			WriterDonConfig: test.DonConfig{Name: "writerDon", N: 4},
+			NumChains:       1,
+		})
+
+		registrySel := te.Env.BlockChains.ListChainSelectors(cldf_chain.WithFamily(chain_selectors.FamilyEVM))[0]
+
+		existingContracts, err := te.Env.ExistingAddresses.AddressesForChain(registrySel)
+		require.NoError(t, err)
+		require.Len(t, existingContracts, 4)
+
+		// Find existing OCR3 contract
+		var existingOCR3Addr string
+		for addr, tv := range existingContracts {
+			if tv.Type == internal.OCR3Capability {
+				existingOCR3Addr = addr
+				break
+			}
+		}
+
+		// Deploy a new OCR3 contract
+		resp, err := changeset.DeployOCR3V2(te.Env, &changeset.DeployRequestV2{ChainSel: registrySel})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NoError(t, te.Env.ExistingAddresses.Merge(resp.AddressBook))
+
+		require.NoError(t, resp.DataStore.Merge(te.Env.DataStore))
+		te.Env.DataStore = resp.DataStore.Seal()
+
+		// Verify after merge there are three original contracts plus one new one
+		addrs, err := te.Env.ExistingAddresses.AddressesForChain(registrySel)
+		require.NoError(t, err)
+		require.Len(t, addrs, 5)
+
+		// Find new OCR3 contract
+		var newOCR3Addr string
+		for addr, tv := range addrs {
+			if tv.Type == internal.OCR3Capability && addr != existingOCR3Addr {
+				newOCR3Addr = addr
+				break
+			}
+		}
+
+		wfNodes := te.GetP2PIDs("wfDon").Strings()
+
+		na := common.HexToAddress(newOCR3Addr)
+		w := &bytes.Buffer{}
+		cfg := changeset.ConfigureOCR3Config{
+			ChainSel:             te.RegistrySelector,
+			NodeIDs:              wfNodes,
+			Address:              &na, // Use the new OCR3 contract to configure
+			OCR3Config:           &c,
+			WriteGeneratedConfig: w,
+		}
+
+		csOut, err := changeset.ConfigureOCR3Contract(te.Env, cfg)
+		require.NoError(t, err)
+		var got ocr3.OCR2OracleConfig
+		err = json.Unmarshal(w.Bytes(), &got)
+		require.NoError(t, err)
+		assert.Len(t, got.Signers, 4)
+		assert.Len(t, got.Transmitters, 4)
+		assert.Nil(t, csOut.MCMSTimelockProposals)
+	})
+
+	t.Run("fails multiple OCR3 contracts but unspecified address", func(t *testing.T) {
+		te := test.SetupContractTestEnv(t, test.EnvWrapperConfig{
+			WFDonConfig:     test.DonConfig{Name: "wfDon", N: nWfNodes},
+			AssetDonConfig:  test.DonConfig{Name: "assetDon", N: 4},
+			WriterDonConfig: test.DonConfig{Name: "writerDon", N: 4},
+			NumChains:       1,
+		})
+
+		registrySel := te.Env.BlockChains.ListChainSelectors(cldf_chain.WithFamily(chain_selectors.FamilyEVM))[0]
+
+		existingContracts, err := te.Env.ExistingAddresses.AddressesForChain(registrySel)
+		require.NoError(t, err)
+		require.Len(t, existingContracts, 4)
+
+		// Deploy a new OCR3 contract
+		resp, err := changeset.DeployOCR3V2(te.Env, &changeset.DeployRequestV2{ChainSel: registrySel})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NoError(t, te.Env.ExistingAddresses.Merge(resp.AddressBook))
+
+		// Verify after merge there are original contracts plus one new one
+		addrs, err := te.Env.ExistingAddresses.AddressesForChain(registrySel)
+		require.NoError(t, err)
+		require.Len(t, addrs, 5)
+
+		wfNodes := te.GetP2PIDs("wfDon").Strings()
+
+		w := &bytes.Buffer{}
+		cfg := changeset.ConfigureOCR3Config{
+			ChainSel:             te.RegistrySelector,
+			NodeIDs:              wfNodes,
+			OCR3Config:           &c,
+			WriteGeneratedConfig: w,
+		}
+
+		_, err = changeset.ConfigureOCR3Contract(te.Env, cfg)
+		require.Error(t, err)
+		require.ErrorContains(t, err, "OCR3 contract to configure is required")
+	})
+
+	t.Run("fails multiple OCR3 contracts but address not found", func(t *testing.T) {
+		te := test.SetupContractTestEnv(t, test.EnvWrapperConfig{
+			WFDonConfig:     test.DonConfig{Name: "wfDon", N: nWfNodes},
+			AssetDonConfig:  test.DonConfig{Name: "assetDon", N: 4},
+			WriterDonConfig: test.DonConfig{Name: "writerDon", N: 4},
+			NumChains:       1,
+		})
+
+		registrySel := te.Env.BlockChains.ListChainSelectors(cldf_chain.WithFamily(chain_selectors.FamilyEVM))[0]
+
+		existingContracts, err := te.Env.ExistingAddresses.AddressesForChain(registrySel)
+		require.NoError(t, err)
+		require.Len(t, existingContracts, 4)
+
+		// Deploy a new OCR3 contract
+		resp, err := changeset.DeployOCR3V2(te.Env, &changeset.DeployRequestV2{
+			ChainSel:  registrySel,
+			Qualifier: "test-ocr-contract"})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NoError(t, te.Env.ExistingAddresses.Merge(resp.AddressBook))
+		refs := resp.DataStore.Addresses().Filter(datastore.AddressRefByQualifier("test-ocr-contract"))
+		require.Len(t, refs, 1)
+
+		// Verify after merge there are original contracts plus one new one
+		addrs, err := te.Env.ExistingAddresses.AddressesForChain(registrySel)
+		require.NoError(t, err)
+		require.Len(t, addrs, 5)
+
+		wfNodes := te.GetP2PIDs("wfDon").Strings()
+
+		nfa := common.HexToAddress("0x1234567890123456789012345678901234567890")
+		w := &bytes.Buffer{}
+		cfg := changeset.ConfigureOCR3Config{
+			ChainSel:             te.RegistrySelector,
+			NodeIDs:              wfNodes,
+			OCR3Config:           &c,
+			Address:              &nfa,
+			WriteGeneratedConfig: w,
+		}
+
+		_, err = changeset.ConfigureOCR3Contract(te.Env, cfg)
+		require.Error(t, err)
+		require.ErrorContains(t, err, "not found in datastore")
+	})
+
+	t.Run("mcms", func(t *testing.T) {
+		te := test.SetupContractTestEnv(t, test.EnvWrapperConfig{
+			WFDonConfig:     test.DonConfig{Name: "wfDon", N: nWfNodes},
+			AssetDonConfig:  test.DonConfig{Name: "assetDon", N: 4},
+			WriterDonConfig: test.DonConfig{Name: "writerDon", N: 4},
+			NumChains:       1,
+			UseMCMS:         true,
+		})
+
+		wfNodes := te.GetP2PIDs("wfDon").Strings()
+
+		registrySel := te.Env.BlockChains.ListChainSelectors(cldf_chain.WithFamily(chain_selectors.FamilyEVM))[0]
+		// Verify after merge there are three original contracts plus one new one
+		addrs, err := te.Env.ExistingAddresses.AddressesForChain(registrySel)
+		require.NoError(t, err)
+
+		// Find new OCR3 contract
+		var existingOCR3Addr string
+		for addr, tv := range addrs {
+			if tv.Type == internal.OCR3Capability {
+				existingOCR3Addr = addr
+				break
+			}
+		}
+
+		w := &bytes.Buffer{}
+		addr := common.HexToAddress(existingOCR3Addr)
+		cfg := changeset.ConfigureOCR3Config{
+			ChainSel:             te.RegistrySelector,
+			NodeIDs:              wfNodes,
+			OCR3Config:           &c,
+			WriteGeneratedConfig: w,
+			Address:              &addr,
+			MCMSConfig:           &changeset.MCMSConfig{MinDuration: 0},
+		}
+
+		csOut, err := changeset.ConfigureOCR3Contract(te.Env, cfg)
+		require.NoError(t, err)
+		var got ocr3.OCR2OracleConfig
+		err = json.Unmarshal(w.Bytes(), &got)
+		require.NoError(t, err)
+		assert.Len(t, got.Signers, 4)
+		assert.Len(t, got.Transmitters, 4)
+		assert.NotNil(t, csOut.MCMSTimelockProposals)
+		t.Logf("got: %v", csOut.MCMSTimelockProposals[0])
+
+		// now apply the changeset such that the proposal is signed and execed
+		w2 := &bytes.Buffer{}
+		cfg.WriteGeneratedConfig = w2
+
+		err = applyProposal(t, te, commonchangeset.Configure(cldf.CreateLegacyChangeSet(changeset.ConfigureOCR3Contract), cfg))
+		require.NoError(t, err)
+	})
+}

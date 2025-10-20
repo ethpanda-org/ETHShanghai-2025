@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 220 22% 97%;
+  --foreground: 222 45% 12%;
+
+  --muted: 220 20% 90%;
+  --muted-foreground: 225 14% 38%;
+
+  --popover: 220 22% 97%;
+  --popover-foreground: 222 45% 12%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222 45% 12%;
+
+  --border: 220 18% 84%;
+  --input: 220 18% 84%;
+
+  --primary: 266 83% 60%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 220 20% 32%;
+  --secondary-foreground: 210 40% 96%;
+
+  --accent: 220 24% 88%;
+  --accent-foreground: 222 45% 12%;
+
+  --destructive: 0 72% 50%;
+  --destructive-foreground: 210 40% 98%;
+
+  --ring: 266 83% 60%;
+
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: 222 47% 11%;
+  --foreground: 216 33% 94%;
+
+  --muted: 220 26% 18%;
+  --muted-foreground: 218 16% 72%;
+
+  --popover: 222 47% 11%;
+  --popover-foreground: 216 33% 94%;
+
+  --card: 222 40% 14%;
+  --card-foreground: 216 33% 94%;
+
+  --border: 218 24% 22%;
+  --input: 218 24% 22%;
+
+  --primary: 266 83% 68%;
+  --primary-foreground: 222 47% 11%;
+
+  --secondary: 220 24% 30%;
+  --secondary-foreground: 216 33% 94%;
+
+  --accent: 220 28% 24%;
+  --accent-foreground: 216 33% 94%;
+
+  --destructive: 0 62% 32%;
+  --destructive-foreground: 216 33% 94%;
+
+  --ring: 266 83% 68%;
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* System font stack for better performance and fallback */
+.font-system-ui {
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    "Noto Sans",
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji";
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.6);
+  border-radius: 9999px;
+}

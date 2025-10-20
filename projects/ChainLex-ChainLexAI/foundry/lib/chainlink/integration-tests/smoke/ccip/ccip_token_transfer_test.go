@@ -1,0 +1,532 @@
+package ccip
+
+import (
+	"math/big"
+	"testing"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/gagliardetto/solana-go"
+	"github.com/stretchr/testify/require"
+	"golang.org/x/exp/maps"
+
+	chain_selectors "github.com/smartcontractkit/chain-selectors"
+
+	"github.com/smartcontractkit/chainlink-ccip/chains/evm/gobindings/generated/v1_2_0/router"
+	solconfig "github.com/smartcontractkit/chainlink-ccip/chains/solana/contracts/tests/config"
+	soltestutils "github.com/smartcontractkit/chainlink-ccip/chains/solana/contracts/tests/testutils"
+	"github.com/smartcontractkit/chainlink-ccip/chains/solana/gobindings/v0_1_0/ccip_router"
+	solstate "github.com/smartcontractkit/chainlink-ccip/chains/solana/utils/state"
+	soltokens "github.com/smartcontractkit/chainlink-ccip/chains/solana/utils/tokens"
+
+	msg_hasher163 "github.com/smartcontractkit/chainlink-ccip/chains/evm/gobindings/generated/v1_6_3/message_hasher"
+	"github.com/smartcontractkit/chainlink-deployments-framework/chain"
+
+	"github.com/smartcontractkit/chainlink-evm/pkg/utils"
+
+	"github.com/smartcontractkit/chainlink/deployment/ccip/changeset/testhelpers"
+	"github.com/smartcontractkit/chainlink/deployment/ccip/changeset/v1_6"
+	"github.com/smartcontractkit/chainlink/deployment/ccip/shared/stateview"
+	testsetups "github.com/smartcontractkit/chainlink/integration-tests/testsetups/ccip"
+
+	"github.com/smartcontractkit/chainlink/v2/core/capabilities/ccip/ccipevm"
+	"github.com/smartcontractkit/chainlink/v2/core/capabilities/ccip/types"
+	"github.com/smartcontractkit/chainlink/v2/core/logger"
+)
+
+func TestTokenTransfer_EVM2EVM(t *testing.T) {
+	t.Parallel()
+	lggr := logger.TestLogger(t)
+	ctx := t.Context()
+
+	tenv, _, _ := testsetups.NewIntegrationEnvironment(t,
+		testhelpers.WithNumOfUsersPerChain(3))
+
+	e := tenv.Env
+	state, err := stateview.LoadOnchainState(e)
+	require.NoError(t, err)
+	evmChains := e.BlockChains.EVMChains()
+	require.GreaterOrEqual(t, len(evmChains), 2)
+
+	allChainSelectors := maps.Keys(evmChains)
+	sourceChain, destChain := allChainSelectors[0], allChainSelectors[1]
+	ownerSourceChain := evmChains[sourceChain].DeployerKey
+	ownerDestChain := evmChains[destChain].DeployerKey
+
+	require.GreaterOrEqual(t, len(tenv.Users[sourceChain]), 2)
+	require.GreaterOrEqual(t, len(tenv.Users[destChain]), 2)
+	selfServeSrcTokenPoolDeployer := tenv.Users[sourceChain][1]
+	selfServeDestTokenPoolDeployer := tenv.Users[destChain][1]
+
+	oneE18 := new(big.Int).SetUint64(1e18)
+
+	// Deploy tokens and pool by CCIP Owner
+	srcToken, _, destToken, _, err := testhelpers.DeployTransferableToken(
+		lggr,
+		tenv.Env.BlockChains.EVMChains(),
+		sourceChain,
+		destChain,
+		ownerSourceChain,
+		ownerDestChain,
+		state,
+		e.ExistingAddresses,
+		"OWNER_TOKEN",
+	)
+	require.NoError(t, err)
+
+	// Deploy Self Serve tokens and pool
+	selfServeSrcToken, _, selfServeDestToken, _, err := testhelpers.DeployTransferableToken(
+		lggr,
+		tenv.Env.BlockChains.EVMChains(),
+		sourceChain,
+		destChain,
+		selfServeSrcTokenPoolDeployer,
+		selfServeDestTokenPoolDeployer,
+		state,
+		e.ExistingAddresses,
+		"SELF_SERVE_TOKEN",
+	)
+	require.NoError(t, err)
+	testhelpers.AddLanesForAll(t, &tenv, state)
+
+	testhelpers.MintAndAllow(
+		t,
+		e,
+		state,
+		map[uint64][]testhelpers.MintTokenInfo{
+			sourceChain: {
+				testhelpers.NewMintTokenInfo(selfServeSrcTokenPoolDeployer, selfServeSrcToken),
+				testhelpers.NewMintTokenInfo(ownerSourceChain, srcToken),
+			},
+			destChain: {
+				testhelpers.NewMintTokenInfo(selfServeDestTokenPoolDeployer, selfServeDestToken),
+				testhelpers.NewMintTokenInfo(ownerDestChain, destToken),
+			},
+		},
+	)
+
+	tcs := []testhelpers.TestTransferRequest{
+		{
+			Name:        "Send token to EOA",
+			SourceChain: sourceChain,
+			DestChain:   destChain,
+			Tokens: []router.ClientEVMTokenAmount{
+				{
+					Token:  srcToken.Address(),
+					Amount: oneE18,
+				},
+			},
+			Receiver: utils.RandomAddress().Bytes(),
+			ExpectedTokenBalances: []testhelpers.ExpectedBalance{
+				{Token: destToken.Address().Bytes(), Amount: oneE18},
+			},
+			ExpectedStatus: testhelpers.EXECUTION_STATE_SUCCESS,
+		},
+		{
+			Name:        "Send token to contract",
+			SourceChain: sourceChain,
+			DestChain:   destChain,
+			Tokens: []router.ClientEVMTokenAmount{
+				{
+					Token:  srcToken.Address(),
+					Amount: oneE18,
+				},
+			},
+			Receiver: state.MustGetEVMChainState(destChain).Receiver.Address().Bytes(),
+			ExpectedTokenBalances: []testhelpers.ExpectedBalance{
+				{Token: destToken.Address().Bytes(), Amount: oneE18},
+			},
+			ExpectedStatus: testhelpers.EXECUTION_STATE_SUCCESS,
+		},
+		{
+			Name:        "Send N tokens to contract",
+			SourceChain: destChain,
+			DestChain:   sourceChain,
+			Tokens: []router.ClientEVMTokenAmount{
+				{
+					Token:  selfServeDestToken.Address(),
+					Amount: oneE18,
+				},
+				{
+					Token:  destToken.Address(),
+					Amount: oneE18,
+				},
+				{
+					Token:  selfServeDestToken.Address(),
+					Amount: oneE18,
+				},
+			},
+			Receiver:  state.MustGetEVMChainState(sourceChain).Receiver.Address().Bytes(),
+			ExtraArgs: testhelpers.MakeEVMExtraArgsV2(300_000, false),
+			ExpectedTokenBalances: []testhelpers.ExpectedBalance{
+				{Token: selfServeSrcToken.Address().Bytes(), Amount: new(big.Int).Add(oneE18, oneE18)},
+				{Token: srcToken.Address().Bytes(), Amount: oneE18},
+			},
+			ExpectedStatus: testhelpers.EXECUTION_STATE_SUCCESS,
+		},
+		{
+			Name:        "Sending token transfer with custom gasLimits to the EOA is successful",
+			SourceChain: destChain,
+			DestChain:   sourceChain,
+			Tokens: []router.ClientEVMTokenAmount{
+				{
+					Token:  selfServeDestToken.Address(),
+					Amount: oneE18,
+				},
+				{
+					Token:  destToken.Address(),
+					Amount: new(big.Int).Add(oneE18, oneE18),
+				},
+			},
+			Receiver:  utils.RandomAddress().Bytes(),
+			ExtraArgs: testhelpers.MakeEVMExtraArgsV2(1, false),
+			ExpectedTokenBalances: []testhelpers.ExpectedBalance{
+				{Token: selfServeSrcToken.Address().Bytes(), Amount: oneE18},
+				{Token: srcToken.Address().Bytes(), Amount: new(big.Int).Add(oneE18, oneE18)},
+			},
+			ExpectedStatus: testhelpers.EXECUTION_STATE_SUCCESS,
+		},
+		{
+			Name:        "Sending PTT with too low gas limit leads to the revert when receiver is a contract",
+			SourceChain: destChain,
+			DestChain:   sourceChain,
+			Tokens: []router.ClientEVMTokenAmount{
+				{
+					Token:  selfServeDestToken.Address(),
+					Amount: oneE18,
+				},
+				{
+					Token:  destToken.Address(),
+					Amount: oneE18,
+				},
+			},
+			Receiver:  state.MustGetEVMChainState(sourceChain).Receiver.Address().Bytes(),
+			Data:      []byte("this should be reverted because gasLimit is too low, no tokens are transferred as well"),
+			ExtraArgs: testhelpers.MakeEVMExtraArgsV2(1, false),
+			ExpectedTokenBalances: []testhelpers.ExpectedBalance{
+				{Token: selfServeSrcToken.Address().Bytes(), Amount: big.NewInt(0)},
+				{Token: srcToken.Address().Bytes(), Amount: big.NewInt(0)},
+			},
+			ExpectedStatus: testhelpers.EXECUTION_STATE_FAILURE,
+		},
+	}
+
+	// Wait for filter registration for CCIPMessageSent (onramp), CommitReportAccepted (offramp), and ExecutionStateChanged (offramp)
+	testhelpers.WaitForEventFilterRegistrationOnLane(t, state, e.Offchain, sourceChain, destChain)
+
+	startBlocks, expectedSeqNums, expectedExecutionStates, expectedTokenBalances :=
+		testhelpers.TransferMultiple(ctx, t, e, state, tcs)
+
+	err = testhelpers.ConfirmMultipleCommits(
+		t,
+		e,
+		state,
+		startBlocks,
+		false,
+		expectedSeqNums,
+	)
+	require.NoError(t, err)
+
+	execStates := testhelpers.ConfirmExecWithSeqNrsForAll(
+		t,
+		e,
+		state,
+		testhelpers.SeqNumberRangeToSlice(expectedSeqNums),
+		startBlocks,
+	)
+	require.Equal(t, expectedExecutionStates, execStates)
+
+	testhelpers.WaitForTokenBalances(ctx, t, e, expectedTokenBalances)
+}
+
+func TestTokenTransfer_EVM2Solana(t *testing.T) {
+	t.Parallel()
+	lggr := logger.TestLogger(t)
+	ctx := t.Context()
+
+	tenv, _, _ := testsetups.NewIntegrationEnvironment(t,
+		testhelpers.WithNumOfUsersPerChain(3),
+		testhelpers.WithSolChains(1),
+		testhelpers.WithOCRConfigOverride(func(params v1_6.CCIPOCRParams) v1_6.CCIPOCRParams {
+			params.ExecuteOffChainConfig.SolanaChainWriterConfigVersion = &types.SolanaChainWriterExecuteConfigVersionV2
+			return params
+		}),
+	)
+
+	e := tenv.Env
+	state, err := stateview.LoadOnchainState(e)
+	require.NoError(t, err)
+	evmChains := e.BlockChains.EVMChains()
+	require.GreaterOrEqual(t, len(evmChains), 2)
+
+	allChainSelectors := e.BlockChains.ListChainSelectors(chain.WithFamily(chain_selectors.FamilyEVM))
+	allSolChainSelectors := e.BlockChains.ListChainSelectors(chain.WithFamily(chain_selectors.FamilySolana))
+	sourceChain, destChain := allChainSelectors[0], allSolChainSelectors[0]
+	ownerSourceChain := evmChains[sourceChain].DeployerKey
+
+	require.GreaterOrEqual(t, len(tenv.Users[sourceChain]), 2) // TODO: ???
+
+	oneE9 := new(big.Int).SetUint64(1e9)
+	oneE18 := new(big.Int).SetUint64(1e18)
+
+	// Deploy tokens and pool by CCIP Owner
+	srcToken, _, destToken, err := testhelpers.DeployTransferableTokenSolanaV0_1_1(
+		lggr,
+		e,
+		sourceChain,
+		destChain,
+		ownerSourceChain,
+		"OWNER_TOKEN",
+	)
+	require.NoError(t, err)
+
+	// testhelpers.AddLanesForAll(t, &tenv, state) TODO:, fixed for Solana now
+	testhelpers.AddLaneWithDefaultPricesAndFeeQuoterConfig(t, &tenv, state, sourceChain, destChain, false)
+
+	testhelpers.MintAndAllow(
+		t,
+		e,
+		state,
+		map[uint64][]testhelpers.MintTokenInfo{
+			sourceChain: {
+				testhelpers.NewMintTokenInfo(ownerSourceChain, srcToken),
+			},
+		},
+	)
+	// TODO: how to do MintAndAllow on Solana?
+	tokenReceiver := state.SolChains[destChain].Receiver
+	t.Logf("Token receiver: %s\n", tokenReceiver.String())
+	tokenReceiverATA, _, ferr := soltokens.FindAssociatedTokenAddress(solana.Token2022ProgramID, destToken, tokenReceiver)
+	require.NoError(t, ferr)
+	t.Logf("Token receiver ATA: %s\n", tokenReceiverATA.String())
+
+	extraArgs, err := ccipevm.SerializeClientSVMExtraArgsV1(msg_hasher163.ClientSVMExtraArgsV1{
+		TokenReceiver: tokenReceiver,
+	})
+	require.NoError(t, err)
+
+	// TODO: test both with ATA pre-initialized and not
+	tcs := []testhelpers.TestTransferRequest{
+		{
+			Name:        "Send token to contract",
+			SourceChain: sourceChain,
+			DestChain:   destChain,
+			Tokens: []router.ClientEVMTokenAmount{
+				{
+					Token:  srcToken.Address(),
+					Amount: new(big.Int).Mul(big.NewInt(20), oneE18),
+				},
+			},
+			TokenReceiverATA: tokenReceiverATA.Bytes(),
+			ExpectedTokenBalances: []testhelpers.ExpectedBalance{
+				// due to the differences in decimals, 20e18 on EVM results to 20e9 on SVM
+				{Token: destToken.Bytes(), Amount: new(big.Int).Mul(big.NewInt(20), oneE9)},
+			},
+			ExtraArgs:      extraArgs,
+			ExpectedStatus: testhelpers.EXECUTION_STATE_SUCCESS,
+		},
+	}
+
+	// Wait for filter registration for CCIPMessageSent (onramp), CommitReportAccepted (offramp), and ExecutionStateChanged (offramp)
+	testhelpers.WaitForEventFilterRegistrationOnLane(t, state, e.Offchain, sourceChain, destChain)
+
+	startBlocks, expectedSeqNums, expectedExecutionStates, expectedTokenBalances :=
+		testhelpers.TransferMultiple(ctx, t, e, state, tcs)
+
+	err = testhelpers.ConfirmMultipleCommits(
+		t,
+		e,
+		state,
+		startBlocks,
+		false,
+		expectedSeqNums,
+	)
+	require.NoError(t, err)
+
+	execStates := testhelpers.ConfirmExecWithSeqNrsForAll(
+		t,
+		e,
+		state,
+		testhelpers.SeqNumberRangeToSlice(expectedSeqNums),
+		startBlocks,
+	)
+	require.Equal(t, expectedExecutionStates, execStates)
+
+	testhelpers.WaitForTokenBalances(ctx, t, e, expectedTokenBalances)
+}
+
+func TestTokenTransfer_Solana2EVM(t *testing.T) {
+	t.Parallel()
+	lggr := logger.TestLogger(t)
+	ctx := t.Context()
+
+	tenv, _, _ := testsetups.NewIntegrationEnvironment(t,
+		testhelpers.WithNumOfUsersPerChain(3),
+		testhelpers.WithSolChains(1))
+
+	e := tenv.Env
+	state, err := stateview.LoadOnchainState(e)
+	require.NoError(t, err)
+	require.GreaterOrEqual(t, len(e.BlockChains.EVMChains()), 2)
+
+	allChainSelectors := e.BlockChains.ListChainSelectors(chain.WithFamily(chain_selectors.FamilyEVM))
+	allSolChainSelectors := e.BlockChains.ListChainSelectors(chain.WithFamily(chain_selectors.FamilySolana))
+	sourceChain, destChain := allSolChainSelectors[0], allChainSelectors[0]
+	sender := e.BlockChains.SolanaChains()[sourceChain].DeployerKey
+	ownerSourceChain := sender.PublicKey()
+	ownerDestChain := e.BlockChains.EVMChains()[destChain].DeployerKey
+
+	require.GreaterOrEqual(t, len(tenv.Users[destChain]), 2) // TODO: ???
+
+	const oneE9 uint64 = 1e9
+
+	// Deploy tokens and pool by CCIP Owner
+	destToken, _, srcToken, err := testhelpers.DeployTransferableTokenSolanaV0_1_1(
+		lggr,
+		e,
+		destChain,
+		sourceChain,
+		ownerDestChain,
+		"OWNER_TOKEN",
+	)
+	require.NoError(t, err)
+
+	testhelpers.AddLaneWithDefaultPricesAndFeeQuoterConfig(t, &tenv, state, sourceChain, destChain, false)
+
+	// TODO: handle in setup
+	solChains := e.BlockChains.SolanaChains()
+	deployer := solChains[sourceChain].DeployerKey
+	rpcClient := solChains[sourceChain].Client
+
+	// create ATA for user
+	tokenProgram := solana.TokenProgramID
+	wSOL := solana.SolMint
+	ixAtaUser, deployerWSOL, uerr := soltokens.CreateAssociatedTokenAccount(tokenProgram, wSOL, deployer.PublicKey(), deployer.PublicKey())
+	require.NoError(t, uerr)
+
+	billingSignerPDA, _, err := solstate.FindFeeBillingSignerPDA(state.SolChains[sourceChain].Router)
+	require.NoError(t, err)
+
+	// Approve CCIP to transfer the user's token for billing
+	ixApprove, err := soltokens.TokenApproveChecked(1e9, 9, tokenProgram, deployerWSOL, wSOL, billingSignerPDA, deployer.PublicKey(), []solana.PublicKey{})
+	require.NoError(t, err)
+
+	soltestutils.SendAndConfirm(ctx, t, rpcClient, []solana.Instruction{ixAtaUser, ixApprove}, *deployer, solconfig.DefaultCommitment)
+
+	// fund user WSOL (transfer SOL + syncNative)
+	transferAmount := 1.0 * solana.LAMPORTS_PER_SOL
+	ixTransfer, err := soltokens.NativeTransfer(transferAmount, deployer.PublicKey(), deployerWSOL)
+	require.NoError(t, err)
+	ixSync, err := soltokens.SyncNative(tokenProgram, deployerWSOL)
+	require.NoError(t, err)
+	soltestutils.SendAndConfirm(ctx, t, rpcClient, []solana.Instruction{ixTransfer, ixSync}, *deployer, solconfig.DefaultCommitment)
+	// END: handle in setup
+
+	testhelpers.MintAndAllow(
+		t,
+		e,
+		state,
+		map[uint64][]testhelpers.MintTokenInfo{
+			// sourceChain: {
+			// 	testhelpers.NewMintTokenInfo(ownerSourceChain, srcToken),
+			// },
+			destChain: {
+				testhelpers.NewMintTokenInfo(ownerDestChain, destToken),
+			},
+		},
+	)
+
+	// TODO: extract as MintAndAllow on Solana? mint already previously happened
+	userTokenAccount, _, err := soltokens.FindAssociatedTokenAddress(solana.Token2022ProgramID, srcToken, ownerSourceChain)
+	require.NoError(t, err)
+
+	ixApprove2, err := soltokens.TokenApproveChecked(1000, 9, solana.Token2022ProgramID, userTokenAccount, srcToken, billingSignerPDA, ownerSourceChain, nil)
+	require.NoError(t, err)
+
+	ixs := []solana.Instruction{ixApprove2}
+	result := soltestutils.SendAndConfirm(ctx, t, rpcClient, ixs, *sender, solconfig.DefaultCommitment)
+	require.NotNil(t, result)
+	// END: extract as MintAndAllow on Solana
+
+	// ---
+	emptyEVMExtraArgsV2 := []byte{}
+	extraArgs := emptyEVMExtraArgsV2
+
+	// extraArgs := soltestutils.MustSerializeExtraArgs(t, fee_quoter.EVMExtraArgsV2{
+	// 	GasLimit: bin.Uint128{Lo: 500_000, Hi: 0}, // TODO: why is default not enough
+	// }, solccip.EVMExtraArgsV2Tag)
+
+	tcs := []testhelpers.TestTransferRequest{
+		{
+			Name:        "Send token to contract",
+			SourceChain: sourceChain,
+			DestChain:   destChain,
+			FeeToken:    wSOL.String(),
+			SolTokens: []ccip_router.SVMTokenAmount{
+				{
+					Token:  srcToken,
+					Amount: 1,
+				},
+			},
+			Receiver: state.MustGetEVMChainState(destChain).Receiver.Address().Bytes(),
+			ExpectedTokenBalances: []testhelpers.ExpectedBalance{
+				// due to the differences in decimals, 1 on SVM results to 1e9 on EVM
+				{Token: common.LeftPadBytes(destToken.Address().Bytes(), 32), Amount: new(big.Int).SetUint64(oneE9)},
+			},
+			ExtraArgs:      extraArgs,
+			ExpectedStatus: testhelpers.EXECUTION_STATE_SUCCESS,
+		},
+		// {
+		// 	Name:        "Send N tokens to contract",
+		// 	SourceChain: destChain,
+		// 	DestChain:   sourceChain,
+		// 	Tokens: []router.ClientEVMTokenAmount{
+		// 		{
+		// 			Token:  selfServeDestToken.Address(),
+		// 			Amount: oneE9,
+		// 		},
+		// 		{
+		// 			Token:  destToken.Address(),
+		// 			Amount: oneE9,
+		// 		},
+		// 		{
+		// 			Token:  selfServeDestToken.Address(),
+		// 			Amount: oneE9,
+		// 		},
+		// 	},
+		// 	Receiver:  state.Chains[sourceChain].Receiver.Address().Bytes(),
+		// 	ExtraArgs: testhelpers.MakeEVMExtraArgsV2(300_000, false),
+		// 	ExpectedTokenBalances: []testhelpers.ExpectedBalance{
+		// 		{selfServeSrcToken.Address().Bytes(), new(big.Int).Add(oneE18, oneE18)},
+		// 		{srcToken.Address().Bytes(), oneE18},
+		// 	},
+		// 	ExpectedStatus: testhelpers.EXECUTION_STATE_SUCCESS,
+		// },
+	}
+
+	// Wait for filter registration for CCIPMessageSent (onramp), CommitReportAccepted (offramp), and ExecutionStateChanged (offramp)
+	testhelpers.WaitForEventFilterRegistrationOnLane(t, state, e.Offchain, sourceChain, destChain)
+
+	startBlocks, expectedSeqNums, expectedExecutionStates, expectedTokenBalances :=
+		testhelpers.TransferMultiple(ctx, t, e, state, tcs)
+
+	err = testhelpers.ConfirmMultipleCommits(
+		t,
+		e,
+		state,
+		startBlocks,
+		false,
+		expectedSeqNums,
+	)
+	require.NoError(t, err)
+
+	execStates := testhelpers.ConfirmExecWithSeqNrsForAll(
+		t,
+		e,
+		state,
+		testhelpers.SeqNumberRangeToSlice(expectedSeqNums),
+		startBlocks,
+	)
+	require.Equal(t, expectedExecutionStates, execStates)
+
+	testhelpers.WaitForTokenBalances(ctx, t, e, expectedTokenBalances)
+}

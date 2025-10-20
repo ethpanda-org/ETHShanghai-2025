@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<title>ChainTech - Compliance Assistant</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#7C3AED", // Updated primary color to purple
+            "secondary": "#374151", // Updated secondary color to dark gray
+            "background-light": "#f6f7f8",
+            "background-dark": "#111827", // Adjusted dark background
+          },
+          fontFamily: {
+            "display": ["Inter"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    .highlight-review {
+        background-color: rgba(124, 58, 237, 0.15);}
+    .thinking-animation::after {
+        content: '.';
+        animation: dots 1.5s steps(3, end) infinite;
+    }
+    @keyframes dots {
+        0%, 20% {
+            color: rgba(0,0,0,0);
+            text-shadow:
+                .25em 0 0 rgba(0,0,0,0),
+                .5em 0 0 rgba(0,0,0,0);
+        }
+        40% {
+            color: white;
+            text-shadow:
+                .25em 0 0 rgba(0,0,0,0),
+                .5em 0 0 rgba(0,0,0,0);
+        }
+        60% {
+            text-shadow:
+                .25em 0 0 white,
+                .5em 0 0 rgba(0,0,0,0);
+        }
+        80%, 100% {
+            text-shadow:
+                .25em 0 0 white,
+                .5em 0 0 white;
+        }
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200">
+<div class="flex flex-col min-h-screen">
+<header class="sticky top-0 z-20 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-b border-slate-200/80 dark:border-slate-800/80">
+<div class="mx-auto max-w-[1440px] px-8">
+<div class="flex items-center justify-between h-16">
+<div class="flex items-center gap-4">
+<svg class="h-8 w-8 text-primary" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+<h1 class="text-xl font-bold text-slate-900 dark:text-white">RWA Compliance Suite</h1>
+</div>
+<nav class="absolute left-1/2 -translate-x-1/2">
+<div class="flex items-center gap-2 rounded-lg bg-slate-200/80 dark:bg-secondary/40 p-1">
+<a class="px-4 py-1.5 text-sm font-medium rounded-md bg-primary text-white" href="#">Compliance Files</a>
+<a class="px-4 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-300/50 dark:hover:bg-secondary/60 rounded-md" href="#">Contract Generation</a>
+<a class="px-4 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-300/50 dark:hover:bg-secondary/60 rounded-md" href="#">Dashboard</a>
+</div>
+</nav>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center size-10 rounded-full bg-slate-200/80 dark:bg-secondary/40 text-slate-600 dark:text-slate-300 hover:bg-slate-300/50 dark:hover:bg-secondary/60">
+<svg fill="currentColor" height="20px" viewBox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg"><path d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
+</button>
+<div class="size-10 rounded-full bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCq4AMPrxyFssOdWy1ROCGgb447sRYNV-oVD8TXql0XwJ5S6a6uMaTf8qyCNTqzTthdMNlse0_nWprS_VyY2OyCOIKbxoNgxIIOnomwb_ZBqG5MWgset-agfylccI03iQCUBDk02WBbTJrjUdAUJp6wncFzD_GMjMtB2NVfzlv1hUeXV321qWDAHPvblzV3A50F-K3lvmhdl_wVQDyjuRxQOt3-z0qw9DzUFWEZ9QF1K_ahQZNxxt7nK8qPfC6s8XWarYZ-u3Xazgp6");'></div>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow w-full max-w-[1440px] mx-auto p-6 grid grid-cols-10 gap-6">
+<aside class="col-span-2 flex flex-col gap-6">
+<div class="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-slate-300 dark:border-secondary p-8 text-center bg-slate-200/20 dark:bg-secondary/20">
+<svg class="h-12 w-12 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+<p class="font-semibold text-slate-700 dark:text-slate-200">Drag and drop files here</p>
+<p class="text-sm text-slate-500 dark:text-slate-400">or</p>
+<button class="w-full h-10 px-4 rounded-md bg-slate-200 dark:bg-secondary hover:bg-slate-300 dark:hover:bg-secondary/80 text-sm font-bold text-slate-700 dark:text-slate-200">Browse Files</button>
+</div>
+<div class="flex flex-col gap-4">
+<h3 class="text-lg font-bold px-4 text-slate-900 dark:text-white">Uploaded Files</h3>
+<div class="rounded-lg bg-background-light dark:bg-secondary/20 p-4 border border-slate-200/80 dark:border-secondary/50">
+<div class="flex gap-4">
+<div class="w-16 h-16 rounded-md bg-cover bg-center flex-shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDmQRiPWBI3DDUxRYXjuSIh2K1wtZ3bJ29GT92QP13257VxtiHpFafNHVWTwrD5UKfviFesisoaPB0OnHI6wGEPbN7HcAqTGGYqk7Wsc6JosoXgg2u4O1IeKmA0wC7rfngyw3q061P0n1LTi0VrjYitfWLRrD2x318yMEGzNcl-phR7c2-nX1XBSUXfQVE2qk4VoUzPKg79omsnOA4XxNPJptJAGdaUO8vQL4G_nPE24vDb82s9gcM-KODb1-EAS21PyHkzwAkxwe7W");'></div>
+<div class="flex flex-col justify-center">
+<p class="font-bold text-sm text-slate-800 dark:text-slate-100">Compliance Report.pdf</p>
+<span class="text-xs px-2 py-0.5 mt-1 rounded-full bg-primary/20 text-primary font-medium w-fit">Compliance</span>
+</div>
+</div>
+<div class="mt-4 border-t border-slate-200 dark:border-secondary/50 pt-4 space-y-2 text-sm">
+<p><strong class="font-medium text-slate-600 dark:text-slate-400">Asset Type:</strong> Real Estate</p>
+<p><strong class="font-medium text-slate-600 dark:text-slate-400">Jurisdiction:</strong> United States</p>
+</div>
+</div>
+</div>
+</aside>
+<section class="col-span-5 flex flex-col bg-slate-200/20 dark:bg-secondary/20 rounded-lg border border-slate-200/80 dark:border-secondary/50 overflow-hidden">
+<div class="p-6 border-b border-slate-200 dark:border-secondary/50">
+<h2 class="text-xl font-bold text-slate-900 dark:text-white">AI Compliance Assistant</h2>
+<div class="mt-4 p-4 rounded-lg bg-slate-50 dark:bg-secondary/40 border border-slate-200 dark:border-secondary/60">
+<p class="text-sm font-bold text-slate-700 dark:text-slate-200">AI Summary</p>
+<p class="text-sm mt-1 text-slate-600 dark:text-slate-300">This document outlines compliance for RWA tokenization, covering regulations, KYC/AML, and reporting.</p>
+</div>
+</div>
+<div class="flex-grow p-6 space-y-6 overflow-y-auto">
+<div class="flex items-start gap-3">
+<div class="size-8 rounded-full bg-cover bg-center flex-shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBhCp1wZmMrbYAFrL1ZD4aRxR4G4y11zBKBTiXXe1La0BEsp7FizMtCr_LKv6uFJR1p3DZ0MZpsJO1u9p-pD5E6g6kUpQgfsWDXBAiPLVyqG2fSZJ4tHZTCLmkSj41R50jQ0dKzYmMC6AMe_iRAgu74XbK36OfJDiJj4AbbvB-1fX-Ja2eTbda3EcVVziXqV6fFVj-mW3DSJr3EUQ3e6hI6lyl-DZy5tSO4LhfQ7HKOmhJX2_gdqw70fChIyzRWcjj42e27LJi9NR8z");'></div>
+<div class="flex flex-col gap-1 items-start">
+<p class="text-xs text-slate-500 dark:text-slate-400">AI Assistant</p>
+<div class="bg-slate-200 dark:bg-secondary p-3 rounded-lg rounded-tl-none">
+<p class="text-sm text-slate-700 dark:text-slate-200 thinking-animation">I'm analyzing your document</p>
+</div>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="size-8 rounded-full bg-cover bg-center flex-shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuASjBEVzEhuizD79K8xfGEb0LDGc4HNugaHAKqsOICbYJdF9vAUJkOOfHDJc2d-kZCN7oorFE-ITbUy3wCOAD9yoMKgqmfw1Cexcn7nL4dB5qIFX_dixiwN37ZxuxExmb0wo80I-FukZq_LszQhSIDjubMQeNnevWlIqlzxJqg5XzE2YJT9jj6oqnoZmAGw_rLQ-QOhNRVH8uqcpcvjNJ9vQr68eYA1Rla0kpx1aO6YMDq-2iCbpBW2Pi2aLXXZZP2D0PhTHbFByUtU");'></div>
+<div class="flex flex-col gap-1 items-start">
+<p class="text-xs text-slate-500 dark:text-slate-400">AI Assistant</p>
+<div class="bg-slate-200 dark:bg-secondary p-3 rounded-lg rounded-tl-none">
+<p class="text-sm text-slate-700 dark:text-slate-200">I've identified some missing information. To proceed, please provide the following details:</p>
+<div class="mt-4 p-4 rounded-lg bg-slate-50 dark:bg-secondary/80 border border-slate-200 dark:border-secondary/90 space-y-3">
+<div>
+<label class="text-xs font-medium text-slate-600 dark:text-slate-300">Asset Type</label>
+<input class="mt-1 w-full form-input rounded-md text-sm bg-slate-200 dark:bg-secondary/90 border-slate-300 dark:border-secondary focus:ring-primary focus:border-primary placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-800 dark:text-slate-200" placeholder="e.g., Real Estate, Bonds" type="text"/>
+</div>
+<div>
+<label class="text-xs font-medium text-slate-600 dark:text-slate-300">Issuance Date</label>
+<input class="mt-1 w-full form-input rounded-md text-sm bg-slate-200 dark:bg-secondary/90 border-slate-300 dark:border-secondary focus:ring-primary focus:border-primary placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-800 dark:text-slate-200" placeholder="YYYY-MM-DD" type="text"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-start gap-3 justify-end">
+<div class="flex flex-col gap-1 items-end">
+<p class="text-xs text-slate-500 dark:text-slate-400">You</p>
+<div class="bg-primary p-3 rounded-lg rounded-br-none">
+<p class="text-sm text-white">Asset Type: Real Estate, Jurisdiction: United States, Issuance Date: 2024-01-15</p>
+</div>
+</div>
+<div class="size-8 rounded-full bg-cover bg-center flex-shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDnKv5uOc-8cloTTg3plFq4A0jCaACFqBipEn2u5s-y0_1oL8rxwKW3M3OQxfyyMGmhgSIht0AhhV_NMawoAjgFotfzkf-bXkzQTzI3WTDbXcZGO2T63AuGgQqsVeYpYVhlWu4hrctm1ctZGCTikBWm7sXo6cWPQV0-lhoTtk0qzI5Egv_EKayqmjXHf4DEqW8t0sfsDpA1XsOEGdeX2URZNBzSzT-8Ui3_ZHyWbMLQZAhkgoQ4ijcH22u20Qyjngg7qakJ1xJFEfCg");'></div>
+</div>
+<div class="flex items-start gap-3">
+<div class="size-8 rounded-full bg-cover bg-center flex-shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDCmSA6t9dEU8xF3wRFt93V6PuNQMuUAR1FhMSOhO2q7_1z6puxafxHwUn-colWTG2dZJrNhn36UqRxQC2xW-6RYcC3RBuEun8UeAVzpMTGe7hIQYRy-9JiZfPZe4Bimbd8DhZ23Ermgu_UPnJLIdjjEGvyLNkxneNTD5h5NDC0PTgG330QBkXB-I9JlhhcllV_xonJPkKejAeIVp7tEqWdH_KXbL0xVmGIRSWe5dg_ZGjfGt4RtW8uAVPyrV0MnxBEaaEh5sdpSTDS");'></div>
+<div class="flex flex-col gap-1 items-start">
+<p class="text-xs text-slate-500 dark:text-slate-400">AI Assistant</p>
+<div class="bg-slate-200 dark:bg-secondary p-3 rounded-lg rounded-tl-none">
+<p class="text-sm text-slate-700 dark:text-slate-200">Thank you. I'm updating the document.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-slate-200/50 dark:bg-secondary/30 border-t border-slate-200 dark:border-secondary/50">
+<div class="relative">
+<textarea class="w-full form-textarea rounded-lg text-sm bg-slate-50 dark:bg-secondary/60 border-slate-300 dark:border-secondary focus:ring-primary focus:border-primary placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-800 dark:text-slate-200 pr-24 resize-none" placeholder="Ask a follow-up question..." rows="2"></textarea>
+<button class="absolute right-2 top-1/2 -translate-y-1/2 h-9 px-4 rounded-md bg-primary text-white text-sm font-bold flex items-center gap-2">
+                    Send
+                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" fill-rule="evenodd"></path></svg>
+</button>
+</div>
+</div>
+</section>
+<aside class="col-span-3 flex flex-col">
+<div class="flex-grow bg-slate-200/20 dark:bg-secondary/20 rounded-lg border border-slate-200/80 dark:border-secondary/50 p-6 flex flex-col">
+<div class="border-b border-slate-300 dark:border-secondary/50">
+<div class="flex gap-4">
+<button class="pb-2 text-sm font-bold border-b-2 border-primary text-primary">Compliance Manual (Draft)</button>
+<button class="pb-2 text-sm font-bold border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary">Contract (Code Preview)</button>
+</div>
+</div>
+<div class="prose prose-sm dark:prose-invert max-w-none flex-grow mt-4 overflow-y-auto pr-2 space-y-4 text-slate-600 dark:text-slate-300">
+<p>This document outlines the compliance requirements for the issuance of tokenized real-world assets (RWAs) on the blockchain. It covers regulatory frameworks, KYC/AML procedures, and reporting obligations to ensure adherence to financial regulations.</p>
+<p><span class="rounded-md highlight-review">Please review the highlighted sections for potential legal review.</span> This is crucial for jurisdictions with strict securities laws. For example, in the United States, the SEC's interpretation of the Howey Test is paramount.</p>
+<p>The asset must be properly classified. <span class="rounded-md highlight-review">Failure to do so can result in significant legal and financial penalties.</span> The issuer must provide a clear legal opinion on the asset's status before tokenization.</p>
+</div>
+<div class="mt-6 pt-6 border-t border-slate-200 dark:border-secondary/50 space-y-3">
+<div class="grid grid-cols-2 gap-3">
+<button class="w-full h-10 px-4 rounded-md bg-slate-200 dark:bg-secondary hover:bg-slate-300 dark:hover:bg-secondary/80 text-sm font-bold text-slate-700 dark:text-slate-200">Export PDF</button>
+<button class="w-full h-10 px-4 rounded-md bg-primary/20 hover:bg-primary/30 text-sm font-bold text-primary">Request Legal Review</button>
+</div>
+<button class="w-full h-10 px-4 rounded-md bg-primary text-white text-sm font-bold">Next: Go to Deploy</button>
+</div>
+</div>
+</aside>
+</main>
+</div>
+</body></html>

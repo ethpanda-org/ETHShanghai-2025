@@ -1,0 +1,93 @@
+name: Go Module Cache
+
+# This workflow is responsible for updating the Go Module Cache.
+# It will maintain the cache: linux-gomod-1-<hash>
+# All other workflows should only restore this cache.
+
+# This workflow is useful because it will:
+# 1. Create the cache if it doesn't exist
+#   - This can be a problem when multiple jobs load the same cache.
+#     Only one will get priority to create the cache.
+# 2. Should not fail, therefore creating a cache
+#   - When a Job errors/fails it will not upload a new cache.
+#     So when test/build jobs are responsible for creating the new cache,
+#     they can fail causing cache misses on subsequent runs. Even though
+#     the dependencies haven't changed.
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  go-cache:
+    name: Go Cache ${{ matrix.suffix }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: ubuntu-latest
+            suffix: "Core (Github-hosted)"
+
+          - runs-on: ubuntu-latest
+            suffix: "Deployment (Github-hosted)"
+            go-mod-directory: "deployment/"
+
+          - runs-on: runs-on=${{ github.run_id }}/cpu=8/ram=16/family=c6id/spot=false/extras=s3-cache
+            suffix: "Core (Self-hosted)"
+
+          - runs-on: runs-on=${{ github.run_id }}/cpu=8/ram=16/family=c6id/spot=false/extras=s3-cache
+            suffix: "Deployment (Self-hosted)"
+            go-mod-directory: "deployment/"
+
+    runs-on: ${{ matrix.runs-on }}
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Enable S3 Cache for Self-Hosted Runners
+        # these env vars are set (and exposed) when it is a self-hosted runner with extras=s3-cache
+        if: ${{ env.RUNS_ON_INSTANCE_ID != '' && env.ACTIONS_CACHE_URL != '' }}
+        uses: runs-on/action@66d4449b717b5462159659523d1241051ff470b9 # v1
+
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Go
+        id: setup-go
+        uses: ./.github/actions/setup-go
+        with:
+          only-modules: "true"
+          restore-module-cache-only: "false"
+          go-version-file: ${{ matrix.go-mod-directory }}go.mod
+          go-module-file: ${{ matrix.go-mod-directory }}go.sum
+
+      - name: go mod download
+        if: ${{ steps.setup-go.outputs.primary-cache-hit-modules != 'true' }}
+        shell: bash
+        working-directory: ${{ matrix.go-mod-directory || '.' }}
+        run: |
+          echo "::group::go mod download"
+          go mod download
+          echo "::endgroup::"
+
+      - name: Fetch other dependencies
+        if: ${{ steps.setup-go.outputs.primary-cache-hit-modules != 'true' }}
+        shell: bash
+        run: |
+          echo "::group::Install LOOP plugins"
+          make install-plugins-public
+          echo "::endgroup::"
+
+          echo "::group::Install testing tools"
+          go install gotest.tools/gotestsum@v1.12.3
+          echo "::endgroup::"

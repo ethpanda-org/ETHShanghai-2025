@@ -1,0 +1,27 @@
+# CTFv2 cached environment, no point in committing this
+*-cache.toml
+# compiled cron capabilities, they should be downloaded by the test
+amd64_cron
+cron
+mock
+# workflow registration artifact, it's created anew every time the workflow is registered
+abcdefgasd*.yaml
+porfeed*.yaml
+# DF Cache contract configuration artifacts
+set-feed-*.yaml
+
+# CRE CLI binary
+cre_v*
+
+.cre.settings.yaml
+
+# crib-specific CL node configuration and secrets that will be used to override the default configuration
+crib-configs/
+cache/
+blockscout/
+compose/
+
+logs/
+
+*.yaml
+env_artifact/

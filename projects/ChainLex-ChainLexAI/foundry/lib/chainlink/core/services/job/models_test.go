@@ -1,0 +1,416 @@
+package job_test
+
+import (
+	_ "embed"
+	"fmt"
+	"reflect"
+	"testing"
+	"time"
+
+	"github.com/pelletier/go-toml/v2"
+
+	"github.com/smartcontractkit/chainlink-common/pkg/codec"
+	"github.com/smartcontractkit/chainlink-common/pkg/sqlutil"
+	"github.com/smartcontractkit/chainlink-common/pkg/types"
+	pkgworkflows "github.com/smartcontractkit/chainlink-common/pkg/workflows"
+	"github.com/smartcontractkit/chainlink-evm/pkg/config"
+	"github.com/smartcontractkit/chainlink/v2/core/internal/testutils"
+	"github.com/smartcontractkit/chainlink/v2/core/services/job"
+	"github.com/smartcontractkit/chainlink/v2/core/services/relay"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"gopkg.in/guregu/null.v4"
+)
+
+func TestStandardCapabilitiesSpec_Deserialization(t *testing.T) {
+	tomlData := `
+	type = "standardcapabilities"
+	schemaVersion = 1
+	name = "consensus-capabilities"
+	externalJobID = "aea7103f-6e87-5c01-b644-a0b4aeaed3eb"
+	forwardingAllowed = false
+	command = "consensus"
+	config = """"""
+	
+	[oracle_factory]
+	enabled = true
+	bootstrap_peers = ["12D3KooWBAzThfs9pD4WcsFKCi68EUz2fZgZskDBT6JcJRndPss5@cl-keystone-two-bt-0:5001"]
+	ocr_contract_address = "0x2C84cff4cd5fA5a0c17dbc710fcCb8FC6A03dEEd"
+	ocr_key_bundle_id = "5fbb7d5dc1e592142a979b7014552e07a78cb89b1a8626c6412f12f2adfcb240"
+	chain_id = "11155111"
+	transmitter_id = "0x60042fBB756f736744C334c463BeBE1A72Add04F"
+	[oracle_factory.onchainSigningStrategy]
+	strategyName = "multi-chain"
+	[oracle_factory.onchainSigningStrategy.config]
+	aptos = "7c2df2e806306383f9aa2bc7a3198cf0e1c626f873799992b2841240c6931733"
+	evm = "5fbb7d5dc1e592142a979b7014552e07a78cb89b1a8626c6412f12f2adfcb240"
+	`
+
+	var spec job.StandardCapabilitiesSpec
+	err := toml.Unmarshal([]byte(tomlData), &spec)
+	require.NoError(t, err)
+	assert.Equal(t, "consensus", spec.Command)
+	assert.Equal(t, "11155111", spec.OracleFactory.ChainID)
+	assert.Equal(t, "multi-chain", spec.OracleFactory.OnchainSigning.StrategyName)
+	assert.Equal(t, []string{"12D3KooWBAzThfs9pD4WcsFKCi68EUz2fZgZskDBT6JcJRndPss5@cl-keystone-two-bt-0:5001"}, spec.OracleFactory.BootstrapPeers)
+	assert.Equal(t, map[string]string{
+		"aptos": "7c2df2e806306383f9aa2bc7a3198cf0e1c626f873799992b2841240c6931733",
+		"evm":   "5fbb7d5dc1e592142a979b7014552e07a78cb89b1a8626c6412f12f2adfcb240",
+	}, spec.OracleFactory.OnchainSigning.Config)
+	assert.Equal(t, "0x60042fBB756f736744C334c463BeBE1A72Add04F", spec.OracleFactory.TransmitterID)
+	assert.Equal(t, "0x2C84cff4cd5fA5a0c17dbc710fcCb8FC6A03dEEd", spec.OracleFactory.OCRContractAddress)
+	assert.Equal(t, "5fbb7d5dc1e592142a979b7014552e07a78cb89b1a8626c6412f12f2adfcb240", spec.OracleFactory.OCRKeyBundleID)
+}
+
+func TestOCR2OracleSpec_RelayIdentifier(t *testing.T) {
+	type fields struct {
+		Relay       string
+		ChainID     string
+		RelayConfig job.JSONConfig
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		want    types.RelayID
+		wantErr bool
+	}{
+		{name: "err no chain id",
+			fields:  fields{},
+			want:    types.RelayID{},
+			wantErr: true,
+		},
+		{
+			name: "evm explicitly configured",
+			fields: fields{
+				Relay:   relay.NetworkEVM,
+				ChainID: "1",
+			},
+			want: types.RelayID{Network: relay.NetworkEVM, ChainID: "1"},
+		},
+		{
+			name: "evm implicitly configured",
+			fields: fields{
+				Relay:       relay.NetworkEVM,
+				RelayConfig: map[string]any{"chainID": 1},
+			},
+			want: types.RelayID{Network: relay.NetworkEVM, ChainID: "1"},
+		},
+		{
+			name: "evm implicitly configured with bad value",
+			fields: fields{
+				Relay:       relay.NetworkEVM,
+				RelayConfig: map[string]any{"chainID": float32(1)},
+			},
+			want:    types.RelayID{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			s := &job.OCR2OracleSpec{
+				Relay:       tt.fields.Relay,
+				ChainID:     tt.fields.ChainID,
+				RelayConfig: tt.fields.RelayConfig,
+			}
+			got, err := s.RelayID()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("OCR2OracleSpec.RelayIdentifier() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("OCR2OracleSpec.RelayIdentifier() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+var (
+	//go:embed testdata/compact.toml
+	compact string
+	//go:embed testdata/pretty.toml
+	pretty string
+)
+
+func TestOCR2OracleSpec(t *testing.T) {
+	val := job.OCR2OracleSpec{
+		Relay:                             relay.NetworkEVM,
+		PluginType:                        types.Median,
+		ContractID:                        "foo",
+		OCRKeyBundleID:                    null.StringFrom("bar"),
+		TransmitterID:                     null.StringFrom("baz"),
+		ContractConfigConfirmations:       1,
+		ContractConfigTrackerPollInterval: *sqlutil.NewInterval(time.Second),
+		RelayConfig: map[string]any{
+			"chainID":   1337,
+			"fromBlock": 42,
+			"chainReader": config.ChainReaderConfig{
+				Contracts: map[string]config.ChainContractReader{
+					"median": {
+						ContractABI: `[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "requester",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "configDigest",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "epoch",
+        "type": "uint32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "round",
+        "type": "uint8"
+      }
+    ],
+    "name": "RoundRequested",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "latestTransmissionDetails",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "configDigest",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "epoch",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint8",
+        "name": "round",
+        "type": "uint8"
+      },
+      {
+        "internalType": "int192",
+        "name": "latestAnswer_",
+        "type": "int192"
+      },
+      {
+        "internalType": "uint64",
+        "name": "latestTimestamp_",
+        "type": "uint64"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
+`,
+						Configs: map[string]*config.ChainReaderDefinition{
+							"LatestTransmissionDetails": {
+								ChainSpecificName: "latestTransmissionDetails",
+								OutputModifications: codec.ModifiersConfig{
+									&codec.EpochToTimeModifierConfig{
+										Fields: []string{"LatestTimestamp_"},
+									},
+									&codec.RenameModifierConfig{
+										Fields: map[string]string{
+											"LatestAnswer_":    "LatestAnswer",
+											"LatestTimestamp_": "LatestTimestamp",
+										},
+									},
+								},
+							},
+							"LatestRoundRequested": {
+								ChainSpecificName: "RoundRequested",
+								ReadType:          config.Event,
+							},
+						},
+					},
+				},
+			},
+			"codec": config.CodecConfig{
+				Configs: map[string]config.ChainCodecConfig{
+					"MedianReport": {
+						TypeABI: `[
+  {
+    "Name": "Timestamp",
+    "Type": "uint32"
+  },
+  {
+    "Name": "Observers",
+    "Type": "bytes32"
+  },
+  {
+    "Name": "Observations",
+    "Type": "int192[]"
+  },
+  {
+    "Name": "JuelsPerFeeCoin",
+    "Type": "int192"
+  }
+]
+`,
+					},
+				},
+			},
+		},
+		OnchainSigningStrategy: map[string]any{
+			"strategyName": "single-chain",
+			"config": map[string]any{
+				"evm":       "",
+				"publicKey": "0xdeadbeef",
+			},
+		},
+		PluginConfig: map[string]any{"juelsPerFeeCoinSource": `  // data source 1
+  ds1          [type=bridge name="%s"];
+  ds1_parse    [type=jsonparse path="data"];
+  ds1_multiply [type=multiply times=2];
+
+  // data source 2
+  ds2          [type=http method=GET url="%s"];
+  ds2_parse    [type=jsonparse path="data"];
+  ds2_multiply [type=multiply times=2];
+
+  ds1 -> ds1_parse -> ds1_multiply -> answer1;
+  ds2 -> ds2_parse -> ds2_multiply -> answer1;
+
+  answer1 [type=median index=0];
+`,
+		},
+	}
+
+	t.Run("marshal", func(t *testing.T) {
+		gotB, err := toml.Marshal(val)
+		require.NoError(t, err)
+		t.Log("marshaled:", string(gotB))
+		require.Equal(t, compact, string(gotB))
+	})
+
+	t.Run("round-trip", func(t *testing.T) {
+		var gotVal job.OCR2OracleSpec
+		require.NoError(t, toml.Unmarshal([]byte(compact), &gotVal))
+		gotB, err := toml.Marshal(gotVal)
+		require.NoError(t, err)
+		require.Equal(t, compact, string(gotB))
+		t.Run("pretty", func(t *testing.T) {
+			var gotVal job.OCR2OracleSpec
+			require.NoError(t, toml.Unmarshal([]byte(pretty), &gotVal))
+			gotB, err := toml.Marshal(gotVal)
+			require.NoError(t, err)
+			t.Log("marshaled compact:", string(gotB))
+			require.Equal(t, compact, string(gotB))
+		})
+	})
+}
+
+func TestWorkflowSpec_Validate(t *testing.T) {
+	type fields struct {
+		Workflow string
+	}
+	tests := []struct {
+		name              string
+		fields            fields
+		wantWorkflowOwner string
+		wantWorkflowName  string
+
+		wantError bool
+	}{
+		{
+			name: "valid",
+			fields: fields{
+				Workflow: pkgworkflows.WFYamlSpec(t, "workflow01", "0x0123456789012345678901234567890123456789"),
+			},
+			wantWorkflowOwner: "0123456789012345678901234567890123456789", // the workflow job spec strips the 0x prefix to limit to 40	characters
+			wantWorkflowName:  "workflow01",
+		},
+		{
+			name: "valid no name",
+			fields: fields{
+				Workflow: pkgworkflows.WFYamlSpec(t, "", "0x0123456789012345678901234567890123456789"),
+			},
+			wantWorkflowOwner: "0123456789012345678901234567890123456789", // the workflow job spec strips the 0x prefix to limit to 40	characters
+			wantWorkflowName:  "",
+		},
+		{
+			name: "valid no owner",
+			fields: fields{
+				Workflow: pkgworkflows.WFYamlSpec(t, "workflow01", ""),
+			},
+			wantWorkflowOwner: "",
+			wantWorkflowName:  "workflow01",
+		},
+		{
+			name: "invalid ",
+			fields: fields{
+				Workflow: "garbage",
+			},
+			wantError: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := &job.WorkflowSpec{
+				Workflow: tt.fields.Workflow,
+			}
+			err := w.Validate(testutils.Context(t))
+			require.Equal(t, tt.wantError, err != nil)
+			if !tt.wantError {
+				assert.NotEmpty(t, w.WorkflowID)
+				assert.Equal(t, tt.wantWorkflowOwner, w.WorkflowOwner)
+				assert.Equal(t, tt.wantWorkflowName, w.WorkflowName)
+			}
+		})
+	}
+
+	t.Run("WASM can validate", func(t *testing.T) {
+		configLocation := "testdata/config.json"
+
+		w := &job.WorkflowSpec{
+			Workflow: createTestBinary(t),
+			SpecType: job.WASMFile,
+			Config:   configLocation,
+		}
+
+		err := w.Validate(testutils.Context(t))
+		require.NoError(t, err)
+		require.NotEmpty(t, w.WorkflowID)
+	})
+
+	t.Run("WASM can validate from TOML", func(t *testing.T) {
+		const wasmWorkfowTomlTemplate = `
+			workflow_owner = "%s"
+			workflow_name = "%s"
+			spec_type = "%s"
+			workflow = "%s"
+			config = "%s"
+		`
+		configLocation := "testdata/config.json"
+		tomlSpec := fmt.Sprintf(wasmWorkfowTomlTemplate,
+			"0x0123456789012345678901234567890123456788",
+			"wf-2",
+			job.WASMFile,
+			createTestBinary(t),
+			configLocation,
+		)
+		var w job.WorkflowSpec
+		err := toml.Unmarshal([]byte(tomlSpec), &w)
+		require.NoError(t, err)
+
+		err = w.Validate(testutils.Context(t))
+		require.NoError(t, err)
+		require.NotEmpty(t, w.WorkflowID)
+		assert.Equal(t, "0123456789012345678901234567890123456788", w.WorkflowOwner)
+		assert.Equal(t, "wf-2", w.WorkflowName)
+	})
+}

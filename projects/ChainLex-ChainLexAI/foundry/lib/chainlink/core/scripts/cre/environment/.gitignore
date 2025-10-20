@@ -1,0 +1,35 @@
+# ctf binary artifacts
+compose/
+blockscout/
+binaries/
+observability/
+
+# contract artifacts
+examples/contracts/abi
+examples/contracts/bin
+
+# CRE CLI binary
+cre_v*
+
+# crib-specific CL node configuration and secrets that will be used to override the default configuration
+crib-configs/
+configs/*-cache.toml
+cache/
+
+logs/
+
+# CRE CLI settings
+.cre.settings.yaml
+cre.yaml
+*.state.yaml
+examples/**/*.yaml
+
+# CRE CLI secrets
+encrypted.secrets.json
+
+# dumped data
+env_artifact/
+bin/
+artifact_paths.json
+*.b64
+state/
