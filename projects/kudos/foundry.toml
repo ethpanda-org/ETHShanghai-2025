@@ -1,0 +1,16 @@
+[profile.default]
+src = "packages/contracts/src"
+out = "packages/contracts/out"
+libs = ["packages/contracts/lib"]
+test = "packages/contracts/test"
+script = "packages/contracts/script"
+cache_path = "packages/contracts/cache"
+broadcast = "packages/contracts/broadcast"
+ffi = true
+fs_permissions = [
+    { access = "read", path = "./" }
+]
+gas_reports = ["IdentityToken", "ReputationBadge", "BadgeRuleRegistry", "Marketplace", "ReputationDataFeed"]
+
+[fmt]
+line_length = 120
