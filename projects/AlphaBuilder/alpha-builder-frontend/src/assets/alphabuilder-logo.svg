@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <style>
+      .bg { fill: #131a1f; }
+      .cut { fill: #ffffff; }
+    </style>
+  </defs>
+  <!-- Hexagon background -->
+  <path d="M 455.19 141.00 L 455.19 371.00 L 256.00 486.00 L 56.81 371.00 L 56.81 141.00 L 256.00 26.00 Z" class="bg"/>
+  <!-- 'A' knockout (drawn as white; can invert by swapping colors) -->
+  <path d="M 256.00 116.00 L 396.00 406.00 L 351.00 406.00 L 291.00 296.00 L 221.00 296.00 L 161.00 406.00 L 116.00 406.00 Z M 256.00 246.00 L 301.00 326.00 L 211.00 326.00 Z" fill="#ffffff" fill-rule="evenodd"/>
+</svg>

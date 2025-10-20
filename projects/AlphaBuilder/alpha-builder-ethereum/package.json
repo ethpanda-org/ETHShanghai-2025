@@ -1,0 +1,22 @@
+{
+  "name": "alpha-builder-ethereum",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Smart contracts and deployment scripts for Alpha Builder AA wallet flows.",
+  "scripts": {
+    "build": "hardhat compile",
+    "lint": "prettier --check \"**/*.{ts,tsx,js,json,sol}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,sol}\"",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.ts --network localhost"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/contracts": "^5.0.2",
+    "@types/node": "^20.12.7",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.5",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.3"
+  }
+}

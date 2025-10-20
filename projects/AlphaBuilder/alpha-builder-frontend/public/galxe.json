@@ -1,0 +1,122 @@
+[
+    {
+      "project": "Taiko",
+      "title": "Decentralized, Ethereum-equivalent ZK-Rollup",
+      "reward": "Piggy Watt",
+      "participants": null,
+      "image": "https://public.rootdata.com/images/b39/1724942485883_128x128.webp",
+      "link": "https://app.galxe.com/quest/Piggycell/GCoqTt8cXQ"
+    },
+    {
+        "project": "Otherside",
+        "title": "Gamified, interoperable metaverse",
+        "reward": null,
+        "participants": null,
+        "image": "https://public.rootdata.com/images/b19/1668101042865_128x128.webp",
+        "link": "https://app.galxe.com/quest/mememarket/GCiTet8JSG"
+    },
+    {
+        "project": "Pudgy Penguins",
+        "title": "Penguin NFT Ecosystem",
+        "reward": null,
+        "participants": null,
+        "image": "https://public.rootdata.com/images/b6/1683639317995_128x128.webp",
+        "link": "https://public.rootdata.com/Projects/detail/Pudgy%20Penguins?k=Nzc4OQ%3D%3D"
+    },
+    {
+        "project": "Dango",
+        "title": "Dango Last Hurrah OAT",
+        "reward": "OAT + 30",
+        "participants": "26.19K",
+        "image": "https://cdn.galxe.com/galaxy/dango/9ec5da18-7736-49c2-85bd-21b167a8f696.png",
+        "link": "https://app.galxe.com/quest/dango"
+    },
+    {
+        "project": "Safe",
+        "title": "Multi-signature wallet provider",
+        "reward": "450 SEI + 30 GG",
+        "participants": "6.73K",
+        "image": "https://public.rootdata.com/images/b16/1666343054752_128x128.webp",
+        "link": "https://app.galxe.com/quest/SovaBTC/GCzyYt8bd6"
+    },
+    {
+      "project": "MemeMarket",
+      "title": "The Road To $MFUN",
+      "reward": "Custom Reward",
+      "participants": "75.81K",
+      "image": "https://cdn.galxe.com/galaxy/192/6a927bdf-90cc-46ed-a444-62395eadecf0.png",
+      "link": "https://app.galxe.com/quest/mememarket"
+    },
+    {
+      "project": "FractionAI",
+      "title": "FractionAI: Early Access Quest",
+      "reward": "100 USDT",
+      "participants": "2.31K",
+      "image": "https://public.rootdata.com/images/b16/1666584636171_128x128.webp",
+      "link": "https://app.galxe.com/quest/FractionAI/GChyQt8G4C"
+    },
+    {
+      "project": "Blast",
+      "title": "Blast Ecosystem Reward Campaign",
+      "reward": "Blast Points",
+      "participants": "9.27K",
+      "image": "https://public.rootdata.com/images/b16/1666361446318_128x128.webp",
+      "link": "https://app.galxe.com/quest/Blast/GCP7nt8JQe"
+    },
+    {
+      "project": "Theo",
+      "title": "Theo Governance Trial Quest",
+      "reward": "OAT",
+      "participants": "1.02K",
+      "image": "https://public.rootdata.com/images/b16/1666540448254_128x128.webp",
+      "link": "https://app.galxe.com/quest/Theo/GCLPst8qWb"
+    },
+    {
+      "project": "XT Exchange",
+      "title": "XT.COM Join to Share 100 USDT",
+      "reward": "100 USDT",
+      "participants": "1.72K",
+      "image": "https://public.rootdata.com/images/b12/1756981338029_128x128.webp",
+      "link": "https://app.galxe.com/quest/XtExchange/GCYvmt8Q7k"
+    },
+    {
+        "project": "Rakebit",
+        "title": "Rakebit Onchain Streak Challenge",
+        "reward": "RKB Token",
+        "participants": "3.14K",
+        "image": "https://public.rootdata.com/images/b18/1666437025594_128x128.webp",
+        "link": "https://app.galxe.com/quest/Rakebit/GCTVet8UDy"
+    },
+    {
+        "project": "Ekox",
+        "title": "Ekox Weekly Onchain Quest",
+        "reward": "EKOX Points",
+        "participants": "6.73K",
+        "image": "https://public.rootdata.com/images/b6/1736258449683_128x128.webp",
+        "link": "https://app.galxe.com/quest/Ekox/GCPZtt8aFJ"
+    },
+    {
+        "project": "Secured Finance",
+        "title": "USDFC Trading Challenge #5",
+        "reward": "OAT + 30",
+        "participants": "253",
+        "image": "https://cdn.galxe.com/galaxy/securedfi/241cfbee-b04f-4aaa-91e0-d303a0945d51.png",
+        "link": "https://app.galxe.com/quest/securedfi"
+    },
+    {
+        "project": "Secured Finance",
+        "title": "2,000 USDFC Raffle for USDFC Trading Challenge #5",
+        "reward": "2,000 USDFC (40 USDFC each)",
+        "participants": "252",
+        "image": "https://cdn.galxe.com/galaxy/securedfi/2b00a2bb-2b5d-4b25-a4a7-768d5f814e1e.png",
+        "link": "https://app.galxe.com/quest/securedfi"
+    },
+    {
+        "project": "LEND",
+        "title": "LEND Launch Cadet Airdrop",
+        "reward": "NFT + 30",
+        "participants": "320",
+        "image": "https://cdn.galxe.com/tooljet/lend_finance.jpg",
+        "link": "https://app.galxe.com/quest/LEND"
+    }
+]
