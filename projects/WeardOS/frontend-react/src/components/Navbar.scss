@@ -1,0 +1,519 @@
+// Navbar.scss - 导航栏样式
+.app-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  // 悬停时增强毛玻璃效果
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(30px) saturate(200%);
+    -webkit-backdrop-filter: blur(30px) saturate(200%);
+    border-bottom-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  // 滚动时的样式变化
+  &.scrolled {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(35px) saturate(220%);
+    -webkit-backdrop-filter: blur(35px) saturate(220%);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  }
+  .nav-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 80px;
+
+    // 响应式设计
+    @media (max-width: 768px) {
+      padding: 0 16px;
+      height: 70px;
+    }
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 48px;
+
+    @media (max-width: 768px) {
+      gap: 24px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: white;
+      font-weight: 700;
+      font-size: 24px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        text-decoration: none;
+        color: #1890ff;
+        transform: scale(1.05);
+      }
+
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        color: #60a5fa;
+        background: linear-gradient(45deg, #1890ff, #722ed1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(24, 144, 255, 0.3);
+        
+        @media (max-width: 768px) {
+          width: 36px;
+          height: 36px;
+        }
+      }
+
+      .brand-text {
+        background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+
+        @media (max-width: 480px) {
+          display: none;
+        }
+      }
+    }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      @media (max-width: 768px) {
+        gap: 4px;
+      }
+
+      .nav-item {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.8);
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+
+        @media (max-width: 768px) {
+          padding: 10px 16px;
+          font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+          padding: 8px 12px;
+          font-size: 13px;
+        }
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+          transition: left 0.5s ease;
+        }
+
+        &:hover {
+          color: white;
+          background: rgba(24, 144, 255, 0.1);
+          transform: translateY(-2px);
+          text-decoration: none;
+          box-shadow: 0 8px 25px rgba(24, 144, 255, 0.2);
+
+          &::before {
+            left: 100%;
+          }
+        }
+
+        &.active {
+          color: #1890ff;
+          background: rgba(24, 144, 255, 0.15);
+          box-shadow: 0 4px 15px rgba(24, 144, 255, 0.3);
+          
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 2px;
+            background: linear-gradient(90deg, #1890ff, #722ed1);
+            border-radius: 1px;
+          }
+        }
+      }
+    }
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    @media (max-width: 768px) {
+      gap: 12px;
+    }
+
+    .language-selector {
+      .language-btn {
+        color: rgba(255, 255, 255, 0.9) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        border-radius: 12px !important;
+        padding: 0 16px !important;
+        height: 40px !important;
+        transition: all 0.3s ease !important;
+
+        @media (max-width: 768px) {
+          height: 36px !important;
+          padding: 0 12px !important;
+        }
+
+        &:hover {
+          background: rgba(24, 144, 255, 0.1) !important;
+          border-color: #1890ff !important;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(24, 144, 255, 0.2);
+        }
+
+        .flag {
+          font-size: 16px;
+        }
+
+        .lang-name {
+          font-size: 14px;
+          font-weight: 500;
+
+          @media (max-width: 768px) {
+            display: none;
+          }
+        }
+      }
+    }
+
+    .connect-wallet-btn {
+      height: 42px !important;
+      padding: 0 20px !important;
+      border-radius: 12px !important;
+      font-weight: 600 !important;
+      font-size: 14px !important;
+      background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%) !important;
+      border: none !important;
+      box-shadow: 0 4px 15px rgba(24, 144, 255, 0.3) !important;
+      transition: all 0.3s ease !important;
+      position: relative;
+      overflow: hidden;
+
+      @media (max-width: 768px) {
+        height: 36px !important;
+        padding: 0 16px !important;
+        font-size: 13px !important;
+      }
+
+      @media (max-width: 480px) {
+        padding: 0 12px !important;
+        font-size: 12px !important;
+      }
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+      }
+
+      &:hover {
+        background: linear-gradient(135deg, #40a9ff 0%, #9254de 100%) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 25px rgba(24, 144, 255, 0.4) !important;
+
+        &::before {
+          left: 100%;
+        }
+      }
+
+      &:active {
+        transform: translateY(0) !important;
+      }
+
+      .anticon {
+        margin-right: 8px;
+
+        @media (max-width: 480px) {
+          margin-right: 4px;
+        }
+      }
+    }
+
+    // 钱包信息按钮样式
+    .wallet-info-btn {
+      height: 42px !important;
+      padding: 0 16px !important;
+      border-radius: 12px !important;
+      font-weight: 500 !important;
+      font-size: 14px !important;
+      background: rgba(255, 255, 255, 0.1) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      color: rgba(255, 255, 255, 0.85) !important;
+      cursor: default !important;
+
+      @media (max-width: 768px) {
+        height: 36px !important;
+        padding: 0 12px !important;
+        font-size: 13px !important;
+      }
+
+      .wallet-info {
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 13px;
+
+        @media (max-width: 768px) {
+          font-size: 12px;
+        }
+      }
+
+      .anticon {
+        margin-right: 8px;
+        color: #52c41a;
+
+        @media (max-width: 480px) {
+          margin-right: 4px;
+        }
+      }
+    }
+
+    // 断开连接按钮样式
+    .disconnect-wallet-btn {
+      height: 42px !important;
+      padding: 0 16px !important;
+      border-radius: 12px !important;
+      font-weight: 500 !important;
+      font-size: 14px !important;
+      background: rgba(255, 77, 79, 0.1) !important;
+      border: 1px solid rgba(255, 77, 79, 0.3) !important;
+      color: #ff4d4f !important;
+      transition: all 0.3s ease !important;
+
+      @media (max-width: 768px) {
+        height: 36px !important;
+        padding: 0 12px !important;
+        font-size: 13px !important;
+      }
+
+      @media (max-width: 480px) {
+        padding: 0 10px !important;
+        font-size: 12px !important;
+      }
+
+      &:hover {
+        background: rgba(255, 77, 79, 0.2) !important;
+        border-color: rgba(255, 77, 79, 0.5) !important;
+        color: #ff4d4f !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(255, 77, 79, 0.2) !important;
+      }
+
+      &:active {
+        transform: translateY(0) !important;
+      }
+    }
+
+    // 网络状态指示器
+    .network-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+
+      @media (max-width: 768px) {
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+
+      @media (max-width: 480px) {
+        display: none;
+      }
+
+      .network-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #52c41a;
+        animation: pulse 2s infinite;
+
+        &.disconnected {
+          background: #ff4d4f;
+        }
+
+        &.connecting {
+          background: #faad14;
+        }
+      }
+    }
+  }
+}
+
+// 语言下拉菜单样式
+.language-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(24, 144, 255, 0.1);
+    color: #1890ff;
+  }
+
+  .flag {
+    font-size: 16px;
+  }
+}
+
+// 脉冲动画
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(82, 196, 26, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(82, 196, 26, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(82, 196, 26, 0);
+  }
+}
+
+// 移动端菜单切换
+.mobile-menu-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: #ffffff;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+
+  @media (max-width: 768px) {
+    display: flex;
+  }
+
+  &:hover {
+    background: rgba(24, 144, 255, 0.1);
+    border-color: #1890ff;
+  }
+}
+
+// 移动端菜单覆盖层
+.mobile-menu-overlay {
+  position: fixed;
+  top: 70px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  z-index: 999;
+  display: none;
+  padding: 24px;
+
+  @media (max-width: 768px) {
+    &.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+  }
+
+  .mobile-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .mobile-menu-item {
+      .mobile-menu-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        text-decoration: none;
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 500;
+        transition: all 0.3s ease;
+
+        &:hover,
+        &.active {
+          color: #1890ff;
+          background: rgba(24, 144, 255, 0.1);
+          border-color: #1890ff;
+          transform: translateX(8px);
+        }
+
+        .mobile-menu-icon {
+          font-size: 20px;
+        }
+
+        .mobile-menu-text {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}
+
+// 全局动画
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

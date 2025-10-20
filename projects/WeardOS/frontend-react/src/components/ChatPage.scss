@@ -1,0 +1,110 @@
+// ChatPage 聊天页面样式
+.chat-page {
+  height: calc(100vh - 64px); // 减去导航栏高度 (64px)
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  overflow: hidden;
+  margin-top: 64px; // 为导航栏留出空间
+
+  .chat-layout {
+    height: calc(100vh - 64px); // 减去导航栏高度
+    background: transparent;
+
+    .ant-layout-sider {
+      background: rgba(15, 15, 35, 0.95) !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+
+      &.ant-layout-sider-collapsed {
+        .chat-sidebar-content {
+          .sidebar-header .sidebar-title {
+            display: none;
+          }
+          
+          .sidebar-content .conversations-container {
+            .conversation-group .group-title {
+              display: none;
+            }
+          }
+        }
+      }
+
+      .ant-layout-sider-trigger {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+      }
+    }
+
+    .chat-main {
+      background: transparent;
+
+      .chat-content {
+        padding: 0;
+        background: transparent;
+        height: calc(100vh - 64px); // 减去导航栏高度
+        overflow: hidden;
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .chat-page {
+    .chat-layout {
+      .ant-layout-sider {
+        position: fixed;
+        z-index: 1000;
+        height: calc(100vh - 64px); // 减去导航栏高度
+        top: 64px; // 从导航栏下方开始
+        
+        &.ant-layout-sider-collapsed {
+          width: 0 !important;
+          min-width: 0 !important;
+          max-width: 0 !important;
+        }
+      }
+
+      .chat-main {
+        margin-left: 0 !important;
+      }
+    }
+  }
+}
+
+// 动画效果
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.chat-sidebar-content {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+.chat-window {
+  animation: slideInRight 0.3s ease-out;
+}

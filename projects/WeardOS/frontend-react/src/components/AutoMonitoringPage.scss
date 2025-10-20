@@ -1,0 +1,636 @@
+// AutoMonitoringPage.scss
+
+// 新交易动画效果
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 交易项样式
+.transaction-item {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: rgba(24, 144, 255, 0.05) !important;
+    transform: translateX(2px);
+  }
+}
+
+// 实时状态指示器
+.realtime-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+    
+    &.connected {
+      background-color: #52c41a;
+    }
+    
+    &.disconnected {
+      background-color: #ff4d4f;
+    }
+    
+    &.connecting {
+      background-color: #faad14;
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(82, 196, 26, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(82, 196, 26, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(82, 196, 26, 0);
+  }
+}
+
+.auto-monitoring-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0f1c 0%, #1a1f35 50%, #0f1426 100%);
+  padding: 2rem;
+  color: #ffffff;
+
+  // Page Header
+  .page-header {
+    margin-bottom: 2rem;
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .header-text {
+      flex: 1;
+      min-width: 300px;
+
+      .page-title {
+        color: #ffffff !important;
+        margin-bottom: 0.5rem !important;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        .title-icon {
+          background: linear-gradient(135deg, #21d4fd 0%, #b721ff 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          font-size: 2.5rem;
+        }
+      }
+
+      .page-subtitle {
+        color: rgba(255, 255, 255, 0.8) !important;
+        font-size: 1.1rem;
+        margin-bottom: 0 !important;
+      }
+    }
+
+    .header-controls {
+      .ant-switch {
+        &.ant-switch-checked {
+          background-color: #52c41a;
+        }
+      }
+
+      .ant-btn-primary {
+        background: linear-gradient(135deg, #21d4fd 0%, #b721ff 100%);
+        border: none;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 15px rgba(33, 212, 253, 0.4);
+        }
+      }
+    }
+  }
+
+  // Card Styles
+  .ant-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    margin-bottom: 1.5rem;
+
+    .ant-card-head {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      
+      .ant-card-head-title {
+        color: #ffffff;
+        font-weight: 600;
+      }
+
+      .ant-card-extra {
+        .ant-select {
+          .ant-select-selector {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+          }
+
+          .ant-select-arrow {
+            color: rgba(255, 255, 255, 0.6);
+          }
+        }
+      }
+    }
+
+    .ant-card-body {
+      color: #ffffff;
+    }
+  }
+
+  // Monitoring Overview Card
+  .monitoring-overview-card {
+    .ant-statistic {
+      .ant-statistic-title {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 0.5rem;
+      }
+
+      .ant-statistic-content {
+        color: #ffffff;
+        font-weight: 600;
+      }
+    }
+  }
+
+  // Wallets Card
+  .wallets-card {
+    .ant-table {
+      background: transparent;
+
+      .ant-table-thead > tr > th {
+        background: rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 600;
+      }
+
+      .ant-table-tbody > tr {
+        background: transparent;
+
+        &:hover > td {
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        > td {
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          color: #ffffff;
+
+          .ant-typography {
+            color: inherit;
+
+            &.ant-typography-caption {
+              color: rgba(255, 255, 255, 0.6);
+            }
+          }
+
+          .ant-statistic {
+            .ant-statistic-content {
+              color: #ffffff;
+            }
+          }
+
+          .ant-tag {
+            border-radius: 12px;
+          }
+
+          .ant-badge {
+            .ant-badge-status-text {
+              color: rgba(255, 255, 255, 0.8);
+            }
+          }
+
+          .ant-btn {
+            color: rgba(255, 255, 255, 0.6);
+
+            &:hover {
+              color: #21d4fd;
+              background: rgba(33, 212, 253, 0.1);
+            }
+
+            &.ant-btn-dangerous:hover {
+              color: #ff4d4f;
+              background: rgba(255, 77, 79, 0.1);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Transactions Card
+  .transactions-card {
+    .transaction-item {
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .ant-list-item-meta {
+        .ant-list-item-meta-title {
+          color: #ffffff;
+          margin-bottom: 0.5rem;
+
+          .ant-typography {
+            color: #ffffff;
+          }
+
+          .ant-tag {
+            margin-left: 0.5rem;
+            border-radius: 12px;
+          }
+        }
+
+        .ant-list-item-meta-description {
+          .ant-typography {
+            color: rgba(255, 255, 255, 0.6);
+          }
+        }
+      }
+    }
+  }
+
+  // Alerts Card
+  .alerts-card {
+    .alert-item {
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &.unread {
+        background: rgba(33, 212, 253, 0.05);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      &.read {
+        opacity: 0.7;
+      }
+
+      .ant-list-item-meta {
+        .ant-list-item-meta-title {
+          color: #ffffff;
+          margin-bottom: 0.5rem;
+
+          .read-title {
+            opacity: 0.7;
+          }
+
+          .ant-tag {
+            margin-left: 0.5rem;
+            border-radius: 8px;
+          }
+        }
+
+        .ant-list-item-meta-description {
+          .alert-message {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.25rem;
+          }
+
+          .ant-typography {
+            color: rgba(255, 255, 255, 0.5);
+          }
+        }
+      }
+    }
+  }
+
+  // Settings Card
+  .settings-card {
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+
+      &:not(:last-child) {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .setting-label {
+        flex: 1;
+
+        .ant-typography {
+          color: rgba(255, 255, 255, 0.8);
+        }
+      }
+
+      .ant-switch {
+        &.ant-switch-checked {
+          background-color: #21d4fd;
+        }
+      }
+
+      .ant-select,
+      .ant-input-number {
+        .ant-select-selector,
+        .ant-input-number-input {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.2);
+          color: #ffffff;
+        }
+
+        .ant-select-arrow,
+        .ant-input-number-handler-wrap {
+          color: rgba(255, 255, 255, 0.6);
+        }
+      }
+    }
+  }
+
+  // Network Status Card
+  .network-status-card {
+    .ant-alert {
+      background: rgba(82, 196, 26, 0.1);
+      border: 1px solid rgba(82, 196, 26, 0.3);
+      border-radius: 12px;
+
+      .ant-alert-message {
+        color: #ffffff;
+        font-weight: 600;
+      }
+
+      .ant-alert-description {
+        color: rgba(255, 255, 255, 0.8);
+
+        .ant-typography {
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .ant-badge {
+          .ant-badge-status-text {
+            color: rgba(255, 255, 255, 0.8);
+          }
+        }
+      }
+
+      .ant-alert-icon {
+        color: #52c41a;
+      }
+    }
+  }
+
+  // Modal Styles
+  .ant-modal {
+    .ant-modal-content {
+      background: rgba(26, 31, 53, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+    }
+
+    .ant-modal-header {
+      background: transparent;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+      .ant-modal-title {
+        color: #ffffff;
+      }
+    }
+
+    .ant-modal-body {
+      .ant-form {
+        .ant-form-item-label > label {
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .ant-input,
+        .ant-select-selector {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.2);
+          color: #ffffff;
+
+          &::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+          }
+
+          &:focus {
+            border-color: #21d4fd;
+            box-shadow: 0 0 10px rgba(33, 212, 253, 0.3);
+          }
+        }
+
+        .ant-select-arrow {
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .ant-btn-primary {
+          background: linear-gradient(135deg, #21d4fd 0%, #b721ff 100%);
+          border: none;
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(33, 212, 253, 0.4);
+          }
+        }
+      }
+    }
+
+    .ant-modal-close {
+      color: rgba(255, 255, 255, 0.6);
+
+      &:hover {
+        color: #ffffff;
+      }
+    }
+  }
+
+  // Ant Design Component Overrides
+  .ant-statistic-title {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  .ant-statistic-content {
+    color: #ffffff !important;
+  }
+
+  .ant-tag {
+    border-radius: 12px;
+    
+    &.ant-tag-success {
+      background: rgba(82, 196, 26, 0.2);
+      border-color: rgba(82, 196, 26, 0.5);
+      color: #52c41a;
+    }
+
+    &.ant-tag-error {
+      background: rgba(255, 77, 79, 0.2);
+      border-color: rgba(255, 77, 79, 0.5);
+      color: #ff4d4f;
+    }
+
+    &.ant-tag-processing {
+      background: rgba(24, 144, 255, 0.2);
+      border-color: rgba(24, 144, 255, 0.5);
+      color: #1890ff;
+    }
+
+    &.ant-tag-warning {
+      background: rgba(250, 173, 20, 0.2);
+      border-color: rgba(250, 173, 20, 0.5);
+      color: #faad14;
+    }
+  }
+
+  .ant-badge {
+    .ant-badge-status-dot {
+      &.ant-badge-status-success {
+        background-color: #52c41a;
+      }
+
+      &.ant-badge-status-error {
+        background-color: #ff4d4f;
+      }
+
+      &.ant-badge-status-default {
+        background-color: rgba(255, 255, 255, 0.4);
+      }
+    }
+
+    .ant-badge-status-text {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .ant-badge-count {
+      background: #1890ff;
+      border-color: #1890ff;
+    }
+  }
+
+  .ant-divider {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .ant-tooltip {
+    .ant-tooltip-inner {
+      background: rgba(0, 0, 0, 0.8);
+      color: #ffffff;
+    }
+
+    .ant-tooltip-arrow::before {
+      background: rgba(0, 0, 0, 0.8);
+    }
+  }
+
+  // Responsive Design
+  @media (max-width: 1200px) {
+    .page-header {
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+
+    .wallets-card {
+      .ant-table {
+        .ant-table-thead > tr > th,
+        .ant-table-tbody > tr > td {
+          padding: 8px 4px;
+          font-size: 12px;
+        }
+      }
+    }
+
+    .alerts-card,
+    .transactions-card {
+      .ant-list-item {
+        padding: 0.75rem 0;
+      }
+
+      .ant-list-item-meta {
+        .ant-list-item-meta-title {
+          font-size: 14px;
+        }
+
+        .ant-list-item-meta-description {
+          font-size: 12px;
+        }
+      }
+    }
+
+    .settings-card {
+      .setting-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+
+        .ant-select,
+        .ant-input-number {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.5rem;
+
+    .page-header {
+      margin-bottom: 1rem;
+
+      .header-text {
+        .page-title {
+          font-size: 1.8rem !important;
+        }
+
+        .page-subtitle {
+          font-size: 1rem;
+        }
+      }
+
+      .header-controls {
+        width: 100%;
+
+        .ant-space {
+          width: 100%;
+          justify-content: space-between;
+        }
+      }
+    }
+
+    .ant-card {
+      margin-bottom: 1rem;
+    }
+
+    .monitoring-overview-card {
+      .ant-row {
+        .ant-col {
+          margin-bottom: 1rem;
+        }
+      }
+    }
+  }
+}

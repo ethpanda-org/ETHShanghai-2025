@@ -1,0 +1,818 @@
+// SecurityRecommendations.scss
+.security-recommendations-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  margin-bottom: 2rem;
+
+  .ant-card-head {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
+    .ant-card-head-title {
+      color: #ffffff;
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 0;
+
+      .recommendations-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+
+        .header-left {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+
+          .recommendations-icon {
+            background: linear-gradient(135deg, #21d4fd 0%, #b721ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.4rem;
+          }
+
+          .total-badge {
+            .ant-badge-count {
+              background: linear-gradient(135deg, #21d4fd 0%, #b721ff 100%);
+              font-size: 0.8rem;
+              height: 20px;
+              min-width: 20px;
+              line-height: 18px;
+            }
+          }
+        }
+
+        .header-stats {
+          .ant-tag {
+            font-size: 0.75rem;
+            border-radius: 12px;
+            margin: 0 0.25rem;
+          }
+        }
+      }
+    }
+  }
+
+  .ant-card-body {
+    padding: 1.5rem;
+  }
+
+  // 过滤器部分
+  .filter-section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    .ant-btn {
+      border-radius: 16px;
+      font-size: 0.85rem;
+      height: 28px;
+      padding: 0 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.8);
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: rgba(33, 212, 253, 0.4);
+        background: rgba(33, 212, 253, 0.1);
+        color: #21d4fd;
+      }
+
+      &.ant-btn-primary {
+        background: linear-gradient(135deg, #21d4fd 0%, #b721ff 100%);
+        border-color: transparent;
+        color: #ffffff;
+
+        &:hover {
+          background: linear-gradient(135deg, #1890ff 0%, #9c1de7 100%);
+        }
+      }
+
+      &.ant-btn-dangerous {
+        &.ant-btn-primary {
+          background: #ff4d4f;
+          border-color: #ff4d4f;
+
+          &:hover {
+            background: #ff7875;
+            border-color: #ff7875;
+          }
+        }
+      }
+    }
+  }
+
+  // 建议列表
+  .recommendations-list {
+    .risk-level-section {
+      margin-bottom: 2rem;
+
+      .section-header {
+        margin-bottom: 1rem;
+
+        .section-tag {
+          font-size: 0.9rem;
+          font-weight: 600;
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          border: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+      }
+
+      // 折叠面板样式
+      .recommendations-collapse {
+        .ant-collapse-item {
+          border: none;
+          background: transparent;
+          margin-bottom: 1rem;
+
+          .ant-collapse-header {
+            padding: 0;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+
+            &:hover {
+              background: rgba(255, 255, 255, 0.05);
+              border-color: rgba(255, 255, 255, 0.2);
+            }
+
+            .recommendation-header {
+              padding: 1.25rem;
+              width: 100%;
+
+              .header-main {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 1rem;
+
+                .title-section {
+                  flex: 1;
+                  min-width: 0;
+
+                  .recommendation-title {
+                    color: #ffffff;
+                    margin: 0 0 0.5rem 0;
+                    font-size: 1.1rem;
+                    font-weight: 600;
+                    line-height: 1.4;
+                  }
+
+                  .recommendation-meta {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.5rem;
+
+                    .category-tag {
+                      background: rgba(33, 212, 253, 0.2);
+                      color: #21d4fd;
+                      border: 1px solid rgba(33, 212, 253, 0.3);
+                      border-radius: 12px;
+                      font-size: 0.8rem;
+                    }
+
+                    .difficulty-tag {
+                      border-radius: 12px;
+                      font-size: 0.8rem;
+                      border: none;
+                    }
+
+                    .custom-tag {
+                      background: rgba(255, 255, 255, 0.1);
+                      color: rgba(255, 255, 255, 0.8);
+                      border: 1px solid rgba(255, 255, 255, 0.2);
+                      border-radius: 12px;
+                      font-size: 0.75rem;
+                    }
+                  }
+                }
+
+                .progress-section {
+                  display: flex;
+                  flex-direction: column;
+                  align-items: flex-end;
+                  gap: 0.5rem;
+                  min-width: 120px;
+
+                  .completion-progress {
+                    width: 100px;
+
+                    .ant-progress-bg {
+                      border-radius: 4px;
+                      height: 6px !important;
+                    }
+
+                    .ant-progress-outer {
+                      .ant-progress-inner {
+                        background: rgba(255, 255, 255, 0.1);
+                        border-radius: 4px;
+                      }
+                    }
+                  }
+
+                  .progress-text {
+                    color: rgba(255, 255, 255, 0.8);
+                    font-size: 0.8rem;
+                  }
+                }
+              }
+
+              .header-stats {
+                .stat-tag {
+                  background: rgba(255, 255, 255, 0.08);
+                  color: rgba(255, 255, 255, 0.8);
+                  border: 1px solid rgba(255, 255, 255, 0.15);
+                  border-radius: 12px;
+                  font-size: 0.75rem;
+                  margin: 0 0.25rem;
+
+                  .anticon {
+                    color: #21d4fd;
+                  }
+                }
+              }
+            }
+          }
+
+          .ant-collapse-content {
+            border: none;
+            background: transparent;
+
+            .ant-collapse-content-box {
+              padding: 0;
+            }
+          }
+
+          // 风险等级样式
+          &.critical-risk {
+            .ant-collapse-header {
+              border-left: 4px solid #ff4d4f;
+              
+              &:hover {
+                border-color: rgba(255, 77, 79, 0.4);
+                background: rgba(255, 77, 79, 0.05);
+              }
+            }
+          }
+
+          &.high-risk {
+            .ant-collapse-header {
+              border-left: 4px solid #ff7a45;
+              
+              &:hover {
+                border-color: rgba(255, 122, 69, 0.4);
+                background: rgba(255, 122, 69, 0.05);
+              }
+            }
+          }
+
+          &.medium-risk {
+            .ant-collapse-header {
+              border-left: 4px solid #faad14;
+              
+              &:hover {
+                border-color: rgba(250, 173, 20, 0.4);
+                background: rgba(250, 173, 20, 0.05);
+              }
+            }
+          }
+
+          &.low-risk {
+            .ant-collapse-header {
+              border-left: 4px solid #52c41a;
+              
+              &:hover {
+                border-color: rgba(82, 196, 26, 0.4);
+                background: rgba(82, 196, 26, 0.05);
+              }
+            }
+          }
+
+          &.implemented {
+            .ant-collapse-header {
+              opacity: 0.7;
+              background: rgba(82, 196, 26, 0.1);
+              border-color: rgba(82, 196, 26, 0.3);
+            }
+          }
+
+          &.ant-collapse-item-active {
+            .ant-collapse-header {
+              border-bottom-left-radius: 0;
+              border-bottom-right-radius: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // 建议内容样式
+  .recommendation-content {
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: none;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+
+    .description-section {
+      margin-bottom: 2rem;
+
+      .recommendation-description {
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 1rem;
+        line-height: 1.6;
+      }
+
+      .impact-alert {
+        background: rgba(250, 173, 20, 0.1);
+        border: 1px solid rgba(250, 173, 20, 0.3);
+        border-radius: 8px;
+
+        .ant-alert-message {
+          color: #faad14;
+          font-weight: 600;
+        }
+
+        .ant-alert-description {
+          color: rgba(250, 173, 20, 0.8);
+        }
+
+        .ant-alert-icon {
+          color: #faad14;
+        }
+      }
+    }
+
+    .section-title {
+      color: #21d4fd;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .anticon {
+        font-size: 1.1rem;
+      }
+    }
+
+    // 修复步骤样式
+    .fix-steps-section {
+      margin-bottom: 2rem;
+
+      .fix-steps {
+        .ant-steps-item {
+          .ant-steps-item-container {
+            .ant-steps-item-content {
+              .ant-steps-item-title {
+                color: #ffffff;
+
+                .step-title {
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  width: 100%;
+
+                  .time-tag {
+                    background: rgba(33, 212, 253, 0.2);
+                    color: #21d4fd;
+                    border: 1px solid rgba(33, 212, 253, 0.3);
+                    border-radius: 8px;
+                  }
+                }
+              }
+
+              .ant-steps-item-description {
+                color: rgba(255, 255, 255, 0.8);
+
+                .step-content {
+                  .step-description {
+                    margin-bottom: 1rem;
+                    line-height: 1.6;
+                  }
+
+                  .code-example {
+                    margin-bottom: 1rem;
+
+                    .ant-typography {
+                      color: #21d4fd;
+                      margin-bottom: 0.5rem;
+                    }
+
+                    .code-block {
+                      background: rgba(0, 0, 0, 0.3);
+                      border: 1px solid rgba(255, 255, 255, 0.1);
+                      border-radius: 8px;
+                      padding: 1rem;
+                      color: #ffffff;
+                      font-family: 'Courier New', monospace;
+                      font-size: 0.85rem;
+                      line-height: 1.5;
+                      overflow-x: auto;
+                      white-space: pre-wrap;
+                    }
+                  }
+
+                  .step-action-btn {
+                    border-radius: 16px;
+                    font-size: 0.8rem;
+                    height: 28px;
+                    padding: 0 12px;
+
+                    &.ant-btn-primary {
+                      background: linear-gradient(135deg, #21d4fd 0%, #b721ff 100%);
+                      border-color: transparent;
+
+                      &:hover {
+                        background: linear-gradient(135deg, #1890ff 0%, #9c1de7 100%);
+                      }
+                    }
+
+                    &.ant-btn-default {
+                      background: rgba(82, 196, 26, 0.2);
+                      border-color: rgba(82, 196, 26, 0.4);
+                      color: #52c41a;
+
+                      &:hover {
+                        background: rgba(82, 196, 26, 0.3);
+                        border-color: rgba(82, 196, 26, 0.6);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            .ant-steps-item-icon {
+              background: rgba(255, 255, 255, 0.1);
+              border-color: rgba(255, 255, 255, 0.2);
+
+              .ant-steps-icon {
+                color: rgba(255, 255, 255, 0.8);
+              }
+            }
+
+            &.ant-steps-item-process {
+              .ant-steps-item-icon {
+                background: rgba(33, 212, 253, 0.2);
+                border-color: rgba(33, 212, 253, 0.4);
+
+                .ant-steps-icon {
+                  color: #21d4fd;
+                }
+              }
+            }
+
+            &.ant-steps-item-finish {
+              .ant-steps-item-icon {
+                background: rgba(82, 196, 26, 0.2);
+                border-color: rgba(82, 196, 26, 0.4);
+
+                .ant-steps-icon {
+                  color: #52c41a;
+                }
+              }
+            }
+          }
+
+          .ant-steps-item-tail {
+            &::after {
+              background: rgba(255, 255, 255, 0.2);
+            }
+          }
+
+          &.ant-steps-item-finish {
+            .ant-steps-item-tail {
+              &::after {
+                background: rgba(82, 196, 26, 0.4);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // 代码对比样式
+    .code-comparison-section {
+      margin-bottom: 2rem;
+
+      .code-comparison {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+
+        .code-before,
+        .code-after {
+          .code-label {
+            color: #21d4fd;
+            display: block;
+            margin-bottom: 0.5rem;
+          }
+
+          .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            min-height: 100px;
+
+            &.before {
+              border-left: 4px solid #ff4d4f;
+            }
+
+            &.after {
+              border-left: 4px solid #52c41a;
+            }
+          }
+        }
+      }
+    }
+
+    // 参考资料样式
+    .references-section {
+      margin-bottom: 2rem;
+
+      .references-list {
+        .ant-list-item {
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 0.75rem 0;
+
+          .reference-link {
+            color: #21d4fd;
+            text-decoration: none;
+            font-size: 0.9rem;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+
+    // 操作按钮样式
+    .recommendation-actions {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+      .implement-btn {
+        background: linear-gradient(135deg, #21d4fd 0%, #b721ff 100%);
+        border-color: transparent;
+        border-radius: 20px;
+        height: 36px;
+        padding: 0 20px;
+        font-weight: 500;
+
+        &:hover {
+          background: linear-gradient(135deg, #1890ff 0%, #9c1de7 100%);
+        }
+
+        &:disabled {
+          background: rgba(82, 196, 26, 0.3);
+          color: #52c41a;
+        }
+      }
+
+      .assign-btn {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.8);
+        border-radius: 20px;
+        height: 36px;
+        padding: 0 20px;
+
+        &:hover {
+          border-color: rgba(33, 212, 253, 0.4);
+          background: rgba(33, 212, 253, 0.1);
+          color: #21d4fd;
+        }
+      }
+    }
+  }
+
+  // 无建议提示
+  .no-recommendations-alert {
+    background: rgba(24, 144, 255, 0.1);
+    border: 1px solid rgba(24, 144, 255, 0.3);
+    border-radius: 8px;
+
+    .ant-alert-message {
+      color: #1890ff;
+      font-weight: 600;
+    }
+
+    .ant-alert-description {
+      color: rgba(24, 144, 255, 0.8);
+    }
+
+    .ant-alert-icon {
+      color: #1890ff;
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .security-recommendations-card {
+    .recommendations-header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+
+      .header-stats {
+        .ant-space {
+          flex-wrap: wrap;
+        }
+      }
+    }
+
+    .filter-section {
+      padding: 0.75rem;
+
+      .ant-space {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    .recommendations-list {
+      .risk-level-section {
+        .recommendations-collapse {
+          .ant-collapse-item {
+            .ant-collapse-header {
+              .recommendation-header {
+                padding: 1rem;
+
+                .header-main {
+                  flex-direction: column;
+                  gap: 1rem;
+
+                  .progress-section {
+                    align-items: flex-start;
+                    width: 100%;
+
+                    .completion-progress {
+                      width: 100%;
+                    }
+                  }
+                }
+
+                .header-stats {
+                  .ant-space {
+                    flex-wrap: wrap;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .recommendation-content {
+      padding: 1rem;
+
+      .code-comparison-section {
+        .code-comparison {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .recommendation-actions {
+        .ant-space {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .security-recommendations-card {
+    .ant-card-body {
+      padding: 1rem;
+    }
+
+    .filter-section {
+      padding: 0.5rem;
+
+      .ant-btn {
+        font-size: 0.8rem;
+        height: 26px;
+        padding: 0 8px;
+      }
+    }
+
+    .recommendations-list {
+      .risk-level-section {
+        .recommendations-collapse {
+          .ant-collapse-item {
+            .ant-collapse-header {
+              .recommendation-header {
+                padding: 0.75rem;
+
+                .header-main {
+                  .title-section {
+                    .recommendation-title {
+                      font-size: 1rem;
+                    }
+
+                    .recommendation-meta {
+                      .category-tag,
+                      .difficulty-tag,
+                      .custom-tag {
+                        font-size: 0.7rem;
+                      }
+                    }
+                  }
+                }
+
+                .header-stats {
+                  .stat-tag {
+                    font-size: 0.7rem;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .recommendation-content {
+      padding: 0.75rem;
+
+      .fix-steps-section {
+        .fix-steps {
+          .ant-steps-item {
+            .ant-steps-item-container {
+              .ant-steps-item-content {
+                .ant-steps-item-title {
+                  .step-title {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 0.5rem;
+                  }
+                }
+
+                .ant-steps-item-description {
+                  .step-content {
+                    .code-example {
+                      .code-block {
+                        font-size: 0.75rem;
+                        padding: 0.75rem;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .code-comparison-section {
+        .code-comparison {
+          .code-before,
+          .code-after {
+            .code-block {
+              font-size: 0.75rem;
+              padding: 0.75rem;
+            }
+          }
+        }
+      }
+
+      .recommendation-actions {
+        .implement-btn,
+        .assign-btn {
+          height: 32px;
+          font-size: 0.9rem;
+          padding: 0 16px;
+        }
+      }
+    }
+  }
+}

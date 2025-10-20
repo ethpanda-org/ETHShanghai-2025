@@ -1,0 +1,371 @@
+// PieChart.scss - 饼图样式
+.pie-chart {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    border-color: rgba(24, 144, 255, 0.3);
+  }
+
+  .ant-card-head {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+
+    .ant-card-head-title {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 16px 0;
+    }
+  }
+
+  .ant-card-body {
+    background: transparent;
+    padding: 16px 24px;
+  }
+
+  .chart-container {
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+    
+    // 图表加载状态
+    &.loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      &::before {
+        content: '';
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top: 3px solid #1890ff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+    }
+  }
+
+  .chart-summary {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+    .total-info {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+
+      .total-label {
+        color: #8c8c8c;
+        font-size: 14px;
+      }
+
+      .total-value {
+        color: #fff;
+        font-size: 18px;
+        font-weight: 700;
+      }
+    }
+
+    .top-items {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .top-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.08);
+          transform: translateX(4px);
+        }
+
+        .item-info {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .item-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+          }
+
+          .item-name {
+            color: #fff;
+            font-size: 13px;
+            font-weight: 500;
+          }
+        }
+
+        .item-stats {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .item-value {
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+          }
+
+          .item-percent {
+            color: #8c8c8c;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+          }
+        }
+      }
+    }
+  }
+
+  // 响应式设计
+  @media (max-width: 768px) {
+    .chart-container {
+      min-height: 250px;
+    }
+
+    .chart-summary {
+      .top-items .top-item {
+        padding: 6px 8px;
+
+        .item-info .item-name,
+        .item-stats .item-value {
+          font-size: 12px;
+        }
+
+        .item-stats .item-percent {
+          font-size: 11px;
+        }
+      }
+    }
+
+    .ant-card-head-title {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .ant-card-body {
+      padding: 12px 16px;
+    }
+
+    .chart-container {
+      min-height: 220px;
+    }
+
+    .chart-summary {
+      .total-info {
+        padding: 8px;
+
+        .total-value {
+          font-size: 16px;
+        }
+      }
+
+      .top-items .top-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+
+        .item-stats {
+          width: 100%;
+          justify-content: space-between;
+        }
+      }
+    }
+  }
+}
+
+// 动画效果
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// 图表容器动画
+.pie-chart {
+  animation: fadeInScale 0.6s ease-out;
+}
+
+// 特殊饼图类型样式
+.pie-chart {
+  &.donut-chart {
+    .chart-container {
+      position: relative;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 20%;
+        transform: translate(-50%, -50%);
+        width: 80px;
+        height: 80px;
+        background: radial-gradient(circle, rgba(24, 144, 255, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+      }
+    }
+  }
+
+  &.asset-distribution {
+    .top-items .top-item {
+      .item-info .item-name {
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+  }
+
+  &.portfolio-chart {
+    .chart-summary .total-info {
+      background: linear-gradient(90deg, rgba(24, 144, 255, 0.1) 0%, rgba(82, 196, 26, 0.1) 100%);
+    }
+  }
+}
+
+// 深色主题适配
+.dark-theme .pie-chart {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
+  border-color: rgba(255, 255, 255, 0.05);
+
+  &:hover {
+    border-color: rgba(24, 144, 255, 0.2);
+  }
+
+  .ant-card-head {
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .chart-summary {
+    border-top-color: rgba(255, 255, 255, 0.05);
+
+    .total-info {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .top-items .top-item {
+      background: rgba(255, 255, 255, 0.02);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+    }
+  }
+}
+
+// 浅色主题适配
+.light-theme .pie-chart {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #000;
+
+  &:hover {
+    border-color: rgba(24, 144, 255, 0.3);
+  }
+
+  .ant-card-head-title,
+  .total-value,
+  .item-name,
+  .item-value {
+    color: #000;
+  }
+
+  .ant-card-head {
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .chart-summary {
+    border-top-color: rgba(0, 0, 0, 0.1);
+
+    .total-info {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .top-items .top-item {
+      background: rgba(0, 0, 0, 0.03);
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.08);
+      }
+    }
+  }
+
+  .total-label,
+  .item-percent {
+    color: #666;
+  }
+}
+
+// 特殊效果
+.pie-chart {
+  // 发光效果
+  &.glow-effect {
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      0 0 20px rgba(24, 144, 255, 0.1);
+
+    &:hover {
+      box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.15),
+        0 0 30px rgba(24, 144, 255, 0.2);
+    }
+  }
+
+  // 渐变边框效果
+  &.gradient-border {
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      bottom: -1px;
+      background: linear-gradient(45deg, #1890ff, #52c41a, #faad14, #f5222d);
+      border-radius: 16px;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    &:hover::before {
+      opacity: 0.3;
+    }
+  }
+}

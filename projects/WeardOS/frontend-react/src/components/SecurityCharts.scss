@@ -1,0 +1,432 @@
+// SecurityCharts.scss
+.security-charts-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border: 1px solid rgba(33, 212, 253, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  margin-bottom: 24px;
+  overflow: hidden;
+
+  .ant-card-head {
+    background: rgba(33, 212, 253, 0.1);
+    border-bottom: 1px solid rgba(33, 212, 253, 0.2);
+    padding: 16px 24px;
+
+    .ant-card-head-title {
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 0;
+    }
+  }
+
+  .ant-card-body {
+    padding: 24px;
+    background: transparent;
+  }
+
+  // 图表头部
+  .charts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .charts-icon {
+        color: #21d4fd;
+        font-size: 20px;
+      }
+
+      span {
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 600;
+      }
+    }
+
+    .header-controls {
+      .chart-selector {
+        min-width: 140px;
+
+        .ant-select-selector {
+          background: rgba(33, 212, 253, 0.1) !important;
+          border: 1px solid rgba(33, 212, 253, 0.3) !important;
+          color: #ffffff !important;
+
+          .ant-select-selection-item {
+            color: #ffffff !important;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          }
+        }
+
+        .ant-select-arrow {
+          color: #21d4fd !important;
+        }
+
+        &:hover .ant-select-selector {
+          border-color: #21d4fd !important;
+        }
+      }
+    }
+  }
+
+  // 统计概览
+  .charts-overview {
+    margin-bottom: 32px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(33, 212, 253, 0.1);
+
+    .overview-stat {
+      text-align: center;
+      padding: 16px;
+      background: rgba(33, 212, 253, 0.05);
+      border-radius: 8px;
+      border: 1px solid rgba(33, 212, 253, 0.1);
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(33, 212, 253, 0.1);
+        border-color: rgba(33, 212, 253, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .ant-statistic {
+        .ant-statistic-title {
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 12px;
+          margin-bottom: 8px;
+        }
+
+        .ant-statistic-content {
+          .ant-statistic-content-value {
+            font-size: 24px;
+            font-weight: 700;
+          }
+
+          .ant-statistic-content-prefix {
+            margin-right: 8px;
+            font-size: 18px;
+          }
+
+          .ant-statistic-content-suffix {
+            font-size: 14px;
+            opacity: 0.8;
+          }
+        }
+      }
+    }
+  }
+
+  // 图表容器
+  .chart-container {
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(33, 212, 253, 0.2);
+
+      .chart-title {
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+      }
+
+      .chart-legend {
+        .legend-items {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+
+          .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            border: 1px solid rgba(33, 212, 253, 0.1);
+
+            .legend-color {
+              width: 12px;
+              height: 12px;
+              border-radius: 2px;
+            }
+
+            .legend-text {
+              color: rgba(255, 255, 255, 0.9);
+              font-size: 12px;
+            }
+
+            .legend-value {
+              background: rgba(33, 212, 253, 0.2);
+              color: #21d4fd;
+              border: 1px solid rgba(33, 212, 253, 0.3);
+              font-size: 11px;
+              padding: 0 6px;
+              height: 18px;
+              line-height: 16px;
+            }
+          }
+        }
+      }
+    }
+
+    .chart-content {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
+      padding: 20px;
+      border: 1px solid rgba(33, 212, 253, 0.1);
+      min-height: 300px;
+
+      // Recharts样式覆盖
+      .recharts-wrapper {
+        .recharts-legend-wrapper {
+          .recharts-default-legend {
+            .recharts-legend-item {
+              color: #ffffff !important;
+              
+              .recharts-legend-item-text {
+                color: #ffffff !important;
+              }
+            }
+          }
+        }
+
+        .recharts-cartesian-axis-tick-value {
+          fill: #ffffff !important;
+        }
+
+        .recharts-polar-angle-axis-tick-value {
+          fill: #ffffff !important;
+        }
+
+        .recharts-polar-radius-axis-tick-value {
+          fill: #ffffff !important;
+        }
+
+        .recharts-tooltip-wrapper {
+          .recharts-default-tooltip {
+            background: rgba(26, 26, 46, 0.95) !important;
+            border: 1px solid rgba(33, 212, 253, 0.3) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+
+            .recharts-tooltip-label {
+              color: #ffffff !important;
+              font-weight: 600 !important;
+            }
+
+            .recharts-tooltip-item {
+              color: #ffffff !important;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // 图表洞察
+  .chart-insights {
+    margin-top: 24px;
+    padding: 20px;
+    background: rgba(33, 212, 253, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(33, 212, 253, 0.2);
+
+    .insight-section {
+      h5 {
+        color: #21d4fd;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        &::before {
+          content: '';
+          width: 4px;
+          height: 16px;
+          background: linear-gradient(135deg, #21d4fd, #b721ff);
+          border-radius: 2px;
+        }
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 20px;
+
+        li {
+          color: rgba(255, 255, 255, 0.9);
+          font-size: 13px;
+          line-height: 1.6;
+          margin-bottom: 8px;
+
+          strong {
+            color: #ffffff;
+            font-weight: 600;
+          }
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+
+  // 响应式设计
+  @media (max-width: 768px) {
+    .charts-header {
+      flex-direction: column;
+      gap: 16px;
+      align-items: flex-start;
+
+      .header-controls {
+        width: 100%;
+
+        .chart-selector {
+          width: 100%;
+        }
+      }
+    }
+
+    .chart-header {
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+
+      .chart-legend {
+        width: 100%;
+
+        .legend-items {
+          justify-content: flex-start;
+        }
+      }
+    }
+
+    .charts-overview {
+      .ant-row {
+        .ant-col {
+          margin-bottom: 12px;
+        }
+      }
+    }
+
+    .chart-content {
+      padding: 12px;
+    }
+
+    .chart-insights {
+      padding: 16px;
+
+      .insight-section {
+        ul {
+          padding-left: 16px;
+
+          li {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .ant-card-body {
+      padding: 16px;
+    }
+
+    .charts-overview {
+      padding: 16px;
+      margin-bottom: 20px;
+
+      .overview-stat {
+        padding: 12px;
+
+        .ant-statistic {
+          .ant-statistic-content {
+            .ant-statistic-content-value {
+              font-size: 20px;
+            }
+
+            .ant-statistic-content-prefix {
+              font-size: 16px;
+            }
+          }
+        }
+      }
+    }
+
+    .chart-container {
+      .chart-content {
+        padding: 8px;
+        min-height: 250px;
+      }
+    }
+  }
+}
+
+// 下拉菜单样式
+.ant-select-dropdown {
+  background: rgba(26, 26, 46, 0.95) !important;
+  border: 1px solid rgba(33, 212, 253, 0.3) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+
+  .ant-select-item {
+    color: rgba(255, 255, 255, 0.9) !important;
+    background: transparent !important;
+
+    &:hover {
+      background: rgba(33, 212, 253, 0.1) !important;
+      color: #ffffff !important;
+    }
+
+    &.ant-select-item-option-selected {
+      background: rgba(33, 212, 253, 0.2) !important;
+      color: #21d4fd !important;
+      font-weight: 600 !important;
+    }
+
+    .ant-select-item-option-content {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+}
+
+// 加载状态
+.ant-card-loading-content {
+  .ant-card-loading-block {
+    background: linear-gradient(90deg, 
+      rgba(33, 212, 253, 0.1) 25%, 
+      rgba(33, 212, 253, 0.2) 50%, 
+      rgba(33, 212, 253, 0.1) 75%
+    ) !important;
+    background-size: 400% 100% !important;
+    animation: loading-shimmer 1.5s ease-in-out infinite !important;
+  }
+}
+
+@keyframes loading-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

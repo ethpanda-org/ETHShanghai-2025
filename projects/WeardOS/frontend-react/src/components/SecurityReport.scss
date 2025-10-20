@@ -1,0 +1,689 @@
+// SecurityReport.scss
+.security-report-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  margin-bottom: 2rem;
+
+  .ant-card-head {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
+    .ant-card-head-title {
+      color: #ffffff;
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 0;
+
+      .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+
+        .header-left {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+
+          .report-icon {
+            background: linear-gradient(135deg, #21d4fd 0%, #b721ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.4rem;
+          }
+        }
+
+        .header-actions {
+          display: flex;
+          gap: 0.5rem;
+
+          .action-btn {
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+
+            &:hover {
+              color: #21d4fd;
+              border-color: rgba(33, 212, 253, 0.4);
+              background: rgba(33, 212, 253, 0.1);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .ant-card-body {
+    padding: 0;
+  }
+
+  // 折叠面板样式
+  .report-collapse {
+    .ant-collapse-item {
+      border: none;
+      background: transparent;
+
+      .ant-collapse-header {
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 0;
+
+        .panel-header {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          color: #ffffff;
+          font-size: 1.1rem;
+          font-weight: 600;
+
+          .panel-icon {
+            color: #21d4fd;
+            font-size: 1.2rem;
+          }
+
+          .issue-badge {
+            margin-left: auto;
+            
+            .ant-badge-count {
+              font-size: 0.8rem;
+              height: 20px;
+              min-width: 20px;
+              line-height: 18px;
+            }
+          }
+
+          .vulnerability-summary {
+            margin-left: auto;
+            display: flex;
+            gap: 0.5rem;
+
+            .risk-tag {
+              font-size: 0.75rem;
+              border-radius: 12px;
+              margin: 0;
+            }
+          }
+        }
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.05);
+        }
+      }
+
+      .ant-collapse-content {
+        border: none;
+        background: transparent;
+
+        .ant-collapse-content-box {
+          padding: 1.5rem;
+        }
+      }
+
+      &.ant-collapse-item-active {
+        .ant-collapse-header {
+          background: rgba(33, 212, 253, 0.05);
+          border-bottom-color: rgba(33, 212, 253, 0.2);
+        }
+      }
+    }
+  }
+
+  // 概览面板样式
+  .overview-panel {
+    .report-meta {
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+
+      .meta-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .meta-label {
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.9rem;
+        }
+
+        .meta-value {
+          color: #ffffff;
+          font-weight: 500;
+          font-family: 'Courier New', monospace;
+        }
+      }
+    }
+
+    .security-score-section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+
+      .overall-score {
+        text-align: center;
+
+        .score-circle {
+          margin-bottom: 1rem;
+
+          .ant-progress-circle {
+            .ant-progress-text {
+              color: #ffffff !important;
+              font-size: 1.5rem !important;
+              font-weight: 600 !important;
+            }
+          }
+        }
+
+        .score-label {
+          h3 {
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+          }
+
+          p {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+            font-size: 0.9rem;
+          }
+        }
+      }
+
+      .category-scores {
+        .ant-statistic {
+          .ant-statistic-title {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+          }
+
+          .ant-statistic-content {
+            margin-bottom: 0.5rem;
+
+            .ant-statistic-content-value {
+              font-size: 1.2rem;
+              font-weight: 600;
+            }
+
+            .ant-statistic-content-suffix {
+              color: rgba(255, 255, 255, 0.6);
+              font-size: 0.9rem;
+            }
+          }
+        }
+
+        .ant-progress {
+          .ant-progress-bg {
+            border-radius: 4px;
+            height: 6px !important;
+          }
+
+          .ant-progress-outer {
+            .ant-progress-inner {
+              background: rgba(255, 255, 255, 0.1);
+              border-radius: 4px;
+            }
+          }
+        }
+      }
+    }
+
+    .stats-section {
+      .ant-statistic {
+        text-align: center;
+
+        .ant-statistic-title {
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.85rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .ant-statistic-content {
+          .ant-statistic-content-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+          }
+
+          .ant-statistic-content-suffix {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+  }
+
+  // 漏洞面板样式
+  .vulnerabilities-panel {
+    .no-vulnerabilities-alert {
+      background: rgba(82, 196, 26, 0.1);
+      border: 1px solid rgba(82, 196, 26, 0.3);
+      border-radius: 8px;
+
+      .ant-alert-message {
+        color: #52c41a;
+        font-weight: 600;
+      }
+
+      .ant-alert-description {
+        color: rgba(82, 196, 26, 0.8);
+      }
+
+      .ant-alert-icon {
+        color: #52c41a;
+      }
+    }
+
+    .vulnerabilities-list {
+      .risk-level-group {
+        margin-bottom: 2rem;
+
+        .risk-level-header {
+          margin-bottom: 1rem;
+
+          .risk-level-tag {
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+        }
+
+        .vulnerability-card {
+          margin-bottom: 1rem;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 12px;
+          transition: all 0.3s ease;
+
+          &:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+          }
+
+          &.critical-risk {
+            border-left: 4px solid #ff4d4f;
+            
+            &:hover {
+              border-color: rgba(255, 77, 79, 0.4);
+              background: rgba(255, 77, 79, 0.05);
+            }
+          }
+
+          &.high-risk {
+            border-left: 4px solid #ff7a45;
+            
+            &:hover {
+              border-color: rgba(255, 122, 69, 0.4);
+              background: rgba(255, 122, 69, 0.05);
+            }
+          }
+
+          &.medium-risk {
+            border-left: 4px solid #faad14;
+            
+            &:hover {
+              border-color: rgba(250, 173, 20, 0.4);
+              background: rgba(250, 173, 20, 0.05);
+            }
+          }
+
+          &.low-risk {
+            border-left: 4px solid #52c41a;
+            
+            &:hover {
+              border-color: rgba(82, 196, 26, 0.4);
+              background: rgba(82, 196, 26, 0.05);
+            }
+          }
+
+          &.info-risk {
+            border-left: 4px solid #1890ff;
+            
+            &:hover {
+              border-color: rgba(24, 144, 255, 0.4);
+              background: rgba(24, 144, 255, 0.05);
+            }
+          }
+
+          .ant-card-body {
+            padding: 1.25rem;
+          }
+
+          .vulnerability-header {
+            margin-bottom: 1rem;
+
+            .vuln-title {
+              display: flex;
+              align-items: center;
+              gap: 0.75rem;
+              flex-wrap: wrap;
+
+              h4 {
+                color: #ffffff;
+                margin: 0;
+                font-size: 1.1rem;
+                font-weight: 600;
+                flex: 1;
+                min-width: 200px;
+              }
+
+              .category-tag {
+                background: rgba(255, 255, 255, 0.1);
+                color: rgba(255, 255, 255, 0.8);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 12px;
+                font-size: 0.8rem;
+              }
+            }
+          }
+
+          .vulnerability-content {
+            .vuln-description {
+              color: rgba(255, 255, 255, 0.9);
+              margin-bottom: 1rem;
+              line-height: 1.6;
+            }
+
+            .vuln-location {
+              color: rgba(255, 255, 255, 0.8);
+              margin-bottom: 1rem;
+              padding: 0.75rem;
+              background: rgba(255, 255, 255, 0.05);
+              border-radius: 8px;
+              font-family: 'Courier New', monospace;
+              font-size: 0.9rem;
+
+              strong {
+                color: #21d4fd;
+              }
+
+              span {
+                margin-right: 1rem;
+              }
+            }
+
+            .vuln-impact,
+            .vuln-recommendation {
+              margin-bottom: 1rem;
+
+              strong {
+                color: #21d4fd;
+                display: block;
+                margin-bottom: 0.5rem;
+              }
+
+              p {
+                color: rgba(255, 255, 255, 0.8);
+                margin: 0;
+                line-height: 1.6;
+              }
+            }
+
+            .vuln-code {
+              margin-bottom: 1rem;
+
+              strong {
+                color: #21d4fd;
+                display: block;
+                margin-bottom: 0.5rem;
+              }
+
+              .code-snippet {
+                background: rgba(0, 0, 0, 0.3);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 8px;
+                padding: 1rem;
+                color: #ffffff;
+                font-family: 'Courier New', monospace;
+                font-size: 0.85rem;
+                line-height: 1.5;
+                overflow-x: auto;
+                white-space: pre-wrap;
+              }
+            }
+
+            .vuln-references {
+              strong {
+                color: #21d4fd;
+                display: block;
+                margin-bottom: 0.5rem;
+              }
+
+              ul {
+                margin: 0;
+                padding-left: 1.5rem;
+
+                li {
+                  margin-bottom: 0.25rem;
+
+                  a {
+                    color: #21d4fd;
+                    text-decoration: none;
+                    font-size: 0.9rem;
+
+                    &:hover {
+                      text-decoration: underline;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .security-report-card {
+    .report-header {
+      .header-actions {
+        display: none;
+      }
+    }
+
+    .report-collapse {
+      .ant-collapse-header {
+        padding: 1rem;
+
+        .panel-header {
+          font-size: 1rem;
+
+          .vulnerability-summary {
+            flex-direction: column;
+            gap: 0.25rem;
+            align-items: flex-end;
+
+            .risk-tag {
+              font-size: 0.7rem;
+            }
+          }
+        }
+      }
+
+      .ant-collapse-content-box {
+        padding: 1rem;
+      }
+    }
+
+    .overview-panel {
+      .security-score-section {
+        padding: 1rem;
+
+        .overall-score {
+          margin-bottom: 1.5rem;
+
+          .score-circle {
+            .ant-progress-circle {
+              width: 100px !important;
+              height: 100px !important;
+
+              .ant-progress-text {
+                font-size: 1.2rem !important;
+              }
+            }
+          }
+        }
+
+        .category-scores {
+          .ant-row {
+            .ant-col {
+              margin-bottom: 1rem;
+            }
+          }
+        }
+      }
+
+      .stats-section {
+        .ant-row {
+          .ant-col {
+            margin-bottom: 1rem;
+          }
+        }
+      }
+    }
+
+    .vulnerabilities-panel {
+      .vulnerability-card {
+        .vulnerability-header {
+          .vuln-title {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+
+            h4 {
+              font-size: 1rem;
+              min-width: auto;
+            }
+          }
+        }
+
+        .vulnerability-content {
+          .vuln-location {
+            font-size: 0.8rem;
+
+            span {
+              display: block;
+              margin-right: 0;
+              margin-bottom: 0.25rem;
+            }
+          }
+
+          .vuln-code {
+            .code-snippet {
+              font-size: 0.75rem;
+              padding: 0.75rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .security-report-card {
+    .report-collapse {
+      .ant-collapse-header {
+        padding: 0.75rem;
+      }
+
+      .ant-collapse-content-box {
+        padding: 0.75rem;
+      }
+    }
+
+    .overview-panel {
+      .report-meta {
+        padding: 0.75rem;
+
+        .meta-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.25rem;
+        }
+      }
+
+      .security-score-section {
+        padding: 0.75rem;
+
+        .overall-score {
+          .score-circle {
+            .ant-progress-circle {
+              width: 80px !important;
+              height: 80px !important;
+
+              .ant-progress-text {
+                font-size: 1rem !important;
+              }
+            }
+          }
+
+          .score-label {
+            h3 {
+              font-size: 1rem;
+            }
+
+            p {
+              font-size: 0.8rem;
+            }
+          }
+        }
+      }
+
+      .stats-section {
+        .ant-statistic {
+          .ant-statistic-title {
+            font-size: 0.8rem;
+          }
+
+          .ant-statistic-content {
+            .ant-statistic-content-value {
+              font-size: 1.2rem;
+            }
+          }
+        }
+      }
+    }
+
+    .vulnerabilities-panel {
+      .vulnerability-card {
+        .ant-card-body {
+          padding: 1rem;
+        }
+
+        .vulnerability-content {
+          .vuln-description {
+            font-size: 0.9rem;
+          }
+
+          .vuln-location {
+            padding: 0.5rem;
+            font-size: 0.75rem;
+          }
+
+          .vuln-impact,
+          .vuln-recommendation {
+            p {
+              font-size: 0.9rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}

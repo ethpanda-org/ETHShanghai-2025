@@ -1,0 +1,702 @@
+// Web3HomePage.scss
+.web3-homepage {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0f1c 0%, #1a1f35 50%, #0f1426 100%);
+  color: #ffffff;
+  overflow-x: hidden;
+
+  // Hero Section
+  .hero-section {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    overflow: hidden;
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      max-width: 1200px;
+      width: 100%;
+      animation: fadeInUp 1s ease-out;
+    }
+
+    .hero-text {
+      margin-bottom: 3rem;
+
+      .hero-title {
+        font-size: clamp(2.5rem, 6vw, 4.5rem);
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+        color: #ffffff;
+
+        .gradient-text {
+          background: linear-gradient(135deg, #21d4fd 0%, #b721ff 50%, #21d4fd 100%);
+          background-size: 200% 200%;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: gradientShift 4s ease-in-out infinite;
+        }
+      }
+
+      .hero-subtitle {
+        font-size: clamp(1rem, 2.5vw, 1.3rem);
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+    }
+
+    // Network Icons
+    .network-icons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+
+      .network-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        animation: floatIn 0.6s ease-out forwards;
+        opacity: 0;
+        transform: translateY(20px);
+        border: 2px solid transparent;
+
+        &:hover {
+          transform: translateY(-4px) scale(1.1);
+          box-shadow: 0 8px 25px rgba(33, 212, 253, 0.3);
+        }
+
+        &.selected {
+          border-color: #21d4fd;
+          box-shadow: 0 0 20px rgba(33, 212, 253, 0.4);
+        }
+
+        .network-symbol {
+          font-size: 1.2rem;
+          font-weight: bold;
+          color: #ffffff;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        &.more-networks {
+          background: linear-gradient(135deg, rgba(33, 212, 253, 0.2) 0%, rgba(183, 33, 255, 0.2) 100%);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          
+          span {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+          }
+        }
+      }
+    }
+
+    // Search Container
+    .search-container {
+      max-width: 900px;
+      margin: 0 auto 2.5rem auto;
+
+      .main-search {
+        .ant-input {
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          color: #ffffff;
+          font-size: 1.1rem;
+          padding: 1.2rem 2rem;
+          border-radius: 60px;
+          backdrop-filter: blur(15px);
+          min-height: 60px;
+
+          &::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1rem;
+          }
+
+          &:focus {
+            border-color: #21d4fd;
+            outline: none;
+          }
+        }
+
+        .ant-btn {
+          background: rgba(33, 212, 253, 0.2);
+          border: 1px solid rgba(33, 212, 253, 0.3);
+          border-radius: 60px;
+          height: 100%;
+          min-height: 60px;
+          min-width: 80px;
+          padding: 0 2.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+          position: relative;
+          overflow: hidden;
+          cursor: pointer;
+          backdrop-filter: blur(10px);
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+          }
+
+          &:hover {
+            transform: scale(1.08);
+            background: rgba(33, 212, 253, 0.3);
+            border-color: rgba(33, 212, 253, 0.5);
+            
+            &::before {
+              left: 100%;
+            }
+          }
+
+          &:active {
+            transform: scale(0.95);
+            background: rgba(33, 212, 253, 0.4);
+          }
+
+          .anticon {
+            font-size: 1.4rem;
+            color: #ffffff;
+          }
+
+          // 修复按钮内span元素的阴影问题
+          span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1rem;
+            height: 1rem;
+            box-shadow: none !important;
+            text-shadow: none !important;
+          }
+        }
+
+        // 禁用Ant Design库中的background样式
+        :where(.css-dev-only-do-not-override-d5xk3g).ant-input-group-wrapper-outlined .ant-input-group-addon {
+          background: transparent !important;
+          border: 1px solid #4c4c4c !important;
+        }
+        
+        // 通用禁用所有ant-input-group-addon的background
+        .ant-input-group-addon {
+          background: transparent !important;
+        }
+        
+        // 禁用所有可能的background: rgba(255, 255, 255, 0.04)样式
+        [class*="ant-input-group"] {
+          background: transparent !important;
+          
+          .ant-input-group-addon {
+            background: transparent !important;
+          }
+        }
+
+        // 响应式设计
+        @media (max-width: 768px) {
+          .ant-input {
+            font-size: 1rem;
+            padding: 1rem 1.5rem;
+            min-height: 50px;
+          }
+
+          .ant-btn {
+            min-height: 50px;
+            min-width: 70px;
+            padding: 0 2rem;
+
+            .anticon {
+              font-size: 1.2rem;
+            }
+          }
+        }
+      }
+    }
+
+    // Quick Actions
+    .quick-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      .action-button {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 50px;
+        padding: 0.5rem 1.5rem;
+        height: auto;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+      }
+
+      .explore-all-btn {
+        color: #21d4fd;
+        font-weight: 500;
+
+        &:hover {
+          color: #b721ff;
+        }
+      }
+    }
+
+    // Background Effects
+    .hero-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+
+      .gradient-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0.6;
+        animation: float 6s ease-in-out infinite;
+
+        &.orb-1 {
+          width: 300px;
+          height: 300px;
+          background: radial-gradient(circle, #21d4fd 0%, transparent 70%);
+          top: 20%;
+          left: 10%;
+          animation-delay: 0s;
+        }
+
+        &.orb-2 {
+          width: 400px;
+          height: 400px;
+          background: radial-gradient(circle, #b721ff 0%, transparent 70%);
+          top: 60%;
+          right: 10%;
+          animation-delay: 2s;
+        }
+
+        &.orb-3 {
+          width: 250px;
+          height: 250px;
+          background: radial-gradient(circle, #1b6dff 0%, transparent 70%);
+          bottom: 20%;
+          left: 50%;
+          animation-delay: 4s;
+        }
+      }
+    }
+  }
+
+  // Features Section
+  .features-section {
+    padding: 6rem 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(10px);
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+
+      h2 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #21d4fd 0%, #b721ff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      p {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.8);
+        max-width: 600px;
+        margin: 0 auto;
+      }
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+
+      .feature-card {
+        background: linear-gradient(135deg, rgba(33, 212, 253, 0.1) 0%, rgba(183, 33, 255, 0.05) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 2.5rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #21d4fd 0%, #b721ff 100%);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+
+        &:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+          border-color: rgba(33, 212, 253, 0.3);
+
+          &::before {
+            opacity: 1;
+          }
+        }
+
+        .feature-icon {
+          width: 60px;
+          height: 60px;
+          background: linear-gradient(135deg, #21d4fd 0%, #b721ff 100%);
+          border-radius: 15px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 1.5rem;
+          font-size: 1.5rem;
+          color: #ffffff;
+        }
+
+        h3 {
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          color: #ffffff;
+        }
+
+        p {
+          color: rgba(255, 255, 255, 0.8);
+          line-height: 1.6;
+          margin-bottom: 1.5rem;
+        }
+
+        .feature-list {
+          list-style: none;
+          padding: 0;
+          margin-bottom: 2rem;
+
+          li {
+            padding: 0.5rem 0;
+            color: rgba(255, 255, 255, 0.7);
+            position: relative;
+            padding-left: 1.5rem;
+
+            &::before {
+              content: '✓';
+              position: absolute;
+              left: 0;
+              color: #21d4fd;
+              font-weight: bold;
+            }
+          }
+        }
+
+        // Wallet Monitoring特殊样式
+        &.wallet-monitoring {
+          .feature-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.5rem;
+
+            .stat {
+              text-align: center;
+
+              .stat-number {
+                display: block;
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #21d4fd;
+                margin-bottom: 0.25rem;
+              }
+
+              .stat-label {
+                font-size: 0.9rem;
+                color: rgba(255, 255, 255, 0.6);
+              }
+            }
+          }
+        }
+
+        // AI Analysis特殊样式
+        &.ai-analysis {
+          .ai-demo {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+
+            .chat-bubble {
+              background: rgba(33, 212, 253, 0.2);
+              padding: 0.75rem 1rem;
+              border-radius: 15px;
+              margin-bottom: 0.75rem;
+              font-size: 0.9rem;
+              color: #ffffff;
+            }
+
+            .ai-response {
+              color: rgba(255, 255, 255, 0.7);
+              font-size: 0.9rem;
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+
+              .anticon {
+                color: #21d4fd;
+              }
+            }
+          }
+        }
+
+        // Visualization特殊样式
+        &.visualization {
+          .chart-preview {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+
+            .mini-chart {
+              height: 60px;
+              display: flex;
+              align-items: end;
+              justify-content: center;
+
+              .chart-bars {
+                display: flex;
+                gap: 4px;
+                align-items: end;
+                height: 100%;
+
+                .bar {
+                  width: 8px;
+                  background: linear-gradient(to top, #21d4fd 0%, #b721ff 100%);
+                  border-radius: 2px;
+                  animation: barGrow 1s ease-out;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // CTA Section
+  .cta-section {
+    padding: 6rem 2rem;
+    background: linear-gradient(135deg, rgba(33, 212, 253, 0.1) 0%, rgba(183, 33, 255, 0.1) 100%);
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .cta-content {
+      h2 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #ffffff;
+      }
+
+      p {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 2.5rem;
+      }
+
+      .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        .ant-btn {
+          height: 50px;
+          padding: 0 2rem;
+          border-radius: 25px;
+          font-size: 1rem;
+          font-weight: 500;
+
+          &.ant-btn-primary {
+            background: linear-gradient(135deg, #21d4fd 0%, #b721ff 100%);
+            border: none;
+
+            &:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 8px 25px rgba(33, 212, 253, 0.4);
+            }
+          }
+
+          &.ant-btn-default {
+            background: transparent;
+            border: 2px solid #21d4fd;
+            color: #21d4fd;
+
+            &:hover {
+              background: rgba(33, 212, 253, 0.1);
+              border-color: #b721ff;
+              color: #b721ff;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Animations
+  @keyframes gradientShift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes floatIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-20px) rotate(180deg);
+    }
+  }
+
+  @keyframes barGrow {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--height, 50%);
+    }
+  }
+
+  // Responsive Design
+  @media (max-width: 768px) {
+    .hero-section {
+      .network-icons {
+        gap: 0.5rem;
+
+        .network-icon {
+          width: 40px;
+          height: 40px;
+
+          .network-symbol {
+            font-size: 1rem;
+          }
+        }
+      }
+
+      .quick-actions {
+        flex-direction: column;
+        align-items: center;
+
+        .action-button {
+          width: 100%;
+          max-width: 300px;
+        }
+      }
+    }
+
+    .features-section {
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .feature-card {
+        padding: 2rem;
+      }
+    }
+
+    .cta-section {
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+
+        .ant-btn {
+          width: 100%;
+          max-width: 300px;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-section {
+      padding: 1rem;
+
+      .search-container {
+        .main-search .ant-input {
+          font-size: 0.9rem;
+          padding: 0.75rem 1rem;
+        }
+      }
+    }
+
+    .features-section,
+    .cta-section {
+      padding: 4rem 1rem;
+    }
+  }
+}

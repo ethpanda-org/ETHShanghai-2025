@@ -1,0 +1,433 @@
+// BarChart.scss - 柱状图样式
+.bar-chart {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    border-color: rgba(24, 144, 255, 0.3);
+  }
+
+  .ant-card-head {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+
+    .ant-card-head-title {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 16px 0;
+    }
+  }
+
+  .ant-card-body {
+    background: transparent;
+    padding: 16px 24px;
+  }
+
+  .chart-container {
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+    
+    // 图表加载状态
+    &.loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      &::before {
+        content: '';
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top: 3px solid #1890ff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+    }
+  }
+
+  .chart-summary {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+    .stats-row {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+
+        .stat-label {
+          color: #8c8c8c;
+          font-size: 12px;
+          text-align: center;
+        }
+
+        .stat-value {
+          color: #fff;
+          font-size: 16px;
+          font-weight: 700;
+        }
+      }
+    }
+
+    .top-items {
+      .top-items-title {
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        text-align: center;
+      }
+
+      .top-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.08);
+          transform: translateX(4px);
+        }
+
+        .rank-badge {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 24px;
+          height: 24px;
+          background: linear-gradient(135deg, #1890ff, #52c41a);
+          color: #fff;
+          font-size: 12px;
+          font-weight: bold;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        .item-info {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          min-width: 80px;
+
+          .item-name {
+            color: #fff;
+            font-size: 13px;
+            font-weight: 500;
+          }
+
+          .item-value {
+            color: #8c8c8c;
+            font-size: 12px;
+          }
+        }
+
+        .progress-bar {
+          flex: 1;
+          height: 6px;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 3px;
+          overflow: hidden;
+
+          .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.8s ease;
+            background: linear-gradient(90deg, currentColor, rgba(255, 255, 255, 0.3));
+          }
+        }
+      }
+    }
+  }
+
+  // 垂直柱状图特殊样式
+  &.vertical-bar {
+    .chart-container {
+      min-height: 250px;
+    }
+  }
+
+  // 水平柱状图特殊样式
+  &.horizontal-bar {
+    .chart-container {
+      min-height: 300px;
+    }
+
+    .stats-row {
+      flex-direction: column;
+      gap: 8px;
+
+      .stat-item {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+  }
+
+  // 响应式设计
+  @media (max-width: 768px) {
+    .chart-container {
+      min-height: 220px;
+    }
+
+    .chart-summary {
+      .stats-row {
+        flex-direction: column;
+        gap: 12px;
+
+        .stat-item {
+          flex-direction: row;
+          justify-content: space-between;
+          padding: 8px 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+      }
+
+      .top-items .top-item {
+        padding: 6px 8px;
+
+        .item-info {
+          min-width: 60px;
+
+          .item-name,
+          .item-value {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+
+    .ant-card-head-title {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .ant-card-body {
+      padding: 12px 16px;
+    }
+
+    .chart-container {
+      min-height: 200px;
+    }
+
+    .chart-summary {
+      .stats-row {
+        padding: 12px;
+
+        .stat-item .stat-value {
+          font-size: 14px;
+        }
+      }
+
+      .top-items .top-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+
+        .rank-badge {
+          align-self: flex-start;
+        }
+
+        .item-info {
+          width: 100%;
+          flex-direction: row;
+          justify-content: space-between;
+        }
+
+        .progress-bar {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+// 动画效果
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 图表容器动画
+.bar-chart {
+  animation: slideInUp 0.6s ease-out;
+}
+
+// 特殊柱状图类型样式
+.bar-chart {
+  &.comparison-chart {
+    .chart-summary .stats-row {
+      background: linear-gradient(90deg, rgba(24, 144, 255, 0.1) 0%, rgba(82, 196, 26, 0.1) 100%);
+    }
+  }
+
+  &.performance-chart {
+    .top-items .top-item .rank-badge {
+      background: linear-gradient(135deg, #faad14, #fa8c16);
+    }
+  }
+
+  &.volume-chart {
+    .chart-container {
+      background: linear-gradient(180deg, rgba(24, 144, 255, 0.05) 0%, transparent 100%);
+    }
+  }
+}
+
+// 深色主题适配
+.dark-theme .bar-chart {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
+  border-color: rgba(255, 255, 255, 0.05);
+
+  &:hover {
+    border-color: rgba(24, 144, 255, 0.2);
+  }
+
+  .ant-card-head {
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .chart-summary {
+    border-top-color: rgba(255, 255, 255, 0.05);
+
+    .stats-row {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .top-items .top-item {
+      background: rgba(255, 255, 255, 0.02);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .progress-bar {
+        background: rgba(255, 255, 255, 0.05);
+      }
+    }
+  }
+}
+
+// 浅色主题适配
+.light-theme .bar-chart {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #000;
+
+  &:hover {
+    border-color: rgba(24, 144, 255, 0.3);
+  }
+
+  .ant-card-head-title,
+  .stat-value,
+  .item-name,
+  .top-items-title {
+    color: #000;
+  }
+
+  .ant-card-head {
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .chart-summary {
+    border-top-color: rgba(0, 0, 0, 0.1);
+
+    .stats-row {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .top-items .top-item {
+      background: rgba(0, 0, 0, 0.03);
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.08);
+      }
+
+      .progress-bar {
+        background: rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  .stat-label,
+  .item-value {
+    color: #666;
+  }
+}
+
+// 特殊效果
+.bar-chart {
+  // 3D效果
+  &.effect-3d {
+    .chart-container {
+      perspective: 1000px;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+  }
+
+  // 霓虹效果
+  &.neon-effect {
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      0 0 20px rgba(24, 144, 255, 0.1);
+
+    &:hover {
+      box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.15),
+        0 0 30px rgba(24, 144, 255, 0.2),
+        inset 0 0 20px rgba(24, 144, 255, 0.1);
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "name": "defi-risk-warning-tool",
+  "version": "1.0.0",
+  "description": "AI-powered DeFi risk warning tool for detecting dangerous transactions",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "backend:dev": "cd backend && npm run dev",
+    "frontend:dev": "cd frontend-react && npm run dev",
+    "build": "npm run backend:build && npm run frontend:build",
+    "backend:build": "cd backend && npm run build",
+    "frontend:build": "cd frontend-react && npm run build",
+    "test": "npm run backend:test && npm run frontend:test",
+    "backend:test": "cd backend && npm test",
+    "frontend:test": "cd frontend-react && npm test",
+    "compile": "npx hardhat compile",
+    "deploy:local": "npx hardhat run scripts/deploy.js --network localhost",
+    "deploy:private": "npx hardhat run scripts/deploy.js --network privateChain",
+    "deploy:holesky": "npx hardhat run scripts/deploy.js --network holesky",
+    "node": "npx hardhat node",
+    "clean": "npx hardhat clean",
+    "setup": "node setup.js",
+    "start:full": "npm run setup && npm run compile && npm run dev",
+    "start:quick": "npm run dev",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend-react && npm install && cd ..",
+    "clean:all": "rimraf node_modules backend/node_modules frontend-react/node_modules",
+    "reset": "npm run clean:all && npm run install:all"
+  },
+  "keywords": ["defi", "blockchain", "risk-analysis", "web3", "ethereum"],
+  "author": "DeFi Risk Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "hardhat": "^2.17.1",
+    "rimraf": "^5.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}

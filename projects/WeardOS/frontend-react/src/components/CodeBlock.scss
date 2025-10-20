@@ -1,0 +1,120 @@
+.code-block {
+  background: #1e1e1e;
+  border-radius: 8px;
+  margin: 16px 0;
+  overflow: hidden;
+  border: 1px solid #333;
+  font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    background: #2d2d2d;
+    border-bottom: 1px solid #333;
+
+    .language-label {
+      color: #888;
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .copy-button {
+      background: transparent;
+      border: none;
+      color: #888;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #404040;
+        color: #fff;
+      }
+
+      &:active {
+        background: #333;
+      }
+
+      svg {
+        width: 14px;
+        height: 14px;
+      }
+    }
+  }
+
+  .code-content {
+    margin: 0;
+    padding: 16px;
+    overflow-x: auto;
+    background: #1e1e1e;
+    color: #e6e6e6;
+    font-size: 14px;
+    line-height: 1.5;
+
+    code {
+      font-family: inherit;
+      background: none;
+      padding: 0;
+      border: none;
+      color: inherit;
+      white-space: pre;
+    }
+
+    /* 滚动条样式 */
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #2d2d2d;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: #666;
+    }
+  }
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .code-block {
+    margin: 12px 0;
+    border-radius: 6px;
+
+    .code-header {
+      padding: 6px 12px;
+
+      .language-label {
+        font-size: 11px;
+      }
+
+      .copy-button {
+        padding: 3px 6px;
+        font-size: 11px;
+
+        svg {
+          width: 12px;
+          height: 12px;
+        }
+      }
+    }
+
+    .code-content {
+      padding: 12px;
+      font-size: 13px;
+    }
+  }
+}

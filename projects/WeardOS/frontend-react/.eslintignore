@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+*.log
+vite.config.ts.timestamp*
+src/**/*.scss.d.ts
+artifacts/
+build/
+public/

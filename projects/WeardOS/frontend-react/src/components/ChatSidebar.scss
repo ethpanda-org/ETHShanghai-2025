@@ -1,0 +1,374 @@
+// ChatSidebar 左侧边栏样式
+.chat-sidebar-content {
+  height: calc(100vh - 64px); // 减去导航栏高度
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+
+  // 头部区域
+  .sidebar-header {
+    padding: 20px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
+
+    .sidebar-title {
+      color: #fff;
+      margin: 0 0 16px 0;
+      font-size: 18px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .new-chat-button {
+      width: 100%;
+      height: 40px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: #fff;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      .anticon {
+        font-size: 16px;
+      }
+    }
+  }
+
+  // 内容区域
+  .sidebar-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 40px 20px;
+      text-align: center;
+
+      .empty-icon {
+        font-size: 48px;
+        color: rgba(255, 255, 255, 0.3);
+        margin-bottom: 16px;
+      }
+
+      .ant-typography {
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 8px;
+
+        &.empty-tip {
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.4);
+        }
+      }
+    }
+
+    .conversations-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+
+      // 自定义滚动条
+      &::-webkit-scrollbar {
+        width: 4px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 2px;
+        
+        &:hover {
+          background: rgba(255, 255, 255, 0.5);
+        }
+      }
+
+      .conversation-group {
+        margin-bottom: 16px;
+
+        .group-title {
+          padding: 8px 16px 4px;
+
+          .group-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+          }
+        }
+
+        .conversation-list {
+          .ant-list-item {
+            padding: 0;
+            border: none;
+          }
+
+          .conversation-item {
+            margin: 2px 8px;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: transparent;
+            border: 1px solid transparent;
+
+            &:hover {
+              background: rgba(255, 255, 255, 0.05);
+              border-color: rgba(255, 255, 255, 0.1);
+            }
+
+            &.active {
+              background: rgba(102, 126, 234, 0.2);
+              border-color: rgba(102, 126, 234, 0.4);
+              box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+
+              .conversation-title .ant-typography {
+                color: #fff;
+                font-weight: 500;
+              }
+            }
+
+            .conversation-content {
+              display: flex;
+              align-items: flex-start;
+              justify-content: space-between;
+
+              .conversation-header {
+                display: flex;
+                align-items: flex-start;
+                flex: 1;
+                min-width: 0;
+
+                .conversation-icon {
+                  margin-right: 12px;
+                  margin-top: 2px;
+                  color: rgba(255, 255, 255, 0.6);
+                  font-size: 16px;
+                }
+
+                .conversation-info {
+                  flex: 1;
+                  min-width: 0;
+
+                  .conversation-title {
+                    margin-bottom: 4px;
+
+                    .ant-typography {
+                      color: rgba(255, 255, 255, 0.9);
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 1.4;
+                    }
+                  }
+
+                  .conversation-preview {
+                    margin-bottom: 6px;
+
+                    .ant-typography {
+                      color: rgba(255, 255, 255, 0.5);
+                      font-size: 12px;
+                      line-height: 1.3;
+                    }
+                  }
+
+                  .conversation-meta {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+
+                    .conversation-time {
+                      font-size: 11px;
+                      color: rgba(255, 255, 255, 0.4);
+                    }
+
+                    .message-count {
+                      .ant-badge-count {
+                        background: rgba(102, 126, 234, 0.8);
+                        color: #fff;
+                        font-size: 10px;
+                        min-width: 16px;
+                        height: 16px;
+                        line-height: 16px;
+                        padding: 0 4px;
+                      }
+                    }
+                  }
+
+                  .edit-input {
+                    background: rgba(255, 255, 255, 0.1);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    color: #fff;
+                    
+                    &:focus {
+                      border-color: #667eea;
+                      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+                    }
+                  }
+                }
+              }
+
+              .conversation-actions {
+                opacity: 0;
+                transition: opacity 0.2s ease;
+                margin-left: 8px;
+
+                .action-button {
+                  color: rgba(255, 255, 255, 0.6);
+                  border: none;
+                  background: transparent;
+
+                  &:hover {
+                    color: #fff;
+                    background: rgba(255, 255, 255, 0.1);
+                  }
+                }
+              }
+            }
+
+            &:hover .conversation-actions {
+              opacity: 1;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // 底部区域
+  .sidebar-footer {
+    padding: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
+
+    .connection-status {
+      .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+
+        &.online {
+          background: #52c41a;
+          box-shadow: 0 0 6px rgba(82, 196, 26, 0.6);
+        }
+
+        &.offline {
+          background: #ff4d4f;
+          box-shadow: 0 0 6px rgba(255, 77, 79, 0.6);
+        }
+      }
+
+      .status-text {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+    }
+  }
+}
+
+// 下拉菜单样式
+.ant-dropdown {
+  .ant-dropdown-menu {
+    background: rgba(15, 15, 35, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+    .ant-dropdown-menu-item {
+      color: rgba(255, 255, 255, 0.8);
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+
+      &.ant-dropdown-menu-item-danger {
+        color: #ff7875;
+
+        &:hover {
+          background: rgba(255, 77, 79, 0.1);
+          color: #ff4d4f;
+        }
+      }
+
+      .anticon {
+        color: inherit;
+      }
+    }
+  }
+}
+
+// 模态框样式
+.ant-modal {
+  .ant-modal-content {
+    background: rgba(15, 15, 35, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    .ant-modal-header {
+      background: transparent;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+      .ant-modal-title {
+        color: #fff;
+      }
+    }
+
+    .ant-modal-body {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .ant-modal-footer {
+      background: transparent;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+      .ant-btn {
+        &.ant-btn-default {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.2);
+          color: rgba(255, 255, 255, 0.8);
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #fff;
+          }
+        }
+      }
+    }
+
+    .ant-modal-close {
+      color: rgba(255, 255, 255, 0.6);
+
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
+}

@@ -1,0 +1,467 @@
+// AnalysisProgress.scss
+.analysis-progress-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  margin-bottom: 2rem;
+
+  .ant-card-head {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
+    .ant-card-head-title {
+      color: #ffffff;
+      font-size: 1.2rem;
+      font-weight: 600;
+
+      .progress-icon {
+        background: linear-gradient(135deg, #21d4fd 0%, #b721ff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 1.4rem;
+      }
+
+      .ant-spin {
+        margin-left: 0.5rem;
+        
+        .anticon {
+          color: #21d4fd;
+        }
+      }
+    }
+  }
+
+  .ant-card-body {
+    padding: 1.5rem;
+  }
+
+  // 整体进度统计
+  .progress-stats {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+
+      .ant-statistic {
+        text-align: center;
+
+        .ant-statistic-title {
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 0.9rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .ant-statistic-content {
+          color: #ffffff;
+          font-size: 1.5rem;
+          font-weight: 600;
+
+          .ant-statistic-content-value {
+            color: #21d4fd;
+          }
+
+          .ant-statistic-content-suffix {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+          }
+        }
+
+        &.overall-progress-stat {
+          .ant-statistic-content-value {
+            background: linear-gradient(135deg, #21d4fd 0%, #b721ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+        }
+
+        &.completed-steps-stat {
+          .ant-statistic-content-value {
+            color: #52c41a;
+          }
+        }
+
+        &.elapsed-time-stat {
+          .ant-statistic-content-value {
+            color: #faad14;
+          }
+        }
+      }
+    }
+
+    .overall-progress-bar {
+      .ant-progress-bg {
+        border-radius: 6px;
+        height: 8px !important;
+      }
+
+      .ant-progress-outer {
+        .ant-progress-inner {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 6px;
+        }
+      }
+    }
+  }
+
+  // 步骤容器
+  .steps-container {
+    .steps-title {
+      color: #ffffff;
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      &::before {
+        content: '';
+        width: 4px;
+        height: 20px;
+        background: linear-gradient(135deg, #21d4fd 0%, #b721ff 100%);
+        border-radius: 2px;
+      }
+    }
+
+    .steps-list {
+      .step-item {
+        margin-bottom: 1.5rem;
+        padding: 1.25rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.3s ease;
+
+        &.current {
+          border-color: rgba(33, 212, 253, 0.4);
+          background: rgba(33, 212, 253, 0.05);
+          box-shadow: 0 0 20px rgba(33, 212, 253, 0.1);
+        }
+
+        &.finish {
+          border-color: rgba(82, 196, 26, 0.3);
+          background: rgba(82, 196, 26, 0.05);
+        }
+
+        .step-header {
+          display: flex;
+          align-items: flex-start;
+          gap: 1rem;
+
+          .step-icon-wrapper {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+
+            .step-icon {
+              font-size: 1.2rem;
+
+              &.success {
+                color: #52c41a;
+              }
+
+              &.processing {
+                color: #21d4fd;
+              }
+
+              &.waiting {
+                color: rgba(255, 255, 255, 0.6);
+              }
+            }
+
+            .ant-spin {
+              .anticon {
+                color: #21d4fd;
+              }
+            }
+          }
+
+          .step-content {
+            flex: 1;
+            min-width: 0;
+
+            .step-title-row {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 0.5rem;
+
+              .step-title {
+                color: #ffffff;
+                margin: 0;
+                font-size: 1rem;
+                font-weight: 600;
+              }
+
+              .step-status-tag {
+                font-size: 0.8rem;
+                border-radius: 12px;
+                padding: 0.2rem 0.6rem;
+                border: none;
+
+                &.ant-tag-success {
+                  background: rgba(82, 196, 26, 0.2);
+                  color: #52c41a;
+                }
+
+                &.ant-tag-processing {
+                  background: rgba(33, 212, 253, 0.2);
+                  color: #21d4fd;
+                }
+
+                &.ant-tag {
+                  background: rgba(255, 255, 255, 0.1);
+                  color: rgba(255, 255, 255, 0.7);
+                }
+              }
+            }
+
+            .step-description {
+              color: rgba(255, 255, 255, 0.8);
+              font-size: 0.9rem;
+              display: block;
+              margin-bottom: 1rem;
+            }
+
+            .step-progress {
+              margin-bottom: 1rem;
+
+              .ant-progress-bg {
+                border-radius: 4px;
+                height: 6px !important;
+              }
+
+              .ant-progress-outer {
+                .ant-progress-inner {
+                  background: rgba(255, 255, 255, 0.1);
+                  border-radius: 4px;
+                }
+              }
+            }
+
+            .step-details {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 0.5rem;
+
+              .detail-tag {
+                font-size: 0.75rem;
+                border-radius: 8px;
+                padding: 0.2rem 0.6rem;
+                border: 1px solid transparent;
+                transition: all 0.3s ease;
+
+                &.completed {
+                  background: rgba(82, 196, 26, 0.2);
+                  color: #52c41a;
+                  border-color: rgba(82, 196, 26, 0.3);
+                }
+
+                &.active {
+                  background: rgba(33, 212, 253, 0.2);
+                  color: #21d4fd;
+                  border-color: rgba(33, 212, 253, 0.3);
+                  animation: pulse 2s infinite;
+                }
+
+                &.inactive {
+                  background: rgba(255, 255, 255, 0.08);
+                  color: rgba(255, 255, 255, 0.6);
+                  border-color: rgba(255, 255, 255, 0.1);
+                }
+              }
+            }
+          }
+        }
+
+        // 步骤状态样式
+        &.finish {
+          .step-icon-wrapper {
+            background: rgba(82, 196, 26, 0.2);
+            border-color: rgba(82, 196, 26, 0.4);
+          }
+        }
+
+        &.process {
+          .step-icon-wrapper {
+            background: rgba(33, 212, 253, 0.2);
+            border-color: rgba(33, 212, 253, 0.4);
+            animation: pulse 2s infinite;
+          }
+        }
+      }
+    }
+  }
+
+  // 分析状态信息
+  .analysis-status {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(33, 212, 253, 0.05);
+    border: 1px solid rgba(33, 212, 253, 0.2);
+    border-radius: 8px;
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      .pulse-dot {
+        width: 12px;
+        height: 12px;
+        background: #21d4fd;
+        border-radius: 50%;
+        animation: pulse 1.5s infinite;
+      }
+
+      .status-text {
+        color: #21d4fd;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// 动画效果
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .analysis-progress-card {
+    .progress-stats {
+      padding: 1rem;
+
+      .stats-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        text-align: center;
+
+        .ant-statistic {
+          .ant-statistic-content {
+            font-size: 1.3rem;
+          }
+        }
+      }
+    }
+
+    .steps-container {
+      .steps-list {
+        .step-item {
+          padding: 1rem;
+
+          .step-header {
+            gap: 0.75rem;
+
+            .step-icon-wrapper {
+              width: 36px;
+              height: 36px;
+
+              .step-icon {
+                font-size: 1.1rem;
+              }
+            }
+
+            .step-content {
+              .step-title-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+
+                .step-title {
+                  font-size: 0.95rem;
+                }
+              }
+
+              .step-description {
+                font-size: 0.85rem;
+              }
+
+              .step-details {
+                .detail-tag {
+                  font-size: 0.7rem;
+                  padding: 0.15rem 0.5rem;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .analysis-progress-card {
+    .ant-card-body {
+      padding: 1rem;
+    }
+
+    .progress-stats {
+      margin-bottom: 1.5rem;
+
+      .stats-row {
+        .ant-statistic {
+          .ant-statistic-content {
+            font-size: 1.2rem;
+          }
+        }
+      }
+    }
+
+    .steps-container {
+      .steps-list {
+        .step-item {
+          margin-bottom: 1rem;
+          padding: 0.75rem;
+
+          .step-header {
+            .step-content {
+              .step-details {
+                .detail-tag {
+                  font-size: 0.65rem;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .analysis-status {
+      padding: 0.75rem;
+
+      .status-indicator {
+        .status-text {
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+}

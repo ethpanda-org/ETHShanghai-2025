@@ -1,0 +1,472 @@
+// 智能输入组件样式
+.smart-input {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  &.focused {
+    border-color: #10b981;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    transform: translateY(-2px);
+  }
+
+  &.loading {
+    .input-container {
+      opacity: 0.8;
+    }
+  }
+
+  .input-container {
+    display: flex;
+    align-items: flex-end;
+    padding: 12px;
+    gap: 8px;
+    min-height: 56px;
+
+    // 左侧工具栏
+    .input-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      &.left {
+        .toolbar-btn {
+          width: 36px;
+          height: 36px;
+          border-radius: 8px;
+          color: #6b7280;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &:hover:not(:disabled) {
+            background: #f3f4f6;
+            color: #374151;
+            transform: scale(1.1);
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+
+          .anticon {
+            font-size: 16px;
+          }
+        }
+      }
+
+      &.right {
+        .toolbar-btn {
+          width: 32px;
+          height: 32px;
+          border-radius: 6px;
+          color: #6b7280;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &:hover:not(:disabled) {
+            background: #f3f4f6;
+            color: #374151;
+            transform: scale(1.1);
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+
+          .anticon {
+            font-size: 14px;
+          }
+        }
+
+        .send-button-wrapper {
+          margin-left: 4px;
+
+          .send-btn,
+          .stop-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+
+            &::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+              opacity: 0;
+              transition: opacity 0.3s ease;
+            }
+
+            .anticon {
+              font-size: 18px;
+              position: relative;
+              z-index: 1;
+            }
+          }
+
+          .send-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+
+            &:hover:not(:disabled) {
+              transform: scale(1.05) translateY(-1px);
+              box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+
+              &::before {
+                opacity: 0.2;
+              }
+            }
+
+            &:active:not(:disabled) {
+              transform: scale(0.95);
+            }
+
+            &:disabled {
+              background: #d1d5db;
+              color: #9ca3af;
+              cursor: not-allowed;
+              box-shadow: none;
+              transform: none;
+            }
+          }
+
+          .stop-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+
+            &:hover {
+              transform: scale(1.05) translateY(-1px);
+              box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+
+              &::before {
+                background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+                opacity: 1;
+              }
+            }
+
+            &:active {
+              transform: scale(0.95);
+            }
+          }
+        }
+      }
+    }
+
+    // 输入区域
+    .input-wrapper {
+      flex: 1;
+      position: relative;
+
+      .message-textarea {
+        border: none;
+        box-shadow: none;
+        resize: none;
+        padding: 8px 12px;
+        font-size: 15px;
+        line-height: 24px;
+        background: transparent;
+        color: #374151;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+        &:focus,
+        &:hover {
+          border-color: transparent;
+          box-shadow: none;
+        }
+
+        &::placeholder {
+          color: #9ca3af;
+          font-style: normal;
+        }
+
+        // 滚动条样式
+        &::-webkit-scrollbar {
+          width: 4px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: #d1d5db;
+          border-radius: 2px;
+
+          &:hover {
+            background: #9ca3af;
+          }
+        }
+      }
+
+      // 字符计数
+      .character-count {
+        position: absolute;
+        bottom: 4px;
+        right: 8px;
+        font-size: 11px;
+        color: #9ca3af;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 2px 6px;
+        border-radius: 4px;
+        backdrop-filter: blur(4px);
+        transition: color 0.2s ease;
+
+        &.over-limit {
+          color: #ef4444;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  // 底部提示
+  .input-footer {
+    padding: 8px 16px 12px;
+    border-top: 1px solid #f3f4f6;
+    background: #fafbfc;
+
+    .input-hints {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+
+      .hint-text {
+        font-size: 12px;
+        color: #6b7280;
+      }
+
+      .hint-divider {
+        font-size: 12px;
+        color: #d1d5db;
+      }
+    }
+  }
+}
+
+// 动画效果
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .smart-input {
+    border-radius: 12px;
+    margin: 0 8px;
+
+    .input-container {
+      padding: 8px;
+      gap: 6px;
+      min-height: 48px;
+
+      .input-toolbar {
+        &.left {
+          .toolbar-btn {
+            width: 32px;
+            height: 32px;
+
+            .anticon {
+              font-size: 14px;
+            }
+          }
+        }
+
+        &.right {
+          .toolbar-btn {
+            width: 28px;
+            height: 28px;
+
+            .anticon {
+              font-size: 12px;
+            }
+          }
+
+          .send-button-wrapper {
+            .send-btn,
+            .stop-btn {
+              width: 36px;
+              height: 36px;
+              border-radius: 8px;
+
+              .anticon {
+                font-size: 16px;
+              }
+            }
+          }
+        }
+      }
+
+      .input-wrapper {
+        .message-textarea {
+          padding: 6px 10px;
+          font-size: 14px;
+          line-height: 20px;
+        }
+
+        .character-count {
+          font-size: 10px;
+          bottom: 2px;
+          right: 6px;
+        }
+      }
+    }
+
+    .input-footer {
+      padding: 6px 12px 8px;
+
+      .input-hints {
+        .hint-text {
+          font-size: 11px;
+        }
+      }
+    }
+  }
+}
+
+// 暗色主题支持
+@media (prefers-color-scheme: dark) {
+  .smart-input {
+    background: #374151;
+    border-color: #4b5563;
+
+    &.focused {
+      border-color: #10b981;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+    }
+
+    .input-container {
+      .input-toolbar {
+        .toolbar-btn {
+          color: #9ca3af;
+
+          &:hover:not(:disabled) {
+            background: #4b5563;
+            color: #f3f4f6;
+          }
+        }
+      }
+
+      .input-wrapper {
+        .message-textarea {
+          color: #f9fafb;
+
+          &::placeholder {
+            color: #6b7280;
+          }
+        }
+
+        .character-count {
+          color: #6b7280;
+          background: rgba(55, 65, 81, 0.9);
+
+          &.over-limit {
+            color: #f87171;
+          }
+        }
+      }
+    }
+
+    .input-footer {
+      background: #4b5563;
+      border-top-color: #6b7280;
+
+      .input-hints {
+        .hint-text {
+          color: #9ca3af;
+        }
+
+        .hint-divider {
+          color: #6b7280;
+        }
+      }
+    }
+  }
+}
+
+// 特殊状态样式
+.smart-input {
+  // 错误状态
+  &.error {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+
+    .input-footer {
+      background: #fef2f2;
+      border-top-color: #fecaca;
+
+      .input-hints {
+        .hint-text {
+          color: #dc2626;
+        }
+      }
+    }
+  }
+
+  // 成功状态
+  &.success {
+    border-color: #10b981;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+
+    .input-footer {
+      background: #ecfdf5;
+      border-top-color: #a7f3d0;
+
+      .input-hints {
+        .hint-text {
+          color: #059669;
+        }
+      }
+    }
+  }
+
+  // 禁用状态
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    border-color: #d1d5db;
+
+    .input-container {
+      pointer-events: none;
+    }
+  }
+}
