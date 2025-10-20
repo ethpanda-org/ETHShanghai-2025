@@ -551,15 +551,23 @@ export default function CommunityLeaderboard() {
   const groupIconUrls = localAvatars;
   // 引入本地 token icons（webp/png/jpg/jpeg），作为URL字符串使用
   const tokenIconUrls = [
+    '/token_icons/1d308d6f81c1061b7f58b68745815277.webp',
+    '/token_icons/21deed59dc9d05f4995f0ee947a9c753b14ca87f3950a4e3fe1ec1c09c8d462c.png',
+    '/token_icons/2fbc4940b6b4966b56511d00f182d56a_v2l.webp',
     '/token_icons/3c6759fe14393bfc189c14058f158534.webp',
     '/token_icons/4f87908c85be4d8ccdcec7fbf0acf7f4.webp',
     '/token_icons/6d34d3d8ae908d910be991d7031f7a3f_v2l.webp',
     '/token_icons/98377fde34fe769bdb3b0a114d6cc6c0.webp',
+    '/token_icons/bf036f40565334545befbef9281d74a7_v2l.webp',
     '/token_icons/cd68c7bfa7d4b5b8363467c93a052cde.webp',
+    '/token_icons/cda79647be832509d760edd8d80be962.webp',
     '/token_icons/ce05864f229d1fc421607dd709605508.webp',
+    '/token_icons/cfc5278dd5286596d30d896d629c87df.webp',
+    '/token_icons/dfc123975b99527567e618670fec54a8_v2l.webp',
     '/token_icons/e34a41abbd659242fb9a20b5c8f97aaf_v2l.webp',
     '/token_icons/f850788494ba8ad70982fec3c55d0b1f.webp',
   ];
+  const fallbackTokenIcon = tokenIconUrls[0];
 
   const topCommunities = mockTopGroups.map((g, i) => ({
     ...g,
@@ -781,6 +789,7 @@ export default function CommunityLeaderboard() {
                               src={token.logo}
                               alt={token.symbol}
                               className="w-6 h-6 rounded-full border border-slate-600"
+                              onError={(e) => { e.currentTarget.src = fallbackTokenIcon; e.currentTarget.onerror = null; }}
                             />
                           ))}
                         </div>
@@ -800,7 +809,7 @@ export default function CommunityLeaderboard() {
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                             {community.top_tokens.slice(0, 6).map((token, i) => (
                               <div key={i} className="flex items-start gap-3 p-3 rounded-lg border border-slate-800 bg-slate-900/50">
-                                <img src={token.logo} alt={token.symbol} className="w-8 h-8 rounded-md border border-slate-700" />
+                                <img src={token.logo} alt={token.symbol} className="w-8 h-8 rounded-md border border-slate-700" onError={(e) => { e.currentTarget.src = fallbackTokenIcon; e.currentTarget.onerror = null; }} />
                                 <div className="flex-1">
                                   <div className="flex items-center justify-between">
                                     <span className="text-white font-semibold">{token.symbol}</span>

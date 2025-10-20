@@ -1,13 +1,7 @@
-import { useId, useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Copy, TrendingUp, Wallet, ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-
-declare global {
-  interface Window {
-    TradingView?: any;
-    tvScriptPromise?: Promise<void>;
-  }
-}
+import { STATIC_SERIES, type TimeframeKey } from '../mock/candles';
 
 interface MemeToken {
   id: string;
@@ -43,119 +37,70 @@ export default function MemeTokenDetail({ goCampaign }: { goCampaign?: () => voi
   const [tradeTab, setTradeTab] = useState<'buy' | 'sell'>('buy');
   const [amount, setAmount] = useState('');
   const [aiExpanded, setAiExpanded] = useState(false);
-  const [timeframe, setTimeframe] = useState('1d');
+  const [timeframe, setTimeframe] = useState<TimeframeKey>('1d');
   const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [isTvReady, setIsTvReady] = useState(false);
-  const tvWidgetRef = useRef<any>(null);
-  const tvContainerRef = useRef<HTMLDivElement | null>(null);
-  const rawId = useId();
-  const tvContainerId = useMemo(
-    () => `tv-chart-${rawId.replace(/[^a-zA-Z0-9_-]/g, '')}`,
-    [rawId]
-  );
 
-  const timeframes = ['1m', '5m', '15m', '1h', '4h', '1d', '1w', '1M'];
+  const timeframes: TimeframeKey[] = ['1m', '5m', '15m', '1h', '4h', '1d', '1w', '1M'];
+  const MAX_CANDLES = 100;
   // Add display constants for icon and symbol
   const DISPLAY_SYMBOL = 'PEPE';
   const DISPLAY_LOGO_URL = '/token_icons/21deed59dc9d05f4995f0ee947a9c753b14ca87f3950a4e3fe1ec1c09c8d462c.png';
 
-  const resolutionMap = useMemo<Record<string, string>>(
-    () => ({
-      '1m': '1',
-      '3m': '3',
-      '5m': '5',
-      '15m': '15',
-      '30m': '30',
-      '1h': '60',
-      '2h': '120',
-      '4h': '240',
-      '6h': '360',
-      '8h': '480',
-      '12h': '720',
-      '1d': 'D',
-      '3d': '3D',
-      '1w': '1W',
-      '1M': '1M',
-    }),
-    []
-  );
+  const getSeriesData = (key: TimeframeKey) => {
+    const series = STATIC_SERIES[key] ?? STATIC_SERIES['1d'];
+    return series.slice(-MAX_CANDLES);
+  };
 
-  useEffect(() => {
-    const container = document.getElementById(tvContainerId) as HTMLDivElement | null;
-    if (!container) return undefined;
-    tvContainerRef.current = container;
-    setIsTvReady(false);
-
-    const initWidget = () => {
-      const container = document.getElementById(tvContainerId) as HTMLDivElement | null;
-      if (!container || !window.TradingView) return;
-      tvContainerRef.current = container;
-      setIsTvReady(false);
-
-      tvWidgetRef.current = new window.TradingView.widget({
-        symbol: 'BINANCE:PEPEUSDT',
-        interval: resolutionMap[timeframe] ?? '60',
-        container_id: tvContainerId,
-        autosize: true,
-        theme: 'dark',
-        locale: 'zh_CN',
-        style: '1',
-        timezone: 'Etc/UTC',
-        allow_symbol_change: false,
-        hide_side_toolbar: false,
-        hide_top_toolbar: false,
-        withdateranges: true,
-        range: '100D',
-        studies: ['MACD@tv-basicstudies'],
-      });
-
-      tvWidgetRef.current.onChartReady?.(() => {
-        setIsTvReady(true);
-      });
-    };
-
-    if (window.TradingView) {
-      initWidget();
-      return () => {
-        tvWidgetRef.current?.remove?.();
-        tvWidgetRef.current = null;
-        setIsTvReady(false);
+  const chartSummary = useMemo(() => {
+    const data = getSeriesData(timeframe);
+    if (!data.length) {
+      return {
+        data,
+        linePoints: '',
+        areaPoints: '',
+        min: 0,
+        max: 0,
+        lastClose: 0,
+        hasData: false,
       };
     }
 
-    if (!window.tvScriptPromise) {
-      window.tvScriptPromise = new Promise<void>((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = 'https://s3.tradingview.com/tv.js';
-        script.async = true;
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error('TradingView script failed to load'));
-        document.head.appendChild(script);
-      });
+    const highs = data.map((c) => c.high);
+    const lows = data.map((c) => c.low);
+    const min = Math.min(...lows);
+    const max = Math.max(...highs);
+    const range = max - min || Math.max(max * 0.01, 1e-6);
+
+    const toPoint = (value: number, index: number) => {
+      const x =
+        data.length === 1 ? 0 : Number(((index / (data.length - 1)) * 100).toFixed(2));
+      const y = Number((100 - ((value - min) / range) * 100).toFixed(2));
+      return `${x},${y}`;
+    };
+
+    const linePoints = data.map((candle, index) => toPoint(candle.close, index));
+
+    let areaPoints = '';
+    if (linePoints.length >= 2) {
+      areaPoints = `0,100 ${linePoints.join(' ')} 100,100`;
+    } else if (linePoints.length === 1) {
+      areaPoints = `0,100 ${linePoints[0]} 100,100`;
     }
 
-    window.tvScriptPromise
-      .then(() => {
-        initWidget();
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    const lastClose = data[data.length - 1]?.close ?? 0;
 
-    return () => {
-      tvWidgetRef.current?.remove?.();
-      tvWidgetRef.current = null;
-      setIsTvReady(false);
+    return {
+      data,
+      linePoints: linePoints.join(' '),
+      areaPoints,
+      min,
+      max,
+      lastClose,
+      hasData: true,
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tvContainerId]);
+  }, [timeframe]);
 
-  useEffect(() => {
-    if (!isTvReady || !tvWidgetRef.current) return;
-    const resolution = resolutionMap[timeframe] ?? '60';
-    const chart = tvWidgetRef.current.activeChart?.();
-    chart?.setResolution(resolution, () => {});
-  }, [isTvReady, timeframe, resolutionMap]);
+  const gradientId = useMemo(() => `chartGradient-${timeframe}`, [timeframe]);
 
   useEffect(() => {
     fetchTokenData();
@@ -229,7 +174,7 @@ export default function MemeTokenDetail({ goCampaign }: { goCampaign?: () => voi
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      <div className="max-w-[1800px] mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           <div className="xl:col-span-2 space-y-6">
             <div className="bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-xl p-6">
@@ -296,15 +241,48 @@ export default function MemeTokenDetail({ goCampaign }: { goCampaign?: () => voi
                 ))}
               </div>
               <div className="h-[400px] relative rounded-lg overflow-hidden bg-slate-950/40">
-                <div
-                  ref={tvContainerRef}
-                  id={tvContainerId}
-                  className="absolute inset-0 w-full h-full"
-                />
-                {!isTvReady && (
+                {chartSummary.hasData ? (
+                  <>
+                    <svg
+                      viewBox="0 0 100 100"
+                      preserveAspectRatio="none"
+                      className="absolute inset-0 w-full h-full"
+                    >
+                      <defs>
+                        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#22c55e" stopOpacity="0.35" />
+                          <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
+                        </linearGradient>
+                      </defs>
+                      {chartSummary.areaPoints && (
+                        <polygon
+                          points={chartSummary.areaPoints}
+                          fill={`url(#${gradientId})`}
+                          stroke="none"
+                        />
+                      )}
+                      {chartSummary.linePoints && (
+                        <polyline
+                          points={chartSummary.linePoints}
+                          fill="none"
+                          stroke="#22c55e"
+                          strokeWidth={1.5}
+                        />
+                      )}
+                    </svg>
+                    <div className="absolute top-4 left-4 text-xs text-slate-400 space-y-1">
+                      <div>High: <span className="text-emerald-300">${chartSummary.max.toFixed(6)}</span></div>
+                      <div>Low: <span className="text-rose-300">${chartSummary.min.toFixed(6)}</span></div>
+                    </div>
+                    <div className="absolute top-4 right-4 text-right text-xs text-slate-400">
+                      <div className="text-2xl font-semibold text-white">${chartSummary.lastClose.toFixed(6)}</div>
+                      <div>Last Price</div>
+                    </div>
+                  </>
+                ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-500 gap-2">
                     <TrendingUp size={36} className="opacity-20" />
-                    <span className="text-sm">Loading TradingView chart...</span>
+                    <span className="text-sm">No chart data available.</span>
                   </div>
                 )}
               </div>
