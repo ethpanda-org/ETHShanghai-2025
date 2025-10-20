@@ -1,0 +1,34 @@
+[package]
+name = "evm-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.86"
+crossterm = "0.27.0"
+ratatui = { version = "0.27.0", features = ["all-widgets"] }
+tonic = "0.12.0"
+prost = "0.13.0"
+tokio = { version = "1.38.0", features = ["full"] }
+unicode-width = "0.1.13"
+pulldown-cmark = "0.13.0"
+clap = { version = "4.5.4", features = ["derive"] }
+rpassword = "7.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+aes-gcm = "0.10"
+rand = "0.8"
+sha2 = "0.10"
+hex = "0.4"
+dirs = "5.0"
+pbkdf2 = "0.12"
+colored = "3.0.0"
+atty = "0.2"
+
+# EVM 相关依赖
+secp256k1 = { version = "0.27", features = ["recovery"] }
+tiny-keccak = { version = "2.0", features = ["keccak"] }
+
+[build-dependencies]
+tonic-build = "0.12.0"
+

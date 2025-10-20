@@ -1,0 +1,14 @@
+/Users/xiangyonglin/code/ETHshanghai/evm-cli/target/release/deps/libserde-1676c0768421bdfd.rmeta: /Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/xiangyonglin/code/ETHshanghai/evm-cli/target/release/build/serde-e7d6223ecd9c6bee/out/private.rs
+
+/Users/xiangyonglin/code/ETHshanghai/evm-cli/target/release/deps/libserde-1676c0768421bdfd.rlib: /Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/xiangyonglin/code/ETHshanghai/evm-cli/target/release/build/serde-e7d6223ecd9c6bee/out/private.rs
+
+/Users/xiangyonglin/code/ETHshanghai/evm-cli/target/release/deps/serde-1676c0768421bdfd.d: /Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs /Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs /Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs /Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs /Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs /Users/xiangyonglin/code/ETHshanghai/evm-cli/target/release/build/serde-e7d6223ecd9c6bee/out/private.rs
+
+/Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/lib.rs:
+/Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/integer128.rs:
+/Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/mod.rs:
+/Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/de.rs:
+/Users/xiangyonglin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228/src/private/ser.rs:
+/Users/xiangyonglin/code/ETHshanghai/evm-cli/target/release/build/serde-e7d6223ecd9c6bee/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/xiangyonglin/code/ETHshanghai/evm-cli/target/release/build/serde-e7d6223ecd9c6bee/out

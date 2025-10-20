@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package agent;
+
+service AgentService {
+  rpc Chat (ChatRequest) returns (stream ChatResponse);
+  rpc ExecuteAction (ActionRequest) returns (ActionResponse);
+}
+
+message ChatRequest {
+  string message = 1;
+}
+
+message ChatResponse {
+  string content = 1;
+}
+
+message ActionRequest {
+  string action = 1;
+  string params = 2;
+}
+
+message ActionResponse {
+  bool success = 1;
+  string result = 2;
+}
