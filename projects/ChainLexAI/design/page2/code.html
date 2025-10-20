@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Xcampl - Contract Generation &amp; Deployment</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: '#6d28d9', // Deep Purple
+              'primary-light': '#8b5cf6',
+              secondary: '#4b5563', // Dark Gray
+              'background-light': '#f3f4f6', // Light Gray
+              'background-dark': '#111827'  // Dark Gray
+            },
+            fontFamily: {
+              display: ['Inter']
+            },
+            borderRadius: {
+              DEFAULT: '0.5rem',
+              lg: '1rem',
+              xl: '1.5rem',
+              full: '9999px'
+            }
+          }
+        }
+      };
+    </script>
+<style>
+      .code-block {
+        background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)), #1f2937;
+      }
+      .dark .code-block {
+        background: linear-gradient(rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.02)), #1f2937;
+      }
+      html, body {
+        height: 100%;
+      }
+      body {
+        min-height: 1080px;
+      }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-300">
+<div class="flex h-full w-full flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-gray-200 dark:border-gray-800 px-10 py-4 bg-white dark:bg-background-dark">
+<div class="flex items-center gap-3">
+<svg class="h-8 w-8 text-primary" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="currentColor" fill-rule="evenodd" opacity="0.6"></path>
+<path clip-rule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+<h1 class="text-xl font-bold text-gray-900 dark:text-white">Xcampl</h1>
+</div>
+<nav class="flex items-center gap-2">
+<a class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary-light px-3 py-2 rounded-md" href="#">Compliance Docs</a>
+<a class="text-sm font-medium text-primary bg-primary/10 dark:text-primary-light dark:bg-primary/20 px-3 py-2 rounded-md" href="#">Contract Generation</a>
+<a class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary-light px-3 py-2 rounded-md" href="#">Dashboard</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center rounded-full h-10 w-10 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+<span class="material-symbols-outlined"> help </span>
+</button>
+<div class="aspect-square w-10 rounded-full bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCCc-xPXyvYT9yDLhs-dEdMLa25zGYXvYogpKfq_S_sSddiktA5hZPIvSX4QdNtzY0vUV4ygcoPjgId_UwYQFhRBUkRr_EP_Dy6cbXjKO9PlC7Aiz0iyMbGunyr2xJZ57vj_aqB3GgB3EolcRb8hCs5B2-YbbfhYSrHUDpcRGdM7tHkn62v_EOC9iIUX4Xfr34TrBIBXqqDRpu4jtwlMFjtrL5UDIvspAR1Dn3YF77XKEeZF2rV3pr2Z6jpjUMuDXmCnskx4xF4GgDf");'></div>
+</div>
+</header>
+<main class="flex flex-1 overflow-hidden">
+<div class="w-[35%] flex-shrink-0 overflow-y-auto border-r border-gray-200 dark:border-gray-700 p-8 space-y-8 bg-white dark:bg-background-dark">
+<h2 class="text-xl font-bold text-gray-900 dark:text-white">Contract Configuration</h2>
+<div class="space-y-4">
+<h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Network Selection</h3>
+<div class="grid grid-cols-3 gap-3">
+<label class="cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-center text-sm font-medium has-[:checked]:border-primary has-[:checked]:bg-primary/10 has-[:checked]:text-primary has-[:checked]:dark:border-primary-light has-[:checked]:dark:bg-primary/20 has-[:checked]:dark:text-primary-light">
+                Ethereum
+                <input checked="" class="sr-only" name="network" type="radio"/>
+</label>
+<label class="cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-center text-sm font-medium has-[:checked]:border-primary has-[:checked]:bg-primary/10 has-[:checked]:text-primary has-[:checked]:dark:border-primary-light has-[:checked]:dark:bg-primary/20 has-[:checked]:dark:text-primary-light">
+                Polygon
+                <input class="sr-only" name="network" type="radio"/>
+</label>
+<label class="cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-center text-sm font-medium has-[:checked]:border-primary has-[:checked]:bg-primary/10 has-[:checked]:text-primary has-[:checked]:dark:border-primary-light has-[:checked]:dark:bg-primary/20 has-[:checked]:dark:text-primary-light">
+                Arbitrum
+                <input class="sr-only" name="network" type="radio"/>
+</label>
+</div>
+</div>
+<div class="space-y-4">
+<h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Off-chain Risk Control Service</h3>
+<div class="grid grid-cols-3 gap-3">
+<label class="cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-center text-sm font-medium has-[:checked]:border-primary has-[:checked]:bg-primary/10 has-[:checked]:text-primary has-[:checked]:dark:border-primary-light has-[:checked]:dark:bg-primary/20 has-[:checked]:dark:text-primary-light">
+                Basic
+                <input class="sr-only" name="risk_control" type="checkbox"/>
+</label>
+<label class="cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-center text-sm font-medium has-[:checked]:border-primary has-[:checked]:bg-primary/10 has-[:checked]:text-primary has-[:checked]:dark:border-primary-light has-[:checked]:dark:bg-primary/20 has-[:checked]:dark:text-primary-light">
+                Advanced
+                <input checked="" class="sr-only" name="risk_control" type="checkbox"/>
+</label>
+<label class="cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-center text-sm font-medium has-[:checked]:border-primary has-[:checked]:bg-primary/10 has-[:checked]:text-primary has-[:checked]:dark:border-primary-light has-[:checked]:dark:bg-primary/20 has-[:checked]:dark:text-primary-light">
+                Custom
+                <input class="sr-only" name="risk_control" type="checkbox"/>
+</label>
+</div>
+</div>
+<div class="space-y-6">
+<h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Contract Parameters</h3>
+<div class="space-y-4">
+<label class="block">
+<p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Total Supply</p>
+<input class="form-input w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary focus:ring-primary dark:focus:border-primary-light" placeholder="1,000,000" type="text"/>
+</label>
+<label class="block">
+<p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Divisible</p>
+<input class="form-input w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary focus:ring-primary dark:focus:border-primary-light" placeholder="Yes" type="text"/>
+</label>
+<label class="block">
+<p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Whitelist Mode</p>
+<input class="form-input w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary focus:ring-primary dark:focus:border-primary-light" placeholder="Disabled" type="text"/>
+</label>
+<label class="block">
+<p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Profit Distribution</p>
+<input class="form-input w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary focus:ring-primary dark:focus:border-primary-light" placeholder="Pro-rata" type="text"/>
+</label>
+<label class="block">
+<p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Upgradable</p>
+<input class="form-input w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary focus:ring-primary dark:focus:border-primary-light" placeholder="Yes" type="text"/>
+</label>
+</div>
+</div>
+<div class="space-y-6">
+<h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Permissions &amp; Governance</h3>
+<div class="space-y-4">
+<label class="block">
+<p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Admin Address</p>
+<input class="form-input w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary focus:ring-primary dark:focus:border-primary-light" placeholder="0x..." type="text"/>
+</label>
+<label class="block">
+<p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Governance Model</p>
+<input class="form-input w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:border-primary focus:ring-primary dark:focus:border-primary-light" placeholder="DAO" type="text"/>
+</label>
+</div>
+</div>
+</div>
+<div class="flex-1 flex flex-col overflow-hidden bg-background-light dark:bg-gray-900/50 p-8">
+<div class="flex-shrink-0 mb-6">
+<h2 class="text-2xl font-bold text-gray-900 dark:text-white">Contract Generation &amp; Deployment</h2>
+<p class="text-sm text-secondary dark:text-gray-400">Project: Imported from Compliance | Status: <span class="text-yellow-500 font-medium">Draft</span></p>
+</div>
+<div class="flex-1 flex flex-col gap-6 overflow-hidden">
+<div class="rounded-xl p-6 bg-cover bg-center relative" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.2) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBOD2CLRrOMDTOmSU6yfBOb63j84nGR5-aM1VpsblcsweQRdg0DT6NUr0x7Oz9VPUBxrejO-wIY2-Xs2DspwxYfVXaQqL4Jepzg-c5fVwbeYSP1WxVKxRFqNnmBQGEiHnAQtE9EpWe2sShIQ4-PM-oIkTt1NiTTLyH0R27x6Ze6W-fMpqzMLvMeXd9J7zSAwE6fwcxBzQOnutsvrVXdmm9_L82w5KPmx9VshgpfCRw8LnX_tiWXc1RN6oX-BLAnypKVSCt2RVU1h94V");'>
+<h3 class="text-lg font-bold text-white">Current Configuration Snapshot</h3>
+<p class="text-sm text-gray-200 mt-1 max-w-lg">Params: Total Supply - 1,000,000, Divisible - Yes, Whitelist - Disabled...</p>
+</div>
+<div class="flex-1 flex flex-col rounded-lg bg-white dark:bg-gray-800/50 overflow-hidden border border-gray-200 dark:border-gray-700">
+<div class="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+<h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">Real-time Generated Contract</h3>
+<button class="text-xs font-medium text-primary hover:underline dark:text-primary-light">Copy Code</button>
+</div>
+<div class="flex-1 overflow-auto code-block p-4 font-mono text-xs text-gray-300">
+<pre><code><span class="text-gray-500">1</span>   <span class="text-secondary">// SPDX-License-Identifier: MIT</span>
+<span class="text-gray-500">2</span>   <span class="text-purple-400">pragma</span> <span class="text-green-400">solidity</span> <span class="text-yellow-400">^0.8.20</span>;
+<span class="text-gray-500">3</span>
+<span class="text-gray-500">4</span>   <span class="text-purple-400">import</span> <span class="text-yellow-400">"@openzeppelin/contracts/token/ERC20/ERC20.sol"</span>;
+<span class="text-gray-500">5</span>   <span class="text-purple-400">import</span> <span class="text-yellow-400">"@openzeppelin/contracts/access/Ownable.sol"</span>;
+<span class="text-gray-500">6</span>
+<span class="text-gray-500">7</span>   <span class="text-purple-400">contract</span> <span class="text-green-400">MyToken</span> <span class="text-blue-400">is</span> <span class="text-green-400">ERC20</span>, <span class="text-green-400">Ownable</span> {
+<span class="text-gray-500">8</span>       <span class="text-purple-400">constructor</span>() <span class="text-green-400">ERC20</span>("MyToken", "MTK") <span class="text-green-400">Ownable</span>(msg.sender) {
+<span class="text-gray-500">9</span>           _mint(msg.sender, 1000000 * 10 ** decimals());
+<span class="text-gray-500">10</span>      }
+<span class="text-gray-500">11</span>  }
+<span class="text-gray-500">12</span>  
+<span class="text-gray-500">13</span>  <span class="text-secondary">// ... more code</span>
+<span class="text-gray-500">14</span>
+<span class="text-gray-500">15</span>
+<span class="text-gray-500">16</span>
+<span class="text-gray-500">17</span>
+<span class="text-gray-500">18</span>
+<span class="text-gray-500">19</span>
+<span class="text-gray-500">20</span>
+<span class="text-gray-500">21</span>
+<span class="text-gray-500">22</span>
+<span class="text-gray-500">23</span>
+</code></pre>
+</div>
+</div>
+<div class="flex-shrink-0 rounded-lg bg-white dark:bg-gray-800/50 p-4 border border-gray-200 dark:border-gray-700">
+<h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Deployment Panel</h3>
+<div class="grid grid-cols-3 gap-4 items-end">
+<div class="col-span-1">
+<label class="block text-xs font-medium text-secondary dark:text-gray-400 mb-1.5">Gas Estimate</label>
+<div class="flex items-center gap-2 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 p-2.5">
+<span class="text-sm font-medium text-gray-900 dark:text-white">0.02 ETH</span>
+<span class="text-xs text-secondary dark:text-gray-400">($45.12)</span>
+</div>
+</div>
+<div class="col-span-1">
+<label class="block text-xs font-medium text-secondary dark:text-gray-400 mb-1.5">Fee Payer</label>
+<input class="form-input w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-sm p-2.5 text-gray-900 dark:text-white focus:border-primary focus:ring-primary dark:focus:border-primary-light" placeholder="0x..." type="text"/>
+</div>
+<div class="col-span-1">
+<button class="w-full flex items-center justify-center rounded-md bg-primary text-white text-sm font-bold h-11 hover:bg-primary/90 dark:bg-primary-light dark:text-background-dark dark:hover:bg-primary-light/90">
+<span class="material-symbols-outlined mr-2 text-base"> rocket_launch </span>
+                    Deploy to Testnet
+                  </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
