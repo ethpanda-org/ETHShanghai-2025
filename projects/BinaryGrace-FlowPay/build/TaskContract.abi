@@ -1,0 +1,156 @@
+[
+  {
+    "inputs": [
+      {"internalType": "string", "name": "_title", "type": "string"},
+      {"internalType": "string", "name": "_description", "type": "string"},
+      {"internalType": "uint256", "name": "_deadline", "type": "uint256"},
+      {"internalType": "string", "name": "_taskType", "type": "string"},
+      {"internalType": "string", "name": "_requirements", "type": "string"},
+      {"internalType": "uint256", "name": "_reward", "type": "uint256"}
+    ],
+    "name": "publishTask",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256", "name": "_taskId", "type": "uint256"},
+      {"internalType": "string", "name": "_result", "type": "string"}
+    ],
+    "name": "submitExecution",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256", "name": "_taskId", "type": "uint256"},
+      {"internalType": "uint256", "name": "_executionIndex", "type": "uint256"}
+    ],
+    "name": "selectWinnerAndPay",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTaskCount",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "uint256", "name": "_taskId", "type": "uint256"}],
+    "name": "getTask",
+    "outputs": [
+      {"internalType": "string", "name": "title", "type": "string"},
+      {"internalType": "string", "name": "description", "type": "string"},
+      {"internalType": "uint256", "name": "deadline", "type": "uint256"},
+      {"internalType": "string", "name": "taskType", "type": "string"},
+      {"internalType": "string", "name": "requirements", "type": "string"},
+      {"internalType": "uint256", "name": "reward", "type": "uint256"},
+      {"internalType": "bool", "name": "isCompleted", "type": "bool"},
+      {"internalType": "address", "name": "publisher", "type": "address"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "uint256", "name": "_taskId", "type": "uint256"}],
+    "name": "getExecutionCount",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {"internalType": "uint256", "name": "_taskId", "type": "uint256"},
+      {"internalType": "uint256", "name": "_executionIndex", "type": "uint256"}
+    ],
+    "name": "getExecution",
+    "outputs": [
+      {"internalType": "address", "name": "executor", "type": "address"},
+      {"internalType": "string", "name": "result", "type": "string"},
+      {"internalType": "uint256", "name": "executedAt", "type": "uint256"},
+      {"internalType": "bool", "name": "isWinner", "type": "bool"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAvailableTasks",
+    "outputs": [{"internalType": "uint256[]", "name": "", "type": "uint256[]"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "uint256", "name": "_taskId", "type": "uint256"}],
+    "name": "getTaskExecutions",
+    "outputs": [
+      {"internalType": "address[]", "name": "executors", "type": "address[]"},
+      {"internalType": "string[]", "name": "results", "type": "string[]"},
+      {"internalType": "uint256[]", "name": "executedAts", "type": "uint256[]"},
+      {"internalType": "bool[]", "name": "isWinners", "type": "bool[]"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getContractBalance",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "uint256", "name": "_amount", "type": "uint256"}],
+    "name": "emergencyWithdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "internalType": "uint256", "name": "taskId", "type": "uint256"},
+      {"indexed": true, "internalType": "address", "name": "publisher", "type": "address"},
+      {"indexed": false, "internalType": "string", "name": "title", "type": "string"},
+      {"indexed": false, "internalType": "uint256", "name": "reward", "type": "uint256"}
+    ],
+    "name": "TaskPublished",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "internalType": "uint256", "name": "taskId", "type": "uint256"},
+      {"indexed": true, "internalType": "address", "name": "executor", "type": "address"},
+      {"indexed": false, "internalType": "string", "name": "result", "type": "string"}
+    ],
+    "name": "ExecutionSubmitted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "internalType": "uint256", "name": "taskId", "type": "uint256"},
+      {"indexed": true, "internalType": "address", "name": "winner", "type": "address"},
+      {"indexed": false, "internalType": "uint256", "name": "reward", "type": "uint256"}
+    ],
+    "name": "WinnerSelected",
+    "type": "event"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
+  }
+]
