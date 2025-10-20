@@ -54,8 +54,6 @@
 - **验证链接（Etherscan/BlockScout）**：部署后补充
 - **最小复现脚本**：
   ```bash
-  # 在本地 anvil 上部署与演练
-  make anvil-smoke
 
   # 测试网部署（待开放）
   forge script packages/contracts/script/DeployReputation.s.sol \
@@ -96,11 +94,9 @@ PRIVATE_KEY=0x...
 # 安装 Node 依赖（apps/web & apps/api 完成后执行）
 pnpm install
 
-# 运行 Foundry 单元测试
-make test-unit
+# 运行 Foundry 单元测试和集成测试
+make test
 
-# 运行 Smoke 测试（依赖本地 Anvil）
-make anvil-smoke
 ```
 
 - **在线 Demo（如有）**：暂无（前端开发中）
