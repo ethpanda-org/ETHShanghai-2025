@@ -1,9 +1,0 @@
-.voter-list-component { background-color: var(--card-background, #fff); border: 1px solid var(--border-color, #e5e7eb); border-radius: 12px; }
-.voter-list-component h3 { padding: 1.5rem; margin: 0; border-bottom: 1px solid var(--border-color, #e5e7eb); color: #111827; }
-.voter-items { padding: 0; }
-.voter-item { display: flex; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color, #e5e7eb); font-size: 0.9rem; color: #111827; }
-.voter-item:last-child { border-bottom: none; }
-.voter-item-option { display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem; font-weight: 600; color: #111827; }
-.voter-item-tx { font-size: 0.75rem; color: #374151; }
-.voter-placeholder { padding: 1rem 1.5rem; color: #111827; }
-.voter-placeholder.error { color: #991b1b; background-color: #fee2e2; }
