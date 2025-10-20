@@ -1,0 +1,30 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.28"
+optimizer = true
+optimizer_runs = 200
+via_ir = true
+
+# Remappings for dependencies
+remappings = [
+    "@openzeppelin/=lib/openzeppelin-contracts/",
+    "forge-std/=lib/forge-std/src/"
+]
+
+# File system permissions for scripts
+fs_permissions = [{ access = "read", path = "./deployed-contracts.json" }]
+
+# RPC endpoints
+[rpc_endpoints]
+bnb_testnet = "https://data-seed-prebsc-1-s1.binance.org:8545/"
+bnb_mainnet = "https://bsc-dataseed.binance.org/"
+
+# BscScan API for contract verification
+# Using BscScan's V2 API endpoints
+[etherscan]
+bnb_testnet = { key = "${BSCSCAN_API_KEY}" }
+bnb_mainnet = { key = "${BSCSCAN_API_KEY}" }
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

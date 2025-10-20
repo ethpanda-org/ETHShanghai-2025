@@ -1,0 +1,151 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "forge-std/Test.sol";
+import "../src/BlockETFCore.sol";
+import "../src/ETFRebalancerV1.sol";
+import "../src/mocks/MockPriceOracle.sol";
+import "../src/mocks/MockERC20.sol";
+import "../src/mocks/MockSwapRouter.sol";
+import "../src/mocks/MockPancakeV2Router.sol";
+
+contract DebugRebalanceTest is Test {
+    BlockETFCore public core;
+    ETFRebalancerV1 public rebalancer;
+    MockPriceOracle public oracle;
+    MockSwapRouter public v3Router;
+    MockPancakeV2Router public v2Router;
+
+    MockERC20 public usdt;
+    MockERC20 public wbnb;
+    MockERC20 public btc;
+    MockERC20 public eth;
+
+    address public owner;
+
+    function setUp() public {
+        owner = address(this);
+
+        // Deploy components
+        oracle = new MockPriceOracle();
+        usdt = new MockERC20("USDT", "USDT", 18);
+        wbnb = new MockERC20("WBNB", "WBNB", 18);
+        btc = new MockERC20("BTC", "BTC", 18);
+        eth = new MockERC20("ETH", "ETH", 18);
+
+        oracle.setPrice(address(usdt), 1e18);
+        oracle.setPrice(address(wbnb), 300e18);
+        oracle.setPrice(address(btc), 50000e18);
+        oracle.setPrice(address(eth), 3000e18);
+
+        v3Router = new MockSwapRouter();
+        v2Router = new MockPancakeV2Router();
+
+        v3Router.setMockPrice(address(usdt), 1e18);
+        v3Router.setMockPrice(address(btc), 50000e18);
+        v3Router.setMockPrice(address(eth), 3000e18);
+        v2Router.setMockPrice(address(usdt), 1e18);
+        v2Router.setMockPrice(address(wbnb), 300e18);
+
+        // Set zero slippage
+        v3Router.setSlippagePercent(0);
+        v2Router.setSlippagePercent(0);
+
+        core = new BlockETFCore("BlockETF", "BETF", address(oracle));
+        rebalancer = new ETFRebalancerV1(
+            address(core),
+            address(v3Router),
+            address(v2Router),
+            address(usdt),
+            address(wbnb)
+        );
+
+        core.setRebalancer(address(rebalancer));
+        rebalancer.configureAssetPool(address(btc), address(0x1), 2500);
+        rebalancer.configureAssetPool(address(eth), address(0x2), 2500);
+        rebalancer.setMaxSlippage(0);
+
+        core.setRebalanceThreshold(500);
+        core.setMinRebalanceCooldown(0);
+
+        core.setRebalanceVerificationThresholds(
+            200,  // maxSlippageBps = 2%
+            1000, // maxBuyExcessBps = 10%
+            200,  // maxTotalValueLossBps = 2%
+            200,  // weightImprovementToleranceBps = 2%
+            10    // unchangedAssetToleranceBps = 0.1%
+        );
+
+        // Mint tokens to routers
+        usdt.mint(address(v3Router), 10000000e18);
+        usdt.mint(address(v2Router), 10000000e18);
+        wbnb.mint(address(v2Router), 100000e18);
+        btc.mint(address(v3Router), 1000e18);
+        eth.mint(address(v3Router), 10000e18);
+
+        // Initialize ETF
+        _initializeETF();
+    }
+
+    function _initializeETF() internal {
+        address[] memory assets = new address[](4);
+        assets[0] = address(usdt);
+        assets[1] = address(wbnb);
+        assets[2] = address(btc);
+        assets[3] = address(eth);
+
+        uint32[] memory weights = new uint32[](4);
+        weights[0] = 4000;
+        weights[1] = 2000;
+        weights[2] = 2000;
+        weights[3] = 2000;
+
+        usdt.mint(owner, 100000e18);
+        wbnb.mint(owner, 1000e18);
+        btc.mint(owner, 10e18);
+        eth.mint(owner, 100e18);
+
+        usdt.approve(address(core), type(uint256).max);
+        wbnb.approve(address(core), type(uint256).max);
+        btc.approve(address(core), type(uint256).max);
+        eth.approve(address(core), type(uint256).max);
+
+        core.initialize(assets, weights, 100000e18);
+    }
+
+    function test_DebugRebalance() public {
+        console.log("=== Before Rebalance ===");
+        IBlockETFCore.AssetInfo[] memory assetsBefore = core.getAssets();
+        for (uint256 i = 0; i < assetsBefore.length; i++) {
+            console.log("Asset", i, "reserve:", assetsBefore[i].reserve);
+        }
+
+        // Change weights
+        uint32[] memory newWeights = new uint32[](4);
+        newWeights[0] = 5000; // 50% USDT (buy)
+        newWeights[1] = 2000; // 20% WBNB
+        newWeights[2] = 1000; // 10% BTC (sell)
+        newWeights[3] = 2000; // 20% ETH
+
+        core.adjustWeights(newWeights);
+
+        console.log("\n=== Rebalance Needed ===");
+        (uint256[] memory currentWeights, uint256[] memory targetWeights, bool needsRebalance) = core.getRebalanceInfo();
+        console.log("Needs rebalance:", needsRebalance);
+        for (uint256 i = 0; i < currentWeights.length; i++) {
+            console.log("Asset", i);
+            console.log("  Current:", currentWeights[i]);
+            console.log("  Target:", targetWeights[i]);
+        }
+
+        // Execute rebalance
+        console.log("\n=== Executing Rebalance ===");
+        core.executeRebalance();
+
+        console.log("\n=== After Rebalance ===");
+        IBlockETFCore.AssetInfo[] memory assetsAfter = core.getAssets();
+        for (uint256 i = 0; i < assetsAfter.length; i++) {
+            console.log("Asset", i, "reserve:", assetsAfter[i].reserve);
+        }
+    }
+}
