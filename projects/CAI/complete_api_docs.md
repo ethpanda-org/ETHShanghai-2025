@@ -1305,25 +1305,6 @@ Sandbox Key: cai_sk_test_1a2b3c4d5e6f7a8b9c0d
 
 ---
 
-## 支持
-
-### 文档
-- 完整文档: https://docs.cai-framework.eth
-- API 参考: https://docs.cai-framework.eth/api
-- 教程: https://docs.cai-framework.eth/tutorials
-
-### 社区
-- Discord: https://discord.gg/cai-framework
-- GitHub: https://github.com/cai-framework
-- Twitter: [@CAI_Framework](https://twitter.com/CAI_Framework)
-
-### 联系方式
-- 技术支持: dev@cai-framework.eth
-- 商务合作: bd@cai-framework.eth
-- 安全问题: security@cai-framework.eth
-
----
-
 ## 附录
 
 ### A. 状态码快速参考
