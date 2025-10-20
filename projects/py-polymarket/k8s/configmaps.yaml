@@ -1,0 +1,138 @@
+# PostgreSQL ConfigMap for Polymarket Trading System
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: polymarket
+  labels:
+    app: postgres
+    component: database
+data:
+  POSTGRES_DB: "polymarket_trading"
+  POSTGRES_USER: "polymarket"
+  PGDATA: "/var/lib/postgresql/data/pgdata"
+  POSTGRES_INIT_TRADING: "true"
+  TRADING_ENV: "production"
+  ENABLE_BACKUPS: "true"
+  # PostgreSQL Configuration
+  postgresql.conf: |
+    # PostgreSQL Configuration for Trading System
+    listen_addresses = '*'
+    port = 5432
+    max_connections = 200
+    shared_buffers = 512MB
+    effective_cache_size = 2GB
+    work_mem = 8MB
+    maintenance_work_mem = 128MB
+    checkpoint_completion_target = 0.9
+    wal_buffers = 16MB
+    default_statistics_target = 100
+    random_page_cost = 1.1
+    effective_io_concurrency = 200
+    
+    # Logging
+    log_destination = 'stderr'
+    log_statement = 'mod'
+    log_min_duration_statement = 1000
+    log_line_prefix = '%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
+    
+    # Replication and WAL
+    wal_level = replica
+    max_wal_senders = 3
+    wal_keep_segments = 32
+    hot_standby = on
+    
+  pg_hba.conf: |
+    # PostgreSQL Client Authentication Configuration
+    local   all             all                                     trust
+    host    all             all             127.0.0.1/32            md5
+    host    all             all             ::1/128                 md5
+    host    all             all             0.0.0.0/0               md5
+    host    replication     all             0.0.0.0/0               md5
+---
+# Redis ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: polymarket
+  labels:
+    app: redis
+    component: cache
+data:
+  REDIS_MODE: "standalone"
+  REDIS_MAX_MEMORY: "2gb"
+  REDIS_MAX_MEMORY_POLICY: "allkeys-lru"
+  INIT_TRADING_DATA: "true"
+  redis.conf: |
+    # Redis Configuration for Trading System
+    bind 0.0.0.0
+    port 6379
+    timeout 0
+    tcp-keepalive 300
+    
+    # Memory Management
+    maxmemory 2gb
+    maxmemory-policy allkeys-lru
+    
+    # Persistence
+    save 900 1
+    save 300 10
+    save 60 10000
+    stop-writes-on-bgsave-error yes
+    rdbcompression yes
+    rdbchecksum yes
+    dbfilename dump.rdb
+    dir /data
+    
+    # Logging
+    loglevel notice
+    logfile /var/log/redis/redis-server.log
+    
+    # Security
+    protected-mode no
+    
+    # Performance
+    tcp-backlog 511
+    databases 16
+---
+# Application ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: polymarket
+  labels:
+    app: polymarket-trading
+    component: config
+data:
+  TRADING_ENV: "production"
+  LOG_LEVEL: "INFO"
+  DATA_ROOT: "/app/data"
+  
+  # Microservices Ports
+  API_GATEWAY_PORT: "8000"
+  DATA_COLLECTOR_PORT: "8001"
+  STRATEGY_ENGINE_PORT: "8002"
+  RISK_MANAGER_PORT: "8003"
+  TRADING_ENGINE_PORT: "8004"
+  WEB_MONITOR_PORT: "8888"
+  
+  # Rate Limiting
+  RATE_LIMIT_REQUESTS: "1000"
+  RATE_LIMIT_WINDOW: "60"
+  
+  # Trading Configuration
+  ENABLE_PAPER_TRADING: "true"
+  MAX_POSITION_SIZE: "10000"
+  MAX_PORTFOLIO_RISK: "0.02"
+  DATA_COLLECTION_INTERVAL: "30"
+  STRATEGY_UPDATE_INTERVAL: "60"
+  
+  # Performance Settings
+  WORKER_PROCESSES: "auto"
+  WORKER_CONNECTIONS: "1024"
+  MAX_CONCURRENT_REQUESTS: "100"
+  DB_POOL_SIZE: "10"
+  DB_MAX_OVERFLOW: "20"
+  CACHE_TTL: "300"

@@ -1,0 +1,50 @@
+# PostgreSQL Database Container Configuration
+# Optimized for Polymarket trading system data storage
+
+FROM postgres:15-alpine as polymarket-postgres
+
+# Set environment variables
+ENV POSTGRES_DB=polymarket_trading \
+    POSTGRES_USER=polymarket \
+    POSTGRES_PASSWORD=changeme_in_production \
+    PGDATA=/var/lib/postgresql/data/pgdata
+
+# Install additional extensions
+RUN apk add --no-cache \
+    postgresql15-contrib \
+    postgresql15-plpython3
+
+# Copy custom PostgreSQL configuration
+COPY docker/database/postgresql.conf /etc/postgresql/postgresql.conf
+COPY docker/database/pg_hba.conf /etc/postgresql/pg_hba.conf
+
+# Copy initialization scripts
+COPY docker/database/init/ /docker-entrypoint-initdb.d/
+
+# Create necessary directories
+RUN mkdir -p /var/lib/postgresql/data/pgdata \
+    && mkdir -p /var/lib/postgresql/backups \
+    && mkdir -p /var/log/postgresql
+
+# Set proper permissions
+RUN chown -R postgres:postgres /var/lib/postgresql/data \
+    && chown -R postgres:postgres /var/lib/postgresql/backups \
+    && chown -R postgres:postgres /var/log/postgresql
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD pg_isready -U $POSTGRES_USER -d $POSTGRES_DB || exit 1
+
+# Expose PostgreSQL port
+EXPOSE 5432
+
+# Add backup script
+COPY docker/database/backup.sh /usr/local/bin/backup.sh
+RUN chmod +x /usr/local/bin/backup.sh
+
+# Custom entrypoint for additional setup
+COPY docker/database/postgres-entrypoint.sh /usr/local/bin/postgres-entrypoint.sh
+RUN chmod +x /usr/local/bin/postgres-entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/postgres-entrypoint.sh"]
+CMD ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]

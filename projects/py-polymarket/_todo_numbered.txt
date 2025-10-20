@@ -1,0 +1,29 @@
+﻿0001: # Continuous Online Simulation & Monitoring TODO
+0002: 
+0003: - [x] Configure `.env` with online credentials (`POLY_OFFLINE_MODE=false`, `CLOB_REST_URL`, `CLOB_WS_URL`, API key triplet, `POLY_PRIVATE_KEY`).
+0004: - [x] Verify dependency footprint (`pip install -r requirements/base.txt` and `pip install -e .`).
+0005: - [x] Author automation script (e.g., `scripts/run_online_simulation.py`) that loops `polymarket-simulate` and timestamps reports.
+0006: - [x] Adjust script output naming to `reports/simulation_report_*.json` for monitor compatibility.
+0007: - [x] Create wrapper/launcher (PowerShell or Make target) that starts both the simulation loop and monitoring UI (`polymarket-launch monitor`).
+0008: - [x] Document start/stop instructions in README or CHANGELOG follow-up section.
+0009: - [x] Add optional analytics step (e.g., script summarizing recent simulation reports) to evaluate strategy win rate.
+0010: 
+0011: ## New Priorities (2025-10-02)
+0012: - [x] Monitor risk metrics in runtime logs/dashboard once live data resumes.
+0013: - [ ] Backtest revised strategy mix against archived market data to confirm diversification gains.
+0014: - [x] Monitor REST ingest in production (alert on repeated fallbacks and revisit endpoint compatibility).
+0015: - [x] Stabilize REST market ingest (GraphQL temporarily disabled): verify REST endpoints, add offline fallback, and log failures for later GraphQL re-enablement.
+0016: - [x] Rebalance strategies: tighten event-driven logic (require non-zero sentiment / bidirectional signals) and lower activation thresholds for mean reversion, momentum, and arbitrage once enrichment fields are verified.
+0017: - [x] Revisit sizing controls: review `settings.trading.min_position_size` and `max_single_position` so order sizes can scale with signal strength.
+0018: - [x] Feed risk analytics: ensure `MarketDataService` writes timestamped price data for `DatabaseManager`, then add an integration test proving VaR/liquidity checks work with real snapshots.
+0019: - [ ] Clean runtime packaging: remove lingering `polymarket.monitor` references by reinstalling the editable package and clearing obsolete wheels before relaunching the monitor.
+0020: 
+0021: 
+0022: 
+0023: 
+0024: 
+0025: 
+0026: 
+0027: 
+0028: 
+0029: 

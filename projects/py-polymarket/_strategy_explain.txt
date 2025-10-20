@@ -1,0 +1,8 @@
+mean_reversion:
+  Uses mid-price deviation from target 0.5; rejects extreme prices near 0/1 and negative 1h momentum. Bias = (0.5-mid)/sensitivity, so mid<0.5 ¡ú YES bias, mid>0.5 ¡ú NO bias.
+momentum_scalping:
+  Looks at 24h price change (delta); only acts if |delta| >= threshold (0.035) and 1h trend consistent. Positive delta favors YES, negative delta favors NO.
+event_driven:
+  Combines sentiment score and volume spike relative to threshold. Needs either sentiment beyond floor or volume spike. Weight sentiment more; synthetic sources downweight confidence.
+micro_arbitrage:
+  Requires external_real feed: compares local bid/ask vs external bid/ask. If external bid >> local bid or local ask >> external ask after fees, it biases accordingly.

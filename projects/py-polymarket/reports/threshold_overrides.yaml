@@ -1,0 +1,11 @@
+threshold_overrides:
+  '0x4319532e181605cb15b1bd677759a3bc7f7394b2fdf145195b700eeaedfd5221': { signal_floor: 0.23, consensus_min: 2 }
+  '0xc4e2af103f1f6e153cb07f9977b3cbdb5f04bb856a69036bbe8bd3921d2bfb00': { signal_floor: 0.23, consensus_min: 2 }
+  '0x027eeeaba097b5f3b166eace64668b2e6b327acc7c6b314ae5f03b33b51425e7': { signal_floor: 0.23, consensus_min: 2 }
+  '0x1df6862b69a47872e75864cac21b9ae9ea0cb552884d38aea9170c5fe5321bc6': { signal_floor: 0.23, consensus_min: 2 }
+  '0x2c8137bf7913df4efb0f4fa7d7a4923762ca5e640e56db6709f5020291d10f69': { signal_floor: 0.23, consensus_min: 2 }
+  '0x3abda4a94020798241644a56bdbfb8f382d8e42610e3e425461667cfe30a37cc': { signal_floor: 0.23, consensus_min: 2 }
+  '0x9094e1bc4278457865eaefdfea7eaf31900383a804b3696e5620480ecee8a9c7': { signal_floor: 0.23, consensus_min: 2 }
+  '0xc8f7efe4f5cf3c6d5b51cdd87cbd360e7f2a3b9999f6b8fa96d2dcd96e287141': { signal_floor: 0.23, consensus_min: 2 }
+  '0xe1209aa6642658fc83658bc1f84dec8352a3e9d8a9950b0fb9fbf211d9a6a1ca': { signal_floor: 0.23, consensus_min: 2 }
+  '0xef6da27c9c02f182d20706bb4efbcd9f7456e1263aef7e24fd6f6ad01346db9b': { signal_floor: 0.23, consensus_min: 2 }

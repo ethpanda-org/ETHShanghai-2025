@@ -1,0 +1,529 @@
+# GitLab CI/CD Pipeline for Polymarket Trading System
+# Alternative to GitHub Actions for GitLab users
+
+stages:
+  - validate
+  - test
+  - security-scan
+  - build
+  - deploy-dev
+  - deploy-staging
+  - deploy-prod
+  - monitoring
+
+variables:
+  DOCKER_REGISTRY: $CI_REGISTRY
+  IMAGE_NAME: $CI_REGISTRY_IMAGE
+  PYTHON_VERSION: "3.11"
+  POSTGRES_VERSION: "15"
+  REDIS_VERSION: "7-alpine"
+
+# Global cache configuration
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .pip-cache/
+    - node_modules/
+    - .cache/
+
+# ==============================================================================
+# VALIDATION AND CODE QUALITY
+# ==============================================================================
+
+code-quality:
+  stage: validate
+  image: python:$PYTHON_VERSION-slim
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-python
+    paths:
+      - .pip-cache/
+  before_script:
+    - pip install --cache-dir .pip-cache --upgrade pip
+    - pip install --cache-dir .pip-cache -r requirements-dev.txt
+  script:
+    - echo "Running code quality checks..."
+    - black --check --diff .
+    - isort --check-only --diff .
+    - flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
+    - flake8 src/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - mypy src/ --ignore-missing-imports --no-strict-optional
+    - bandit -r src/ -f json -o bandit-report.json || true
+    - safety check --json --output safety-report.json || true
+  artifacts:
+    reports:
+      junit: bandit-report.json
+    paths:
+      - bandit-report.json
+      - safety-report.json
+    expire_in: 30 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+
+# ==============================================================================
+# AUTOMATED TESTING
+# ==============================================================================
+
+unit-tests:
+  stage: test
+  image: python:$PYTHON_VERSION-slim
+  services:
+    - name: postgres:$POSTGRES_VERSION
+      alias: postgres
+      variables:
+        POSTGRES_DB: polymarket_test
+        POSTGRES_USER: test_user
+        POSTGRES_PASSWORD: test_password
+    - name: redis:$REDIS_VERSION
+      alias: redis
+  variables:
+    DATABASE_URL: "postgresql://test_user:test_password@postgres:5432/polymarket_test"
+    REDIS_URL: "redis://redis:6379/0"
+    TRADING_ENV: "testing"
+    PYTHONPATH: "$CI_PROJECT_DIR/src"
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-python
+    paths:
+      - .pip-cache/
+  before_script:
+    - pip install --cache-dir .pip-cache --upgrade pip
+    - pip install --cache-dir .pip-cache -r requirements.txt
+    - pip install --cache-dir .pip-cache -r requirements-test.txt
+    - python scripts/init_test_db.py
+  script:
+    - echo "Running unit tests..."
+    - pytest tests/unit/ 
+        --cov=src 
+        --cov-report=xml 
+        --cov-report=html 
+        --junit-xml=pytest-results.xml 
+        --cov-fail-under=80
+        -v
+  artifacts:
+    reports:
+      junit: pytest-results.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    paths:
+      - htmlcov/
+      - pytest-results.xml
+      - coverage.xml
+    expire_in: 30 days
+  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+
+integration-tests:
+  stage: test
+  image: python:$PYTHON_VERSION-slim
+  services:
+    - name: postgres:$POSTGRES_VERSION
+      alias: postgres
+      variables:
+        POSTGRES_DB: polymarket_test
+        POSTGRES_USER: test_user
+        POSTGRES_PASSWORD: test_password
+    - name: redis:$REDIS_VERSION
+      alias: redis
+  variables:
+    DATABASE_URL: "postgresql://test_user:test_password@postgres:5432/polymarket_test"
+    REDIS_URL: "redis://redis:6379/0"
+    TRADING_ENV: "testing"
+    PYTHONPATH: "$CI_PROJECT_DIR/src"
+    MOCK_POLYMARKET_API: "true"
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-python
+    paths:
+      - .pip-cache/
+  before_script:
+    - pip install --cache-dir .pip-cache --upgrade pip
+    - pip install --cache-dir .pip-cache -r requirements.txt
+    - pip install --cache-dir .pip-cache -r requirements-test.txt
+    - python scripts/init_test_db.py
+  script:
+    - echo "Running integration tests..."
+    - pytest tests/integration/ 
+        --timeout=300 
+        --junit-xml=integration-results.xml 
+        -v
+  artifacts:
+    reports:
+      junit: integration-results.xml
+    paths:
+      - integration-results.xml
+    expire_in: 30 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+
+# ==============================================================================
+# SECURITY SCANNING
+# ==============================================================================
+
+container-security-scan:
+  stage: security-scan
+  image: docker:24-dind
+  services:
+    - docker:24-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - echo "Building image for security scan..."
+    - docker build -t $IMAGE_NAME:$CI_COMMIT_SHA .
+    
+    # Trivy vulnerability scan
+    - |
+      docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+        -v $PWD:/tmp/trivy \
+        aquasec/trivy:latest image \
+        --format sarif \
+        --output /tmp/trivy/trivy-report.sarif \
+        --severity HIGH,CRITICAL \
+        $IMAGE_NAME:$CI_COMMIT_SHA
+    
+    # Grype vulnerability scan
+    - |
+      curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+      grype $IMAGE_NAME:$CI_COMMIT_SHA -o sarif > grype-report.sarif || true
+      
+  artifacts:
+    reports:
+      sast: trivy-report.sarif
+    paths:
+      - trivy-report.sarif
+      - grype-report.sarif
+    expire_in: 30 days
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+
+dependency-scan:
+  stage: security-scan
+  image: python:$PYTHON_VERSION-slim
+  before_script:
+    - pip install safety pip-audit
+  script:
+    - echo "Scanning dependencies for vulnerabilities..."
+    - safety check --json --output safety-report.json || true
+    - pip-audit --format=json --output=pip-audit-report.json || true
+  artifacts:
+    paths:
+      - safety-report.json
+      - pip-audit-report.json
+    expire_in: 30 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+
+# ==============================================================================
+# IMAGE BUILD AND PUSH
+# ==============================================================================
+
+build-main-image:
+  stage: build
+  image: docker:24-dind
+  services:
+    - docker:24-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+    BUILDKIT_PROGRESS: plain
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker buildx create --use --name multiarch-builder
+  script:
+    - echo "Building multi-architecture main image..."
+    - |
+      docker buildx build \
+        --platform linux/amd64,linux/arm64 \
+        --target production \
+        --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
+        --build-arg BUILD_REVISION=$CI_COMMIT_SHA \
+        --build-arg BUILD_VERSION=$CI_COMMIT_REF_NAME \
+        --tag $IMAGE_NAME:$CI_COMMIT_SHA \
+        --tag $IMAGE_NAME:latest \
+        --push \
+        .
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+    - if: $CI_COMMIT_TAG
+
+build-microservices:
+  stage: build
+  image: docker:24-dind
+  services:
+    - docker:24-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker buildx create --use --name microservices-builder
+  script:
+    - echo "Building microservice images..."
+    - |
+      services=("api-gateway" "data-collector" "strategy-engine" "risk-manager" "trading-engine")
+      
+      for service in "${services[@]}"; do
+        echo "Building $service image..."
+        docker buildx build \
+          --platform linux/amd64,linux/arm64 \
+          --file docker/microservices/Dockerfile.$service \
+          --tag $IMAGE_NAME/$service:$CI_COMMIT_SHA \
+          --tag $IMAGE_NAME/$service:latest \
+          --push \
+          .
+      done
+      
+    # Build database images
+    - |
+      docker buildx build \
+        --platform linux/amd64,linux/arm64 \
+        --file docker/database/Dockerfile.postgres \
+        --tag $IMAGE_NAME/postgres:$CI_COMMIT_SHA \
+        --tag $IMAGE_NAME/postgres:latest \
+        --push \
+        .
+        
+      docker buildx build \
+        --platform linux/amd64,linux/arm64 \
+        --file docker/cache/Dockerfile.redis \
+        --tag $IMAGE_NAME/redis:$CI_COMMIT_SHA \
+        --tag $IMAGE_NAME/redis:latest \
+        --push \
+        .
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "develop"
+
+# ==============================================================================
+# DEVELOPMENT DEPLOYMENT
+# ==============================================================================
+
+deploy-development:
+  stage: deploy-dev
+  image: bitnami/kubectl:latest
+  environment:
+    name: development
+    url: https://dev.polymarket.local
+  variables:
+    KUBE_NAMESPACE: polymarket-dev
+  before_script:
+    - echo "$DEV_KUBECONFIG" | base64 -d > ~/.kube/config
+    - chmod 600 ~/.kube/config
+  script:
+    - echo "Deploying to development environment..."
+    
+    # Update image tags in manifests
+    - sed -i "s|polymarket/.*:latest|$IMAGE_NAME:$CI_COMMIT_SHA|g" k8s/*.yaml
+    - sed -i "s|namespace: polymarket|namespace: $KUBE_NAMESPACE|g" k8s/*.yaml
+    
+    # Deploy to development
+    - kubectl apply -f k8s/namespace.yaml
+    - kubectl apply -f k8s/configmaps.yaml
+    - kubectl apply -f k8s/secrets.yaml
+    - kubectl apply -f k8s/persistentvolumes.yaml
+    - kubectl apply -f k8s/postgres.yaml
+    - kubectl apply -f k8s/redis.yaml
+    
+    # Wait for infrastructure
+    - kubectl wait --for=condition=ready pod -l app=postgres -n $KUBE_NAMESPACE --timeout=300s
+    - kubectl wait --for=condition=ready pod -l app=redis -n $KUBE_NAMESPACE --timeout=300s
+    
+    # Deploy microservices
+    - kubectl apply -f k8s/api-gateway.yaml
+    - kubectl apply -f k8s/data-collector.yaml
+    - kubectl apply -f k8s/strategy-engine.yaml
+    - kubectl apply -f k8s/risk-manager.yaml
+    - kubectl apply -f k8s/trading-engine.yaml
+    - kubectl apply -f k8s/web-monitor.yaml
+    - kubectl apply -f k8s/nginx-ingress.yaml
+    
+    # Verify deployment
+    - kubectl rollout status deployment/api-gateway -n $KUBE_NAMESPACE --timeout=300s
+    - kubectl rollout status deployment/trading-engine -n $KUBE_NAMESPACE --timeout=300s
+    
+    # Run smoke tests
+    - sleep 30
+    - kubectl exec deployment/api-gateway -n $KUBE_NAMESPACE -- curl -f http://localhost:8000/health
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+
+# ==============================================================================
+# STAGING DEPLOYMENT
+# ==============================================================================
+
+deploy-staging:
+  stage: deploy-staging
+  image: bitnami/kubectl:latest
+  environment:
+    name: staging
+    url: https://staging.polymarket.local
+  variables:
+    KUBE_NAMESPACE: polymarket-staging
+  before_script:
+    - echo "$STAGING_KUBECONFIG" | base64 -d > ~/.kube/config
+    - chmod 600 ~/.kube/config
+  script:
+    - echo "Deploying to staging environment..."
+    
+    # Update manifests for staging
+    - sed -i "s|polymarket/.*:latest|$IMAGE_NAME:$CI_COMMIT_SHA|g" k8s/*.yaml
+    - sed -i "s|namespace: polymarket|namespace: $KUBE_NAMESPACE|g" k8s/*.yaml
+    
+    # Deploy using the deployment script
+    - chmod +x k8s/deploy.sh
+    - ./k8s/deploy.sh -n $KUBE_NAMESPACE
+    
+    # Run staging tests
+    - python scripts/staging_tests.py --endpoint staging.polymarket.local
+    - python scripts/performance_tests.py --duration 300 --threads 10
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# ==============================================================================
+# PRODUCTION DEPLOYMENT
+# ==============================================================================
+
+deploy-production:
+  stage: deploy-prod
+  image: bitnami/kubectl:latest
+  environment:
+    name: production
+    url: https://polymarket.local
+  variables:
+    KUBE_NAMESPACE: polymarket-prod
+  when: manual
+  before_script:
+    - echo "$PROD_KUBECONFIG" | base64 -d > ~/.kube/config
+    - chmod 600 ~/.kube/config
+  script:
+    - echo "Deploying to production environment with Blue-Green strategy..."
+    
+    # Determine current and new colors
+    - |
+      CURRENT_COLOR=$(kubectl get service nginx -n $KUBE_NAMESPACE -o jsonpath='{.spec.selector.color}' 2>/dev/null || echo "blue")
+      NEW_COLOR=$([[ "$CURRENT_COLOR" == "blue" ]] && echo "green" || echo "blue")
+      echo "Current: $CURRENT_COLOR, New: $NEW_COLOR"
+    
+    # Update manifests for new color deployment
+    - sed -i "s|polymarket/.*:latest|$IMAGE_NAME:$CI_COMMIT_SHA|g" k8s/*.yaml
+    - sed -i "s|app: |app: $NEW_COLOR-|g" k8s/*.yaml
+    - sed -i "s|namespace: polymarket|namespace: $KUBE_NAMESPACE|g" k8s/*.yaml
+    
+    # Deploy new version
+    - ./k8s/deploy.sh -n $KUBE_NAMESPACE
+    
+    # Wait for new deployment readiness
+    - kubectl wait --for=condition=ready pod -l color=$NEW_COLOR -n $KUBE_NAMESPACE --timeout=600s
+    
+    # Warm up services
+    - python scripts/warmup_services.py --color $NEW_COLOR
+    
+    # Run production readiness tests
+    - python scripts/production_readiness_tests.py --color $NEW_COLOR
+    
+    # Switch traffic to new deployment
+    - kubectl patch service nginx -n $KUBE_NAMESPACE -p '{"spec":{"selector":{"color":"'$NEW_COLOR'"}}}'
+    - kubectl patch service api-gateway -n $KUBE_NAMESPACE -p '{"spec":{"selector":{"color":"'$NEW_COLOR'"}}}'
+    
+    # Monitor new deployment
+    - python scripts/monitor_deployment.py --duration 600 --color $NEW_COLOR
+    
+    # Cleanup old deployment after verification
+    - sleep 300
+    - kubectl delete deployment -l color=$CURRENT_COLOR -n $KUBE_NAMESPACE
+    
+  rules:
+    - if: $CI_COMMIT_TAG
+
+# ==============================================================================
+# MONITORING AND ROLLBACK
+# ==============================================================================
+
+post-deployment-monitoring:
+  stage: monitoring
+  image: python:$PYTHON_VERSION-slim
+  variables:
+    MONITORING_DURATION: "1800"  # 30 minutes
+  script:
+    - echo "Starting post-deployment monitoring..."
+    - pip install requests prometheus-client
+    - python scripts/post_deployment_monitor.py --duration $MONITORING_DURATION
+  rules:
+    - if: $CI_COMMIT_TAG
+  allow_failure: true
+
+rollback-production:
+  stage: deploy-prod
+  image: bitnami/kubectl:latest
+  environment:
+    name: production
+    url: https://polymarket.local
+  variables:
+    KUBE_NAMESPACE: polymarket-prod
+  when: manual
+  before_script:
+    - echo "$PROD_KUBECONFIG" | base64 -d > ~/.kube/config
+    - chmod 600 ~/.kube/config
+  script:
+    - echo "Emergency rollback initiated..."
+    
+    # Get current and previous colors
+    - |
+      CURRENT_COLOR=$(kubectl get service nginx -n $KUBE_NAMESPACE -o jsonpath='{.spec.selector.color}')
+      PREVIOUS_COLOR=$([[ "$CURRENT_COLOR" == "blue" ]] && echo "green" || echo "blue")
+    
+    # Switch traffic back to previous version
+    - kubectl patch service nginx -n $KUBE_NAMESPACE -p '{"spec":{"selector":{"color":"'$PREVIOUS_COLOR'"}}}'
+    - kubectl patch service api-gateway -n $KUBE_NAMESPACE -p '{"spec":{"selector":{"color":"'$PREVIOUS_COLOR'"}}}'
+    
+    # Verify rollback
+    - kubectl get pods -l color=$PREVIOUS_COLOR -n $KUBE_NAMESPACE
+    - python scripts/health_check.py --environment production
+    
+    - echo "Emergency rollback completed"
+  rules:
+    - if: $CI_COMMIT_TAG
+
+# ==============================================================================
+# NOTIFICATION
+# ==============================================================================
+
+.notify_template: &notify_template
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache curl
+  variables:
+    WEBHOOK_URL: $SLACK_WEBHOOK_URL
+
+notify-success:
+  <<: *notify_template
+  stage: monitoring
+  script:
+    - |
+      curl -X POST -H 'Content-type: application/json' \
+        --data "{\"text\":\"✅ Deployment successful for $CI_PROJECT_NAME - $CI_COMMIT_REF_NAME ($CI_COMMIT_SHA)\"}" \
+        $WEBHOOK_URL
+  rules:
+    - if: $CI_COMMIT_TAG
+  when: on_success
+
+notify-failure:
+  <<: *notify_template
+  stage: monitoring
+  script:
+    - |
+      curl -X POST -H 'Content-type: application/json' \
+        --data "{\"text\":\"❌ Deployment failed for $CI_PROJECT_NAME - $CI_COMMIT_REF_NAME ($CI_COMMIT_SHA)\"}" \
+        $WEBHOOK_URL
+  rules:
+    - if: $CI_COMMIT_TAG
+  when: on_failure

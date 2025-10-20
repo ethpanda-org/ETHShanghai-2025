@@ -1,0 +1,179 @@
+# Prometheus Configuration for Polymarket Trading System
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'polymarket-trading'
+    environment: 'production'
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  - "rules/*.yml"
+  - "alerts/*.yml"
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Scrape configuration
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 5s
+
+  # Main Application
+  - job_name: 'polymarket-trading'
+    static_configs:
+      - targets: ['app:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Web Monitor
+  - job_name: 'web-monitor'
+    static_configs:
+      - targets: ['web-monitor:8888']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # API Gateway
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api-gateway:8001']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Data Collector Service
+  - job_name: 'data-collector'
+    static_configs:
+      - targets: ['data-collector:8002']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Strategy Engine
+  - job_name: 'strategy-engine'
+    static_configs:
+      - targets: ['strategy-engine:8003']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Risk Manager
+  - job_name: 'risk-manager'
+    static_configs:
+      - targets: ['risk-manager:8004']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Trading Engine
+  - job_name: 'trading-engine'
+    static_configs:
+      - targets: ['trading-engine:8005']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+
+  # PostgreSQL Database
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Redis Cache
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Node Exporter for System Metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+
+  # cAdvisor for Container Metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 15s
+    metrics_path: '/metrics'
+
+  # Nginx Reverse Proxy
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:9113']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Custom Business Metrics Endpoint
+  - job_name: 'business-metrics'
+    static_configs:
+      - targets: ['app:8000']
+    metrics_path: '/api/metrics/business'
+    scrape_interval: 30s
+
+  # Trading Performance Metrics
+  - job_name: 'trading-metrics'
+    static_configs:
+      - targets: ['trading-engine:8005']
+    metrics_path: '/api/metrics/trading'
+    scrape_interval: 10s
+
+  # External API Health Checks
+  - job_name: 'external-api-health'
+    static_configs:
+      - targets: ['app:8000']
+    metrics_path: '/api/metrics/external'
+    scrape_interval: 60s
+
+  # Kubernetes Metrics (if deployed on K8s)
+  - job_name: 'kubernetes-pods'
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names:
+            - polymarket
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+
+  # Service Discovery for Dynamic Services
+  - job_name: 'consul-services'
+    consul_sd_configs:
+      - server: 'consul:8500'
+        services: []
+    relabel_configs:
+      - source_labels: ['__meta_consul_service']
+        target_label: 'service'
+      - source_labels: ['__meta_consul_tags']
+        target_label: 'tags'
+
+# Remote write configuration for long-term storage
+remote_write:
+  - url: "http://prometheus-remote-storage:9201/write"
+    queue_config:
+      max_samples_per_send: 1000
+      max_shards: 10
+      capacity: 10000
+
+# Storage configuration
+storage:
+  tsdb:
+    retention.time: 30d
+    retention.size: 50GB
+    wal-compression: true

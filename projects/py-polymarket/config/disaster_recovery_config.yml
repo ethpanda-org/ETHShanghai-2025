@@ -1,0 +1,352 @@
+# Disaster Recovery Configuration
+# Comprehensive backup and recovery settings for Polymarket Trading System
+
+system:
+  backup_base_path: "/opt/backups"
+  max_records_history: 10000
+  cleanup_interval: 3600  # seconds
+  encryption_key: null  # Will generate new key if not provided
+  notification_channels: ["email", "slack"]
+  
+# Backup Jobs Configuration
+backup_jobs:
+  # Critical Database Backups
+  - id: critical_db_full_backup
+    name: "Critical Database Full Backup"
+    backup_type: full
+    source_type: database
+    source_config:
+      host: postgres
+      port: 5432
+      user: backup_user
+      password: "${POSTGRES_BACKUP_PASSWORD}"
+      database: polymarket_trading
+    destinations: [local, s3]
+    schedule: "0 2 * * *"  # Daily at 2 AM
+    retention_days: 90
+    encryption_enabled: true
+    compression_enabled: true
+    enabled: true
+    metadata:
+      priority: critical
+      backup_size_estimate: "500MB"
+      estimated_duration: "15min"
+
+  - id: critical_db_incremental_backup
+    name: "Critical Database Incremental Backup"
+    backup_type: incremental
+    source_type: database
+    source_config:
+      host: postgres
+      port: 5432
+      user: backup_user
+      password: "${POSTGRES_BACKUP_PASSWORD}"
+      database: polymarket_trading
+    destinations: [local, s3]
+    schedule: "0 */6 * * *"  # Every 6 hours
+    retention_days: 14
+    encryption_enabled: true
+    compression_enabled: true
+    enabled: true
+    metadata:
+      priority: high
+      depends_on: critical_db_full_backup
+
+  # Redis Cache Backups
+  - id: redis_cache_backup
+    name: "Redis Cache Backup"
+    backup_type: full
+    source_type: redis
+    source_config:
+      host: redis
+      port: 6379
+      password: "${REDIS_PASSWORD}"
+      db: 0
+      data_dir: "/var/lib/redis"
+    destinations: [local, s3]
+    schedule: "0 3 * * *"  # Daily at 3 AM
+    retention_days: 30
+    encryption_enabled: true
+    compression_enabled: true
+    enabled: true
+    metadata:
+      priority: medium
+      backup_size_estimate: "100MB"
+
+  # Application Configuration Backups
+  - id: config_files_backup
+    name: "Configuration Files Backup"
+    backup_type: incremental
+    source_type: filesystem
+    source_config:
+      paths:
+        - "/opt/polymarket/config"
+        - "/opt/polymarket/kubernetes"
+        - "/opt/polymarket/docker"
+        - "/etc/nginx/sites-available"
+        - "/etc/ssl/certs/polymarket"
+    destinations: [local, s3]
+    schedule: "0 1 * * *"  # Daily at 1 AM
+    retention_days: 60
+    encryption_enabled: true
+    compression_enabled: true
+    enabled: true
+    metadata:
+      priority: high
+      backup_type_reason: "Critical for system restoration"
+
+  # Application Logs Backup
+  - id: application_logs_backup
+    name: "Application Logs Backup"
+    backup_type: incremental
+    source_type: filesystem
+    source_config:
+      paths:
+        - "/opt/polymarket/logs"
+        - "/var/log/polymarket"
+        - "/var/log/nginx"
+        - "/var/log/kubernetes"
+    destinations: [local, s3]
+    schedule: "0 4 * * *"  # Daily at 4 AM
+    retention_days: 30
+    encryption_enabled: false  # Logs don't need encryption
+    compression_enabled: true
+    enabled: true
+    metadata:
+      priority: low
+      backup_type_reason: "Audit trail and debugging"
+
+  # Trading Data and Models Backup
+  - id: trading_models_backup
+    name: "Trading Models and Strategies Backup"
+    backup_type: full
+    source_type: filesystem
+    source_config:
+      paths:
+        - "/opt/polymarket/models"
+        - "/opt/polymarket/src/polymarket/strategies"
+        - "/opt/polymarket/data/historical"
+    destinations: [local, s3, azure]
+    schedule: "0 0 * * 0"  # Weekly on Sunday at midnight
+    retention_days: 180  # Keep for 6 months
+    encryption_enabled: true
+    compression_enabled: true
+    enabled: true
+    metadata:
+      priority: critical
+      backup_size_estimate: "2GB"
+      business_impact: "High - Contains proprietary trading algorithms"
+
+  # Monitoring and Metrics Backup
+  - id: monitoring_data_backup
+    name: "Monitoring and Metrics Data Backup"
+    backup_type: full
+    source_type: filesystem
+    source_config:
+      paths:
+        - "/opt/prometheus/data"
+        - "/opt/grafana/data"
+        - "/opt/polymarket/monitoring"
+    destinations: [local, s3]
+    schedule: "0 5 * * *"  # Daily at 5 AM
+    retention_days: 45
+    encryption_enabled: false
+    compression_enabled: true
+    enabled: true
+    metadata:
+      priority: medium
+      backup_type_reason: "Historical metrics and dashboards"
+
+  # SSL Certificates and Security Keys Backup
+  - id: security_keys_backup
+    name: "SSL Certificates and Security Keys Backup"
+    backup_type: full
+    source_type: filesystem
+    source_config:
+      paths:
+        - "/etc/ssl/private"
+        - "/opt/polymarket/certs"
+        - "/opt/polymarket/keys"
+    destinations: [local, s3, azure]  # Multiple destinations for security
+    schedule: "0 6 * * 0"  # Weekly on Sunday at 6 AM
+    retention_days: 365  # Keep for 1 year
+    encryption_enabled: true
+    compression_enabled: false  # Keys are small, compression not needed
+    enabled: true
+    metadata:
+      priority: critical
+      security_level: high
+      backup_type_reason: "Critical for service availability and security"
+
+# Backup Destinations Configuration
+backup_destinations:
+  local:
+    type: filesystem
+    base_path: "/opt/backups/local"
+    max_size_gb: 500
+    cleanup_policy: size_based
+    
+  s3:
+    type: s3
+    bucket_name: "polymarket-backups-primary"
+    region: "us-west-2"
+    access_key_id: "${AWS_ACCESS_KEY_ID}"
+    secret_access_key: "${AWS_SECRET_ACCESS_KEY}"
+    encryption: server_side
+    storage_class: STANDARD_IA
+    lifecycle_rules:
+      - rule_name: archive_old_backups
+        transition_days: 30
+        storage_class: GLACIER
+      - rule_name: delete_old_backups
+        expiration_days: 2555  # 7 years
+    
+  azure:
+    type: azure_blob
+    account_name: "polymarketbackups"
+    account_key: "${AZURE_STORAGE_KEY}"
+    container_name: "disaster-recovery"
+    access_tier: cool
+    encryption_enabled: true
+
+# Recovery Testing Configuration
+recovery_testing:
+  enabled: true
+  schedule: "0 10 * * 6"  # Weekly on Saturday at 10 AM
+  test_scenarios:
+    - name: database_point_in_time_recovery
+      description: "Test database restoration to specific point in time"
+      backup_jobs: [critical_db_full_backup, critical_db_incremental_backup]
+      target_environment: testing
+      validation_queries:
+        - "SELECT COUNT(*) FROM trading_positions"
+        - "SELECT MAX(created_at) FROM market_data"
+      success_criteria:
+        - query_results_match: true
+        - recovery_time_minutes: 30
+        
+    - name: full_system_recovery
+      description: "Test complete system recovery from backups"
+      backup_jobs: [critical_db_full_backup, config_files_backup, trading_models_backup]
+      target_environment: staging
+      validation_steps:
+        - verify_database_connectivity
+        - verify_trading_engine_startup
+        - verify_api_endpoints
+        - verify_monitoring_systems
+      success_criteria:
+        - all_services_healthy: true
+        - recovery_time_hours: 4
+
+# Business Continuity Configuration
+business_continuity:
+  rpo_targets:  # Recovery Point Objective
+    critical_data: 1  # hours
+    important_data: 6  # hours
+    normal_data: 24  # hours
+    
+  rto_targets:  # Recovery Time Objective
+    critical_services: 1  # hours
+    important_services: 4  # hours
+    normal_services: 24  # hours
+    
+  disaster_scenarios:
+    - name: primary_datacenter_failure
+      impact: critical
+      recovery_strategy: failover_to_secondary_region
+      estimated_rto_hours: 2
+      estimated_rpo_hours: 1
+      
+    - name: database_corruption
+      impact: critical
+      recovery_strategy: restore_from_backup
+      estimated_rto_hours: 4
+      estimated_rpo_hours: 6
+      
+    - name: security_breach
+      impact: high
+      recovery_strategy: isolate_and_rebuild
+      estimated_rto_hours: 8
+      estimated_rpo_hours: 1
+      
+    - name: application_server_failure
+      impact: medium
+      recovery_strategy: auto_scaling_replacement
+      estimated_rto_minutes: 15
+      estimated_rpo_hours: 0
+
+# Notification Configuration
+notifications:
+  backup_completion:
+    enabled: true
+    channels: [email]
+    on_success: false
+    on_failure: true
+    on_warning: true
+    
+  backup_testing:
+    enabled: true
+    channels: [email, slack]
+    on_success: true
+    on_failure: true
+    
+  disaster_recovery:
+    enabled: true
+    channels: [email, slack, sms]
+    on_activation: true
+    on_completion: true
+    escalation_after_minutes: 30
+    
+  email:
+    smtp_host: smtp.gmail.com
+    smtp_port: 587
+    username: "${SMTP_USERNAME}"
+    password: "${SMTP_PASSWORD}"
+    from_email: "backups@polymarket-trading.com"
+    recipients:
+      - "ops-team@polymarket-trading.com"
+      - "sre@polymarket-trading.com"
+      
+  slack:
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    channel: "#ops-alerts"
+    
+  sms:
+    provider: twilio
+    account_sid: "${TWILIO_ACCOUNT_SID}"
+    auth_token: "${TWILIO_AUTH_TOKEN}"
+    from_number: "${TWILIO_FROM_NUMBER}"
+    recipients:
+      - "+1234567890"  # On-call engineer
+      - "+1234567891"  # Backup on-call engineer
+
+# Compliance and Audit Configuration
+compliance:
+  data_retention:
+    financial_data_years: 7
+    user_data_years: 3
+    system_logs_months: 12
+    
+  encryption_requirements:
+    data_at_rest: true
+    data_in_transit: true
+    key_rotation_days: 90
+    
+  audit_logging:
+    enabled: true
+    log_all_backup_operations: true
+    log_all_restore_operations: true
+    log_access_to_backup_files: true
+    retention_years: 5
+    
+  regulatory_compliance:
+    - name: SOX
+      requirements:
+        - backup_integrity_verification
+        - access_logging
+        - change_management_tracking
+    - name: GDPR
+      requirements:
+        - data_subject_backup_exclusion
+        - right_to_erasure_compliance
+        - data_processing_logging

@@ -1,0 +1,14 @@
+﻿FROM python:3.11-slim as base
+
+WORKDIR /app
+
+COPY pyproject.toml requirements/ src/ config/ apps/ .
+
+RUN pip install --no-cache-dir --upgrade pip \
+    && if [ -f requirements/base.txt ]; then pip install --no-cache-dir -r requirements/base.txt; fi \
+    && pip install --no-cache-dir -e .
+
+ENV PYTHONUNBUFFERED=1
+
+ENTRYPOINT ["polymarket-launch"]
+CMD ["trade", "--interval", "60"]

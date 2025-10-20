@@ -1,0 +1,64 @@
+# Strategy Engine Microservice Dockerfile
+# Specialized container for trading strategy computation and signal generation
+
+FROM python:3.11-slim as strategy-engine
+
+# Set microservice-specific environment variables
+ENV SERVICE_NAME=strategy-engine \
+    SERVICE_PORT=8002 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Install system dependencies for mathematical computations
+RUN apt-get update && apt-get install -y \
+    curl \
+    gcc \
+    g++ \
+    libffi-dev \
+    libssl-dev \
+    libatlas-base-dev \
+    liblapack-dev \
+    gfortran \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy requirements
+COPY requirements.txt ./
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Additional dependencies for strategy computation
+RUN pip install \
+    scipy>=1.10.0 \
+    scikit-learn>=1.2.0 \
+    ta-lib>=0.4.25 \
+    plotly>=5.13.0
+
+# Copy source code
+COPY src/ ./src/
+COPY config/ ./config/
+COPY docker/microservices/microservice-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/microservice-entrypoint.sh
+
+# Create microservice user
+RUN useradd --create-home --shell /bin/bash strategist && \
+    mkdir -p /app/logs /app/data /app/cache /app/models && \
+    chown -R strategist:strategist /app
+
+USER strategist
+
+# Set Python path and strategy-specific environment
+ENV PYTHONPATH=/app/src \
+    WAIT_FOR_REDIS=true \
+    WAIT_FOR_SERVICE_REGISTRY=true \
+    MODEL_DIR=/app/models \
+    STRATEGY_CONFIG_PATH=/app/config/strategies.yaml
+
+# Health check for strategy engine
+HEALTHCHECK --interval=30s --timeout=15s --start-period=45s --retries=3 \
+    CMD curl -f http://localhost:8002/health || exit 1
+
+EXPOSE 8002
+
+ENTRYPOINT ["/usr/local/bin/microservice-entrypoint.sh"]
+CMD ["strategy-engine"]

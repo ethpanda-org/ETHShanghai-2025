@@ -1,0 +1,70 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: polymarket-suite
+  labels:
+    app: polymarket-suite
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: polymarket-suite
+  template:
+    metadata:
+      labels:
+        app: polymarket-suite
+    spec:
+      containers:
+        - name: trader
+          image: polymarket/trader:local
+          imagePullPolicy: IfNotPresent
+          args: ["trade", "--interval", "60"]
+          envFrom:
+            - configMapRef:
+                name: polymarket-config
+            - secretRef:
+                name: polymarket-secrets
+          env:
+            - name: POLY_OFFLINE_MODE
+              value: "true"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+        - name: monitor
+          image: polymarket/trader:local
+          imagePullPolicy: IfNotPresent
+          args: ["monitor", "--port", "8888"]
+          envFrom:
+            - configMapRef:
+                name: polymarket-config
+            - secretRef:
+                name: polymarket-secrets
+          env:
+            - name: POLY_OFFLINE_MODE
+              value: "true"
+          ports:
+            - containerPort: 8888
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: polymarket-monitor
+spec:
+  selector:
+    app: polymarket-suite
+  ports:
+    - port: 8888
+      targetPort: 8888
+      protocol: TCP
+      name: http

@@ -1,0 +1,145 @@
+# PostgreSQL Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: polymarket
+  labels:
+    app: postgres
+    component: database
+    tier: infrastructure
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate  # PostgreSQL cannot have multiple replicas with the same PV
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        component: database
+        tier: infrastructure
+    spec:
+      containers:
+      - name: postgres
+        image: polymarket/postgres:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_DB
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
+        - name: PGDATA
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: PGDATA
+        - name: POSTGRES_INIT_TRADING
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_INIT_TRADING
+        - name: TRADING_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: TRADING_ENV
+        - name: ENABLE_BACKUPS
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: ENABLE_BACKUPS
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+        - name: postgres-backups
+          mountPath: /var/lib/postgresql/backups
+        - name: postgres-config-volume
+          mountPath: /etc/postgresql
+        - name: app-logs
+          mountPath: /var/log/postgresql
+        livenessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 5
+        readinessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+      volumes:
+      - name: postgres-data
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+      - name: postgres-backups
+        persistentVolumeClaim:
+          claimName: postgres-backup-pvc
+      - name: postgres-config-volume
+        configMap:
+          name: postgres-config
+          items:
+          - key: postgresql.conf
+            path: postgresql.conf
+          - key: pg_hba.conf
+            path: pg_hba.conf
+      - name: app-logs
+        persistentVolumeClaim:
+          claimName: app-logs-pvc
+      restartPolicy: Always
+      securityContext:
+        fsGroup: 999  # postgres user group
+---
+# PostgreSQL Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: polymarket
+  labels:
+    app: postgres
+    component: database
+    tier: infrastructure
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgres
+  selector:
+    app: postgres

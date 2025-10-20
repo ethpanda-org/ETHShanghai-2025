@@ -1,0 +1,64 @@
+# Trading Engine Microservice Dockerfile
+# Specialized container for order execution and trade management
+
+FROM python:3.11-slim as trading-engine
+
+# Set microservice-specific environment variables
+ENV SERVICE_NAME=trading-engine \
+    SERVICE_PORT=8004 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    gcc \
+    libffi-dev \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy requirements
+COPY requirements.txt ./
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Additional dependencies for trading execution
+RUN pip install \
+    ccxt>=3.1.0 \
+    py-clob-client>=0.2.0
+
+# Copy source code
+COPY src/ ./src/
+COPY config/ ./config/
+COPY docker/microservices/microservice-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/microservice-entrypoint.sh
+
+# Copy proxy certificates if available
+COPY brightdata_proxy_ca/ ./brightdata_proxy_ca/ 2>/dev/null || true
+
+# Create microservice user
+RUN useradd --create-home --shell /bin/bash trader && \
+    mkdir -p /app/logs /app/data /app/cache /app/orders && \
+    chown -R trader:trader /app
+
+USER trader
+
+# Set Python path and trading-specific environment
+ENV PYTHONPATH=/app/src \
+    WAIT_FOR_REDIS=true \
+    WAIT_FOR_SERVICE_REGISTRY=true \
+    WAIT_FOR_DB=true \
+    TRADING_CONFIG_PATH=/app/config/trading.yaml \
+    ORDERS_DIR=/app/orders \
+    MAX_POSITION_SIZE=1000 \
+    ENABLE_PAPER_TRADING=true
+
+# Health check for trading engine
+HEALTHCHECK --interval=20s --timeout=10s --start-period=40s --retries=5 \
+    CMD curl -f http://localhost:8004/health || exit 1
+
+EXPOSE 8004
+
+ENTRYPOINT ["/usr/local/bin/microservice-entrypoint.sh"]
+CMD ["trading-engine"]

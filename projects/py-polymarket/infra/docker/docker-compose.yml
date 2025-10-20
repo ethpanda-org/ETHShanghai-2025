@@ -1,0 +1,23 @@
+﻿version: "3.9"
+
+services:
+  trader:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.trader
+    environment:
+      POLY_OFFLINE_MODE: "true"
+    restart: unless-stopped
+
+  monitor:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.trader
+    command: ["monitor", "--port", "8888", "--background"]
+    ports:
+      - "8888:8888"
+    environment:
+      POLY_OFFLINE_MODE: "true"
+    depends_on:
+      - trader
+

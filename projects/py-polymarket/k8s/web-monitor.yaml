@@ -1,0 +1,154 @@
+# Web Monitor Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-monitor
+  namespace: polymarket
+  labels:
+    app: web-monitor
+    component: web-monitor
+    tier: monitoring
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: web-monitor
+  template:
+    metadata:
+      labels:
+        app: web-monitor
+        component: web-monitor
+        tier: monitoring
+    spec:
+      containers:
+      - name: web-monitor
+        image: polymarket/polymarket-trading:latest
+        imagePullPolicy: Always
+        command: ["web-monitor"]
+        ports:
+        - containerPort: 8888
+          name: http
+        env:
+        - name: TRADING_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: TRADING_ENV
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: LOG_LEVEL
+        - name: MONITOR_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: WEB_MONITOR_PORT
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: REDIS_PASSWORD
+        - name: DB_HOST
+          value: "postgres"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_DB
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
+        volumeMounts:
+        - name: app-logs
+          mountPath: /app/logs
+        - name: app-config-volume
+          mountPath: /app/config
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8888
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8888
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: app-logs
+        persistentVolumeClaim:
+          claimName: app-logs-pvc
+      - name: app-config-volume
+        configMap:
+          name: app-config
+      restartPolicy: Always
+      initContainers:
+      - name: wait-for-dependencies
+        image: busybox:1.35
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Waiting for PostgreSQL..."
+          until nc -z postgres 5432; do
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+          
+          echo "Waiting for Redis..."
+          until nc -z redis 6379; do
+            sleep 2
+          done
+          echo "Redis is ready!"
+---
+# Web Monitor Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-monitor
+  namespace: polymarket
+  labels:
+    app: web-monitor
+    component: web-monitor
+    tier: monitoring
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8888
+    targetPort: 8888
+    protocol: TCP
+    name: http
+  selector:
+    app: web-monitor

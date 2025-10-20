@@ -1,0 +1,237 @@
+# Alertmanager Configuration for Polymarket Trading System
+global:
+  # SMTP configuration for email alerts
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alerts@polymarket-trading.local'
+  smtp_auth_username: 'alerts@polymarket-trading.local'
+  smtp_auth_password: 'your-app-password-here'
+  smtp_require_tls: true
+  
+  # Slack configuration
+  slack_api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+
+# Templates for notifications
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Routing configuration
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+  receiver: 'default'
+  
+  routes:
+    # Critical alerts - immediate notification
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      group_wait: 10s
+      group_interval: 1m
+      repeat_interval: 5m
+      
+    # Trading system specific alerts
+    - match:
+        service: trading-engine
+      receiver: 'trading-alerts'
+      group_wait: 15s
+      group_interval: 2m
+      
+    # Database alerts
+    - match:
+        service: postgres
+      receiver: 'database-alerts'
+      
+    # Business metrics alerts
+    - match:
+        category: business
+      receiver: 'business-alerts'
+      group_wait: 1m
+      
+    # Warning level alerts
+    - match:
+        severity: warning
+      receiver: 'warning-alerts'
+      repeat_interval: 6h
+
+# Receivers configuration
+receivers:
+  # Default receiver
+  - name: 'default'
+    email_configs:
+      - to: 'admin@polymarket-trading.local'
+        subject: '[POLYMARKET] {{ .GroupLabels.alertname }}'
+        body: |
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Labels: {{ range .Labels.SortedPairs }}
+            {{ .Name }}: {{ .Value }}
+          {{ end }}
+          {{ end }}
+
+  # Critical alerts - multiple channels
+  - name: 'critical-alerts'
+    email_configs:
+      - to: 'admin@polymarket-trading.local,devops@polymarket-trading.local'
+        subject: '[CRITICAL] Polymarket Trading System Alert'
+        headers:
+          Priority: 'high'
+        body: |
+          🚨 CRITICAL ALERT 🚨
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Severity: {{ .Labels.severity }}
+          Instance: {{ .Labels.instance }}
+          Time: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          
+          Labels:
+          {{ range .Labels.SortedPairs }}  - {{ .Name }}: {{ .Value }}
+          {{ end }}
+          {{ end }}
+          
+          Please investigate immediately!
+          
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+        channel: '#alerts-critical'
+        title: '🚨 Critical Alert: {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          *Alert:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          *Instance:* {{ .Labels.instance }}
+          *Time:* {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          {{ end }}
+        color: 'danger'
+
+  # Trading system alerts
+  - name: 'trading-alerts'
+    email_configs:
+      - to: 'trading-team@polymarket-trading.local'
+        subject: '[TRADING] {{ .GroupLabels.alertname }}'
+        body: |
+          📈 Trading System Alert
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Instance: {{ .Labels.instance }}
+          Service: {{ .Labels.service }}
+          
+          Current Status: {{ .Labels.status }}
+          {{ if .Labels.current_value }}Current Value: {{ .Labels.current_value }}{{ end }}
+          {{ if .Labels.threshold }}Threshold: {{ .Labels.threshold }}{{ end }}
+          {{ end }}
+          
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+        channel: '#trading-alerts'
+        title: '📈 Trading Alert: {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          *Service:* {{ .Labels.service }}
+          *Alert:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          {{ end }}
+        color: 'warning'
+
+  # Database alerts
+  - name: 'database-alerts'
+    email_configs:
+      - to: 'dba@polymarket-trading.local,admin@polymarket-trading.local'
+        subject: '[DATABASE] {{ .GroupLabels.alertname }}'
+        body: |
+          🗄️ Database Alert
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Database: {{ .Labels.database | default "postgres" }}
+          Instance: {{ .Labels.instance }}
+          
+          {{ if .Labels.query_time }}Query Time: {{ .Labels.query_time }}{{ end }}
+          {{ if .Labels.connection_count }}Connections: {{ .Labels.connection_count }}{{ end }}
+          {{ end }}
+
+  # Business metrics alerts
+  - name: 'business-alerts'
+    email_configs:
+      - to: 'business@polymarket-trading.local'
+        subject: '[BUSINESS] {{ .GroupLabels.alertname }}'
+        body: |
+          💼 Business Metrics Alert
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          
+          {{ if .Labels.profit_loss }}P&L Impact: {{ .Labels.profit_loss }}{{ end }}
+          {{ if .Labels.position_count }}Position Count: {{ .Labels.position_count }}{{ end }}
+          {{ if .Labels.success_rate }}Success Rate: {{ .Labels.success_rate }}{{ end }}
+          {{ end }}
+          
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+        channel: '#business-metrics'
+        title: '💼 Business Alert: {{ .GroupLabels.alertname }}'
+        color: 'good'
+
+  # Warning alerts
+  - name: 'warning-alerts'
+    email_configs:
+      - to: 'monitoring@polymarket-trading.local'
+        subject: '[WARNING] {{ .GroupLabels.alertname }}'
+        body: |
+          ⚠️ Warning Alert
+          
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Service: {{ .Labels.service }}
+          Instance: {{ .Labels.instance }}
+          {{ end }}
+
+# Inhibition rules - suppress alerts when higher priority alerts are active
+inhibit_rules:
+  # Suppress warning alerts when critical alerts are firing for the same service
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['service', 'instance']
+
+  # Suppress database connection warnings when database is completely down
+  - source_match:
+      alertname: 'DatabaseDown'
+    target_match:
+      alertname: 'DatabaseConnectionHigh'
+    equal: ['instance']
+
+  # Suppress individual service alerts when entire system is down
+  - source_match:
+      alertname: 'SystemDown'
+    target_match_re:
+      alertname: '.*ServiceDown'
+    equal: ['cluster']
+
+# Time-based silencing
+time_intervals:
+  - name: business_hours
+    time_intervals:
+      - times:
+        - start_time: '09:00'
+          end_time: '17:00'
+        weekdays: ['monday:friday']
+        location: 'UTC'
+        
+  - name: maintenance_window
+    time_intervals:
+      - times:
+        - start_time: '02:00'
+          end_time: '04:00'
+        weekdays: ['sunday']
+        location: 'UTC'

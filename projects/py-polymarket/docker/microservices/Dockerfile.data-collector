@@ -1,0 +1,57 @@
+# Data Collector Microservice Dockerfile
+# Specialized container for market data collection and processing
+
+FROM python:3.11-slim as data-collector
+
+# Set microservice-specific environment variables
+ENV SERVICE_NAME=data-collector \
+    SERVICE_PORT=8001 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Install system dependencies for data collection
+RUN apt-get update && apt-get install -y \
+    curl \
+    gcc \
+    libffi-dev \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy requirements
+COPY requirements.txt ./
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Additional dependencies for data collection
+RUN pip install \
+    aioredis>=2.0.0 \
+    websockets>=10.4 \
+    schedule>=1.2.0
+
+# Copy source code
+COPY src/ ./src/
+COPY config/ ./config/
+COPY docker/microservices/microservice-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/microservice-entrypoint.sh
+
+# Create microservice user
+RUN useradd --create-home --shell /bin/bash datacollecter && \
+    mkdir -p /app/logs /app/data /app/cache && \
+    chown -R datacollecter:datacollecter /app
+
+USER datacollecter
+
+# Set Python path
+ENV PYTHONPATH=/app/src \
+    WAIT_FOR_REDIS=true \
+    WAIT_FOR_SERVICE_REGISTRY=true
+
+# Health check specific to data collector
+HEALTHCHECK --interval=20s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8001/health || exit 1
+
+EXPOSE 8001
+
+ENTRYPOINT ["/usr/local/bin/microservice-entrypoint.sh"]
+CMD ["data-collector"]

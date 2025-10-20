@@ -1,0 +1,485 @@
+# Polymarket Trading System - Production Docker Compose
+# Complete microservices orchestration for production deployment
+
+version: '3.8'
+
+# ==============================================================================
+# SERVICES DEFINITION
+# ==============================================================================
+services:
+  
+  # =============================================================================
+  # INFRASTRUCTURE SERVICES
+  # =============================================================================
+  
+  # PostgreSQL Database
+  postgres:
+    build:
+      context: .
+      dockerfile: docker/database/Dockerfile.postgres
+    container_name: polymarket-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-polymarket_trading}
+      POSTGRES_USER: ${POSTGRES_USER:-polymarket}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme_in_production}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_INIT_TRADING: "true"
+      TRADING_ENV: ${TRADING_ENV:-production}
+      ENABLE_BACKUPS: ${ENABLE_BACKUPS:-true}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_backups:/var/lib/postgresql/backups
+      - postgres_logs:/var/log/postgresql
+      - ./config/database:/etc/postgresql:ro
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    networks:
+      - polymarket_backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-polymarket} -d ${POSTGRES_DB:-polymarket_trading}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+
+  # Redis Cache & Message Broker
+  redis:
+    build:
+      context: .
+      dockerfile: docker/cache/Dockerfile.redis
+    container_name: polymarket-redis
+    restart: unless-stopped
+    environment:
+      REDIS_MODE: ${REDIS_MODE:-standalone}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-changeme_in_production}
+      REDIS_MAX_MEMORY: ${REDIS_MAX_MEMORY:-2gb}
+      REDIS_MAX_MEMORY_POLICY: ${REDIS_MAX_MEMORY_POLICY:-allkeys-lru}
+      INIT_TRADING_DATA: "true"
+    volumes:
+      - redis_data:/data
+      - redis_logs:/var/log/redis
+      - ./config/cache:/etc/redis:ro
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - polymarket_backend
+    healthcheck:
+      test: ["CMD-SHELL", "/usr/local/bin/redis-healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+          cpus: '0.5'
+        reservations:
+          memory: 2G
+          cpus: '0.25'
+
+  # =============================================================================
+  # CORE MICROSERVICES
+  # =============================================================================
+
+  # API Gateway (Entry Point)
+  api-gateway:
+    build:
+      context: .
+      dockerfile: docker/microservices/Dockerfile.api-gateway
+    container_name: polymarket-api-gateway
+    restart: unless-stopped
+    environment:
+      SERVICE_NAME: api-gateway
+      SERVICE_PORT: 8000
+      TRADING_ENV: ${TRADING_ENV:-production}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      WAIT_FOR_REDIS: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      RATE_LIMIT_REQUESTS: ${RATE_LIMIT_REQUESTS:-1000}
+      RATE_LIMIT_WINDOW: ${RATE_LIMIT_WINDOW:-60}
+    volumes:
+      - ./logs:/app/logs
+      - ./config:/app/config:ro
+    ports:
+      - "${API_GATEWAY_PORT:-8000}:8000"
+    networks:
+      - polymarket_frontend
+      - polymarket_backend
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # Data Collector Service
+  data-collector:
+    build:
+      context: .
+      dockerfile: docker/microservices/Dockerfile.data-collector
+    container_name: polymarket-data-collector
+    restart: unless-stopped
+    environment:
+      SERVICE_NAME: data-collector
+      SERVICE_PORT: 8001
+      TRADING_ENV: ${TRADING_ENV:-production}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      WAIT_FOR_REDIS: "true"
+      WAIT_FOR_DB: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-polymarket_trading}
+      DB_USER: data_collector
+      DB_PASSWORD: ${DATA_COLLECTOR_DB_PASSWORD:-data_collector_password_change_me}
+      POLYMARKET_API_KEY: ${POLYMARKET_API_KEY:-}
+      DATA_COLLECTION_INTERVAL: ${DATA_COLLECTION_INTERVAL:-30}
+    volumes:
+      - ./logs:/app/logs
+      - ./config:/app/config:ro
+      - ./data:/app/data
+    ports:
+      - "${DATA_COLLECTOR_PORT:-8001}:8001"
+    networks:
+      - polymarket_backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8001/health || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Strategy Engine Service
+  strategy-engine:
+    build:
+      context: .
+      dockerfile: docker/microservices/Dockerfile.strategy-engine
+    container_name: polymarket-strategy-engine
+    restart: unless-stopped
+    environment:
+      SERVICE_NAME: strategy-engine
+      SERVICE_PORT: 8002
+      TRADING_ENV: ${TRADING_ENV:-production}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      WAIT_FOR_REDIS: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MODEL_DIR: /app/models
+      STRATEGY_CONFIG_PATH: /app/config/strategies.yaml
+      STRATEGY_UPDATE_INTERVAL: ${STRATEGY_UPDATE_INTERVAL:-60}
+    volumes:
+      - ./logs:/app/logs
+      - ./config:/app/config:ro
+      - ./models:/app/models
+      - strategy_cache:/app/cache
+    ports:
+      - "${STRATEGY_ENGINE_PORT:-8002}:8002"
+    networks:
+      - polymarket_backend
+    depends_on:
+      redis:
+        condition: service_healthy
+      data-collector:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8002/health || exit 1"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 45s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+
+  # Risk Manager Service
+  risk-manager:
+    build:
+      context: .
+      dockerfile: docker/microservices/Dockerfile.risk-manager
+    container_name: polymarket-risk-manager
+    restart: unless-stopped
+    environment:
+      SERVICE_NAME: risk-manager
+      SERVICE_PORT: 8003
+      TRADING_ENV: ${TRADING_ENV:-production}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      WAIT_FOR_REDIS: "true"
+      WAIT_FOR_DB: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-polymarket_trading}
+      DB_USER: risk_manager
+      DB_PASSWORD: ${RISK_MANAGER_DB_PASSWORD:-risk_manager_password_change_me}
+      RISK_CONFIG_PATH: /app/config/risk_management.yaml
+      REPORTS_DIR: /app/reports
+      MAX_POSITION_SIZE: ${MAX_POSITION_SIZE:-10000}
+      MAX_PORTFOLIO_RISK: ${MAX_PORTFOLIO_RISK:-0.02}
+    volumes:
+      - ./logs:/app/logs
+      - ./config:/app/config:ro
+      - ./reports:/app/reports
+    ports:
+      - "${RISK_MANAGER_PORT:-8003}:8003"
+    networks:
+      - polymarket_backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      strategy-engine:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8003/health || exit 1"]
+      interval: 25s
+      timeout: 10s
+      retries: 3
+      start_period: 35s
+
+  # Trading Engine Service
+  trading-engine:
+    build:
+      context: .
+      dockerfile: docker/microservices/Dockerfile.trading-engine
+    container_name: polymarket-trading-engine
+    restart: unless-stopped
+    environment:
+      SERVICE_NAME: trading-engine
+      SERVICE_PORT: 8004
+      TRADING_ENV: ${TRADING_ENV:-production}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      WAIT_FOR_REDIS: "true"
+      WAIT_FOR_DB: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-polymarket_trading}
+      DB_USER: trading_engine
+      DB_PASSWORD: ${TRADING_ENGINE_DB_PASSWORD:-trading_engine_password_change_me}
+      TRADING_CONFIG_PATH: /app/config/trading.yaml
+      ORDERS_DIR: /app/orders
+      MAX_POSITION_SIZE: ${MAX_POSITION_SIZE:-10000}
+      ENABLE_PAPER_TRADING: ${ENABLE_PAPER_TRADING:-true}
+      POLYMARKET_PRIVATE_KEY: ${POLYMARKET_PRIVATE_KEY:-}
+      PROXY_HOST: ${PROXY_HOST:-}
+      PROXY_PORT: ${PROXY_PORT:-}
+    volumes:
+      - ./logs:/app/logs
+      - ./config:/app/config:ro
+      - ./orders:/app/orders
+      - trading_cache:/app/cache
+      # Mount proxy certificates if available
+      - ./brightdata_proxy_ca:/app/brightdata_proxy_ca:ro
+    ports:
+      - "${TRADING_ENGINE_PORT:-8004}:8004"
+    networks:
+      - polymarket_backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      risk-manager:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8004/health || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  # =============================================================================
+  # MONITORING & UTILITIES
+  # =============================================================================
+
+  # Web Monitor Service
+  web-monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: polymarket-web-monitor
+    restart: unless-stopped
+    command: ["web-monitor"]
+    environment:
+      TRADING_ENV: ${TRADING_ENV:-production}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      MONITOR_PORT: 8888
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - ./logs:/app/logs
+      - ./config:/app/config:ro
+    ports:
+      - "${WEB_MONITOR_PORT:-8888}:8888"
+    networks:
+      - polymarket_frontend
+      - polymarket_backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8888/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:1.24-alpine
+    container_name: polymarket-nginx
+    restart: unless-stopped
+    environment:
+      NGINX_HOST: ${NGINX_HOST:-localhost}
+      NGINX_PORT: ${NGINX_PORT:-80}
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - nginx_logs:/var/log/nginx
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+      - "${NGINX_HTTPS_PORT:-443}:443"
+    networks:
+      - polymarket_frontend
+    depends_on:
+      - api-gateway
+      - web-monitor
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+# ==============================================================================
+# NETWORKS CONFIGURATION
+# ==============================================================================
+networks:
+  polymarket_frontend:
+    name: polymarket_frontend
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+    driver_opts:
+      com.docker.network.bridge.name: br-polymarket-frontend
+
+  polymarket_backend:
+    name: polymarket_backend
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/16
+    driver_opts:
+      com.docker.network.bridge.name: br-polymarket-backend
+    internal: false  # Set to true for production security
+
+# ==============================================================================
+# VOLUMES CONFIGURATION
+# ==============================================================================
+volumes:
+  # Database storage
+  postgres_data:
+    name: polymarket_postgres_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DATA_ROOT:-./data}/postgres
+
+  postgres_backups:
+    name: polymarket_postgres_backups
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DATA_ROOT:-./data}/backups
+
+  postgres_logs:
+    name: polymarket_postgres_logs
+    driver: local
+
+  # Cache storage
+  redis_data:
+    name: polymarket_redis_data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DATA_ROOT:-./data}/redis
+
+  redis_logs:
+    name: polymarket_redis_logs
+    driver: local
+
+  # Application storage
+  strategy_cache:
+    name: polymarket_strategy_cache
+    driver: local
+
+  trading_cache:
+    name: polymarket_trading_cache
+    driver: local
+
+  nginx_logs:
+    name: polymarket_nginx_logs
+    driver: local
+
+# ==============================================================================
+# SECRETS (Production only)
+# ==============================================================================
+secrets:
+  postgres_password:
+    file: ./secrets/postgres_password.txt
+  redis_password:
+    file: ./secrets/redis_password.txt
+  polymarket_private_key:
+    file: ./secrets/polymarket_private_key.txt
+  polymarket_api_key:
+    file: ./secrets/polymarket_api_key.txt
+
+# ==============================================================================
+# CONFIGURATION OVERRIDES
+# ==============================================================================
+configs:
+  postgres_config:
+    file: ./config/database/postgresql.conf
+  redis_config:
+    file: ./config/cache/redis.conf
+  nginx_config:
+    file: ./docker/nginx/nginx.conf

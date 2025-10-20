@@ -1,0 +1,340 @@
+# Polymarket Trading System - Development Docker Compose
+# Simplified configuration for local development and testing
+
+version: '3.8'
+
+# ==============================================================================
+# DEVELOPMENT SERVICES
+# ==============================================================================
+services:
+  
+  # =============================================================================
+  # INFRASTRUCTURE SERVICES (Development Mode)
+  # =============================================================================
+  
+  # PostgreSQL Database (Development)
+  postgres-dev:
+    build:
+      context: .
+      dockerfile: docker/database/Dockerfile.postgres
+      target: development
+    container_name: polymarket-postgres-dev
+    restart: "no"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-polymarket_trading_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-polymarket_dev}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password_123}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_INIT_TRADING: "true"
+      TRADING_ENV: development
+      ENABLE_BACKUPS: "false"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./config/database:/etc/postgresql:ro
+      - ./logs:/var/log/postgresql
+    ports:
+      - "${POSTGRES_DEV_PORT:-5433}:5432"
+    networks:
+      - polymarket_dev
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-polymarket_dev} -d ${POSTGRES_DB:-polymarket_trading_dev}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Redis Cache (Development)
+  redis-dev:
+    build:
+      context: .
+      dockerfile: docker/cache/Dockerfile.redis
+    container_name: polymarket-redis-dev
+    restart: "no"
+    environment:
+      REDIS_MODE: standalone
+      REDIS_PASSWORD: "" # No password in development
+      REDIS_MAX_MEMORY: 512mb
+      REDIS_MAX_MEMORY_POLICY: allkeys-lru
+      INIT_TRADING_DATA: "true"
+    volumes:
+      - redis_dev_data:/data
+      - ./config/cache:/etc/redis:ro
+    ports:
+      - "${REDIS_DEV_PORT:-6380}:6379"
+    networks:
+      - polymarket_dev
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # =============================================================================
+  # CORE MICROSERVICES (Development Mode)
+  # =============================================================================
+
+  # API Gateway (Development)
+  api-gateway-dev:
+    build:
+      context: .
+      dockerfile: docker/microservices/Dockerfile.api-gateway
+      target: development
+    container_name: polymarket-api-gateway-dev
+    restart: "no"
+    environment:
+      SERVICE_NAME: api-gateway
+      SERVICE_PORT: 8000
+      TRADING_ENV: development
+      LOG_LEVEL: DEBUG
+      REDIS_HOST: redis-dev
+      REDIS_PORT: 6379
+      RATE_LIMIT_REQUESTS: 10000  # Higher limit for development
+      RATE_LIMIT_WINDOW: 60
+      ENABLE_CORS: "true"
+      ENABLE_DEBUG_ROUTES: "true"
+    volumes:
+      - ./src:/app/src:ro  # Live code mounting for development
+      - ./config:/app/config:ro
+      - ./logs:/app/logs
+    ports:
+      - "${API_GATEWAY_DEV_PORT:-8000}:8000"
+    networks:
+      - polymarket_dev
+    depends_on:
+      redis-dev:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # Data Collector (Development)
+  data-collector-dev:
+    build:
+      context: .
+      dockerfile: docker/microservices/Dockerfile.data-collector
+      target: development
+    container_name: polymarket-data-collector-dev
+    restart: "no"
+    environment:
+      SERVICE_NAME: data-collector
+      SERVICE_PORT: 8001
+      TRADING_ENV: development
+      LOG_LEVEL: DEBUG
+      REDIS_HOST: redis-dev
+      REDIS_PORT: 6379
+      DB_HOST: postgres-dev
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB:-polymarket_trading_dev}
+      DB_USER: data_collector
+      DB_PASSWORD: data_collector_password_change_me
+      DATA_COLLECTION_INTERVAL: 10  # More frequent in development
+      MOCK_DATA_MODE: ${MOCK_DATA_MODE:-true}  # Use mock data by default
+    volumes:
+      - ./src:/app/src:ro
+      - ./config:/app/config:ro
+      - ./logs:/app/logs
+      - ./data:/app/data
+    ports:
+      - "${DATA_COLLECTOR_DEV_PORT:-8001}:8001"
+    networks:
+      - polymarket_dev
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
+      redis-dev:
+        condition: service_healthy
+
+  # Strategy Engine (Development)
+  strategy-engine-dev:
+    build:
+      context: .
+      dockerfile: docker/microservices/Dockerfile.strategy-engine
+      target: development
+    container_name: polymarket-strategy-engine-dev
+    restart: "no"
+    environment:
+      SERVICE_NAME: strategy-engine
+      SERVICE_PORT: 8002
+      TRADING_ENV: development
+      LOG_LEVEL: DEBUG
+      REDIS_HOST: redis-dev
+      REDIS_PORT: 6379
+      MODEL_DIR: /app/models
+      STRATEGY_CONFIG_PATH: /app/config/strategies.yaml
+      STRATEGY_UPDATE_INTERVAL: 30  # Faster updates for development
+      ENABLE_STRATEGY_DEBUGGING: "true"
+    volumes:
+      - ./src:/app/src:ro
+      - ./config:/app/config:ro
+      - ./logs:/app/logs
+      - ./models:/app/models
+    ports:
+      - "${STRATEGY_ENGINE_DEV_PORT:-8002}:8002"
+    networks:
+      - polymarket_dev
+    depends_on:
+      redis-dev:
+        condition: service_healthy
+      data-collector-dev:
+        condition: service_started
+
+  # Web Monitor (Development)
+  web-monitor-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: polymarket-web-monitor-dev
+    restart: "no"
+    command: ["web-monitor"]
+    environment:
+      TRADING_ENV: development
+      LOG_LEVEL: DEBUG
+      MONITOR_PORT: 8888
+      REDIS_HOST: redis-dev
+      REDIS_PORT: 6379
+      DB_HOST: postgres-dev
+      DB_PORT: 5432
+      ENABLE_HOT_RELOAD: "true"
+    volumes:
+      - ./src:/app/src:ro
+      - ./config:/app/config:ro
+      - ./logs:/app/logs
+    ports:
+      - "${WEB_MONITOR_DEV_PORT:-8888}:8888"
+    networks:
+      - polymarket_dev
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
+      redis-dev:
+        condition: service_healthy
+
+  # =============================================================================
+  # DEVELOPMENT UTILITIES
+  # =============================================================================
+
+  # Database Admin (pgAdmin)
+  pgadmin:
+    image: dpage/pgadmin4:7
+    container_name: polymarket-pgadmin-dev
+    restart: "no"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@polymarket.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./config/pgadmin/servers.json:/pgadmin4/servers.json:ro
+    ports:
+      - "${PGADMIN_PORT:-8080}:80"
+    networks:
+      - polymarket_dev
+    depends_on:
+      - postgres-dev
+
+  # Redis Admin (RedisInsight)
+  redis-insight:
+    image: redislabs/redisinsight:latest
+    container_name: polymarket-redis-insight-dev
+    restart: "no"
+    volumes:
+      - redis_insight_data:/db
+    ports:
+      - "${REDIS_INSIGHT_PORT:-8001}:8001"
+    networks:
+      - polymarket_dev
+    depends_on:
+      - redis-dev
+
+  # Jupyter Notebook for Analysis
+  jupyter:
+    image: jupyter/datascience-notebook:latest
+    container_name: polymarket-jupyter-dev
+    restart: "no"
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:-polymarket123}
+    volumes:
+      - ./notebooks:/home/jovyan/work/notebooks
+      - ./data:/home/jovyan/work/data:ro
+      - ./src:/home/jovyan/work/src:ro
+    ports:
+      - "${JUPYTER_PORT:-8889}:8888"
+    networks:
+      - polymarket_dev
+    user: root
+    command: "start-notebook.sh --NotebookApp.token='${JUPYTER_TOKEN:-polymarket123}' --NotebookApp.password=''"
+
+  # Mailhog for Email Testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: polymarket-mailhog-dev
+    restart: "no"
+    ports:
+      - "${MAILHOG_WEB_PORT:-8025}:8025"    # Web interface
+      - "${MAILHOG_SMTP_PORT:-1025}:1025"   # SMTP server
+    networks:
+      - polymarket_dev
+
+# ==============================================================================
+# DEVELOPMENT NETWORKS
+# ==============================================================================
+networks:
+  polymarket_dev:
+    name: polymarket_dev
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/16
+
+# ==============================================================================
+# DEVELOPMENT VOLUMES
+# ==============================================================================
+volumes:
+  postgres_dev_data:
+    name: polymarket_postgres_dev_data
+    driver: local
+
+  redis_dev_data:
+    name: polymarket_redis_dev_data  
+    driver: local
+
+  pgadmin_data:
+    name: polymarket_pgadmin_data
+    driver: local
+
+  redis_insight_data:
+    name: polymarket_redis_insight_data
+    driver: local
+
+# ==============================================================================
+# DEVELOPMENT PROFILES
+# ==============================================================================
+# Usage examples:
+# docker-compose -f docker-compose.dev.yml up                    # Start core services
+# docker-compose -f docker-compose.dev.yml --profile admin up    # Include admin tools
+# docker-compose -f docker-compose.dev.yml --profile full up     # All services including utilities
+
+profiles:
+  admin:
+    - pgadmin
+    - redis-insight
+  
+  analysis:
+    - jupyter
+    
+  testing:
+    - mailhog
+    
+  full:
+    - pgadmin
+    - redis-insight 
+    - jupyter
+    - mailhog

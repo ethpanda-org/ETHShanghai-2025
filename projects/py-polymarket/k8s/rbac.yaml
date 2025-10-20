@@ -1,0 +1,100 @@
+# RBAC for Polymarket Trading System
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: polymarket-service-account
+  namespace: polymarket
+  labels:
+    app: polymarket-trading
+    component: rbac
+---
+# ClusterRole for application permissions
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: polymarket-cluster-role
+  labels:
+    app: polymarket-trading
+    component: rbac
+rules:
+# Permissions for reading cluster information
+- apiGroups: [""]
+  resources: ["nodes", "persistentvolumes"]
+  verbs: ["get", "list", "watch"]
+# Permissions for metrics collection
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["nodes", "pods"]
+  verbs: ["get", "list"]
+---
+# Role for namespace-specific permissions
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: polymarket-role
+  namespace: polymarket
+  labels:
+    app: polymarket-trading
+    component: rbac
+rules:
+# Pod management permissions
+- apiGroups: [""]
+  resources: ["pods", "pods/log", "pods/status"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["services", "endpoints"]
+  verbs: ["get", "list", "watch"]
+# ConfigMap and Secret read permissions
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+# Deployment and ReplicaSet read permissions
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets", "statefulsets"]
+  verbs: ["get", "list", "watch"]
+# HPA permissions
+- apiGroups: ["autoscaling"]
+  resources: ["horizontalpodautoscalers"]
+  verbs: ["get", "list", "watch"]
+# Ingress permissions
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "watch"]
+# Event permissions
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["get", "list", "watch"]
+---
+# ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: polymarket-cluster-role-binding
+  labels:
+    app: polymarket-trading
+    component: rbac
+subjects:
+- kind: ServiceAccount
+  name: polymarket-service-account
+  namespace: polymarket
+roleRef:
+  kind: ClusterRole
+  name: polymarket-cluster-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: polymarket-role-binding
+  namespace: polymarket
+  labels:
+    app: polymarket-trading
+    component: rbac
+subjects:
+- kind: ServiceAccount
+  name: polymarket-service-account
+  namespace: polymarket
+roleRef:
+  kind: Role
+  name: polymarket-role
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,55 @@
+# Redis Cache Cluster Configuration
+# Optimized for high-performance caching and message brokering
+
+FROM redis:7-alpine as polymarket-redis
+
+# Install additional tools
+RUN apk add --no-cache \
+    bash \
+    curl \
+    redis-tools \
+    procps
+
+# Create redis user and directories
+RUN addgroup -g 999 redis && \
+    adduser -D -u 999 -G redis redis && \
+    mkdir -p /data /var/log/redis /etc/redis && \
+    chown -R redis:redis /data /var/log/redis /etc/redis
+
+# Copy custom Redis configuration
+COPY docker/cache/redis.conf /etc/redis/redis.conf
+COPY docker/cache/redis-cluster.conf /etc/redis/redis-cluster.conf
+
+# Copy Redis startup scripts
+COPY docker/cache/redis-entrypoint.sh /usr/local/bin/redis-entrypoint.sh
+COPY docker/cache/redis-cluster-setup.sh /usr/local/bin/redis-cluster-setup.sh
+RUN chmod +x /usr/local/bin/redis-entrypoint.sh /usr/local/bin/redis-cluster-setup.sh
+
+# Health check script
+COPY docker/cache/redis-healthcheck.sh /usr/local/bin/redis-healthcheck.sh
+RUN chmod +x /usr/local/bin/redis-healthcheck.sh
+
+# Set proper permissions
+RUN chown -R redis:redis /etc/redis /usr/local/bin/redis-*
+
+USER redis
+
+# Environment variables for Redis configuration
+ENV REDIS_MODE=standalone \
+    REDIS_PASSWORD=changeme_in_production \
+    REDIS_MAX_MEMORY=2gb \
+    REDIS_MAX_MEMORY_POLICY=allkeys-lru \
+    REDIS_SAVE_INTERVAL=60 \
+    REDIS_CLUSTER_ENABLED=no
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD /usr/local/bin/redis-healthcheck.sh
+
+# Expose Redis ports
+# 6379: Standard Redis
+# 16379: Redis Cluster bus
+EXPOSE 6379 16379
+
+ENTRYPOINT ["/usr/local/bin/redis-entrypoint.sh"]
+CMD ["redis-server", "/etc/redis/redis.conf"]

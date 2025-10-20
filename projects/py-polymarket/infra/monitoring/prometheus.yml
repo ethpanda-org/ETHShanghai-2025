@@ -1,0 +1,8 @@
+﻿global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: polymarket-monitor
+    static_configs:
+      - targets:
+          - polymarket-monitor:8888

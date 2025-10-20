@@ -1,0 +1,53 @@
+# Honest trading strategy configuration - only strategies with real data support
+strategies:
+  mean_reversion:
+    enabled: true
+    weight: 0.60  # Higher weight since it's more reliable
+    params:
+      min_confidence: 0.25  # Slightly higher threshold for quality
+      mid_target: 0.55
+      sensitivity: 0.15
+      min_position_size: 250.0
+      require_real_bid_ask: true  # Only trade if we have real bid/ask data
+  
+  event_driven:
+    enabled: true
+    weight: 0.40  # Good weight since volume data is usually real
+    params:
+      min_confidence: 0.30  # Reasonable threshold
+      volume_threshold: 5000.0  # Higher threshold for quality signals
+      sentiment_weight: 0.8  # Rely more on volume than sentiment
+      require_real_volume: true  # Only trade if we have real volume data
+  
+  # Disable strategies that require external data we don't have
+  micro_arbitrage:
+    enabled: false  # Disabled - requires external price feeds
+    weight: 0.0
+    params:
+      min_confidence: 0.20
+      min_spread: 0.015
+      reason_disabled: "No reliable external price data available"
+  
+  momentum_scalping:
+    enabled: false  # Disabled initially - requires price history
+    weight: 0.0     # Will be enabled automatically when enough history is available
+    params:
+      min_confidence: 0.20
+      threshold: 0.015
+      min_history_length: 5  # Require at least 5 price points
+      reason_disabled: "Insufficient price history - will enable automatically"
+
+# Data quality requirements
+data_quality:
+  min_markets_for_momentum: 3  # Need at least 3 markets with history before enabling momentum
+  price_history_hours: 2      # Need at least 2 hours of price history
+  volume_threshold: 1000      # Minimum volume to consider market active
+  
+# Honest trading principles
+honest_trading:
+  never_use_fake_external_prices: true
+  never_use_random_sentiment: true
+  require_real_data_for_decisions: true
+  log_data_sources: true
+  warn_on_derived_data: true
+

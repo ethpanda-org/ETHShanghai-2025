@@ -1,0 +1,50 @@
+﻿# Trading strategy weights and parameters.
+strategies:
+  mean_reversion:
+    enabled: true
+    weight: 0.30
+    params:
+      min_confidence: 0.35
+      mid_target: 0.5
+      sensitivity: 0.24
+      min_deviation: 0.06
+      require_non_negative_momentum: true
+      price_extreme_bound: 0.08
+      use_dynamic_target: true
+      dynamic_target_alpha: 0.2
+  event_driven:
+    enabled: true
+    exclusive: true
+    weight: 0.25
+    params:
+      min_confidence: 0.30
+      volume_threshold: 5000.0
+      sentiment_weight: 0.55
+      sentiment_floor: 0.05
+      require_true_source: true
+      non_news_conf_scale: 0.65
+      max_age_seconds: 1800
+      decay_half_life_seconds: 900
+      volume_spike_multiplier_non_news: 1.5
+      allowed_risk_levels: [LOW, MEDIUM]
+  micro_arbitrage:
+    enabled: true
+    weight: 0.0
+    params:
+      min_confidence: 0.35
+      min_spread: 0.02
+      min_net_edge: 0.005
+      external_spread_max: 0.05
+      min_local_liquidity: 5000.0
+      internal_edge_threshold: 0.015
+      internal_confidence_scale: 1.0
+      min_reference_volume: 25000.0
+      allow_external_fallback: true
+  momentum_scalping:
+    enabled: true
+    weight: 0.35
+    params:
+      min_confidence: 0.30
+      threshold: 0.035
+      require_consistency_1h: false
+      min_1h_magnitude: 0.0025

@@ -1,0 +1,285 @@
+# Nginx Ingress Controller ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: polymarket
+  labels:
+    app: nginx
+    component: ingress
+data:
+  nginx.conf: |
+    events {
+        worker_connections 1024;
+        use epoll;
+        multi_accept on;
+    }
+    
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+        
+        # Performance Optimizations
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
+        keepalive_timeout 65;
+        types_hash_max_size 2048;
+        server_tokens off;
+        
+        # Gzip Compression
+        gzip on;
+        gzip_vary on;
+        gzip_min_length 1024;
+        gzip_proxied any;
+        gzip_comp_level 6;
+        gzip_types
+            text/plain
+            text/css
+            text/xml
+            text/javascript
+            application/json
+            application/javascript
+            application/xml+rss
+            application/atom+xml
+            image/svg+xml;
+        
+        # Rate Limiting
+        limit_req_zone $binary_remote_addr zone=api:10m rate=30r/m;
+        limit_req_zone $binary_remote_addr zone=monitor:10m rate=10r/m;
+        limit_conn_zone $binary_remote_addr zone=conn_limit_per_ip:10m;
+        
+        # Upstream Services
+        upstream api_gateway {
+            least_conn;
+            server api-gateway:8000 max_fails=3 fail_timeout=30s;
+            keepalive 32;
+        }
+        
+        upstream web_monitor {
+            least_conn;
+            server web-monitor:8888 max_fails=3 fail_timeout=30s;
+            keepalive 16;
+        }
+        
+        server {
+            listen 80;
+            server_name _;
+            
+            # Security Headers
+            add_header X-Frame-Options DENY always;
+            add_header X-Content-Type-Options nosniff always;
+            add_header X-XSS-Protection "1; mode=block" always;
+            add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+            
+            # Health Check
+            location /health {
+                access_log off;
+                return 200 "healthy\n";
+                add_header Content-Type text/plain;
+            }
+            
+            # API Gateway Routes
+            location /api/ {
+                limit_req zone=api burst=50 nodelay;
+                limit_conn conn_limit_per_ip 10;
+                
+                proxy_pass http://api_gateway;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_cache_bypass $http_upgrade;
+                
+                # CORS Headers
+                add_header Access-Control-Allow-Origin "*" always;
+                add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" always;
+                add_header Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With" always;
+            }
+            
+            # Web Monitor Routes
+            location /monitor/ {
+                limit_req zone=monitor burst=20 nodelay;
+                
+                proxy_pass http://web_monitor/;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_cache_bypass $http_upgrade;
+            }
+            
+            # Default route to web monitor
+            location / {
+                return 301 /monitor/;
+            }
+        }
+    }
+---
+# Nginx Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: polymarket
+  labels:
+    app: nginx
+    component: ingress
+    tier: frontend
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+        component: ingress
+        tier: frontend
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.24-alpine
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        env:
+        - name: NGINX_HOST
+          value: "localhost"
+        - name: NGINX_PORT
+          value: "80"
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        - name: nginx-logs
+          mountPath: /var/log/nginx
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+      - name: nginx-logs
+        emptyDir: {}
+      restartPolicy: Always
+      initContainers:
+      - name: wait-for-services
+        image: busybox:1.35
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Waiting for API Gateway..."
+          until nc -z api-gateway 8000; do
+            sleep 2
+          done
+          echo "API Gateway is ready!"
+          
+          echo "Waiting for Web Monitor..."
+          until nc -z web-monitor 8888; do
+            sleep 2
+          done
+          echo "Web Monitor is ready!"
+---
+# Nginx Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: polymarket
+  labels:
+    app: nginx
+    component: ingress
+    tier: frontend
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: https
+  selector:
+    app: nginx
+---
+# Nginx Ingress (Alternative to LoadBalancer)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: polymarket-ingress
+  namespace: polymarket
+  labels:
+    app: polymarket-trading
+    component: ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rate-limit-rps: "100"
+    nginx.ingress.kubernetes.io/rate-limit-connections: "10"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: polymarket.local
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: api-gateway
+            port:
+              number: 8000
+      - path: /monitor
+        pathType: Prefix
+        backend:
+          service:
+            name: web-monitor
+            port:
+              number: 8888
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-monitor
+            port:
+              number: 8888

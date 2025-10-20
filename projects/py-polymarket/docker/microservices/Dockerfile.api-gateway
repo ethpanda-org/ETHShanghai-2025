@@ -1,0 +1,65 @@
+# API Gateway Microservice Dockerfile
+# Specialized container for API routing, load balancing, and request management
+
+FROM python:3.11-slim as api-gateway
+
+# Set microservice-specific environment variables
+ENV SERVICE_NAME=api-gateway \
+    SERVICE_PORT=8000 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    gcc \
+    libffi-dev \
+    libssl-dev \
+    nginx \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy requirements
+COPY requirements.txt ./
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Additional dependencies for API gateway
+RUN pip install \
+    fastapi>=0.95.0 \
+    uvicorn[standard]>=0.21.0 \
+    nginx-python-module>=1.1.0 \
+    prometheus-fastapi-instrumentator>=5.9.0
+
+# Copy source code
+COPY src/ ./src/
+COPY config/ ./config/
+COPY docker/microservices/microservice-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/microservice-entrypoint.sh
+
+# Copy nginx configuration
+COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
+
+# Create microservice user
+RUN useradd --create-home --shell /bin/bash gateway && \
+    mkdir -p /app/logs /app/data /app/cache && \
+    chown -R gateway:gateway /app
+
+USER gateway
+
+# Set Python path and gateway-specific environment
+ENV PYTHONPATH=/app/src \
+    WAIT_FOR_SERVICE_REGISTRY=true \
+    GATEWAY_CONFIG_PATH=/app/config/gateway.yaml \
+    RATE_LIMIT_REQUESTS=1000 \
+    RATE_LIMIT_WINDOW=60
+
+# Health check for API gateway
+HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# API Gateway exposes the main port
+EXPOSE 8000
+
+ENTRYPOINT ["/usr/local/bin/microservice-entrypoint.sh"]
+CMD ["api-gateway"]

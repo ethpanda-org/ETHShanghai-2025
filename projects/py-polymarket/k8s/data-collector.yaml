@@ -1,0 +1,171 @@
+# Data Collector Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-collector
+  namespace: polymarket
+  labels:
+    app: data-collector
+    component: data-collector
+    tier: microservice
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: data-collector
+  template:
+    metadata:
+      labels:
+        app: data-collector
+        component: data-collector
+        tier: microservice
+    spec:
+      containers:
+      - name: data-collector
+        image: polymarket/data-collector:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8001
+          name: http
+        env:
+        - name: SERVICE_NAME
+          value: "data-collector"
+        - name: SERVICE_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DATA_COLLECTOR_PORT
+        - name: TRADING_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: TRADING_ENV
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: LOG_LEVEL
+        - name: WAIT_FOR_REDIS
+          value: "true"
+        - name: WAIT_FOR_DB
+          value: "true"
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: REDIS_PASSWORD
+        - name: DB_HOST
+          value: "postgres"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_DB
+        - name: DB_USER
+          value: "data_collector"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: DATA_COLLECTOR_DB_PASSWORD
+        - name: POLYMARKET_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: polymarket-api-secret
+              key: POLYMARKET_API_KEY
+        - name: DATA_COLLECTION_INTERVAL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DATA_COLLECTION_INTERVAL
+        volumeMounts:
+        - name: app-logs
+          mountPath: /app/logs
+        - name: app-config-volume
+          mountPath: /app/config
+        - name: models-data
+          mountPath: /app/data
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 30
+          periodSeconds: 20
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8001
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+      volumes:
+      - name: app-logs
+        persistentVolumeClaim:
+          claimName: app-logs-pvc
+      - name: app-config-volume
+        configMap:
+          name: app-config
+      - name: models-data
+        persistentVolumeClaim:
+          claimName: models-data-pvc
+      restartPolicy: Always
+      initContainers:
+      - name: wait-for-dependencies
+        image: busybox:1.35
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Waiting for PostgreSQL..."
+          until nc -z postgres 5432; do
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+          
+          echo "Waiting for Redis..."
+          until nc -z redis 6379; do
+            sleep 2
+          done
+          echo "Redis is ready!"
+---
+# Data Collector Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-collector
+  namespace: polymarket
+  labels:
+    app: data-collector
+    component: data-collector
+    tier: microservice
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8001
+    targetPort: 8001
+    protocol: TCP
+    name: http
+  selector:
+    app: data-collector

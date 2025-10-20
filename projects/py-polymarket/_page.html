@@ -1,0 +1,968 @@
+﻿<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'/>
+    <meta name='viewport' content='width=device-width, initial-scale=1'/>
+    <title>Polymarket Trading Monitor</title>
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif; margin: 0; padding: 0; background: #f5f6fa; color: #111827; }
+      header { background: #4338ca; color: white; padding: 24px 16px; }
+      header h1 { margin: 0 0 6px 0; font-size: 24px; }
+      main { max-width: 1080px; margin: 24px auto; padding: 0 20px; }
+      section { background: white; border-radius: 12px; padding: 16px 20px; margin-bottom: 18px; box-shadow: 0 2px 8px rgba(15, 23, 42, .08); }
+      section h2 { margin: 0 0 10px 0; font-size: 18px; }
+      section h3 { margin: 10px 0 6px; font-size: 15px; color: #312e81; }
+      .metrics { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+      .metric { background: #eef2ff; border-radius: 10px; padding: 12px; text-align: center; }
+      .metric strong { color: #312e81; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; display: block; }
+      .metric span { display: block; margin-top: 4px; font-size: 20px; font-weight: 600; color: #111827; }
+      .status { padding: 12px; border-radius: 8px; font-weight: 600; }
+      .status-ok { background: #dcfce7; color: #166534; border: 1px solid #22c55e; }
+      .status-warn { background: #fee2e2; color: #b91c1c; border: 1px solid #f87171; }
+      .status-info { background: #e0e7ff; color: #1e3a8a; border: 1px solid #6366f1; }
+      table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+      th, td { padding: 8px 10px; border-bottom: 1px solid #e5e7eb; text-align: left; font-size: 14px; }
+      th { background: #eef2ff; color: #312e81; }
+      .muted { color: #6b7280; font-size: 13px; }
+      .reason-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 12px; }
+      .reason-list { list-style: none; margin: 0; padding: 0; }
+      .reason-list li { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+      .reason-list li:last-child { border-bottom: none; }
+      .reason-label { color: #374151; }
+      .reason-value { font-weight: 600; color: #111827; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Polymarket Trading Monitor</h1>
+      <p class='muted'>Live snapshot of data ingest, strategy execution, and risk posture.</p>
+    </header>
+    <main>
+      <section>
+        <div id='status' class='status status-info'>Loading latest results...</div>
+        <p class='muted'>Report file: <span id='report_file'>-</span> &nbsp;|&nbsp;
+           Report generated: <span id='report_generated'>-</span> &nbsp;|&nbsp;
+           Dashboard refreshed: <span id='last_updated'>-</span></p>
+        <div class='metrics'>
+          <div class='metric'><strong>Total Trades</strong><span id='total_trades'>-</span></div>
+          <div class='metric'><strong>Open Positions</strong><span id='open_positions'>-</span></div>
+          <div class='metric'><strong>Balance</strong><span id='current_balance'>-</span></div>
+          <div class='metric'><strong>Total PnL</strong><span id='total_pnl'>-</span></div>
+          <div class='metric'><strong>Win Rate</strong><span id='win_rate'>-</span></div>
+          <div class='metric'><strong>Total Return</strong><span id='total_return'>-</span></div>
+        </div>
+      </section>
+      <section>
+        <h2>Realized Summary</h2>
+        <div class='metrics'>
+          <div class='metric'><strong>Closed Trades</strong><span id='real_closed'>-</span></div>
+          <div class='metric'><strong>Wins</strong><span id='real_wins'>-</span></div>
+          <div class='metric'><strong>Losses</strong><span id='real_losses'>-</span></div>
+          <div class='metric'><strong>Win Rate</strong><span id='real_win_rate'>-</span></div>
+          <div class='metric'><strong>Realized PnL (net)</strong><span id='real_pnl'>-</span></div>
+          <div class='metric'><strong>Gross PnL</strong><span id='real_pnl_gross'>-</span></div>
+          <div class='metric'><strong>Updated</strong><span id='real_updated'>-</span></div>
+          <div class='metric'><strong>Avg PnL (net)</strong><span id='real_avg_pnl'>-</span></div>
+          <div class='metric'><strong>Avg Hold (s)</strong><span id='real_avg_hold'>-</span></div>
+        </div>
+        <div class='card'>
+          <h3>Exit Reasons</h3>
+          <div id='real_reason_breakdown' class='reason-list'></div>
+        </div>
+        <div class='card'>
+          <h3>Per-Strategy PnL</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Strategy</th>
+                <th>Trades</th>
+                <th>Wins</th>
+                <th>Losses</th>
+                <th>Win Rate</th>
+                <th>Net PnL</th>
+                <th>Avg Hold (s)</th>
+              </tr>
+            </thead>
+            <tbody id='real_strategy_rows'><tr><td colspan='7'>No realized trades yet</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+      <section>
+        <h2>Sentiment Telemetry</h2>
+        <div class='metrics'>
+          <div class='metric'><strong>Live Sources</strong><span id='sent_live_avail'>-</span></div>
+          <div class='metric'><strong>Cache Hits</strong><span id='sent_cache_hits'>-</span></div>
+          <div class='metric'><strong>Live Requests</strong><span id='sent_live_req'>-</span></div>
+          <div class='metric'><strong>Live Hits</strong><span id='sent_live_hits'>-</span></div>
+          <div class='metric'><strong>Live Misses</strong><span id='sent_live_miss'>-</span></div>
+          <div class='metric'><strong>Fallback Used</strong><span id='sent_fallback_used'>-</span></div>
+          <div class='metric'><strong>Offline Blocks</strong><span id='sent_offline_blocks'>-</span></div>
+          <div class='metric'><strong>Last Source</strong><span id='sent_last_source'>-</span></div>
+          <div class='metric'><strong>Last Live At</strong><span id='sent_last_live_at'>-</span></div>
+        </div>
+        <p class='muted'>Fallback reasons: <span id='sent_reasons'>-</span></p>
+      </section>
+      <section>
+        <h2>Event-Driven Exits (last 24h vs prior)</h2>
+        <div class='metrics'>
+          <div class='metric'><strong>Wins</strong><span id='ev_wins'>-</span></div>
+          <div class='metric'><strong>Losses</strong><span id='ev_losses'>-</span></div>
+          <div class='metric'><strong>Win Rate</strong><span id='ev_win_rate'>-</span></div>
+          <div class='metric'><strong>Avg Hold (s)</strong><span id='ev_avg_hold'>-</span></div>
+          <div class='metric'><strong>Slip (NW)</strong><span id='ev_slip'>-</span></div>
+          <div class='metric'><strong>Total Fees</strong><span id='ev_fees'>-</span></div>
+        </div>
+        <h3>Sources (last 24h)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Entries</th>
+            </tr>
+          </thead>
+          <tbody id='event_source_rows'><tr><td colspan='2'>No event-driven entries yet</td></tr></tbody>
+        </table>
+        <table>
+          <thead>
+            <tr>
+              <th>Reason</th>
+              <th>Current Count</th>
+              <th>Previous Count</th>
+            </tr>
+          </thead>
+          <tbody id='event_exit_rows'><tr><td colspan='3'>No event-driven exits yet</td></tr></tbody>
+        </table>
+      </section>
+      <section>
+        <h2>Strategy Rate Limits</h2>
+        <p class='muted'>Rolling windows of per-strategy approvals (global / per-market / per-side)</p>
+        <div class='metrics'>
+          <div class='metric'><strong>Tracked Strategies</strong><span id='freq_strat_count'>-</span></div>
+          <div class='metric'><strong>Tracked Markets</strong><span id='freq_strat_market_count'>-</span></div>
+          <div class='metric'><strong>Tracked Sides</strong><span id='freq_strat_side_count'>-</span></div>
+          <div class='metric'><strong>Tracked Market脳Side</strong><span id='freq_strat_mkt_side_count'>-</span></div>
+        </div>
+        <table>
+          <thead><tr><th>Strategy</th><th>Window</th><th>Max</th><th>Current</th></tr></thead>
+          <tbody id='freq_rows'><tr><td colspan='4'>No frequency data yet</td></tr></tbody>
+        </table>
+        <h3>Top Rate-Limit Hotspots</h3>
+        <table>
+          <thead><tr><th>Market</th><th>Side</th><th>Count</th></tr></thead>
+          <tbody id='freq_hotspots'><tr><td colspan='3'>No rate-limit hotspots yet</td></tr></tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>Risk Audit</h2>
+        <div class='metrics'>
+          <div class='metric'><strong>Approved</strong><span id='risk_approved'>-</span></div>
+          <div class='metric'><strong>Rejected</strong><span id='risk_rejected'>-</span></div>
+        </div>
+        <h3>Top Rejections</h3>
+        <table>
+          <thead><tr><th>Reason</th><th>Count</th></tr></thead>
+          <tbody id='risk_reasons'><tr><td colspan='2'>No risk rejections yet</td></tr></tbody>
+        </table>
+        <h3>Per鈥慡trategy Risk</h3>
+        <table>
+          <thead><tr><th>Strategy</th><th>Approved</th><th>Rejected</th></tr></thead>
+          <tbody id='risk_strategy'><tr><td colspan='3'>No strategy risk stats yet</td></tr></tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2>Order Lifecycle</h2>
+        <div class='metrics'>
+          <div class='metric'><strong>Approvals</strong><span id='orders_approvals'>-</span></div>
+          <div class='metric'><strong>Rejects</strong><span id='orders_rejects'>-</span></div>
+          <div class='metric'><strong>Fills</strong><span id='orders_fills'>-</span></div>
+          <div class='metric'><strong>Partials</strong><span id='orders_partials'>-</span></div>
+          <div class='metric'><strong>Pending</strong><span id='orders_pending'>-</span></div>
+          <div class='metric'><strong>WS Status</strong><span id='orders_ws_status'>-</span></div>
+          <div class='metric'><strong>REST Poll</strong><span id='orders_rest_status'>-</span></div>
+          <div class='metric'><strong>Ext Opened</strong><span id='ext_opened'>-</span></div>
+          <div class='metric'><strong>Ext Applied</strong><span id='ext_applied'>-</span></div>
+          <div class='metric'><strong>Ext Reduced</strong><span id='ext_reduced'>-</span></div>
+          <div class='metric'><strong>Ext Closed</strong><span id='ext_closed'>-</span></div>
+          <div class='metric'><strong>Ext Last</strong><span id='ext_last'>-</span></div>
+          <div class='metric'><strong>Ext Trend</strong><span id='ext_trend'>-</span></div>
+          <div class='metric'><strong>IO Orders Err</strong><span id='io_orders_err'>-</span></div>
+          <div class='metric'><strong>IO Trades Err</strong><span id='io_trades_err'>-</span></div>
+        </div>
+        <p class='muted'>Trend window: <select id='ext_window'><option value='5'>5m</option><option value='15' selected>15m</option><option value='60'>60m</option></select></p>
+        <h3>Recent Order Updates</h3>
+        <table>
+          <thead><tr><th>Time</th><th>Market</th><th>Side</th><th>Size</th><th>Event</th><th>Reason</th></tr></thead>
+          <tbody id='orders_rows'><tr><td colspan='6'>No recent orders</td></tr></tbody>
+        </table>
+      </section>
+      <section>
+        <h2>Backtest Frontier</h2>
+        <p class='muted'>Best win-rate / return combinations per maker/taker offset.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Maker Offset (bps)</th>
+              <th>Taker Offset (bps)</th>
+              <th>Entries</th>
+              <th>Best Win Rate</th>
+              <th>Best Total Return</th>
+              <th>Best Holding (s)</th>
+            </tr>
+          </thead>
+          <tbody id='frontier_rows'><tr><td colspan='6'>No frontier data yet</td></tr></tbody>
+        </table>
+      </section>
+      <section>
+        <h2>Ledger Summary</h2>
+        <p class='muted'>Aggregated results from backtests_ledger.csv</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Holding (s)</th>
+              <th>Trades</th>
+              <th>Win Rate</th>
+              <th>Net PnL</th>
+              <th>Avg PnL (net)</th>
+            </tr>
+          </thead>
+          <tbody id='ledger_rows'><tr><td colspan='5'>No ledger data yet</td></tr></tbody>
+        </table>
+      </section>
+      <section>
+        <h2>Execution Telemetry</h2>
+        <div class='metrics'>
+          <div class='metric'><strong>Entries</strong><span id='telemetry_entries'>-</span></div>
+          <div class='metric'><strong>Exits</strong><span id='telemetry_exits'>-</span></div>
+          <div class='metric'><strong>Avg Notional</strong><span id='telemetry_notional'>-</span></div>
+          <div class='metric'><strong>Entry Slip (bps)</strong><span id='telemetry_entry_slip'>-</span></div>
+          <div class='metric'><strong>Exit Slip (bps)</strong><span id='telemetry_exit_slip'>-</span></div>
+          <div class='metric'><strong>Total Fees</strong><span id='telemetry_fees'>-</span></div>
+          <div class='metric'><strong>Micro-Arb (internal)</strong><span id='telemetry_micro_internal'>-</span></div>
+          <div class='metric'><strong>Micro-Arb (external)</strong><span id='telemetry_micro_external'>-</span></div>
+        </div>
+        <p class='muted'>Execution modes: <span id='telemetry_modes'>-</span></p>
+        <div class='reason-grid'>
+          <div>
+            <h3>Strategy Holds</h3>
+            <ul id='strategy_hold_counts' class='reason-list'><li class='muted'>No strategy holds</li></ul>
+          </div>
+          <div>
+            <h3>Strategy Rejects</h3>
+            <ul id='strategy_reject_counts' class='reason-list'><li class='muted'>No strategy rejects</li></ul>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Strategy</th>
+              <th>Trades*</th>
+              <th>Wins*</th>
+              <th>Losses*</th>
+              <th>Win Rate</th>
+              <th>Net PnL</th>
+              <th>Avg Net PnL</th>
+            </tr>
+          </thead>
+          <tbody id='telemetry_strategy_rows'><tr><td colspan='7'>No exit fills yet</td></tr></tbody>
+        </table>
+        <p class='muted footnote'>*Weighted by shared contributions when multiple strategies participate.</p>
+      </section>
+      <section>
+        <h2>Execution Loop</h2>
+        <div class='metrics'>
+          <div class='metric'><strong>Processed</strong><span id='loop_processed'>-</span></div>
+          <div class='metric'><strong>Approved</strong><span id='loop_approved'>-</span></div>
+          <div class='metric'><strong>Rejected</strong><span id='loop_rejected'>-</span></div>
+          <div class='metric'><strong>On Hold</strong><span id='loop_hold'>-</span></div>
+          <div class='metric'><strong>Next Sleep (s)</strong><span id='loop_sleep'>-</span></div>
+        </div>
+        <p class='muted'>Fallback state: <span id='fallback_state'>-</span> &nbsp;|&nbsp; Validation coverage: <span id='validation_coverage'>-</span></p>
+        <div class='metrics'>
+          <div class='metric'><strong>Current Source</strong><span id='ingest_source'>-</span></div>
+          <div class='metric'><strong>WS Age (s)</strong><span id='ws_age'>-</span></div>
+          <div class='metric'><strong>REST Age (s)</strong><span id='rest_age'>-</span></div>
+          <div class='metric'><strong>WS Cooldown (s)</strong><span id='ws_cooldown'>-</span></div>
+        </div>
+        <div class='reason-grid'>
+          <div>
+            <h3>Hold Reasons</h3>
+            <ul id='hold_reasons' class='reason-list'><li class='muted'>No holds recorded</li></ul>
+          </div>
+          <div>
+            <h3>Reject Reasons</h3>
+            <ul id='reject_reasons' class='reason-list'><li class='muted'>No rejects recorded</li></ul>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h2>Ingest Metrics</h2>
+        <div class='metrics'>
+          <div class='metric'><strong>REST Requests</strong><span id='rest_requests'>-</span></div>
+          <div class='metric'><strong>429s</strong><span id='rest_429s'>-</span></div>
+          <div class='metric'><strong>Inflight Peak</strong><span id='rest_inflight_peak'>-</span></div>
+          <div class='metric'><strong>Avg Latency (ms)</strong><span id='rest_latency_avg'>-</span></div>
+        </div>
+      </section>
+      <section>
+        <h2>Exit Analytics</h2>
+        <p class='muted' id='exit_alert'>Exit analytics data not available yet.</p>
+        <div class='metrics'>
+          <div class='metric'><strong>Current Trades</strong><span id='exit_current_trades'>-</span></div>
+          <div class='metric'><strong>Current PnL</strong><span id='exit_current_pnl'>-</span></div>
+          <div class='metric'><strong>Current tp/sl Share</strong><span id='exit_current_tp_sl'>-</span></div>
+          <div class='metric'><strong>Previous Trades</strong><span id='exit_previous_trades'>-</span></div>
+          <div class='metric'><strong>Previous PnL</strong><span id='exit_previous_pnl'>-</span></div>
+          <div class='metric'><strong>Previous tp/sl Share</strong><span id='exit_previous_tp_sl'>-</span></div>
+        </div>
+        <div class='reason-grid'>
+          <div>
+            <h3>Worst Markets (current)</h3>
+            <ul id='exit_current_worst' class='reason-list'><li class='muted'>No data</li></ul>
+          </div>
+          <div>
+            <h3>Worst Markets (previous)</h3>
+            <ul id='exit_previous_worst' class='reason-list'><li class='muted'>No data</li></ul>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h2>Recent Trades</h2>
+        <table>
+          <thead><tr><th>Market</th><th>Action</th><th>Size</th><th>Confidence</th><th>Score</th><th>Timestamp</th><th>Strategies</th></tr></thead>
+          <tbody id='recent_trades'><tr><td colspan='7'>No trades yet</td></tr></tbody>
+        </table>
+      </section>
+      <section>
+        <h2>Daily Strategy Metrics</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Strategy</th>
+              <th>Wins</th>
+              <th>Losses</th>
+              <th>Win Rate</th>
+              <th>Net PnL</th>
+              <th>Avg Hold (s)</th>
+              <th>NW Slippage</th>
+              <th>Fees</th>
+              <th>Events</th>
+            </tr>
+          </thead>
+          <tbody id='daily_strategy_rows'><tr><td colspan='9'>No daily metrics yet</td></tr></tbody>
+        </table>
+      </section>
+    </main>
+    <script>
+      function fmtNumber(x){ if(x==null||isNaN(x)) return '-'; return Number(x).toLocaleString(); }
+      function fmtCurrency(x){ if(x==null||isNaN(x)) return '-'; return '$' + Number(x).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}); }
+      function fmtPercent(x){ if(x==null||isNaN(x)) return '-'; return (Number(x)*100).toFixed(2) + '%'; }
+      function fmtPercentValue(x){ if(x==null||isNaN(x)) return '-'; return Number(x).toFixed(1) + '%'; }
+      function fmtSeconds(x){ if(x==null||isNaN(x)) return '-'; return Number(x).toFixed(1) + ' s'; }
+      function fmtTime(t){ if(!t) return '-'; const d=new Date(t); return isNaN(d.getTime())? String(t) : d.toLocaleString(); }
+      function fmtEpoch(sec){ if(sec==null) return '-'; const d=new Date(Number(sec)*1000); return isNaN(d.getTime())? '-' : d.toLocaleTimeString(); }
+      function nz(value, fallback){ return (value === undefined || value === null) ? fallback : value; }
+      // Tiny sparkline generator using unicode blocks (global fallback)
+      if (typeof window.spark !== 'function') {
+        window.spark = function(arr){
+          if(!Array.isArray(arr) || !arr.length){ return '-'; }
+          const bars = '鈻佲杺鈻冣杽鈻呪枂鈻団枅';
+          let min = Infinity, max = -Infinity;
+          for(const v of arr){
+            const x = Number(v||0);
+            if(!Number.isFinite(x)) continue;
+            if(x < min) min = x; if(x > max) max = x;
+          }
+          if(!isFinite(min) || !isFinite(max)){ return '-'; }
+          const span = (max - min) || 1;
+          let out = '';
+          for(const v of arr){
+            const x = Number(v||0);
+            const idx = Math.max(0, Math.min(7, Math.floor(((x - min) / span) * 7)));
+            out += bars[idx];
+          }
+          return out;
+        }
+      }
+      const missing = new Set();
+      function byId(id){
+        const el=document.getElementById(id);
+        if(!el && !missing.has(id)){
+          console.warn('monitor: missing element #' + id);
+          missing.add(id);
+        }
+        return el;
+      }
+      function setText(id, value, formatter){
+        const el=byId(id);
+        if(!el) return;
+        let text = formatter ? formatter(value) : value;
+        if(text === undefined || text === null || text === ''){
+          text = '-';
+        }
+        el.textContent = text;
+      }
+      function renderReasonList(id, data, emptyText){
+        const el=byId(id);
+        if(!el) return;
+        el.innerHTML='';
+        const entries=[];
+        if(data && typeof data === 'object'){
+          Object.entries(data).forEach(([reason,count]) => {
+            const value = Number(count || 0);
+            if(Number.isFinite(value) && value > 0){
+              entries.push({reason, count:value});
+            }
+          });
+        }
+        entries.sort((a,b) => b.count - a.count);
+        if(!entries.length){
+          const li=document.createElement('li');
+          li.className='muted';
+          li.textContent=emptyText;
+          el.appendChild(li);
+          return;
+        }
+        entries.forEach(item => {
+          const li=document.createElement('li');
+          const name=document.createElement('span');
+          name.className='reason-label';
+          name.textContent=item.reason;
+          const value=document.createElement('span');
+          value.className='reason-value';
+          value.textContent=fmtNumber(item.count);
+          li.appendChild(name);
+          li.appendChild(value);
+          el.appendChild(li);
+        });
+      }
+      function renderWorstList(id, items){
+        const el=byId(id);
+        if(!el) return;
+        el.innerHTML='';
+        if(!items || !items.length){
+          const li=document.createElement('li');
+          li.className='muted';
+          li.textContent='No data';
+          el.appendChild(li);
+          return;
+        }
+        items.slice(0,5).forEach(function(row){
+          const market = row[0];
+          const pnl = Number(row[1] || 0);
+          const count = Number(row[2] || 0);
+          const li=document.createElement('li');
+          const name=document.createElement('span');
+          name.className='reason-label';
+          name.textContent=market;
+          const value=document.createElement('span');
+          value.className='reason-value';
+          value.textContent=fmtCurrency(pnl) + ' (' + fmtNumber(count) + ')';
+          li.appendChild(name);
+          li.appendChild(value);
+          el.appendChild(li);
+        });
+      }
+      function renderStrategyTable(id, data){
+        const el=byId(id);
+        if(!el) return;
+        el.innerHTML='';
+        const rows=[];
+        if(data && typeof data === 'object'){
+          Object.entries(data).forEach(([name, stats]) => {
+            if(!stats) return;
+            rows.push({
+              name,
+              trades: Number(stats.trades || 0),
+              wins: Number(stats.wins || 0),
+              losses: Number(stats.losses || 0),
+              win_rate_pct: stats.win_rate_pct,
+              net_pnl: nz(stats.total_pnl_after_fees, stats.total_pnl),
+              avg_hold: stats.avg_holding_seconds
+            });
+          });
+        }
+        rows.sort((a,b) => b.trades - a.trades);
+        if(!rows.length){
+          el.innerHTML = '<tr><td colspan="7">No realized trades yet</td></tr>';
+          return;
+        }
+        rows.forEach(item => {
+          const tr=document.createElement('tr');
+          const winRate = (item.win_rate_pct==null) ? '-' : fmtPercentValue(item.win_rate_pct);
+          tr.innerHTML =
+            '<td>'+ item.name +'</td>'+
+            '<td>'+ fmtNumber(item.trades) +'</td>'+
+            '<td>'+ fmtNumber(item.wins) +'</td>'+
+            '<td>'+ fmtNumber(item.losses) +'</td>'+
+            '<td>'+ winRate +'</td>'+
+            '<td>'+ fmtCurrency(nz(item.net_pnl, 0)) +'</td>'+
+            '<td>'+ fmtSeconds(item.avg_hold) +'</td>';
+          el.appendChild(tr);
+        });
+      }
+      function renderFrontierTable(id, data){
+        const el=byId(id);
+        if(!el) return;
+        el.innerHTML='';
+        if(!data || !data.length){
+          el.innerHTML = '<tr><td colspan="6">No frontier data yet</td></tr>';
+          return;
+        }
+        data.forEach(item => {
+          const tr=document.createElement('tr');
+          tr.innerHTML =
+            '<td>'+ fmtNumber(item.maker_offset_bps) +'</td>'+
+            '<td>'+ fmtNumber(item.taker_offset_bps) +'</td>'+
+            '<td>'+ fmtNumber(item.entries) +'</td>'+
+            '<td>'+ fmtPercent(item.best_win_rate) +'</td>'+
+            '<td>'+ fmtPercent(item.best_total_return) +'</td>'+
+            '<td>'+ fmtNumber(item.best_holding_seconds) +'</td>';
+          el.appendChild(tr);
+        });
+      }
+      function renderHotspots(id, rows){
+        const el=byId(id);
+        if(!el) return;
+        el.innerHTML='';
+        if(!rows || !rows.length){ el.innerHTML = '<tr><td colspan="3">No rate-limit hotspots yet</td></tr>'; return; }
+        rows.forEach(item => {
+          const tr=document.createElement('tr');
+          tr.innerHTML =
+            '<td>'+ (item.market_id||'-') +'</td>'+
+            '<td>'+ (item.side||'-') +'</td>'+
+            '<td>'+ fmtNumber(item.count) +'</td>';
+          el.appendChild(tr);
+        });
+      }
+      function renderRiskReasons(id, data){
+        const el=byId(id);
+        if(!el) return;
+        el.innerHTML='';
+        const rows = [];
+        if(data && typeof data === 'object'){
+          Object.entries(data).forEach(([name, cnt]) => { rows.push({name, count:Number(cnt||0)}); });
+        }
+        rows.sort((a,b)=> b.count - a.count);
+        if(!rows.length){ el.innerHTML = '<tr><td colspan="2">No risk rejections yet</td></tr>'; return; }
+        rows.forEach(r => {
+          const tr=document.createElement('tr');
+          tr.innerHTML = '<td>'+ r.name +'</td><td>'+ fmtNumber(r.count) +'</td>';
+          el.appendChild(tr);
+        });
+      }
+      function renderStrategyRisk(id, data){
+        const el=byId(id); if(!el) return; el.innerHTML='';
+        const rows=[]; if(data && typeof data==='object'){
+          Object.entries(data).forEach(([name, obj])=>{
+            rows.push({name, approved:Number((obj&&obj.approved)||0), rejected:Number((obj&&obj.rejected)||0)});
+          });
+        }
+        rows.sort((a,b)=> (b.rejected - a.rejected) || (b.approved - a.approved));
+        if(!rows.length){ el.innerHTML='<tr><td colspan="3">No strategy risk stats yet</td></tr>'; return; }
+        rows.forEach(r=>{
+          const tr=document.createElement('tr');
+          tr.innerHTML = '<td>'+ r.name +'</td><td>'+ fmtNumber(r.approved) +'</td><td>'+ fmtNumber(r.rejected) +'</td>';
+          el.appendChild(tr);
+        });
+      }
+      function renderOrderRows(id, rows){
+        const el=byId(id);
+        if(!el) return;
+        el.innerHTML='';
+        if(!rows || !rows.length){ el.innerHTML = '<tr><td colspan="6">No recent orders</td></tr>'; return; }
+        rows.forEach(r => {
+          const tr=document.createElement('tr');
+          tr.innerHTML =
+            '<td>'+ fmtTime(r.timestamp) +'</td>'+
+            '<td>'+ (r.market_id||'-') +'</td>'+
+            '<td>'+ (r.action||'-') +'</td>'+
+            '<td>'+ fmtNumber(r.size) +'</td>'+
+            '<td>'+ (r.event||'-') +'</td>'+
+            '<td>'+ (r.reason||'') +'</td>';
+          el.appendChild(tr);
+        });
+      }
+      function renderLedgerTable(id, data){
+        const el=byId(id);
+        if(!el) return;
+        el.innerHTML='';
+        if(!data || !data.length){
+          el.innerHTML = '<tr><td colspan="5">No ledger data yet</td></tr>';
+          return;
+        }
+        data.forEach(item => {
+          const tr=document.createElement('tr');
+          tr.innerHTML =
+            '<td>'+ fmtNumber(item.holding_seconds) +'</td>'+
+            '<td>'+ fmtNumber(item.trades) +'</td>'+
+            '<td>'+ fmtPercent(item.win_rate) +'</td>'+
+            '<td>'+ fmtCurrency(item.total_pnl_after_fees !== undefined ? item.total_pnl_after_fees : item.total_pnl) +'</td>'+
+            '<td>'+ fmtCurrency(item.avg_pnl_after_fees) +'</td>';
+          el.appendChild(tr);
+        });
+      }
+      function renderTelemetryStrategyTable(id, data){
+        const el = byId(id);
+        if(!el) return;
+        el.innerHTML = '';
+        if(!data || !data.length){
+          el.innerHTML = '<tr><td colspan="7">No exit fills yet</td></tr>';
+          return;
+        }
+        data.forEach(item => {
+          const winRate = item.win_rate == null ? '-' : fmtPercent(item.win_rate);
+          const row = document.createElement('tr');
+          row.innerHTML =
+            '<td>'+ item.name +'</td>'+
+            '<td>'+ fmtNumber(item.trades) +'</td>'+
+            '<td>'+ fmtNumber(item.wins) +'</td>'+
+            '<td>'+ fmtNumber(item.losses) +'</td>'+
+            '<td>'+ winRate +'</td>'+
+            '<td>'+ fmtCurrency(item.pnl_after !== undefined ? item.pnl_after : item.pnl) +'</td>'+
+            '<td>'+ fmtCurrency(item.avg_pnl_after) +'</td>';
+          el.appendChild(row);
+        });
+      }
+
+      function setBanner(p){
+        const el=byId('status');
+        if(!el) return;
+        if(!p || p.status !== 'success'){
+          el.className='status status-info';
+          el.textContent=(p&&p.message)||'Waiting for trading system';
+          return;
+        }
+        const info=(p.pipeline && p.pipeline.fetch_info) || {};
+        const ows = info.orders_ws || {};
+        const owsStatus = (ows.status||'disabled').toLowerCase();
+        const cd = ows.cooldown_remaining_seconds;
+        const lastOk = ows.last_success_epoch ? (' last ' + fmtEpoch(ows.last_success_epoch)) : '';
+        const owsTail = (owsStatus==='healthy') ? ('Order WS healthy' + lastOk) : ('Order WS '+owsStatus+(cd?(' ('+cd+'s)'):'')+ lastOk);
+        const ioe = (p.pipeline && p.pipeline.io_errors) || {};
+        const ioSum = Number(ioe.orders||0)+Number(ioe.trades||0)+Number(ioe.status||0)+Number(ioe.positions||0);
+        const ioNote = ioSum>0 ? (' 路 IO degraded ('+ioSum+')') : '';
+        const orc = info.orders_rest || {};
+        const restErrs = Number(orc.errors||0);
+        const wsDegraded = (owsStatus!=='healthy' && owsStatus!=='disabled');
+        const isFallback = !!info.fallback;
+        const shouldWarn = isFallback || wsDegraded || restErrs>0 || ioSum>0;
+        el.className = shouldWarn ? 'status status-warn' : 'status status-ok';
+        const base = shouldWarn ? (isFallback ? ('Fallback mode ('+(info.reason||'unknown')+')') : 'Live data ingest') : 'Live data ingest healthy';
+        el.textContent = base + ' 鈥?' + owsTail + (restErrs>0?(' 路 REST errors '+restErrs):'') + ioNote;
+      }
+
+      function updateView(p){
+        setBanner(p);
+        if(!p || p.status !== 'success') return;
+        setText('report_file', p.filename || '-');
+        setText('report_generated', p.report_generated_at, fmtTime);
+        setText('last_updated', p.timestamp, fmtTime);
+        setText('total_trades', nz(p.total_trades, 0), fmtNumber);
+        setText('open_positions', nz(p.open_positions, 0), fmtNumber);
+        setText('current_balance', nz(p.current_balance, 0), fmtCurrency);
+        setText('total_pnl', nz(p.total_pnl, 0), fmtCurrency);
+        setText('win_rate', nz(p.win_rate, 0), fmtPercent);
+        setText('total_return', nz(p.total_return, 0), fmtPercent);
+        const rz=p.realized||{};
+        setText('real_closed', nz(rz.closed_trades, 0), fmtNumber);
+        setText('real_wins', nz(rz.wins, 0), fmtNumber);
+        setText('real_losses', nz(rz.losses, 0), fmtNumber);
+        setText('real_win_rate', nz(rz.win_rate_pct, null), fmtPercentValue);
+        const pnlNet = nz(rz.total_pnl_after_fees, rz.total_pnl);
+        setText('real_pnl', nz(pnlNet, 0), fmtCurrency);
+        setText('real_pnl_gross', nz(rz.total_pnl, 0), fmtCurrency);
+        setText('real_updated', rz.last_updated, fmtTime);
+        setText('real_avg_pnl', nz(rz.avg_pnl_after_fees, 0), fmtCurrency);
+        setText('real_avg_hold', nz(rz.avg_holding_seconds, null), fmtSeconds);
+        renderReasonList('real_reason_breakdown', rz.reasons || {}, 'No realized trades yet');
+        renderStrategyTable('real_strategy_rows', rz.per_strategy || {});
+        renderFrontierTable('frontier_rows', p.frontier || []);
+        const orders = p.orders || {};
+        const rejects = orders.rejects || {};
+        const rejectSum = Object.values(rejects).reduce((a,b)=>a+Number(b||0),0);
+        setText('orders_approvals', nz(orders.approvals, 0), fmtNumber);
+        setText('orders_rejects', rejectSum, fmtNumber);
+        setText('orders_fills', nz(orders.fills, 0), fmtNumber);
+        setText('orders_partials', nz(orders.partials, 0), fmtNumber);
+        setText('orders_pending', nz(orders.pending, 0), fmtNumber);
+        renderOrderRows('orders_rows', orders.recent || []);
+        // Order feed status mini-cards
+        const fi = (p.pipeline && p.pipeline.fetch_info) || {};
+        const ows = fi.orders_ws || {};
+        const owsMiniTxt = (ows.status||'-') + (ows.cooldown_remaining_seconds?(' ('+ows.cooldown_remaining_seconds+'s)'):'') + (ows.last_success_epoch?(' 路 last '+fmtEpoch(ows.last_success_epoch)):'') + (ows.last_error_epoch?(' 路 last err '+fmtEpoch(ows.last_error_epoch)):'');
+        setText('orders_ws_status', owsMiniTxt);
+        const wsEl = byId('orders_ws_status'); if(wsEl){ wsEl.title = ows.last_error ? String(ows.last_error) : ''; }
+        const orc = fi.orders_rest || {};
+        const restTxt = (orc.running ? ('On ('+ (orc.interval_seconds||'-') +'s)') : 'Off') + (orc.errors?(' 路 err '+orc.errors):'') + (orc.last_success_epoch?(' 路 last '+fmtEpoch(orc.last_success_epoch)):'') + (orc.last_error_epoch?(' 路 last err '+fmtEpoch(orc.last_error_epoch)):'');
+        setText('orders_rest_status', restTxt);
+        const restEl = byId('orders_rest_status'); if(restEl){ restEl.title = orc.last_error ? String(orc.last_error) : ''; }
+        const telemetry=p.telemetry||{};
+        setText('telemetry_entries', nz(telemetry.entries, 0), fmtNumber);
+        setText('telemetry_exits', nz(telemetry.exits, 0), fmtNumber);
+        setText('telemetry_notional', telemetry.avg_notional, fmtCurrency);
+        setText('telemetry_entry_slip', telemetry.avg_entry_slip_bps, fmtNumber);
+        setText('telemetry_exit_slip', telemetry.avg_exit_slip_bps, fmtNumber);
+        setText('telemetry_fees', telemetry.total_fees, fmtCurrency);
+        const modes = telemetry.execution_modes || {};
+        const modeParts = Object.keys(modes).sort().map(name => name + ': ' + modes[name]);
+        setText('telemetry_modes', modeParts.length ? modeParts.join(', ') : '-');
+        const micro = telemetry.micro_arbitrage || {};
+        setText('telemetry_micro_internal', nz(micro.internal, 0), fmtNumber);
+        setText('telemetry_micro_external', nz(micro.external, 0), fmtNumber);
+        renderTelemetryStrategyTable('telemetry_strategy_rows', telemetry.strategy_pnl || []);
+        const pipeline=p.pipeline||{};
+        const loop=pipeline.loop_summary||{};
+        const holdReasons=pipeline.hold_reasons||{};
+        const rejectReasons=pipeline.reject_reasons||{};
+        const holdTotal=Object.values(holdReasons).reduce((acc,val)=>acc+Number(val||0),0);
+        setText('loop_processed', nz(loop.processed, 0), fmtNumber);
+        setText('loop_approved', nz(loop.approved, 0), fmtNumber);
+        setText('loop_rejected', nz(loop.rejected, 0), fmtNumber);
+        setText('loop_hold', holdTotal, fmtNumber);
+        setText('loop_sleep', pipeline.next_sleep_seconds, fmtNumber);
+        const fetchInfo=pipeline.fetch_info||{};
+        const fallbackLabel=fetchInfo.fallback ? 'Fallback ('+(fetchInfo.reason||'unknown')+')' : 'Live ingest';
+        setText('fallback_state', fallbackLabel);
+        // Sentiment telemetry
+        const sent = (p.pipeline && p.pipeline.sentiment) || {};
+        setText('sent_live_avail', sent.live_sources_available ? 'Yes' : 'No');
+        setText('sent_cache_hits', nz(sent.cache_hits, 0), fmtNumber);
+        setText('sent_live_req', nz(sent.live_requests, 0), fmtNumber);
+        setText('sent_live_hits', nz(sent.live_hits, 0), fmtNumber);
+        setText('sent_live_miss', nz(sent.live_misses, 0), fmtNumber);
+        setText('sent_fallback_used', nz(sent.fallback_used, 0), fmtNumber);
+        setText('sent_offline_blocks', nz(sent.offline_blocks, 0), fmtNumber);
+        setText('sent_last_source', sent.last_live_source || '-');
+        setText('sent_last_live_at', sent.last_live_at || '-');
+        try {
+          const fr = sent.fallback_reasons || {};
+          const parts = Object.keys(fr).sort((a,b)=>fr[b]-fr[a]).map(k => k+': '+fr[k]);
+          setText('sent_reasons', parts.length ? parts.join(', ') : '-');
+        } catch (e) {
+          setText('sent_reasons', '-');
+        }
+        const coverage = nz(pipeline.validation_coverage_pct, fetchInfo.validation && fetchInfo.validation.coverage_pct);
+        setText('validation_coverage', coverage, fmtPercentValue);
+        renderReasonList('hold_reasons', holdReasons, 'No holds recorded');
+        renderReasonList('reject_reasons', rejectReasons, 'No rejects recorded');
+        const freqOrders = p.orders || {};
+        renderHotspots('freq_hotspots', freqOrders.rate_limit_hotspots || []);
+        // Risk audit summary
+        const ra = (p.pipeline && p.pipeline.risk_audit) || {};
+        setText('risk_approved', nz(ra.approved, 0), fmtNumber);
+        setText('risk_rejected', nz(ra.rejected, 0), fmtNumber);
+        renderRiskReasons('risk_reasons', ra.reasons || {});
+        renderStrategyRisk('risk_strategy', (p.pipeline && p.pipeline.strategy_risk) || {});
+        // External fills metrics
+        const ext = (p.pipeline && p.pipeline.external_fills) || {};
+        setText('ext_opened', nz(ext.opened, 0), fmtNumber);
+        setText('ext_applied', nz(ext.applied_same_side, 0), fmtNumber);
+        setText('ext_reduced', nz(ext.reduced_opposite, 0), fmtNumber);
+        setText('ext_closed', nz(ext.closed, 0), fmtNumber);
+        setText('ext_last', ext.last_seen, fmtTime);
+        const tr = (p.pipeline && p.pipeline.external_fills_trend) || [];
+        const counts = Array.isArray(tr) ? tr.map(x => Number((x && x.count) || 0)) : [];
+        const trendEl = byId('ext_trend'); if(trendEl){ trendEl.textContent = spark(counts); }
+        // IO error counters
+        const ioe = (p.pipeline && p.pipeline.io_errors) || {};
+        setText('io_orders_err', nz(ioe.orders, 0), fmtNumber);
+        setText('io_trades_err', nz(ioe.trades, 0), fmtNumber);
+        renderReasonList('strategy_hold_counts', pipeline.strategy_hold_counts || {}, 'No strategy holds');
+        renderReasonList('strategy_reject_counts', pipeline.strategy_reject_counts || {}, 'No strategy rejects');
+        const freq = pipeline.strategy_order_frequency || {};
+        const freqMkt = pipeline.strategy_market_order_frequency || {};
+        const freqSide = pipeline.strategy_side_order_frequency || {};
+        const freqMktSide = pipeline.strategy_market_side_order_frequency || {};
+        setText('freq_strat_count', Object.keys(freq).length, fmtNumber);
+        setText('freq_strat_market_count', Object.keys(freqMkt).length, fmtNumber);
+        setText('freq_strat_side_count', Object.keys(freqSide).length, fmtNumber);
+        setText('freq_strat_mkt_side_count', Object.keys(freqMktSide).length, fmtNumber);
+        // Ingest metrics mini-cards
+        const rest = (fetchInfo.rest_metrics||{});
+        const lat = (rest.latency_ms||{});
+        setText('rest_requests', nz(rest.requests, 0), fmtNumber);
+        setText('rest_429s', nz(rest['429s'], 0), fmtNumber);
+        setText('rest_inflight_peak', nz(rest.inflight_peak, 0), fmtNumber);
+        setText('rest_latency_avg', nz(lat.avg, null), fmtNumber);
+        const freqTb = byId('freq_rows');
+        if(freqTb){
+          const rows = Object.entries(freq).map(([name, cfg]) => {
+            const cur = Number(nz(cfg.current_window, 0));
+            const max = Number(nz(cfg.max_orders, 0));
+            const win = Number(nz(cfg.interval_seconds, 0));
+            return {name, cur, max, win};
+          });
+          rows.sort((a,b)=>b.cur-a.cur);
+          if(!rows.length){ freqTb.innerHTML = '<tr><td colspan="4">No frequency data yet</td></tr>'; }
+          else {
+            freqTb.innerHTML='';
+            rows.forEach(r => {
+              const tr=document.createElement('tr');
+              tr.innerHTML = '<td>'+r.name+'</td>'+
+                             '<td>'+fmtSeconds(r.win)+'</td>'+
+                             '<td>'+fmtNumber(r.max)+'</td>'+
+                             '<td>'+fmtNumber(r.cur)+'</td>';
+              freqTb.appendChild(tr);
+            });
+          }
+        }
+        setText('ingest_source', nz(pipeline.current_source, fetchInfo.current_source));
+        const sources = (fetchInfo.sources||{});
+        setText('ws_age', sources.ws_age_seconds, fmtSeconds);
+        setText('rest_age', sources.rest_age_seconds, fmtSeconds);
+        setText('ws_cooldown', pipeline.ws_cooldown_remaining_seconds, fmtSeconds);
+        const tb=byId('recent_trades');
+        if(tb){
+          tb.innerHTML='';
+          (p.recent_trades || []).forEach(function(tr){
+            const row=document.createElement('tr');
+            row.innerHTML = '<td>'+ (tr.market_id||'-') +'</td>' +
+                            '<td>'+ (tr.action||'-') +'</td>' +
+                            '<td>'+ fmtNumber(nz(tr.size,0)) +'</td>' +
+                            '<td>'+ (tr.confidence==null?'-':fmtPercent(tr.confidence)) +'</td>' +
+                            '<td>'+ (tr.score==null?'-':fmtNumber(tr.score)) +'</td>' +
+                            '<td>'+ fmtTime(tr.timestamp) +'</td>' +
+                            '<td>'+ (tr.strategies && tr.strategies.length ? tr.strategies.join(', ') : '-') +'</td>';
+            tb.appendChild(row);
+          });
+          if(!p.recent_trades || !p.recent_trades.length){
+            tb.innerHTML = '<tr><td colspan="7">No trades recorded yet</td></tr>';
+          }
+        }
+        // Daily strategy metrics table
+        try {
+          const d = (p.pipeline && p.pipeline.daily_strategy) || {};
+          const per = d.per_strategy || {};
+          const tb2 = byId('daily_strategy_rows');
+          if(tb2){
+            const rows = Object.keys(per).sort().map(function(name){ const m = per[name] || {}; return {
+              name,
+              wins: nz(m.wins, 0),
+              losses: nz(m.losses, 0),
+              win_rate: nz(m.win_rate, 0),
+              pnl: nz(m.pnl_after_fees, 0),
+              hold: nz(m.avg_holding_seconds, 0),
+              slip: nz(m.slippage_notional_weighted, 0),
+              fees: nz(m.total_fees, 0),
+              events: nz(m.events, 0),
+            }; });
+            tb2.innerHTML='';
+            if(!rows.length){ tb2.innerHTML = '<tr><td colspan='9'>No daily metrics yet</td></tr>'; }
+            else {
+              rows.forEach(function(r){
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td>'+r.name+'</td>'+
+                               '<td>'+fmtNumber(r.wins)+'</td>'+
+                               '<td>'+fmtNumber(r.losses)+'</td>'+
+                               '<td>'+fmtPercent(r.win_rate)+'</td>'+
+                               '<td>'+fmtCurrency(r.pnl)+'</td>'+
+                               '<td>'+fmtSeconds(r.hold)+'</td>'+
+                               '<td>'+fmtNumber(r.slip)+'</td>'+
+                               '<td>'+fmtCurrency(r.fees)+'</td>'+
+                               '<td>'+fmtNumber(r.events)+'</td>';
+                tb2.appendChild(tr);
+              });
+            }
+          }
+        } catch (e) { /* ignore */ }
+        const analytics=p.exit_analytics||{};
+        const results=analytics.results||{};
+        const current=results.current||{};
+        const previous=results.previous||{};
+        const threshold=analytics.threshold!=null? analytics.threshold : 0.7;
+        setText('exit_current_trades', current.total_trades, fmtNumber);
+        setText('exit_current_pnl', current.total_pnl, fmtCurrency);
+        setText('exit_current_tp_sl', current.tp_sl_share, fmtPercent);
+        setText('exit_previous_trades', previous.total_trades, fmtNumber);
+        setText('exit_previous_pnl', previous.total_pnl, fmtCurrency);
+        setText('exit_previous_tp_sl', previous.tp_sl_share, fmtPercent);
+        renderWorstList('exit_current_worst', current.worst_markets||[]);
+        renderWorstList('exit_previous_worst', previous.worst_markets||[]);
+        // Event-driven exit reasons table (counts only)
+        try {
+          const curList = current.reason_counts || [];
+          const prevList = previous.reason_counts || [];
+          const prevMap = {};
+          prevList.forEach(function(it){ if(Array.isArray(it) && it.length>=2){ prevMap[String(it[0])] = Number(it[1]||0); } });
+          const evRows = (curList||[]).filter(function(it){ return Array.isArray(it) && String(it[0]||'').startsWith('event_'); });
+          const tb = byId('event_exit_rows');
+          if(tb){
+            tb.innerHTML='';
+            if(!evRows.length){ tb.innerHTML='<tr><td colspan='3'>No event-driven exits yet</td></tr>'; }
+            else {
+              evRows.forEach(function(it){
+                const name = String(it[0]);
+                const cur = Number(it[1]||0);
+                const prev = Number(prevMap[name]||0);
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td>'+name+'</td><td>'+fmtNumber(cur)+'</td><td>'+fmtNumber(prev)+'</td>';
+                tb.appendChild(tr);
+              });
+            }
+          }
+        } catch (e) { /* ignore */ }
+        // Event-driven summary metrics
+        const ev = p.event_driven || {};
+        setText('ev_wins', nz(ev.wins, 0), fmtNumber);
+        setText('ev_losses', nz(ev.losses, 0), fmtNumber);
+        setText('ev_win_rate', ev.win_rate, fmtPercent);
+        setText('ev_avg_hold', ev.avg_holding_seconds, fmtSeconds);
+        setText('ev_slip', ev.slippage, fmtNumber);
+        setText('ev_fees', ev.total_fees, fmtCurrency);
+        // Event-driven source table
+        try {
+          const srcs = ev.sources || {};
+          const tb = byId('event_source_rows');
+          if(tb){
+            const entries = Object.entries(srcs).sort((a,b)=>b[1]-a[1]);
+            tb.innerHTML='';
+            if(!entries.length){ tb.innerHTML='<tr><td colspan='2'>No event-driven entries yet</td></tr>'; }
+            else {
+              entries.forEach(function([name, count]){
+                const tr=document.createElement('tr');
+                tr.innerHTML='<td>'+name+'</td><td>'+fmtNumber(count)+'</td>';
+                tb.appendChild(tr);
+              });
+            }
+          }
+        } catch (e) { /* ignore */ }
+        const alertEl=byId('exit_alert');
+        if(alertEl){
+          const alertFlags=analytics.tp_sl_alert||{};
+          const currentAlert=!!alertFlags.current;
+          if(!current.total_trades && !previous.total_trades){
+            alertEl.className='muted';
+            alertEl.textContent='Exit analytics data not available yet.';
+          } else if(currentAlert){
+            alertEl.className='status status-warn';
+            alertEl.textContent='Alert: Current tp/sl share ' + fmtPercent(current.tp_sl_share) + ' exceeds threshold ' + fmtPercent(threshold);
+          } else {
+            alertEl.className='status status-ok';
+            alertEl.textContent='Current tp/sl share ' + fmtPercent(current.tp_sl_share) + ' (threshold ' + fmtPercent(threshold) + ')';
+          }
+        }
+      }
+
+      function refresh(){
+        const winSel = byId('ext_window');
+        const w = winSel ? Number(winSel.value||15) : 15;
+        fetch('/api/data?ext_window='+encodeURIComponent(w)).then(r => r.json()).then(updateView).catch(err => {
+          console.error(err);
+          setBanner({status:'error', message:String(err)});
+        });
+      }
+      function start(){
+        refresh();
+        setInterval(refresh, 5000);
+      }
+      if(document.readyState === 'loading'){
+        document.addEventListener('DOMContentLoaded', start);
+      } else {
+        start();
+      }
+    </script>
+  </body>
+</html>
+

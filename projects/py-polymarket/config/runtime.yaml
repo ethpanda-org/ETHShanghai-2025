@@ -1,0 +1,173 @@
+environment: development
+debug: false
+offline_mode: false
+network:
+  timeout_total: 120
+  timeout_connect: 30
+  timeout_read: 60
+  retry_attempts: 3
+  max_connections: 10
+  keepalive_timeout: 30
+proxy:
+  enabled: true
+  host: brd.superproxy.io
+  port: 33335
+  skip_healthcheck: true
+  rotation_countries:
+  - US
+  - CA
+  - GB
+  - DE
+  - FR
+  - NL
+  - CH
+  - AU
+  requests_per_rotation: 8
+  max_retry: 3
+  refresh_interval: 600
+  test_url: https://geo.brdtest.com/welcome.txt?product=resi&method=native
+database:
+  host: localhost
+  name: polymarket_db
+  user: null
+  password: null
+  port: 5432
+blockchain:
+  polymarket_contract: 442978940591120174517643673630057466383290556485
+monitoring:
+  port: 8888
+  report_dir: logs
+  auto_open_browser: true
+logging:
+  level: INFO
+  enable_console: true
+  file_path: logs/polymarket.log
+  format: '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
+  max_file_size: 10485760
+  backup_count: 5
+trading:
+  initial_balance: 10000
+  max_total_exposure: 0.15
+  max_single_position: 0.03
+  min_position_size: 5
+  daily_loss_enabled: true
+  daily_loss_reset_hour: 0
+  max_side_exposure_ratio: 0.0
+  daily_loss_limit_pct: 0.02
+  daily_loss_limit_usd: 0.0
+  daily_loss_cooldown_minutes: 90
+  daily_loss_recovery_ratio: 0.1
+  max_open_positions: 50
+  max_positions_per_market: 1
+  max_orders_per_loop: 6
+  # Per-market daily loss guard (blocks worst markets for the day)
+  per_market_daily_loss_enabled: true
+  per_market_daily_loss_limit_pct: 0.01   # 1% of initial balance per market/day
+  per_market_daily_loss_limit_usd: 0.0    # optional absolute cap
+  per_market_exposure_caps:
+    '0x014d853c42e5a59aee3dfce695701511fd88b40fd416539e8937b5bcc1261213': 25.0
+    '0x5dc1896bbb5bb26acedeeb1a21db4b97ba21bf9745e350249e91e6ceb8a47db3': 25.0
+    '0xda8ebb9d7998b0e37f912b78d8f71a9e36b8a8b5b2afff4bb1f8106e29ae0604': 25.0
+    '0xfa74239cef99a76cc3d1e515eeb1893e64c7958f11dade8af98340287f7eacfc': 25.0
+    '0xc5eae79d1ffe716572353962eb926b1e3964c500a4880a7a94f58408218ee76b': 25.0
+    '0x11ff723a8308bb5659efe8126db3a7272a0c3d4eebc23da1e28d7a6971844d73': 25.0
+    '0xa623c862fc7f6fbdfb93bd27d636e82fa295968921c9921125fff1f9d0d5bed2': 25.0
+    '0xcdcd3fc5cf560770987b743bed2321383e1d853812fb9ba60118ca74eebdd0d0': 25.0
+    '0x679c625d28216f18fd401636d1cdbf7dcbec47c9a957f718f3d8571bbcaf1404': 30.0
+    '0x4567b275e6b667a6217f5cb4f06a797d3a1eaf1d0281fb5bc8c75e2046ae7e57': 30.0
+    '0xa1324f2f9d9bb179df84ba70d1d2785dc58f3bfcfe632038579c97e3eb07271d': 30.0
+    '0x6ef075c9da61c78ca84b708fe7f34aa14ec761319324db64dcf788dadf42445e': 30.0
+    '0x1c72805915588dc639113070bd4d88ef4e2a75a88660e4cfe33228396f220987': 10.0
+    '0x0b6aaec1a8de88291ac23e5ce240ea02e7491c25be60abf28ed7ea76262f5355': 10.0
+  strategy_exposure_caps: {}
+strategy:
+  consensus_min: 2
+  signal_floor: 0.22
+  min_volume_24h: 0
+  max_spread_bps: 1000
+  spread_volume_tiers:
+  - min_volume: 50000
+    max_spread_bps: 600
+  - min_volume: 20000
+    max_spread_bps: 1000
+  - min_volume: 0
+    max_spread_bps: 1200
+  micro_arbitrage_reference_pairs: {}
+  # Optional per-market threshold overrides
+  # threshold_overrides:
+  #   '0xexamplemarketid123': { signal_floor: 0.23, consensus_min: 2 }
+  blacklist:
+  - '0x014d853c42e5a59aee3dfce695701511fd88b40fd416539e8937b5bcc1261213'
+  - '0x5dc1896bbb5bb26acedeeb1a21db4b97ba21bf9745e350249e91e6ceb8a47db3'
+  - '0xda8ebb9d7998b0e37f912b78d8f71a9e36b8a8b5b2afff4bb1f8106e29ae0604'
+  - '0xfa74239cef99a76cc3d1e515eeb1893e64c7958f11dade8af98340287f7eacfc'
+  - '0xc5eae79d1ffe716572353962eb926b1e3964c500a4880a7a94f58408218ee76b'
+  - '0x11ff723a8308bb5659efe8126db3a7272a0c3d4eebc23da1e28d7a6971844d73'
+  - '0xa623c862fc7f6fbdfb93bd27d636e82fa295968921c9921125fff1f9d0d5bed2'
+  - '0xcdcd3fc5cf560770987b743bed2321383e1d853812fb9ba60118ca74eebdd0d0'
+  - '0x679c625d28216f18fd401636d1cdbf7dcbec47c9a957f718f3d8571bbcaf1404'
+  - '0x4567b275e6b667a6217f5cb4f06a797d3a1eaf1d0281fb5bc8c75e2046ae7e57'
+  - '0xa1324f2f9d9bb179df84ba70d1d2785dc58f3bfcfe632038579c97e3eb07271d'
+  - '0x6ef075c9da61c78ca84b708fe7f34aa14ec761319324db64dcf788dadf42445e'
+  - '0x0cd53c5a833fa34db56d219593c1e65bafd96ffa6b6067f6ebb69fadcf43b8b3'
+  - '0x62f31557b0e55475789b57a94ac385ee438ef9f800117fd1b823a0797b1fdd68'
+  - '0xb54dfd7b69391e65fcdeb291e09606e2f3c44ef3a3e7b6dbd1d411a4ed4c2b54'
+  - '0x1c72805915588dc639113070bd4d88ef4e2a75a88660e4cfe33228396f220987'  # worst-loss 2025-10-13
+  - '0x0b6aaec1a8de88291ac23e5ce240ea02e7491c25be60abf28ed7ea76262f5355'  # worst-loss 2025-10-13
+execution:
+  exit_policy:
+    mode: advanced
+    min_hold_seconds: 180
+    holding_seconds: 480
+    stop_loss_pct: 0.05
+    take_profit_pct: 0.10
+    tiered_tp_sl:
+      enabled: true
+      soft_stop_pct: 0.04
+      hard_stop_pct: 0.10
+      trim_ratio: 0.35
+      cooldown_seconds: 900
+      extended_min_hold_seconds: 240
+  costs:
+    taker_fee: 0.005
+    edge_risk_premium: 0.005
+    maker_fee: 0.0
+  time_stop_min_seconds: 60
+  time_stop_max_seconds: 300
+  breakeven_trigger_pct: 0.05
+  price_guard:
+    enabled: true
+    max_abs_from_top: 0.06
+    max_abs_from_last: 0.10
+    max_rel_pct: 0.20
+  order_dedupe:
+    window_seconds: 900
+    max_entries: 1000
+    size_tolerance: 0.5
+    size_ratio_tolerance: 0.1
+    persist_csv: true
+    log_path: reports/order_intents.csv
+  slippage_model: maker_limit
+  entry_cooldown_seconds: 900
+  notional_step: 1.0
+market_rules:
+  price_tick: 0.01
+data:
+  max_retries: 3
+  request_timeout: 30
+risk:
+  volatility_risk_ceiling: 0.18
+alert:
+  enable_email: false
+  smtp_server: smtp.example.com
+  smtp_port: 587
+  username: null
+  password: null
+  to_email: admin@example.com
+  subject: '[Polymarket] System Alert'
+user_agents:
+- Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)
+  Chrome/91.0.4472.124 Safari/537.36
+- Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like
+  Gecko) Chrome/91.0.4472.124 Safari/537.36
+

@@ -1,0 +1,200 @@
+# Trading Engine Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trading-engine
+  namespace: polymarket
+  labels:
+    app: trading-engine
+    component: trading-engine
+    tier: microservice
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: trading-engine
+  template:
+    metadata:
+      labels:
+        app: trading-engine
+        component: trading-engine
+        tier: microservice
+    spec:
+      containers:
+      - name: trading-engine
+        image: polymarket/trading-engine:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8004
+          name: http
+        env:
+        - name: SERVICE_NAME
+          value: "trading-engine"
+        - name: SERVICE_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: TRADING_ENGINE_PORT
+        - name: TRADING_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: TRADING_ENV
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: LOG_LEVEL
+        - name: WAIT_FOR_REDIS
+          value: "true"
+        - name: WAIT_FOR_DB
+          value: "true"
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: REDIS_PASSWORD
+        - name: DB_HOST
+          value: "postgres"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_DB
+        - name: DB_USER
+          value: "trading_engine"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: TRADING_ENGINE_DB_PASSWORD
+        - name: TRADING_CONFIG_PATH
+          value: "/app/config/trading.yaml"
+        - name: ORDERS_DIR
+          value: "/app/orders"
+        - name: MAX_POSITION_SIZE
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: MAX_POSITION_SIZE
+        - name: ENABLE_PAPER_TRADING
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: ENABLE_PAPER_TRADING
+        - name: POLYMARKET_PRIVATE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: polymarket-api-secret
+              key: POLYMARKET_PRIVATE_KEY
+        - name: PROXY_HOST
+          value: ""
+        - name: PROXY_PORT
+          value: ""
+        volumeMounts:
+        - name: app-logs
+          mountPath: /app/logs
+        - name: app-config-volume
+          mountPath: /app/config
+        - name: orders-volume
+          mountPath: /app/orders
+        - name: trading-cache
+          mountPath: /app/cache
+        - name: brightdata-proxy-ca
+          mountPath: /app/brightdata_proxy_ca
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8004
+          initialDelaySeconds: 40
+          periodSeconds: 20
+          timeoutSeconds: 10
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8004
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+      volumes:
+      - name: app-logs
+        persistentVolumeClaim:
+          claimName: app-logs-pvc
+      - name: app-config-volume
+        configMap:
+          name: app-config
+      - name: orders-volume
+        emptyDir: {}
+      - name: trading-cache
+        emptyDir: {}
+      - name: brightdata-proxy-ca
+        secret:
+          secretName: proxy-secret
+          optional: true
+      restartPolicy: Always
+      initContainers:
+      - name: wait-for-dependencies
+        image: busybox:1.35
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Waiting for PostgreSQL..."
+          until nc -z postgres 5432; do
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+          
+          echo "Waiting for Redis..."
+          until nc -z redis 6379; do
+            sleep 2
+          done
+          echo "Redis is ready!"
+          
+          echo "Waiting for Risk Manager..."
+          until nc -z risk-manager 8003; do
+            sleep 2
+          done
+          echo "Risk Manager is ready!"
+---
+# Trading Engine Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: trading-engine
+  namespace: polymarket
+  labels:
+    app: trading-engine
+    component: trading-engine
+    tier: microservice
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8004
+    targetPort: 8004
+    protocol: TCP
+    name: http
+  selector:
+    app: trading-engine

@@ -1,0 +1,5 @@
+# Optional monitoring stack extras
+-r base.txt
+
+prometheus-client>=0.16.0
+grafana-api>=1.0.3

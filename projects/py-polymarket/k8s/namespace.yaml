@@ -1,0 +1,29 @@
+# Kubernetes Namespace for Polymarket Trading System
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: polymarket
+  labels:
+    name: polymarket
+    environment: production
+    version: v1.0.0
+---
+# Production Environment Namespace  
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: polymarket-prod
+  labels:
+    name: polymarket-prod
+    environment: production
+    version: v1.0.0
+---
+# Development Environment Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: polymarket-dev
+  labels:
+    name: polymarket-dev
+    environment: development
+    version: v1.0.0

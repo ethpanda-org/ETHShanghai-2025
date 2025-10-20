@@ -1,0 +1,120 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Environment variables
+.env
+.env.*
+.venv
+venv/
+ENV/
+env/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Git
+.git
+.gitignore
+
+# Documentation
+docs/
+*.md
+README*
+
+# Test data and temp files
+test_data/
+temp/
+tmp/
+*.tmp
+
+# Configuration files that should not be in container
+config/local.env
+config/secrets.env
+
+# Development artifacts
+.mypy_cache/
+.ruff_cache/
+node_modules/
+
+# Trading system specific
+trading_logs/
+simulation_reports/
+cache/
+data/reports/
+enhanced_simulation_report_*.json
+
+# Proxy certificates (should be mounted as volumes)
+brightdata_proxy_ca/
+
+# Backup files
+*.bak
+*.backup

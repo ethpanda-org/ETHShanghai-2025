@@ -1,0 +1,42 @@
+    def _to_ticker(self, market: Dict[str, Any]) -> MarketTicker:
+        def _as_float(value: Any) -> Optional[float]:
+            try:
+                return float(value)
+            except (TypeError, ValueError):
+                return None
+
+        tokens = market.get("tokens") or []
+        bid = _as_float(market.get("bid") or market.get("bestBid")) or 0.0
+        ask = _as_float(market.get("ask") or market.get("bestAsk")) or 0.0
+
+        if tokens:
+            prices = [
+                _as_float(token.get("price"))
+                for token in tokens
+                if token.get("price") is not None
+            ]
+            prices = [p for p in prices if p is not None]
+            if prices:
+                bid = prices[0] or 0.0
+                if len(prices) > 1 and prices[1] is not None:
+                    ask = prices[1]
+                else:
+                    ask = max(0.0, 1.0 - bid)
+
+        market_id = str(
+            market.get("market_id")
+            or market.get("condition_id")
+            or market.get("id")
+            or market.get("market")
+            or "unknown"
+        )
+
+        return MarketTicker(
+            market_id=market_id,
+            bid=bid,
+            ask=ask,
+            high=_as_float(market.get("high")),
+            low=_as_float(market.get("low")),
+            volatility=_as_float(market.get("volatility")),
+            raw=market,
+        )

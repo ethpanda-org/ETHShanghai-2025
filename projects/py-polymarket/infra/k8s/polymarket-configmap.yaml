@@ -1,0 +1,10 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: polymarket-config
+  labels:
+    app: polymarket-suite
+data:
+  POLY_OFFLINE_MODE: "false"
+  POLYGON_RPC_URL: "https://polygon-rpc.com"
+  CLOB_REST_URL: "https://clob.polymarket.com"

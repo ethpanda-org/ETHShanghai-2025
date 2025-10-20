@@ -1,0 +1,156 @@
+# Strategy Engine Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: strategy-engine
+  namespace: polymarket
+  labels:
+    app: strategy-engine
+    component: strategy-engine
+    tier: microservice
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: strategy-engine
+  template:
+    metadata:
+      labels:
+        app: strategy-engine
+        component: strategy-engine
+        tier: microservice
+    spec:
+      containers:
+      - name: strategy-engine
+        image: polymarket/strategy-engine:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8002
+          name: http
+        env:
+        - name: SERVICE_NAME
+          value: "strategy-engine"
+        - name: SERVICE_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: STRATEGY_ENGINE_PORT
+        - name: TRADING_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: TRADING_ENV
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: LOG_LEVEL
+        - name: WAIT_FOR_REDIS
+          value: "true"
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: REDIS_PASSWORD
+        - name: MODEL_DIR
+          value: "/app/models"
+        - name: STRATEGY_CONFIG_PATH
+          value: "/app/config/strategies.yaml"
+        - name: STRATEGY_UPDATE_INTERVAL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: STRATEGY_UPDATE_INTERVAL
+        volumeMounts:
+        - name: app-logs
+          mountPath: /app/logs
+        - name: app-config-volume
+          mountPath: /app/config
+        - name: models-data
+          mountPath: /app/models
+        - name: strategy-cache
+          mountPath: /app/cache
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8002
+          initialDelaySeconds: 45
+          periodSeconds: 30
+          timeoutSeconds: 15
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+      volumes:
+      - name: app-logs
+        persistentVolumeClaim:
+          claimName: app-logs-pvc
+      - name: app-config-volume
+        configMap:
+          name: app-config
+      - name: models-data
+        persistentVolumeClaim:
+          claimName: models-data-pvc
+      - name: strategy-cache
+        emptyDir: {}
+      restartPolicy: Always
+      initContainers:
+      - name: wait-for-redis
+        image: busybox:1.35
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Waiting for Redis..."
+          until nc -z redis 6379; do
+            sleep 2
+          done
+          echo "Redis is ready!"
+          
+          echo "Waiting for Data Collector..."
+          until nc -z data-collector 8001; do
+            sleep 2
+          done
+          echo "Data Collector is ready!"
+---
+# Strategy Engine Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: strategy-engine
+  namespace: polymarket
+  labels:
+    app: strategy-engine
+    component: strategy-engine
+    tier: microservice
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8002
+    targetPort: 8002
+    protocol: TCP
+    name: http
+  selector:
+    app: strategy-engine

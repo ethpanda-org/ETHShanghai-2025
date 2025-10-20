@@ -1,0 +1,20 @@
+*** Begin Patch
+*** Update File: src/polymarket/strategies/registry.py
+@@
+ register(
+     "micro_arbitrage",
+     lambda cfg: MicroArbitrageStrategy(
+         min_confidence=float(cfg.get("min_confidence", 0.2)),
+         min_spread=float(cfg.get("min_spread", 0.02)),
+         taker_fee=float(cfg.get("taker_fee", 0.003)),
+         min_net_edge=float(cfg.get("min_net_edge", 0.002)),
+         external_spread_max=float(cfg.get("external_spread_max", 0.05)),
++        min_local_liquidity=float(cfg.get("min_local_liquidity", 0.0)),
++        external_fee=float(cfg.get("external_fee", 0.0)),
++        internal_edge_threshold=float(cfg.get("internal_edge_threshold", 0.015)),
++        internal_confidence_scale=float(cfg.get("internal_confidence_scale", 1.0)),
++        min_reference_volume=float(cfg.get("min_reference_volume", 0.0)),
++        allow_external_fallback=bool(cfg.get("allow_external_fallback", True)),
+     ),
+ )
+*** End Patch

@@ -1,0 +1,321 @@
+# Prometheus Alert Rules for Polymarket Trading System
+
+groups:
+  # System Health Alerts
+  - name: system_health
+    rules:
+      # Instance down
+      - alert: InstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          category: infrastructure
+        annotations:
+          summary: "Instance {{ $labels.instance }} is down"
+          description: "Instance {{ $labels.instance }} has been down for more than 1 minute."
+          runbook_url: "https://docs.polymarket-trading.local/runbooks/instance-down"
+
+      # High CPU usage
+      - alert: HighCPUUsage
+        expr: (100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 80% for more than 5 minutes on {{ $labels.instance }}"
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 85% for more than 5 minutes on {{ $labels.instance }}"
+
+      # Low disk space
+      - alert: LowDiskSpace
+        expr: (1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          category: storage
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Disk usage is above 85% on {{ $labels.instance }} ({{ $labels.mountpoint }})"
+
+  # Application Health Alerts
+  - name: application_health
+    rules:
+      # Application down
+      - alert: ApplicationDown
+        expr: up{job="polymarket-trading"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: polymarket-trading
+          category: application
+        annotations:
+          summary: "Polymarket Trading application is down"
+          description: "The main trading application has been unavailable for more than 30 seconds"
+
+      # High error rate
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 3m
+        labels:
+          severity: warning
+          service: "{{ $labels.service }}"
+          category: application
+        annotations:
+          summary: "High error rate for {{ $labels.service }}"
+          description: "Error rate is above 5% for {{ $labels.service }} (current: {{ $value | humanizePercentage }})"
+
+      # High response time
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: "{{ $labels.service }}"
+          category: performance
+        annotations:
+          summary: "High response time for {{ $labels.service }}"
+          description: "95th percentile response time is above 2 seconds for {{ $labels.service }}"
+
+  # Database Alerts
+  - name: database_alerts
+    rules:
+      # Database down
+      - alert: DatabaseDown
+        expr: up{job="postgres"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: postgres
+          category: database
+        annotations:
+          summary: "PostgreSQL database is down"
+          description: "PostgreSQL database has been unavailable for more than 30 seconds"
+
+      # High database connections
+      - alert: DatabaseConnectionsHigh
+        expr: pg_stat_database_numbackends / pg_settings_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: postgres
+          category: database
+        annotations:
+          summary: "High number of database connections"
+          description: "Database connection usage is above 80% ({{ $value | humanizePercentage }})"
+
+      # Slow queries
+      - alert: DatabaseSlowQueries
+        expr: rate(pg_stat_database_tup_fetched[5m]) / rate(pg_stat_database_tup_returned[5m]) < 0.1
+        for: 10m
+        labels:
+          severity: warning
+          service: postgres
+          category: performance
+        annotations:
+          summary: "Database queries are running slow"
+          description: "Database query efficiency is below 10%"
+
+      # Database locks
+      - alert: DatabaseDeadlocks
+        expr: rate(pg_stat_database_deadlocks[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+          service: postgres
+          category: database
+        annotations:
+          summary: "Database deadlocks detected"
+          description: "Database deadlocks are occurring ({{ $value }} deadlocks/sec)"
+
+  # Cache Alerts
+  - name: cache_alerts
+    rules:
+      # Redis down
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: redis
+          category: cache
+        annotations:
+          summary: "Redis cache is down"
+          description: "Redis cache has been unavailable for more than 30 seconds"
+
+      # High Redis memory usage
+      - alert: RedisMemoryHigh
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          service: redis
+          category: cache
+        annotations:
+          summary: "Redis memory usage is high"
+          description: "Redis memory usage is above 90% ({{ $value | humanizePercentage }})"
+
+      # Redis evicted keys
+      - alert: RedisEvictedKeys
+        expr: rate(redis_evicted_keys_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+          service: redis
+          category: cache
+        annotations:
+          summary: "Redis is evicting keys"
+          description: "Redis is evicting {{ $value }} keys per second due to memory pressure"
+
+  # Trading System Alerts
+  - name: trading_alerts
+    rules:
+      # Trading engine down
+      - alert: TradingEngineDown
+        expr: up{job="trading-engine"} == 0
+        for: 10s
+        labels:
+          severity: critical
+          service: trading-engine
+          category: trading
+        annotations:
+          summary: "Trading engine is down"
+          description: "Trading engine has been unavailable for more than 10 seconds"
+
+      # High position count
+      - alert: HighPositionCount
+        expr: trading_active_positions_total > 50
+        for: 5m
+        labels:
+          severity: warning
+          service: trading-engine
+          category: risk
+        annotations:
+          summary: "High number of active positions"
+          description: "Number of active positions is {{ $value }}, which exceeds the warning threshold of 50"
+
+      # Low success rate
+      - alert: LowTradingSuccessRate
+        expr: trading_success_rate < 0.6
+        for: 15m
+        labels:
+          severity: warning
+          service: trading-engine
+          category: performance
+        annotations:
+          summary: "Trading success rate is low"
+          description: "Trading success rate has dropped to {{ $value | humanizePercentage }} for more than 15 minutes"
+
+      # Risk manager alerts
+      - alert: RiskManagerDown
+        expr: up{job="risk-manager"} == 0
+        for: 10s
+        labels:
+          severity: critical
+          service: risk-manager
+          category: risk
+        annotations:
+          summary: "Risk manager is down"
+          description: "Risk manager service has been unavailable for more than 10 seconds"
+
+      # High portfolio risk
+      - alert: HighPortfolioRisk
+        expr: portfolio_risk_score > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: risk-manager
+          category: risk
+        annotations:
+          summary: "Portfolio risk is high"
+          description: "Portfolio risk score is {{ $value }}, exceeding the warning threshold of 0.8"
+
+  # Business Metrics Alerts
+  - name: business_alerts
+    rules:
+      # Significant losses
+      - alert: SignificantLosses
+        expr: trading_total_pnl < -1000
+        for: 5m
+        labels:
+          severity: critical
+          service: trading-engine
+          category: business
+          profit_loss: "{{ $value }}"
+        annotations:
+          summary: "Significant trading losses detected"
+          description: "Total P&L has dropped to ${{ $value }}, indicating significant losses"
+
+      # No trades in extended period
+      - alert: NoTradingActivity
+        expr: increase(trading_total_trades[1h]) == 0
+        for: 1h
+        labels:
+          severity: warning
+          service: trading-engine
+          category: business
+        annotations:
+          summary: "No trading activity detected"
+          description: "No trades have been executed in the last hour"
+
+      # Data collector issues
+      - alert: DataCollectorDown
+        expr: up{job="data-collector"} == 0
+        for: 1m
+        labels:
+          severity: warning
+          service: data-collector
+          category: data
+        annotations:
+          summary: "Data collector is down"
+          description: "Data collector service has been unavailable for more than 1 minute"
+
+      # Stale market data
+      - alert: StaleMarketData
+        expr: time() - market_data_last_update_timestamp > 300
+        for: 2m
+        labels:
+          severity: warning
+          service: data-collector
+          category: data
+        annotations:
+          summary: "Market data is stale"
+          description: "Market data hasn't been updated for more than 5 minutes"
+
+  # External Dependencies
+  - name: external_dependencies
+    rules:
+      # Polymarket API issues
+      - alert: PolymarketAPIDown
+        expr: external_api_success_rate{api="polymarket"} < 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: data-collector
+          category: external
+        annotations:
+          summary: "Polymarket API success rate is low"
+          description: "Polymarket API success rate is {{ $value | humanizePercentage }}"
+
+      # Proxy issues
+      - alert: ProxyConnectivityIssues
+        expr: proxy_success_rate < 0.9
+        for: 3m
+        labels:
+          severity: warning
+          service: data-collector
+          category: external
+        annotations:
+          summary: "Proxy connectivity issues"
+          description: "Proxy success rate has dropped to {{ $value | humanizePercentage }}"

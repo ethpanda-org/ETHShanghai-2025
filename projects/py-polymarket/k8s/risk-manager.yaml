@@ -1,0 +1,180 @@
+# Risk Manager Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: risk-manager
+  namespace: polymarket
+  labels:
+    app: risk-manager
+    component: risk-manager
+    tier: microservice
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: risk-manager
+  template:
+    metadata:
+      labels:
+        app: risk-manager
+        component: risk-manager
+        tier: microservice
+    spec:
+      containers:
+      - name: risk-manager
+        image: polymarket/risk-manager:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8003
+          name: http
+        env:
+        - name: SERVICE_NAME
+          value: "risk-manager"
+        - name: SERVICE_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: RISK_MANAGER_PORT
+        - name: TRADING_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: TRADING_ENV
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: LOG_LEVEL
+        - name: WAIT_FOR_REDIS
+          value: "true"
+        - name: WAIT_FOR_DB
+          value: "true"
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: REDIS_PASSWORD
+        - name: DB_HOST
+          value: "postgres"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_DB
+        - name: DB_USER
+          value: "risk_manager"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: RISK_MANAGER_DB_PASSWORD
+        - name: RISK_CONFIG_PATH
+          value: "/app/config/risk_management.yaml"
+        - name: REPORTS_DIR
+          value: "/app/reports"
+        - name: MAX_POSITION_SIZE
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: MAX_POSITION_SIZE
+        - name: MAX_PORTFOLIO_RISK
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: MAX_PORTFOLIO_RISK
+        volumeMounts:
+        - name: app-logs
+          mountPath: /app/logs
+        - name: app-config-volume
+          mountPath: /app/config
+        - name: reports-volume
+          mountPath: /app/reports
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8003
+          initialDelaySeconds: 35
+          periodSeconds: 25
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8003
+          initialDelaySeconds: 25
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: app-logs
+        persistentVolumeClaim:
+          claimName: app-logs-pvc
+      - name: app-config-volume
+        configMap:
+          name: app-config
+      - name: reports-volume
+        emptyDir: {}
+      restartPolicy: Always
+      initContainers:
+      - name: wait-for-dependencies
+        image: busybox:1.35
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Waiting for PostgreSQL..."
+          until nc -z postgres 5432; do
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+          
+          echo "Waiting for Redis..."
+          until nc -z redis 6379; do
+            sleep 2
+          done
+          echo "Redis is ready!"
+          
+          echo "Waiting for Strategy Engine..."
+          until nc -z strategy-engine 8002; do
+            sleep 2
+          done
+          echo "Strategy Engine is ready!"
+---
+# Risk Manager Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: risk-manager
+  namespace: polymarket
+  labels:
+    app: risk-manager
+    component: risk-manager
+    tier: microservice
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8003
+    targetPort: 8003
+    protocol: TCP
+    name: http
+  selector:
+    app: risk-manager

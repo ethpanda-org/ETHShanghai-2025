@@ -1,0 +1,635 @@
+# Polymarket Trading System - CI/CD Pipeline
+# GitHub Actions workflow for automated testing, building, and deployment
+
+name: Polymarket Trading CI/CD
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+  release:
+    types: [ published ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "18"
+
+# Global permissions for the workflow
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+  actions: read
+
+jobs:
+  # ==============================================================================
+  # CODE QUALITY AND SECURITY ANALYSIS
+  # ==============================================================================
+  
+  code-quality:
+    name: Code Quality Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for better analysis
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+        
+    - name: Run code formatting check
+      run: |
+        black --check --diff .
+        isort --check-only --diff .
+        
+    - name: Run linting
+      run: |
+        flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 src/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        
+    - name: Run security analysis
+      run: |
+        bandit -r src/ -f json -o bandit-report.json || true
+        safety check --json --output safety-report.json || true
+        
+    - name: Run type checking
+      run: |
+        mypy src/ --ignore-missing-imports --no-strict-optional
+        
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
+          safety-report.json
+        retention-days: 30
+
+  # ==============================================================================
+  # AUTOMATED TESTING
+  # ==============================================================================
+  
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+        
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: polymarket_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-test.txt
+        
+    - name: Set up test environment
+      env:
+        DATABASE_URL: postgresql://postgres:test_password@localhost:5432/polymarket_test
+        REDIS_URL: redis://localhost:6379/0
+        TRADING_ENV: testing
+      run: |
+        # Initialize test database
+        python scripts/init_test_db.py
+        
+    - name: Run unit tests
+      env:
+        DATABASE_URL: postgresql://postgres:test_password@localhost:5432/polymarket_test
+        REDIS_URL: redis://localhost:6379/0
+        TRADING_ENV: testing
+        PYTHONPATH: ${{ github.workspace }}/src
+      run: |
+        pytest tests/unit/ \
+          --cov=src \
+          --cov-report=xml \
+          --cov-report=html \
+          --junit-xml=pytest-results.xml \
+          -v
+          
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results-${{ matrix.python-version }}
+        path: |
+          pytest-results.xml
+          htmlcov/
+        retention-days: 30
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      if: matrix.python-version == '3.11'
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [code-quality]
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: polymarket_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-test.txt
+        
+    - name: Set up test environment
+      env:
+        DATABASE_URL: postgresql://postgres:test_password@localhost:5432/polymarket_test
+        REDIS_URL: redis://localhost:6379/0
+        TRADING_ENV: testing
+      run: |
+        python scripts/init_test_db.py
+        
+    - name: Run integration tests
+      env:
+        DATABASE_URL: postgresql://postgres:test_password@localhost:5432/polymarket_test
+        REDIS_URL: redis://localhost:6379/0
+        TRADING_ENV: testing
+        PYTHONPATH: ${{ github.workspace }}/src
+        # Mock external APIs in tests
+        MOCK_POLYMARKET_API: "true"
+      run: |
+        pytest tests/integration/ \
+          --timeout=300 \
+          --junit-xml=integration-results.xml \
+          -v
+          
+    - name: Upload integration test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: integration-test-results
+        path: integration-results.xml
+        retention-days: 30
+
+  # ==============================================================================
+  # CONTAINER IMAGE BUILD AND SECURITY SCAN
+  # ==============================================================================
+  
+  build-and-scan:
+    name: Build and Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: [unit-tests]
+    
+    outputs:
+      image-digest: ${{ steps.build.outputs.digest }}
+      image-tags: ${{ steps.meta.outputs.tags }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+          
+    - name: Build and push main image
+      id: build
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        target: production
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        build-args: |
+          BUILD_DATE=${{ github.event.head_commit.timestamp }}
+          BUILD_REVISION=${{ github.sha }}
+          BUILD_VERSION=${{ github.ref_name }}
+          
+    - name: Build microservices images
+      run: |
+        # Build individual microservice images
+        services=("api-gateway" "data-collector" "strategy-engine" "risk-manager" "trading-engine")
+        
+        for service in "${services[@]}"; do
+          echo "Building $service image..."
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --file docker/microservices/Dockerfile.$service \
+            --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/$service:${{ github.sha }} \
+            --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/$service:latest \
+            --push \
+            .
+        done
+        
+    - name: Build database images
+      run: |
+        # Build PostgreSQL image
+        docker buildx build \
+          --platform linux/amd64,linux/arm64 \
+          --file docker/database/Dockerfile.postgres \
+          --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/postgres:${{ github.sha }} \
+          --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/postgres:latest \
+          --push \
+          .
+          
+        # Build Redis image
+        docker buildx build \
+          --platform linux/amd64,linux/arm64 \
+          --file docker/cache/Dockerfile.redis \
+          --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/redis:${{ github.sha }} \
+          --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/redis:latest \
+          --push \
+          .
+          
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+        
+    - name: Run Grype vulnerability scanner
+      uses: anchore/scan-action@v3
+      id: scan
+      with:
+        image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        fail-build: false
+        severity-cutoff: high
+        
+    - name: Upload Grype scan results
+      uses: actions/upload-artifact@v3
+      with:
+        name: grype-scan-results
+        path: ${{ steps.scan.outputs.sarif }}
+        retention-days: 30
+
+  # ==============================================================================
+  # DEPLOYMENT STAGES
+  # ==============================================================================
+  
+  deploy-development:
+    name: Deploy to Development
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [integration-tests, build-and-scan]
+    if: github.ref == 'refs/heads/develop'
+    environment: development
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Kubernetes CLI
+      uses: azure/k8s-set-context@v3
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.DEV_KUBECONFIG }}
+        
+    - name: Deploy to development cluster
+      run: |
+        # Update image tags in Kubernetes manifests
+        sed -i "s|polymarket/.*:latest|${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}|g" k8s/*.yaml
+        
+        # Apply development-specific configurations
+        kubectl apply -f k8s/namespace.yaml
+        kubectl apply -f k8s/configmaps.yaml
+        kubectl apply -f k8s/secrets.yaml
+        kubectl apply -f k8s/persistentvolumes.yaml
+        
+        # Deploy infrastructure
+        kubectl apply -f k8s/postgres.yaml
+        kubectl apply -f k8s/redis.yaml
+        
+        # Wait for infrastructure
+        kubectl wait --for=condition=ready pod -l app=postgres -n polymarket-dev --timeout=300s
+        kubectl wait --for=condition=ready pod -l app=redis -n polymarket-dev --timeout=300s
+        
+        # Deploy microservices
+        kubectl apply -f k8s/api-gateway.yaml
+        kubectl apply -f k8s/data-collector.yaml
+        kubectl apply -f k8s/strategy-engine.yaml
+        kubectl apply -f k8s/risk-manager.yaml
+        kubectl apply -f k8s/trading-engine.yaml
+        kubectl apply -f k8s/web-monitor.yaml
+        kubectl apply -f k8s/nginx-ingress.yaml
+        
+        # Wait for deployments
+        kubectl rollout status deployment/api-gateway -n polymarket-dev --timeout=300s
+        kubectl rollout status deployment/trading-engine -n polymarket-dev --timeout=300s
+        
+    - name: Run smoke tests
+      run: |
+        # Wait for services to be ready
+        sleep 30
+        
+        # Get service endpoint
+        API_ENDPOINT=$(kubectl get service nginx -n polymarket-dev -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+        
+        if [ -z "$API_ENDPOINT" ]; then
+          # Use port-forward if LoadBalancer IP is not available
+          kubectl port-forward service/nginx 8080:80 -n polymarket-dev &
+          sleep 10
+          API_ENDPOINT="localhost:8080"
+        fi
+        
+        # Run basic health checks
+        curl -f http://$API_ENDPOINT/health || exit 1
+        curl -f http://$API_ENDPOINT/api/health || exit 1
+        curl -f http://$API_ENDPOINT/monitor/ || exit 1
+        
+        echo "✅ Smoke tests passed"
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [deploy-development]
+    if: github.ref == 'refs/heads/main'
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Kubernetes CLI
+      uses: azure/k8s-set-context@v3
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.STAGING_KUBECONFIG }}
+        
+    - name: Deploy to staging cluster
+      run: |
+        # Update image tags
+        sed -i "s|polymarket/.*:latest|${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}|g" k8s/*.yaml
+        
+        # Apply staging namespace
+        sed -i 's/namespace: polymarket/namespace: polymarket-staging/g' k8s/*.yaml
+        
+        # Deploy full stack
+        ./k8s/deploy.sh -n polymarket-staging --skip-wait
+        
+    - name: Run staging tests
+      run: |
+        # Run comprehensive staging tests
+        python scripts/staging_tests.py --endpoint staging.polymarket.local
+        
+    - name: Performance benchmarks
+      run: |
+        # Run performance tests
+        python scripts/performance_tests.py --duration 300 --threads 10
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [deploy-staging]
+    if: github.event_name == 'release'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Kubernetes CLI
+      uses: azure/k8s-set-context@v3
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.PROD_KUBECONFIG }}
+        
+    - name: Blue-Green Deployment Setup
+      run: |
+        # Determine current active deployment (blue or green)
+        CURRENT_COLOR=$(kubectl get service nginx -n polymarket-prod -o jsonpath='{.spec.selector.color}' || echo "blue")
+        NEW_COLOR=$([[ "$CURRENT_COLOR" == "blue" ]] && echo "green" || echo "blue")
+        
+        echo "CURRENT_COLOR=$CURRENT_COLOR" >> $GITHUB_ENV
+        echo "NEW_COLOR=$NEW_COLOR" >> $GITHUB_ENV
+        
+    - name: Deploy new version (Blue-Green)
+      run: |
+        # Update image tags and color labels
+        sed -i "s|polymarket/.*:latest|${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}|g" k8s/*.yaml
+        sed -i "s|app: |app: ${{ env.NEW_COLOR }}-|g" k8s/*.yaml
+        sed -i 's/namespace: polymarket/namespace: polymarket-prod/g' k8s/*.yaml
+        
+        # Deploy new color version
+        ./k8s/deploy.sh -n polymarket-prod
+        
+    - name: Warm up new deployment
+      run: |
+        # Wait for new deployment to be ready
+        kubectl wait --for=condition=ready pod -l color=${{ env.NEW_COLOR }} -n polymarket-prod --timeout=600s
+        
+        # Warm up services
+        python scripts/warmup_services.py --color ${{ env.NEW_COLOR }}
+        
+    - name: Production smoke tests
+      run: |
+        # Run comprehensive production readiness tests
+        python scripts/production_readiness_tests.py --color ${{ env.NEW_COLOR }}
+        
+    - name: Switch traffic (Blue-Green)
+      run: |
+        # Update service selectors to point to new color
+        kubectl patch service nginx -n polymarket-prod -p '{"spec":{"selector":{"color":"'${{ env.NEW_COLOR }}'"}}}'
+        kubectl patch service api-gateway -n polymarket-prod -p '{"spec":{"selector":{"color":"'${{ env.NEW_COLOR }}'"}}}'
+        
+        echo "✅ Traffic switched to ${{ env.NEW_COLOR }} deployment"
+        
+    - name: Monitor new deployment
+      run: |
+        # Monitor metrics for 10 minutes
+        python scripts/monitor_deployment.py --duration 600 --color ${{ env.NEW_COLOR }}
+        
+    - name: Cleanup old deployment
+      run: |
+        # Remove old color deployment after successful switch
+        sleep 300  # Wait 5 minutes before cleanup
+        
+        kubectl delete deployment -l color=${{ env.CURRENT_COLOR }} -n polymarket-prod
+        echo "✅ Old deployment (${{ env.CURRENT_COLOR }}) cleaned up"
+
+  # ==============================================================================
+  # ROLLBACK WORKFLOW
+  # ==============================================================================
+  
+  rollback:
+    name: Emergency Rollback
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: failure() && (needs.deploy-production.result == 'failure' || github.event.inputs.rollback == 'true')
+    needs: [deploy-production]
+    environment: production
+    
+    steps:
+    - name: Set up Kubernetes CLI
+      uses: azure/k8s-set-context@v3
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.PROD_KUBECONFIG }}
+        
+    - name: Rollback to previous version
+      run: |
+        # Get current and previous colors
+        CURRENT_COLOR=$(kubectl get service nginx -n polymarket-prod -o jsonpath='{.spec.selector.color}')
+        PREVIOUS_COLOR=$([[ "$CURRENT_COLOR" == "blue" ]] && echo "green" || echo "blue")
+        
+        # Switch traffic back to previous version
+        kubectl patch service nginx -n polymarket-prod -p '{"spec":{"selector":{"color":"'$PREVIOUS_COLOR'"}}}'
+        kubectl patch service api-gateway -n polymarket-prod -p '{"spec":{"selector":{"color":"'$PREVIOUS_COLOR'"}}}'
+        
+        echo "🔄 Emergency rollback completed - traffic switched to $PREVIOUS_COLOR"
+        
+    - name: Verify rollback
+      run: |
+        # Verify services are responding
+        kubectl get pods -l color=$PREVIOUS_COLOR -n polymarket-prod
+        python scripts/health_check.py --environment production
+
+  # ==============================================================================
+  # NOTIFICATION AND REPORTING
+  # ==============================================================================
+  
+  notify:
+    name: Deployment Notification
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: always()
+    needs: [deploy-production, rollback]
+    
+    steps:
+    - name: Notify Slack
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        username: 'GitHub Actions'
+        icon_emoji: ':rocket:'
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        
+    - name: Create deployment report
+      run: |
+        echo "## Deployment Report" >> deployment-report.md
+        echo "- **Environment**: Production" >> deployment-report.md
+        echo "- **Version**: ${{ github.sha }}" >> deployment-report.md
+        echo "- **Status**: ${{ job.status }}" >> deployment-report.md
+        echo "- **Timestamp**: $(date -u)" >> deployment-report.md
+        
+    - name: Upload deployment report
+      uses: actions/upload-artifact@v3
+      with:
+        name: deployment-report
+        path: deployment-report.md
+        retention-days: 90

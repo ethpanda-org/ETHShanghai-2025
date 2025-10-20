@@ -1,0 +1,130 @@
+# Redis Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: polymarket
+  labels:
+    app: redis
+    component: cache
+    tier: infrastructure
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        component: cache
+        tier: infrastructure
+    spec:
+      containers:
+      - name: redis
+        image: polymarket/redis:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 6379
+          name: redis
+        env:
+        - name: REDIS_MODE
+          valueFrom:
+            configMapKeyRef:
+              name: redis-config
+              key: REDIS_MODE
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: REDIS_PASSWORD
+        - name: REDIS_MAX_MEMORY
+          valueFrom:
+            configMapKeyRef:
+              name: redis-config
+              key: REDIS_MAX_MEMORY
+        - name: REDIS_MAX_MEMORY_POLICY
+          valueFrom:
+            configMapKeyRef:
+              name: redis-config
+              key: REDIS_MAX_MEMORY_POLICY
+        - name: INIT_TRADING_DATA
+          valueFrom:
+            configMapKeyRef:
+              name: redis-config
+              key: INIT_TRADING_DATA
+        command:
+        - redis-server
+        - /etc/redis/redis.conf
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        - name: redis-config-volume
+          mountPath: /etc/redis
+        - name: app-logs
+          mountPath: /var/log/redis
+        livenessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - /usr/local/bin/redis-healthcheck.sh
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "250m"
+          limits:
+            memory: "3Gi"
+            cpu: "500m"
+      volumes:
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: redis-pvc
+      - name: redis-config-volume
+        configMap:
+          name: redis-config
+          items:
+          - key: redis.conf
+            path: redis.conf
+      - name: app-logs
+        persistentVolumeClaim:
+          claimName: app-logs-pvc
+      restartPolicy: Always
+      securityContext:
+        fsGroup: 999  # redis user group
+---
+# Redis Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: polymarket
+  labels:
+    app: redis
+    component: cache
+    tier: infrastructure
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: redis
+  selector:
+    app: redis

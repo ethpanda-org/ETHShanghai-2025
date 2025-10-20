@@ -1,0 +1,76 @@
+# Base Dockerfile template for Polymarket microservices
+# Multi-stage build optimized for microservice deployment
+
+# Stage 1: Base environment with minimal dependencies
+FROM python:3.11-slim as microservice-base
+
+# Set environment variables for Python optimization
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    DEBIAN_FRONTEND=noninteractive
+
+# Install minimal system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    gcc \
+    libffi-dev \
+    libssl-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Stage 2: Dependencies installation
+FROM microservice-base as microservice-deps
+
+WORKDIR /app
+
+# Copy requirements for microservices
+COPY requirements.txt requirements-microservices.txt* ./
+
+# Install Python dependencies
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install -r requirements.txt && \
+    if [ -f requirements-microservices.txt ]; then pip install -r requirements-microservices.txt; fi
+
+# Stage 3: Microservice application
+FROM microservice-deps as microservice-app
+
+# Copy source code
+COPY src/ ./src/
+COPY config/ ./config/
+COPY scripts/ ./scripts/
+
+# Create microservice user for security
+RUN useradd --create-home --shell /bin/bash microservice && \
+    mkdir -p /app/logs /app/data /app/cache /app/tmp && \
+    chown -R microservice:microservice /app
+
+# Copy microservice entrypoint
+COPY docker/microservices/microservice-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/microservice-entrypoint.sh
+
+# Switch to microservice user
+USER microservice
+
+# Set Python path
+ENV PYTHONPATH=/app/src
+
+# Set entrypoint
+ENTRYPOINT ["/usr/local/bin/microservice-entrypoint.sh"]
+
+# Default health check - can be overridden
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:${SERVICE_PORT:-8001}/health || exit 1
+
+# Environment variables for microservices
+ENV TRADING_ENV=production \
+    LOG_LEVEL=INFO \
+    SERVICE_NAME=unknown \
+    SERVICE_PORT=8001 \
+    MESSAGE_BROKER_URL=redis://redis:6379 \
+    SERVICE_REGISTRY_URL=http://service-registry:8000
+
+# Default command
+CMD ["python", "src/polymarket/microservices/service_base.py"]
