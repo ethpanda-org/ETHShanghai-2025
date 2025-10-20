@@ -1,10 +1,13 @@
 // 文件：src/App.js
+import "./App.css";
 import React, { useState } from "react";
 import axios from "axios";
 
 // --- 配置 DeepSeek API Key
 const DEEPSEEK_API_KEY = process.env.REACT_APP_DEEPSEEK_API_KEY;
 const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
+const EVM_ADDRESS = "0x3683520348c66286A6b6a59b795bE9D50B648dE6";   
+const EVM_NETWORK = "Ethereum / EVM 兼容链";
 
 
 // 所有牌阵配置
@@ -135,6 +138,7 @@ export default function App() {
   const [aiResult, setAIResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [freeUsed, setFreeUsed] = useState(getFreeCount() >= 1);
+  const [showPay, setShowPay] = useState(false);
 
   // 卡牌池（可扩展正逆位和牌名，demo为英文大阿尔克那）
   const tarotCards = [
@@ -213,8 +217,9 @@ ${spreadText}
 
   // 支付按钮占位（可接入合约或钱包支付逻辑）
   function handlePay() {
-    alert("支付入口占位：集成钱包、合约，支付完成后可解锁今日更多解读。");
-  }
+  setShowPay(true);
+}
+
 
   // 导航和牌阵切换
   function handleCategoryChange(val) {
@@ -231,85 +236,174 @@ ${spreadText}
     setAIResult("");
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 p-4">
-      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-8">
-        <h1 className="text-3xl font-bold mb-4 text-center">AI链上塔罗占卜</h1>
-        {/* 主题导航 */}
-        <div className="flex gap-4 mb-4">
-          {ALL_CATEGORIES.map((c) => (
-            <button key={c.value}
-              className={`px-3 py-2 rounded-lg ${category.value === c.value ? "bg-blue-200 font-bold" : "bg-gray-100"}`}
-              onClick={() => handleCategoryChange(c.value)}
-            >{c.label}</button>
-          ))}
-        </div>
-        {/* 牌阵选择 */}
-        <div className="flex gap-3 items-center mb-4">
-          <span>请选择牌阵：</span>
-          <select className="border rounded px-2 py-1"
-            value={spread.value}
-            onChange={e => handleSpreadChange(e.target.value)}
+ return (
+  <div className="page">
+    <div className="glass">
+      <h1 className="title">AI链上塔罗占卜</h1>
+
+      {/* 主题导航 */}
+      <div className="flex gap-4 mb-4">
+        {ALL_CATEGORIES.map((c) => (
+          <button
+            key={c.value}
+            className={`px-3 py-2 rounded-lg ${category.value === c.value ? "bg-blue-200 font-bold" : "bg-gray-100"}`}
+            onClick={() => handleCategoryChange(c.value)}
           >
-            {category.spreads.map(sp => (
-              <option value={sp.value} key={sp.value}>{sp.label}</option>
-            ))}
-          </select>
-        </div>
-        {/* 占卜问题 */}
-        <div className="mb-3">
-          <input className="w-full border px-3 py-2 rounded-lg"
-            placeholder="请输入你要占卜的问题（如：下半年我的工作运如何？）"
-            value={question}
-            onChange={e => setQuestion(e.target.value)}
-          />
-        </div>
-        {/* 抽牌按钮 */}
+            {c.label}
+          </button>
+        ))}
+      </div>
+
+      {/* 牌阵选择 */}
+      <div className="flex gap-3 items-center mb-4">
+        <span>请选择牌阵：</span>
+        <select
+          className="border rounded px-2 py-1"
+          value={spread.value}
+          onChange={(e) => handleSpreadChange(e.target.value)}
+        >
+          {category.spreads.map((sp) => (
+            <option value={sp.value} key={sp.value}>
+              {sp.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* 占卜问题 */}
+      <div className="mb-3">
+        <input
+          className="w-full border px-3 py-2 rounded-lg"
+          placeholder="请输入你要占卜的问题（如：下半年我的工作运如何？）"
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+        />
+      </div>
+
+      {/* 抽牌按钮 */}
+      <div className="mb-4">
+        <button
+          className="bg-indigo-500 text-white px-5 py-2 rounded-xl shadow"
+          onClick={() => drawCards(spread.positions.length)}
+        >
+          点击抽牌
+        </button>
+      </div>
+
+      {/* 展示抽牌结果 */}
+      {drawnCards.length > 0 && (
         <div className="mb-4">
-          <button className="bg-indigo-500 text-white px-5 py-2 rounded-xl shadow"
-            onClick={() => drawCards(spread.positions.length)}
-          >点击抽牌</button>
-        </div>
-        {/* 展示抽牌结果 */}
-        {drawnCards.length > 0 && (
-          <div className="mb-4">
-            <div className="grid grid-cols-2 gap-2">
-              {spread.positions.map((pos, i) => (
-                <div key={i} className="bg-gray-50 p-2 rounded shadow">
-                  <div className="font-semibold">{pos}</div>
-                  <div className="text-lg">{drawnCards[i]?.name} <span className="text-xs">{drawnCards[i]?.position}</span></div>
+          <div className="grid grid-cols-2 gap-2">
+            {spread.positions.map((pos, i) => (
+              <div key={i} className="bg-gray-50 p-2 rounded shadow">
+                <div className="font-semibold">{pos}</div>
+                <div className="text-lg">
+                  {drawnCards[i]?.name} <span className="text-xs">{drawnCards[i]?.position}</span>
                 </div>
-              ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* AI解读 & 付费判断 */}
+      {drawnCards.length > 0 && (
+        <>
+          {!freeUsed ? (
+            <button
+              className="bg-green-600 text-white px-6 py-2 rounded-xl shadow-lg"
+              onClick={handleAI}
+              disabled={loading}
+            >
+              {loading ? "AI智能分析中..." : "免费AI解读（每日一次）"}
+            </button>
+          ) : (
+            <button
+              className="bg-yellow-400 text-black px-6 py-2 rounded-xl shadow-lg"
+              onClick={handlePay}
+            >
+              支付解锁更多占卜（支持加密货币）
+            </button>
+          )}
+        </>
+      )}
+
+      {/* AI结果 */}
+      {aiResult && (
+        <div className="mt-6 bg-gray-50 border rounded-xl p-4 text-gray-800 whitespace-pre-line shadow">
+          <strong>AI解读：</strong>
+          <div>{aiResult}</div>
+        </div>
+      )}
+
+      {/* 底部免责声明 */}
+      <div className="mt-10 text-xs text-gray-500 text-center">
+        部分牌阵结构与灵感参考自多本经典塔罗教材，所有解读均由AI实时生成，仅供学习娱乐，不构成任何专业建议。
+      </div>
+
+      {/* 支付弹窗放在 .glass 内（推荐） */}
+      {showPay && (
+        <div
+          className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowPay(false)}
+        >
+          <div
+            className="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-3">
+              <h3 className="text-lg font-bold">支付解锁更多占卜</h3>
+              <button
+                className="w-8 h-8 rounded-full bg-black/5 hover:bg-black/10"
+                onClick={() => setShowPay(false)}
+                aria-label="close"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-600">
+              使用 {EVM_NETWORK} 向下方地址链上转账即可解锁。当前版本仅展示收款地址，不接微信/支付宝；如遇失败可人工联系退款。
+            </p>
+
+            <div className="mt-4">
+              <div className="text-xs text-gray-500 mb-1">收款地址</div>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 bg-gray-100 rounded-lg px-3 py-2 overflow-x-auto">{EVM_ADDRESS}</code>
+                <button
+                  className="px-3 py-2 rounded-lg bg-indigo-600 text-white font-semibold"
+                  onClick={() => navigator.clipboard.writeText(EVM_ADDRESS)}
+                >
+                  复制
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-5 flex items-center justify-end gap-8">
+              <a
+                className="text-indigo-600 hover:underline"
+                href={`ethereum:${EVM_ADDRESS}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                用钱包打开
+              </a>
+
+              <button
+                className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50"
+                onClick={() => setShowPay(false)}
+              >
+                已完成支付
+              </button>
+            </div>
+
+            <div className="tiny">
+              网络：{EVM_NETWORK}。若遇到 401/402 等错误未成功解读，可联系人工退款（暂未自动合约退款）。
             </div>
           </div>
-        )}
-        {/* AI解读 & 付费判断 */}
-        {drawnCards.length > 0 && (
-          <>
-            {!freeUsed ? (
-              <button className="bg-green-600 text-white px-6 py-2 rounded-xl shadow-lg"
-                onClick={handleAI}
-                disabled={loading}
-              >{loading ? "AI智能分析中..." : "免费AI解读（每日一次）"}</button>
-            ) : (
-              <button className="bg-yellow-400 text-black px-6 py-2 rounded-xl shadow-lg"
-                onClick={handlePay}
-              >支付解锁更多占卜（支持加密货币）</button>
-            )}
-          </>
-        )}
-        {/* AI结果 */}
-        {aiResult && (
-          <div className="mt-6 bg-gray-50 border rounded-xl p-4 text-gray-800 whitespace-pre-line shadow">
-            <strong>AI解读：</strong>
-            <div>{aiResult}</div>
-          </div>
-        )}
-        {/* 底部免责声明 */}
-        <div className="mt-10 text-xs text-gray-500 text-center">
-          部分牌阵结构与灵感参考自多本经典塔罗教材，所有解读均由AI实时生成，仅供学习娱乐，不构成任何专业建议。
         </div>
-      </div>
-    </div>
-  );
+      )}
+   </div>
+  </div>
+);
 }
