@@ -1,4 +1,4 @@
 [
-  { "name": "menu1", "path": "/vocabulary" },
-  { "name": "menu2", "path": "/article" }
+  { "name": "首页", "path": "/" },
+  { "name": "我的Agent", "path": "/my" }
 ]

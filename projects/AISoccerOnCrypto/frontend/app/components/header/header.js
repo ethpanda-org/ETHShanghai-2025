@@ -37,7 +37,7 @@ export default function Header() {
       <Link href="/" className={styles.card}  rel="noopener noreferrer">            
         <HStack>
           <Image src={logo} style={{height: '60px', width: '60px'}}/>
-          <Box className={styles.creepsterRegular}>XXX</Box>
+          <Box className={styles.creepsterRegular}>Soccer Master</Box>
         </HStack>
       </Link>
       

@@ -18,8 +18,11 @@ const theme = extendTheme({
   styles: {
     global: {
       body: {
-        bg: 'var(--background)',
-        color: 'var(--foreground)',
+        bg: '#191B1F',
+        color: 'white',
+      },
+      '*': {
+        color: 'white',
       },
     },
   },
@@ -31,7 +34,7 @@ const theme = extendTheme({
       variants: {
         solid: {
           bg: 'var(--primary)',
-          color: 'var(--foreground)',
+          color: 'white',
           _hover: {
             bg: 'var(--secondary)',
           },
@@ -41,7 +44,81 @@ const theme = extendTheme({
     Modal: {
       baseStyle: {
         dialog: {
-          bg: 'gray.50',
+          bg: 'rgba(255, 255, 255, 0.05)',
+          borderColor: '#40444F',
+          border: '1px solid',
+          color: 'white',
+        },
+      },
+    },
+    Text: {
+      baseStyle: {
+        color: 'white',
+      },
+    },
+    Heading: {
+      baseStyle: {
+        color: 'white',
+      },
+    },
+    FormLabel: {
+      baseStyle: {
+        color: 'gray.300',
+      },
+    },
+    Input: {
+      baseStyle: {
+        field: {
+          bg: 'rgba(255, 255, 255, 0.1)',
+          borderColor: '#40444F',
+          color: 'white',
+          _placeholder: {
+            color: 'gray.400',
+          },
+          _hover: {
+            borderColor: '#00ff9d',
+          },
+          _focus: {
+            borderColor: '#00ff9d',
+            boxShadow: '0 0 0 1px #00ff9d',
+          },
+        },
+      },
+    },
+    Textarea: {
+      baseStyle: {
+        bg: 'rgba(255, 255, 255, 0.1)',
+        borderColor: '#40444F',
+        color: 'white',
+        _placeholder: {
+          color: 'gray.400',
+        },
+        _hover: {
+          borderColor: '#00ff9d',
+        },
+        _focus: {
+          borderColor: '#00ff9d',
+          boxShadow: '0 0 0 1px #00ff9d',
+        },
+      },
+    },
+    Tabs: {
+      baseStyle: {
+        tab: {
+          color: 'gray.400',
+          _selected: {
+            color: 'white',
+            borderColor: '#00ff9d',
+          },
+          _hover: {
+            color: 'white',
+          },
+        },
+        tablist: {
+          borderColor: '#40444F',
+        },
+        tabpanel: {
+          color: 'white',
         },
       },
     },
