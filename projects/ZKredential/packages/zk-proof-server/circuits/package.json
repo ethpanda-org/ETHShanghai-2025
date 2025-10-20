@@ -1,0 +1,17 @@
+{
+  "name": "zk-rwa-circuits",
+  "version": "1.0.0",
+  "description": "ZK-RWA Modular Circuits",
+  "main": "index.js",
+  "scripts": {
+    "compile": "bash compile_modular_circuits.sh",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "circomlib": "^2.0.5"
+  },
+  "devDependencies": {},
+  "keywords": ["zk", "rwa", "circom", "groth16"],
+  "author": "ZK-RWA Team",
+  "license": "MIT"
+}
