@@ -1,168 +1,210 @@
 #!/usr/bin/env python3
 """
 智能合约部署脚本
-支持本地开发网络和测试网部署
+使用 Python Web3 编译和部署 TaskContract 到 Ganache 网络
 """
 
 import os
+import sys
 import json
-import time
+from pathlib import Path
 from web3 import Web3
 from dotenv import load_dotenv
+from solcx import compile_source, install_solc
 
-# 加载环境变量
-load_dotenv()
+def load_environment():
+    """加载环境变量"""
+    load_dotenv()
+    
+    # 检查必要的环境变量
+    required_vars = ['ETHEREUM_RPC_URL_DEVNET']
+    missing_vars = [var for var in required_vars if not os.getenv(var)]
+    
+    if missing_vars:
+        print(f"❌ 缺少环境变量: {', '.join(missing_vars)}")
+        return False
+    
+    return True
 
-def deploy_to_local():
-    """部署到本地开发网络（Ganache）"""
-    print("🚀 部署到本地开发网络...")
+def compile_contract():
+    """编译智能合约"""
+    print("�� 编译智能合约...")
     
-    # 连接本地网络
-    w3 = Web3(Web3.HTTPProvider('http://localhost:8545'))
+    contract_file = Path("contracts/TaskContract.sol")
+    if not contract_file.exists():
+        print("❌ 合约文件不存在: contracts/TaskContract.sol")
+        return None, None
     
-    if not w3.is_connected():
-        raise Exception("无法连接到本地网络，请确保Ganache正在运行")
-    
-    # 使用第一个账户
-    account = w3.eth.accounts[0]
-    print(f"使用账户: {account}")
-    
-    # 加载合约ABI
-    with open('build/TaskContract.abi', 'r') as f:
-        abi = json.load(f)
-    
-    # 编译合约（这里使用预编译的字节码）
-    # 在实际项目中，应该使用solc编译
-    bytecode = "0x608060405234801561001057600080fd5b50600436106100a95760003560e01c8063..."
-    
-    # 创建合约实例
-    contract = w3.eth.contract(abi=abi, bytecode=bytecode)
-    
-    # 部署合约
-    print("部署合约中...")
-    tx_hash = contract.constructor().transact({'from': account})
-    
-    # 等待交易确认
-    tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
-    
-    contract_address = tx_receipt.contractAddress
-    print(f"✅ 合约部署成功!")
-    print(f"合约地址: {contract_address}")
-    print(f"交易哈希: {tx_hash.hex()}")
-    
-    return contract_address
+    try:
+        # 安装 Solidity 编译器
+        print("📦 安装 Solidity 编译器...")
+        install_solc('0.8.19')
+        
+        # 读取合约源码
+        with open(contract_file, 'r') as f:
+            source_code = f.read()
+        
+        # 编译合约
+        print("🔧 编译合约源码...")
+        compiled_sol = compile_source(
+            source_code,
+            solc_version='0.8.19',
+            optimize=True,
+            optimize_runs=200,
+            # viaIR=True  # 0.8.19 不支持
+        )
+        
+        # 获取合约
+        contract_interface = compiled_sol['<stdin>:TaskContract']
+        
+        print("✅ 合约编译成功")
+        # 保存 ABI 和 BIN 文件到 build 目录
+        os.makedirs("build", exist_ok=True)
+        with open("build/TaskContract.abi", "w") as f:
+            json.dump(contract_interface["abi"], f, indent=2)
+        with open("build/TaskContract.bin", "w") as f:
+            f.write(contract_interface["bin"])
+        print("📁 ABI 和 BIN 文件已保存到 build/ 目录")
+        bytecode = contract_interface['bin']
+        if not bytecode.startswith("0x"):
+            bytecode = "0x" + bytecode
+        return contract_interface['abi'], bytecode
+        
+    except Exception as e:
+        print(f"❌ 合约编译失败: {e}")
+        return None, None
 
-def deploy_to_testnet():
-    """部署到测试网（Sepolia）"""
-    print("🚀 部署到Sepolia测试网...")
-    
-    # 连接测试网
-    rpc_url = os.getenv('ETHEREUM_RPC_URL_TESTNET')
-    if not rpc_url:
-        raise Exception("未设置测试网RPC URL")
-    
+def deploy_contract(abi, bytecode):
+    """部署合约到区块链"""
+    print("🚀 部署合约到区块链...")
+
+    print("abi:", abi);
+    print("bytecode:", bytecode);
+
+    # 连接网络
+    rpc_url = os.getenv('ETHEREUM_RPC_URL_DEVNET')
     w3 = Web3(Web3.HTTPProvider(rpc_url))
     
     if not w3.is_connected():
-        raise Exception("无法连接到测试网")
+        print("❌ 无法连接到区块链网络")
+        return None
     
-    print("⚠️ 测试网部署需要私钥和Gas费用")
-    print("请使用Remix IDE或其他工具进行部署")
-    print("部署后请更新.env文件中的TASK_CONTRACT_ADDRESS_TESTNET")
+    print(f"✅ 已连接到网络: {rpc_url}")
     
-    return None
-
-def verify_deployment(contract_address, network_type):
-    """验证合约部署"""
-    print(f"🔍 验证合约部署...")
+    # 直接使用 Ganache 的第一个账户
+    first_account = w3.eth.accounts[0]
+    print(f"📝 使用账户: {first_account}")
     
-    if network_type == 'devnet':
-        w3 = Web3(Web3.HTTPProvider('http://localhost:8545'))
-    else:
-        rpc_url = os.getenv('ETHEREUM_RPC_URL_TESTNET')
-        w3 = Web3(Web3.HTTPProvider(rpc_url))
+    # 检查余额
+    balance = w3.eth.get_balance(first_account)
+    balance_eth = w3.from_wei(balance, 'ether')
+    print(f"💰 账户余额: {balance_eth:.4f} ETH")
     
-    # 加载合约ABI
-    with open('build/TaskContract.abi', 'r') as f:
-        abi = json.load(f)
-    
-    # 创建合约实例
-    contract = w3.eth.contract(address=contract_address, abi=abi)
+    if balance < w3.to_wei(0.01, 'ether'):
+        print("⚠️ 账户余额较低，可能无法支付Gas费用")
     
     try:
-        # 测试合约调用
-        task_count = contract.functions.getTaskCount().call()
-        print(f"✅ 合约验证成功，当前任务数量: {task_count}")
-        return True
+        # 创建合约实例
+        contract = w3.eth.contract(abi=abi, bytecode=bytecode)
+        
+        # 构建部署交易
+        constructor_tx = contract.constructor().build_transaction({
+            'from': first_account,
+            'gas': 5000000,  # 增加gas限制
+            'gasPrice': w3.to_wei(1, 'gwei'),  # 降低gas价格
+            'nonce': w3.eth.get_transaction_count(first_account),
+        })
+        
+        # 使用 Ganache 的自动签名功能
+        signed_txn = constructor_tx
+        
+        # 发送交易
+        tx_hash = w3.eth.send_transaction(signed_txn)
+        print(f"📤 交易已发送: {tx_hash.hex()}")
+        
+        # 等待交易确认
+        print("⏳ 等待交易确认...")
+        tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+        
+        if tx_receipt.status == 1:
+            contract_address = tx_receipt.contractAddress
+            print(f"✅ 合约部署成功!")
+            print(f"�� 合约地址: {contract_address}")
+            print(f"⛽ Gas使用: {tx_receipt.gasUsed}")
+            return contract_address
+        else:
+            print("❌ 合约部署失败")
+            return None
+            
     except Exception as e:
-        print(f"❌ 合约验证失败: {e}")
-        return False
+        print(f"❌ 部署过程中出错: {e}")
+        return None
 
-def update_env_file(contract_address, network_type):
-    """更新环境变量文件"""
-    env_file = '.env'
+def update_env_file(contract_address):
+    """更新 .env 文件中的合约地址"""
+    print("📝 更新环境配置...")
     
-    if os.path.exists(env_file):
+    env_file = Path(".env")
+    if not env_file.exists():
+        print("❌ .env 文件不存在")
+        return False
+    
+    try:
+        # 读取现有内容
         with open(env_file, 'r') as f:
             lines = f.readlines()
         
-        # 更新合约地址
+        # 更新或添加合约地址
         updated = False
         for i, line in enumerate(lines):
-            if line.startswith(f'TASK_CONTRACT_ADDRESS_{network_type.upper()}'):
-                lines[i] = f'TASK_CONTRACT_ADDRESS_{network_type.upper()}={contract_address}\n'
+            if line.startswith('TASK_CONTRACT_ADDRESS_LOCAL='):
+                lines[i] = f'TASK_CONTRACT_ADDRESS_LOCAL={contract_address}\n'
                 updated = True
                 break
         
         if not updated:
-            lines.append(f'TASK_CONTRACT_ADDRESS_{network_type.upper()}={contract_address}\n')
+            lines.append(f'TASK_CONTRACT_ADDRESS_LOCAL={contract_address}\n')
         
+        # 写回文件
         with open(env_file, 'w') as f:
             f.writelines(lines)
         
-        print(f"✅ 已更新.env文件中的合约地址")
-    else:
-        print("⚠️ .env文件不存在，请手动设置合约地址")
+        print("✅ 环境配置已更新")
+        return True
+        
+    except Exception as e:
+        print(f"❌ 更新环境配置失败: {e}")
+        return False
 
 def main():
     """主函数"""
-    print("🎯 FlowPay 智能合约部署工具")
+    print("🚀 FlowAI 智能合约部署脚本 (使用 Python Web3)")
     print("=" * 50)
     
-    # 检查网络类型
-    network_type = os.getenv('NETWORK_TYPE', 'devnet')
-    print(f"目标网络: {network_type}")
+    # 加载环境变量
+    if not load_environment():
+        return False
     
-    try:
-        if network_type == 'devnet':
-            # 本地开发网络部署
-            contract_address = deploy_to_local()
-            
-            if contract_address:
-                # 验证部署
-                if verify_deployment(contract_address, 'devnet'):
-                    # 更新环境变量
-                    update_env_file(contract_address, 'devnet')
-                    print("\n🎉 本地部署完成!")
-                    print(f"合约地址: {contract_address}")
-                    print("现在可以启动应用: python main.py full --network devnet")
-                else:
-                    print("❌ 部署验证失败")
-            else:
-                print("❌ 部署失败")
-                
-        elif network_type == 'testnet':
-            # 测试网部署
-            deploy_to_testnet()
-            
-        else:
-            print(f"❌ 不支持的网络类型: {network_type}")
-            
-    except Exception as e:
-        print(f"❌ 部署失败: {e}")
-        return 1
+    # 编译合约
+    abi, bytecode = compile_contract()
+    if not abi or not bytecode:
+        return False
     
-    return 0
+    # 部署合约
+    contract_address = deploy_contract(abi, bytecode)
+    if not contract_address:
+        return False
+    
+    # 更新环境配置
+    if update_env_file(contract_address):
+        print("\n🎉 部署完成!")
+        print(f"📍 合约地址: {contract_address}")
+        print("📝 请重启应用以使用新部署的合约")
+        return True
+    else:
+        print("⚠️ 合约部署成功，但环境配置更新失败")
+        return False
 
 if __name__ == "__main__":
-    exit(main())
+    success = main()
+    sys.exit(0 if success else 1)

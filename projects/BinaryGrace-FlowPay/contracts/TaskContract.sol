@@ -1,303 +1,203 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-/**
- * @title TaskContract
- * @dev 去中心化任务管理智能合约
- * @author FlowPay Team
- */
 contract TaskContract {
-    // 任务结构体
-    struct Task {
-        string title;           // 任务标题
-        string description;     // 任务描述
-        uint256 deadline;       // 截止时间
-        string taskType;        // 任务类型
-        string requirements;    // 任务要求
-        uint256 reward;         // 奖励金额
-        bool isCompleted;       // 是否已完成
-        address publisher;      // 发布者地址
-    }
-    
-    // 执行记录结构体
     struct Execution {
-        address executor;       // 执行者地址
-        string result;          // 执行结果
-        uint256 executedAt;     // 执行时间
-        bool isWinner;          // 是否为获胜者
+        address executor;
+        uint256 executedAt;
+        string result;
+        bool isWinner;  // 新增：标记是否被选为最佳提交
+    }
+
+    struct Task {
+        uint256 id;
+        address publisher;
+        string title;
+        string description;
+        uint256 reward;
+        bool isCompleted;
+        bool isClaimed;
+        address worker;
+        uint256 createdAt;
+        uint256 deadline;
+        string taskType;
+        string requirements;
+        bool rewardPaid;  // 新增：标记奖金是否已支付
     }
     
-    // 状态变量
-    Task[] public tasks;                    // 任务列表
-    mapping(uint256 => Execution[]) public executions;  // 任务执行记录
-    mapping(uint256 => uint256) public taskExecutionCount;  // 任务执行数量
+    mapping(uint256 => Task) public tasks;
+    // 新增：每个任务的执行记录列表
+    mapping(uint256 => Execution[]) public taskExecutions;
+    mapping(address => bool) public workers;
     
-    // 事件
-    event TaskPublished(uint256 indexed taskId, address indexed publisher, string title, uint256 reward);
-    event ExecutionSubmitted(uint256 indexed taskId, address indexed executor, string result);
-    event WinnerSelected(uint256 indexed taskId, address indexed winner, uint256 reward);
+    uint256 public taskCounter;
+    address public owner;
     
-    // 修饰符
-    modifier taskExists(uint256 _taskId) {
-        require(_taskId < tasks.length, "Task does not exist");
+    event TaskCreated(uint256 indexed taskId, address indexed publisher, string title, uint256 reward);
+    event TaskClaimed(uint256 indexed taskId, address indexed worker);
+    event TaskCompleted(uint256 indexed taskId, address indexed worker, uint256 reward);
+    event WorkerRegistered(address indexed worker);
+    event ExecutionSubmitted(uint256 indexed taskId, address indexed executor, uint256 executedAt);
+    // 新增：选择最佳提交和支付奖金事件
+    event WinnerSelected(uint256 indexed taskId, address indexed winner, uint256 executionIndex, uint256 reward);
+    event RewardPaid(uint256 indexed taskId, address indexed winner, uint256 amount);
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
         _;
     }
     
-    modifier notCompleted(uint256 _taskId) {
-        require(!tasks[_taskId].isCompleted, "Task is already completed");
+    modifier taskExists(uint256 taskId) {
+        require(tasks[taskId].id != 0, "Task does not exist");
         _;
     }
     
-    modifier onlyPublisher(uint256 _taskId) {
-        require(msg.sender == tasks[_taskId].publisher, "Only publisher can perform this action");
+    modifier onlyWorker() {
+        require(workers[msg.sender], "Worker not registered");
         _;
     }
     
-    /**
-     * @dev 发布任务
-     * @param _title 任务标题
-     * @param _description 任务描述
-     * @param _deadline 截止时间
-     * @param _taskType 任务类型
-     * @param _requirements 任务要求
-     * @param _reward 奖励金额
-     */
+    // 发布任务（不需要提前支付奖金）
     function publishTask(
         string memory _title,
         string memory _description,
         uint256 _deadline,
         string memory _taskType,
         string memory _requirements,
-        uint256 _reward
-    ) external payable {
-        require(bytes(_title).length > 0, "Title cannot be empty");
-        require(bytes(_description).length > 0, "Description cannot be empty");
-        require(_deadline > block.timestamp, "Deadline must be in the future");
-        require(_reward > 0, "Reward must be greater than 0");
-        require(msg.value >= _reward, "Insufficient payment for reward");
-        
-        Task memory newTask = Task({
+        uint256 _reward,
+        address _publisher
+    ) public {
+        taskCounter++;
+        tasks[taskCounter] = Task({
+            id: taskCounter,
+            publisher: _publisher,
             title: _title,
             description: _description,
+            reward: _reward,
+            isCompleted: false,
+            isClaimed: false,
+            worker: address(0),
+            createdAt: block.timestamp,
             deadline: _deadline,
             taskType: _taskType,
             requirements: _requirements,
-            reward: _reward,
-            isCompleted: false,
-            publisher: msg.sender
+            rewardPaid: false
         });
         
-        tasks.push(newTask);
-        uint256 taskId = tasks.length - 1;
-        
-        emit TaskPublished(taskId, msg.sender, _title, _reward);
+        emit TaskCreated(taskCounter, _publisher, _title, _reward);
     }
     
-    /**
-     * @dev 提交任务执行结果
-     * @param _taskId 任务ID
-     * @param _result 执行结果
-     */
-    function submitExecution(uint256 _taskId, string memory _result) 
-        external 
-        taskExists(_taskId) 
-        notCompleted(_taskId) 
-    {
-        require(bytes(_result).length > 0, "Result cannot be empty");
-        require(block.timestamp <= tasks[_taskId].deadline, "Task deadline has passed");
+    // 注册工作者
+    function registerWorker() public {
+        workers[msg.sender] = true;
+        emit WorkerRegistered(msg.sender);
+    }
+    
+    // 领取任务
+    function claimTask(uint256 _taskId) public onlyWorker taskExists(_taskId) {
+        require(tasks[_taskId].worker == address(0), "Task already claimed");
+        require(block.timestamp <= tasks[_taskId].deadline, "Task deadline passed");
         
-        Execution memory newExecution = Execution({
-            executor: msg.sender,
-            result: _result,
+        tasks[_taskId].worker = msg.sender;
+        emit TaskClaimed(_taskId, msg.sender);
+    }
+    
+    // 完成任务（保留：仅标记状态与奖励事件）
+    function completeTask(uint256 _taskId) public taskExists(_taskId) {
+        require(tasks[_taskId].worker == msg.sender, "Only assigned worker can complete");
+        require(!tasks[_taskId].isCompleted, "Task already completed");
+        
+        tasks[_taskId].isCompleted = true;
+        emit TaskCompleted(_taskId, msg.sender, tasks[_taskId].reward);
+    }
+    
+    // 提交执行记录（可多次）
+    function submitExecution(uint256 _taskId, address _executor, string calldata _result) public taskExists(_taskId) {
+        require(!tasks[_taskId].isCompleted, "Task already completed");
+        require(block.timestamp <= tasks[_taskId].deadline, "Task deadline passed");
+        
+        Execution memory e = Execution({
+            executor: _executor,
             executedAt: block.timestamp,
+            result: _result,
             isWinner: false
         });
-        
-        executions[_taskId].push(newExecution);
-        taskExecutionCount[_taskId]++;
-        
-        emit ExecutionSubmitted(_taskId, msg.sender, _result);
+        taskExecutions[_taskId].push(e);
+        emit ExecutionSubmitted(_taskId, _executor, e.executedAt);
     }
     
-    /**
-     * @dev 选择获胜者并支付奖励
-     * @param _taskId 任务ID
-     * @param _executionIndex 执行记录索引
-     */
-    function selectWinnerAndPay(uint256 _taskId, uint256 _executionIndex) 
-        external 
-        payable 
-        taskExists(_taskId) 
-        notCompleted(_taskId) 
-        onlyPublisher(_taskId) 
-    {
-        require(_executionIndex < executions[_taskId].length, "Invalid execution index");
-        require(block.timestamp > tasks[_taskId].deadline, "Cannot select winner before deadline");
+    // 新增：发布者选择最佳提交并直接支付奖金
+    function selectWinnerAndPay(uint256 _taskId, uint256 _executionIndex) public payable taskExists(_taskId) {
+        Task storage task = tasks[_taskId];
         
-        // 标记获胜者
-        executions[_taskId][_executionIndex].isWinner = true;
+        // 验证权限：只有发布者可以选择
+        require(msg.sender == task.publisher, "Only publisher can select winner");
         
-        // 标记任务为已完成
-        tasks[_taskId].isCompleted = true;
+        // 验证状态
+        require(!task.isCompleted, "Task already completed");
+        require(!task.rewardPaid, "Reward already paid");
+        require(_executionIndex < taskExecutions[_taskId].length, "Invalid execution index");
         
-        // 支付奖励
-        address winner = executions[_taskId][_executionIndex].executor;
-        uint256 reward = tasks[_taskId].reward;
+        // 验证发送的金额等于奖励金额
+        require(msg.value == task.reward, "Sent value must equal reward amount");
         
-        require(address(this).balance >= reward, "Insufficient contract balance");
-        require(msg.value >= reward, "Insufficient payment for reward");
+        // 获取获胜者
+        Execution storage winningExecution = taskExecutions[_taskId][_executionIndex];
+        address winner = winningExecution.executor;
         
-        // 转账给获胜者
-        (bool success, ) = winner.call{value: reward}("");
-        require(success, "Transfer failed");
+        // 标记状态
+        winningExecution.isWinner = true;
+        task.isCompleted = true;
+        task.rewardPaid = true;
+        task.worker = winner;  // 记录最终获胜者
         
-        emit WinnerSelected(_taskId, winner, reward);
+        // 直接转账给获胜者
+        uint256 rewardAmount = msg.value;
+        if (rewardAmount > 0) {
+            (bool success, ) = payable(winner).call{value: rewardAmount}("");
+            require(success, "Payment failed");
+            emit RewardPaid(_taskId, winner, rewardAmount);
+        }
+        
+        emit WinnerSelected(_taskId, winner, _executionIndex, rewardAmount);
+        emit TaskCompleted(_taskId, winner, rewardAmount);
+    }
+
+    // 获取任务信息
+    function getTask(uint256 _taskId) public view taskExists(_taskId) returns (Task memory) {
+        return tasks[_taskId];
+    }
+
+    // 获取任务的执行数量
+    function getExecutionCount(uint256 _taskId) public view taskExists(_taskId) returns (uint256) {
+        return taskExecutions[_taskId].length;
+    }
+
+    // 获取任务的某条执行详情
+    function getExecution(uint256 _taskId, uint256 _index) public view taskExists(_taskId) returns (Execution memory) {
+        require(_index < taskExecutions[_taskId].length, "Execution index out of range");
+        return taskExecutions[_taskId][_index];
     }
     
-    /**
-     * @dev 获取任务总数
-     * @return 任务总数
-     */
-    function getTaskCount() external view returns (uint256) {
-        return tasks.length;
+    // 新增：获取任务的所有执行记录
+    function getAllExecutions(uint256 _taskId) public view taskExists(_taskId) returns (Execution[] memory) {
+        return taskExecutions[_taskId];
     }
     
-    /**
-     * @dev 获取任务详情
-     * @param _taskId 任务ID
-     * @return 任务详情
-     */
-    function getTask(uint256 _taskId) external view taskExists(_taskId) returns (
-        string memory title,
-        string memory description,
-        uint256 deadline,
-        string memory taskType,
-        string memory requirements,
-        uint256 reward,
-        bool isCompleted,
-        address publisher
-    ) {
-        Task memory task = tasks[_taskId];
-        return (
-            task.title,
-            task.description,
-            task.deadline,
-            task.taskType,
-            task.requirements,
-            task.reward,
-            task.isCompleted,
-            task.publisher
-        );
-    }
-    
-    /**
-     * @dev 获取任务的执行记录数量
-     * @param _taskId 任务ID
-     * @return 执行记录数量
-     */
-    function getExecutionCount(uint256 _taskId) external view taskExists(_taskId) returns (uint256) {
-        return executions[_taskId].length;
-    }
-    
-    /**
-     * @dev 获取任务的执行记录
-     * @param _taskId 任务ID
-     * @param _executionIndex 执行记录索引
-     * @return 执行记录详情
-     */
-    function getExecution(uint256 _taskId, uint256 _executionIndex) external view taskExists(_taskId) returns (
-        address executor,
-        string memory result,
-        uint256 executedAt,
-        bool isWinner
-    ) {
-        require(_executionIndex < executions[_taskId].length, "Invalid execution index");
-        Execution memory execution = executions[_taskId][_executionIndex];
-        return (
-            execution.executor,
-            execution.result,
-            execution.executedAt,
-            execution.isWinner
-        );
-    }
-    
-    /**
-     * @dev 获取合约余额
-     * @return 合约余额
-     */
-    function getContractBalance() external view returns (uint256) {
+    // 新增：获取合约余额
+    function getContractBalance() public view returns (uint256) {
         return address(this).balance;
     }
     
-    /**
-     * @dev 获取可用任务ID列表
-     * @return 可用任务ID数组
-     */
-    function getAvailableTasks() external view returns (uint256[] memory) {
-        uint256[] memory availableTasks = new uint256[](tasks.length);
-        uint256 count = 0;
-        
-        for (uint256 i = 0; i < tasks.length; i++) {
-            if (!tasks[i].isCompleted && block.timestamp <= tasks[i].deadline) {
-                availableTasks[count] = i;
-                count++;
-            }
+    // 新增：获取任务已锁定的奖金
+    function getTaskLockedReward(uint256 _taskId) public view taskExists(_taskId) returns (uint256) {
+        if (tasks[_taskId].rewardPaid) {
+            return 0;
         }
-        
-        // 调整数组大小
-        uint256[] memory result = new uint256[](count);
-        for (uint256 i = 0; i < count; i++) {
-            result[i] = availableTasks[i];
-        }
-        
-        return result;
+        return tasks[_taskId].reward;
     }
-    
-    /**
-     * @dev 获取任务的所有执行记录
-     * @param _taskId 任务ID
-     * @return 执行记录数组
-     */
-    function getTaskExecutions(uint256 _taskId) external view taskExists(_taskId) returns (
-        address[] memory executors,
-        string[] memory results,
-        uint256[] memory executedAts,
-        bool[] memory isWinners
-    ) {
-        uint256 executionCount = executions[_taskId].length;
-        executors = new address[](executionCount);
-        results = new string[](executionCount);
-        executedAts = new uint256[](executionCount);
-        isWinners = new bool[](executionCount);
-        
-        for (uint256 i = 0; i < executionCount; i++) {
-            Execution memory execution = executions[_taskId][i];
-            executors[i] = execution.executor;
-            results[i] = execution.result;
-            executedAts[i] = execution.executedAt;
-            isWinners[i] = execution.isWinner;
-        }
-    }
-    
-    /**
-     * @dev 紧急提取函数（仅合约所有者）
-     * @param _amount 提取金额
-     */
-    function emergencyWithdraw(uint256 _amount) external {
-        require(msg.sender == owner, "Only owner can withdraw");
-        require(_amount <= address(this).balance, "Insufficient balance");
-        
-        (bool success, ) = msg.sender.call{value: _amount}("");
-        require(success, "Withdrawal failed");
-    }
-    
-    // 合约所有者
-    address public owner;
-    
-    constructor() {
-        owner = msg.sender;
-    }
-    
-    // 接收以太币
-    receive() external payable {}
 }
