@@ -316,28 +316,6 @@ interface IAquaFluxCore {
     function isAssetVerified(bytes32 assetId) external view returns (bool);
 
     /**
-     * @dev Updates the coupon allocation for C and S tokens (admin only)
-     * @param assetId The asset identifier
-     * @param newCouponAllocationC The new coupon allocation to C token (in basis points, 0-10000)
-     * @param newCouponAllocationS The new coupon allocation to S token (in basis points, 0-10000)
-     */
-    function updateCouponAllocation(
-        bytes32 assetId,
-        uint256 newCouponAllocationC,
-        uint256 newCouponAllocationS
-    ) external;
-
-    /**
-     * @dev Updates the metadata URI for an asset (admin only)
-     * @param assetId The asset identifier
-     * @param newMetadataURI The new metadata URI
-     */
-    function updateMetadataURI(
-        bytes32 assetId,
-        string calldata newMetadataURI
-    ) external;
-
-    /**
      * @dev Emitted when global fee rate is updated
      * @param operation The operation type (register, wrap, split, merge, unwrap)
      * @param oldFeeRate The old fee rate
@@ -515,16 +493,6 @@ interface IAquaFluxCore {
      * @return True if asset is paused
      */
     function isAssetPaused(bytes32 assetId) external view returns (bool);
-
-    /**
-     * @dev Updates the S Token fee allocation for an asset (admin only)
-     * @param assetId The asset identifier
-     * @param newSTokenFeeAllocation The new S Token fee allocation (in basis points, 0-10000)
-     */
-    function updateSTokenFeeAllocation(
-        bytes32 assetId,
-        uint256 newSTokenFeeAllocation
-    ) external;
 
     /**
      * @dev Updates the operation deadline for an asset (admin only)

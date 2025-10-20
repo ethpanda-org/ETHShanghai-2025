@@ -12,14 +12,14 @@ contract AquaFluxTimelock is TimelockController {
     bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
 
     // Minimum allowed min delay
-    uint256 public constant MINIMUM_ALLOWED_MIN_DELAY = 12 hours;
+    uint256 public constant MINIMUM_ALLOWED_MIN_DELAY = 20;
 
     // Special values
     uint256 private constant UNCONFIGURED_DELAY = type(uint256).max;
 
     // Emergency parameters
     uint256 public constant EMERGENCY_DELAY = MINIMUM_ALLOWED_MIN_DELAY;
-    uint256 public constant EMERGENCY_COOLDOWN = 6 hours;
+    uint256 public constant EMERGENCY_COOLDOWN = 10;
 
     // Operation tracking
     mapping(bytes4 => uint256) private operationDelays;
@@ -105,69 +105,54 @@ contract AquaFluxTimelock is TimelockController {
         // Business operations - UUPS upgrade (OpenZeppelin 5.x only has upgradeToAndCall)
         _setOperationDelay(
             bytes4(keccak256("upgradeToAndCall(address,bytes)")),
-            3 days
+            20
         );
         _setOperationDelay(
             bytes4(keccak256("withdrawAllProtocolFees(bytes32[],address)")),
-            1 days
+            20
         );
         _setOperationDelay(
             bytes4(keccak256("withdrawForRedemption(bytes32,address)")),
-            1 days
+            20
         );
         _setOperationDelay(
             bytes4(keccak256("withdrawProtocolFees(bytes32,address)")),
-            1 days
+            20
         );
         _setOperationDelay(
             bytes4(keccak256("setDistributionConfig(bytes32,address,address,uint256)")),
-            12 hours
+            20
         );
         _setOperationDelay(
             bytes4(keccak256("updateDistributionConfig(bytes32,address,address,uint256)")),
-            2 days
+            20
         );
 
         // High-risk governance functions (longer delays)
-        _setOperationDelay(bytes4(keccak256("setFactory(address)")), 3 days);
+        _setOperationDelay(bytes4(keccak256("setFactory(address)")), 20);
         _setOperationDelay(
             bytes4(keccak256("setGlobalFeeRate(string,uint256)")),
-            2 days
+            20
         );
 
-        // Medium-risk asset management functions (1 day delay)
-        _setOperationDelay(
-            bytes4(keccak256("updateCouponAllocation(bytes32,uint256,uint256)")),
-            1 days
-        );
-        _setOperationDelay(
-            bytes4(keccak256("updateSTokenFeeAllocation(bytes32,uint256)")),
-            1 days
-        );
         _setOperationDelay(
             bytes4(keccak256("updateOperationDeadline(bytes32,uint256)")),
-            1 days
+            20
         );
         _setOperationDelay(
             bytes4(keccak256("setDistributionPlan(bytes32,uint256,uint256,uint256,uint256)")),
-            1 days
-        );
-
-        // Low-risk metadata function (12 hours delay)
-        _setOperationDelay(
-            bytes4(keccak256("updateMetadataURI(bytes32,string)")),
-            12 hours
+            20
         );
         
         // Critical ERC20 operations - approve is high risk as it grants spending rights
         _setOperationDelay(
             bytes4(keccak256("approve(address,uint256)")),
-            3 days  // Same as other high-risk operations like setFactory
+            20  // Same as other high-risk operations like setFactory
         );
 
         // Global pause/unpause functions (1 day delay) - affect entire protocol
-        _setOperationDelay(bytes4(keccak256("pause()")), 1 days);
-        _setOperationDelay(bytes4(keccak256("unpause()")), 1 days);
+        _setOperationDelay(bytes4(keccak256("pause()")), 20);
+        _setOperationDelay(bytes4(keccak256("unpause()")), 20);
 
         // Note: pauseAsset() and unpauseAsset() now use OPERATOR_ROLE and don't require timelock
         // They handle individual assets and can be executed directly for quick response
