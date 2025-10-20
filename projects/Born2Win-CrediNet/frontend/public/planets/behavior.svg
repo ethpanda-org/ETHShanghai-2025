@@ -1,0 +1,15 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 蓝色星球 - 行为维度 -->
+  <circle cx="60" cy="60" r="40" fill="url(#blue-gradient)" />
+  <ellipse cx="60" cy="60" rx="50" ry="10" fill="#60A5FA" opacity="0.5" transform="rotate(45 60 60)" />
+  <ellipse cx="60" cy="60" rx="50" ry="10" fill="#2563EB" opacity="0.4" transform="rotate(-45 60 60)" />
+  <circle cx="60" cy="60" r="30" fill="none" stroke="#93C5FD" stroke-width="1" opacity="0.3" />
+  <circle cx="60" cy="60" r="20" fill="none" stroke="#60A5FA" stroke-width="1" opacity="0.4" />
+  <defs>
+    <radialGradient id="blue-gradient">
+      <stop offset="0%" stop-color="#93C5FD" />
+      <stop offset="100%" stop-color="#1E40AF" />
+    </radialGradient>
+  </defs>
+</svg>
+

@@ -1,0 +1,80 @@
+[
+  {
+    "test": "服务健康检查",
+    "success": true,
+    "message": "服务运行正常",
+    "timestamp": "2025-10-13T02:57:29.303794"
+  },
+  {
+    "test": "发送邮箱验证码",
+    "success": true,
+    "message": "成功发送到 test@example.com",
+    "timestamp": "2025-10-13T02:57:29.304680"
+  },
+  {
+    "test": "发送手机号验证码",
+    "success": true,
+    "message": "成功发送到 13800138000",
+    "timestamp": "2025-10-13T02:57:29.305314"
+  },
+  {
+    "test": "发送无效邮箱验证码",
+    "success": true,
+    "message": "成功发送到 invalid-email",
+    "timestamp": "2025-10-13T02:57:29.305868"
+  },
+  {
+    "test": "有效验证码登录",
+    "success": false,
+    "message": "没有找到验证码",
+    "timestamp": "2025-10-13T02:57:29.306920"
+  },
+  {
+    "test": "无效验证码登录-错误验证码",
+    "success": true,
+    "message": "正确拒绝无效验证码",
+    "timestamp": "2025-10-13T02:57:29.307486"
+  },
+  {
+    "test": "无效验证码登录-验证码长度不足",
+    "success": true,
+    "message": "正确拒绝无效验证码",
+    "timestamp": "2025-10-13T02:57:29.307987"
+  },
+  {
+    "test": "无效验证码登录-验证码长度过长",
+    "success": true,
+    "message": "正确拒绝无效验证码",
+    "timestamp": "2025-10-13T02:57:29.308460"
+  },
+  {
+    "test": "无效验证码登录-非数字验证码",
+    "success": true,
+    "message": "正确拒绝无效验证码",
+    "timestamp": "2025-10-13T02:57:29.308910"
+  },
+  {
+    "test": "受保护路由测试",
+    "success": false,
+    "message": "无有效Token",
+    "timestamp": "2025-10-13T02:57:29.308916"
+  },
+  {
+    "test": "无效Token测试-完全无效Token",
+    "success": true,
+    "message": "正确拒绝无效Token",
+    "timestamp": "2025-10-13T02:57:29.309386"
+  },
+  {
+    "test": "无效Token测试-错误格式Token",
+    "success": true,
+    "message": "正确拒绝无效Token",
+    "timestamp": "2025-10-13T02:57:29.309807"
+  },
+  {
+    "test": "无效Token测试-空Token",
+    "success": true,
+    "message": "正确拒绝无效Token",
+    "timestamp": "2025-10-13T02:57:29.310217"
+  }
+]

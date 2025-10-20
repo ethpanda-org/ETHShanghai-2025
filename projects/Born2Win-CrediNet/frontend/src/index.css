@@ -1,0 +1,213 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 全局样式 */
+@layer base {
+  :root {
+    /* 主题颜色 */
+    --color-dark-bg: #0f1729;
+    --color-dark-card: #1a1e3d;
+    --color-dark-border: #2d3250;
+    
+    /* 渐变色 */
+    --color-gradient-from: #6366f1;
+    --color-gradient-via: #8b5cf6;
+    --color-gradient-to: #06b6d4;
+    
+    /* 信用光谱色 */
+    --color-keystone: #8b5cf6;
+    --color-ability: #3b82f6;
+    --color-finance: #f59e0b;
+    --color-health: #10b981;
+    --color-behavior: #ef4444;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply bg-dark-bg text-gray-100 antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+  }
+
+  /* 平滑滚动 */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* 自定义滚动条 */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-dark-bg;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-dark-border rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-600;
+  }
+}
+
+/* 自定义工具类 */
+@layer components {
+  /* 渐变背景 */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, var(--color-gradient-from) 0%, var(--color-gradient-via) 50%, var(--color-gradient-to) 100%);
+  }
+
+  /* 渐变文字 */
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-gradient-from) 0%, var(--color-gradient-via) 50%, var(--color-gradient-to) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 毛玻璃卡片 */
+  .glass-card {
+    @apply bg-dark-card/60 backdrop-blur-xl border border-dark-border/50 rounded-2xl p-6;
+  }
+
+  /* 渐变边框卡片 */
+  .gradient-border-card {
+    @apply relative rounded-2xl p-6;
+    background: rgba(26, 30, 61, 0.8);
+  }
+
+  .gradient-border-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 1rem;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--color-gradient-from), var(--color-gradient-via), var(--color-gradient-to));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+  }
+
+  /* 按钮样式 */
+  .btn-primary {
+    @apply px-6 py-3 rounded-lg bg-gradient-primary text-white font-semibold;
+    @apply transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/30;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 rounded-lg bg-dark-card border border-dark-border text-gray-300;
+    @apply transition-all duration-300 hover:bg-dark-border hover:text-white;
+  }
+
+  /* 输入框样式 */
+  .input-primary {
+    @apply w-full px-4 py-3 rounded-lg bg-dark-card border border-dark-border;
+    @apply text-gray-100 placeholder-gray-500;
+    @apply focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500;
+    @apply transition-all duration-200;
+  }
+
+  /* 卡片 hover 效果 */
+  .card-hover {
+    @apply transition-all duration-300;
+  }
+
+  .card-hover:hover {
+    @apply scale-[1.02] shadow-xl shadow-cyan-500/10;
+  }
+}
+
+/* RainbowKit 自定义样式 */
+@layer utilities {
+  /* 自定义 RainbowKit 按钮 */
+  [data-rk] {
+    --rk-colors-accentColor: #06b6d4;
+    --rk-colors-accentColorForeground: white;
+    --rk-colors-modalBackground: var(--color-dark-card);
+    --rk-colors-modalBorder: var(--color-dark-border);
+    --rk-colors-modalText: #e5e7eb;
+    --rk-colors-modalTextSecondary: #9ca3af;
+    --rk-fonts-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  }
+
+  /* RainbowKit 连接按钮样式覆盖 */
+  button[data-rk] {
+    @apply transition-all duration-300 hover:scale-105;
+  }
+}
+
+/* 动画 */
+@layer utilities {
+  /* 淡入动画 */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* 脉冲光晕 */
+  .animate-pulse-glow {
+    animation: pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(6, 182, 212, 0.6);
+    }
+  }
+
+  /* 旋转动画 */
+  .animate-spin-slow {
+    animation: spin 3s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+/* Recharts 图表样式 */
+.recharts-surface {
+  @apply rounded-lg;
+}
+
+.recharts-legend-item-text {
+  @apply text-gray-300 text-sm;
+}
+
+.recharts-tooltip-wrapper {
+  @apply rounded-lg shadow-xl;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .container {
+    @apply px-4;
+  }
+}

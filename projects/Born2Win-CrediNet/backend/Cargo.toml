@@ -1,0 +1,33 @@
+[package]
+name = "credinet-auth"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+rand = "0.8"
+jsonwebtoken = "9.2"
+sqlx = { version = "0.7", features = ["sqlite", "runtime-tokio-native-tls", "uuid", "chrono"] }
+dotenvy = "0.15"
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+parking_lot = "0.12"
+anyhow = "1.0"
+seahash = "4.1"
+# DID相关依赖
+sha2 = "0.10"
+base64 = "0.21"
+hex = "0.4"
+url = "2.4"
+# 身份验证相关依赖
+reqwest = { version = "0.11", features = ["json"] }
+oauth2 = "4.4"
+secp256k1 = { version = "0.28", features = ["recovery"] }
+ethereum-types = "0.14"
+# 邮件/短信发送
+lettre = "0.11"
+async-trait = "0.1"
+regex = "1.10"

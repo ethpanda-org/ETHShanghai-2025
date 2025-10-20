@@ -1,0 +1,17 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 橙色星球 - 财富维度 -->
+  <circle cx="60" cy="60" r="45" fill="url(#orange-gradient)" />
+  <circle cx="40" cy="40" r="15" fill="#FB923C" opacity="0.6" />
+  <circle cx="75" cy="70" r="18" fill="#EA580C" opacity="0.5" />
+  <circle cx="65" cy="45" r="10" fill="#FDBA74" opacity="0.7" />
+  <path d="M 30 50 L 35 48 L 32 55 L 38 53 L 35 60" stroke="#FED7AA" stroke-width="2" fill="none" opacity="0.6" />
+  <path d="M 70 80 L 75 78 L 72 85 L 78 83 L 75 90" stroke="#FED7AA" stroke-width="2" fill="none" opacity="0.6" />
+  <circle cx="50" cy="75" r="8" fill="#F97316" opacity="0.5" />
+  <defs>
+    <radialGradient id="orange-gradient">
+      <stop offset="0%" stop-color="#FDBA74" />
+      <stop offset="100%" stop-color="#C2410C" />
+    </radialGradient>
+  </defs>
+</svg>
+
