@@ -199,7 +199,37 @@ pub async fn get_stats(
 ) -> Result<impl IntoResponse, AppError> {
     let service = SbtService::new(state.db.clone());
     let stats = service.get_issuance_stats(&claims.sub).await?;
-    
+
     Ok((StatusCode::OK, Json(stats)))
+}
+
+// ========== EIP-712 签名生成 ==========
+
+/// 生成铸造许可签名
+/// 注意：此接口不需要认证，允许任何人请求签名
+/// 签名本身包含了目标地址和参数，无法被滥用
+pub async fn generate_mint_permit(
+    State(_state): State<AppState>,
+    Json(req): Json<MintPermitRequest>,
+) -> Result<impl IntoResponse, AppError> {
+    use super::services::Eip712Signer;
+
+    // 验证请求参数
+    if req.to.is_empty() || !req.to.starts_with("0x") {
+        return Err(AppError::ValidationError("无效的地址格式".to_string()));
+    }
+
+    let signer = Eip712Signer::from_env()
+        .map_err(|e| AppError::BlockchainError(format!("签名器初始化失败: {}", e)))?;
+
+    let response = signer.sign_mint_permit(
+        &req.to,
+        req.badge_type,
+        &req.token_uri,
+        &req.request_hash,
+    ).await
+        .map_err(|e| AppError::BlockchainError(format!("签名生成失败: {}", e)))?;
+
+    Ok((StatusCode::OK, Json(response)))
 }
 

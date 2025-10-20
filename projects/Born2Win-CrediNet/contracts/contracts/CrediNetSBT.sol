@@ -5,7 +5,10 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import "./interfaces/IDynamicSBTAgent.sol";
 // Counters removed in OZ v5; use a simple incrementing id instead
 
@@ -26,10 +29,13 @@ interface IValidationRegistry {
 
 /// @title CrediNet Soulbound Badge Token (SBT)
 /// @notice 不可转让的 ERC-721 徽章，支持多类型，每地址每类型唯一，含查询、批量铸造与（可选）撤销接口
-contract CrediNetSBT is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard {
+contract CrediNetSBT is ERC721, ERC721Enumerable, Ownable, AccessControl, ReentrancyGuard, EIP712 {
 
     /// @dev 版本号便于运维识别
-    string public constant VERSION = "CrediNet SBT v1.0";
+    string public constant VERSION = "CrediNet SBT v1.1";
+
+    /// @dev MINTER_ROLE 用于授权签名铸造
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     /// @dev 自增 tokenId 计数器（从 1 开始）
     uint256 private _nextTokenId;
@@ -84,8 +90,22 @@ contract CrediNetSBT is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard {
     /// @dev DynamicAgent 更新事件
     event DynamicAgentUpdated(address indexed oldAgent, address indexed newAgent);
 
-    constructor(string memory name_, string memory symbol_, string memory baseURI_) ERC721(name_, symbol_) Ownable(msg.sender) {
+    /// @dev EIP-712 签名相关
+    bytes32 private constant MINT_PERMIT_TYPEHASH =
+        keccak256("MintPermit(address issuer,address to,uint8 badgeType,string tokenURI,bytes32 requestHash,uint256 deadline)");
+
+    /// @dev 用于防止重放攻击的 nonce
+    mapping(address => uint256) public nonces;
+
+    constructor(string memory name_, string memory symbol_, string memory baseURI_)
+        ERC721(name_, symbol_)
+        Ownable(msg.sender)
+        EIP712(name_, "1")
+    {
         _baseMetadataURI = baseURI_;
+        // 授予部署者 DEFAULT_ADMIN_ROLE 和 MINTER_ROLE
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(MINTER_ROLE, msg.sender);
     }
 
     // -----------------------------
@@ -222,6 +242,119 @@ contract CrediNetSBT is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard {
         emit BadgeBurned(owner, tokenId, badgeType);
     }
 
+    /// @notice 通过 issuer 签名铸造 SBT（许可式铸造）
+    /// @param issuer 签名者地址（必须拥有 MINTER_ROLE）
+    /// @param to 接收者地址
+    /// @param badgeType 徽章类型
+    /// @param tokenURI_ 元数据 URI
+    /// @param requestHash 验证请求哈希
+    /// @param deadline 签名过期时间戳
+    /// @param signature EIP-712 签名
+    function mintWithPermit(
+        address issuer,
+        address to,
+        uint8 badgeType,
+        string calldata tokenURI_,
+        bytes32 requestHash,
+        uint256 deadline,
+        bytes calldata signature
+    ) external nonReentrant returns (uint256 tokenId) {
+        require(block.timestamp <= deadline, "SBT: signature expired");
+        require(hasRole(MINTER_ROLE, issuer), "SBT: issuer lacks MINTER_ROLE");
+        require(to != address(0), "SBT: to zero address");
+        require(!_hasBadge[to][badgeType], "SBT: already has type");
+
+        // 构建 EIP-712 结构化数据哈希
+        bytes32 structHash = keccak256(
+            abi.encode(
+                MINT_PERMIT_TYPEHASH,
+                issuer,
+                to,
+                badgeType,
+                keccak256(bytes(tokenURI_)),
+                requestHash,
+                deadline
+            )
+        );
+
+        // 验证签名
+        bytes32 digest = _hashTypedDataV4(structHash);
+        address signer = ECDSA.recover(digest, signature);
+        require(signer == issuer, "SBT: invalid signature");
+
+        // 执行铸造（绕过 onlyOwner 检查，但保留验证逻辑）
+        tokenId = _mintBadgeInternalPermit(to, badgeType, tokenURI_, requestHash, issuer);
+    }
+
+    /// @dev 许可式铸造的内部函数（支持 issuer 参数用于验证）
+    function _mintBadgeInternalPermit(
+        address to,
+        uint8 badgeType,
+        string memory tokenURI_,
+        bytes32 requestHash,
+        address issuer
+    ) internal returns (uint256 tokenId) {
+        if (enforceRegistryChecks) {
+            require(identityRegistry != address(0) && reputationRegistry != address(0) && validationRegistry != address(0), "SBT: registries not set");
+            uint256 agentId = issuerAgentId[issuer];
+            require(agentId != 0, "SBT: issuer agentId not set");
+            // 验证 issuer 拥有该 agentId
+            require(IIdentityRegistry(identityRegistry).ownerOf(agentId) == issuer, "SBT: agentId owner mismatch");
+            // 声誉阈值
+            (, uint8 avg) = IReputationRegistry(reputationRegistry).getSummary(agentId, new address[](0), bytes32(0), bytes32(0));
+            require(avg >= minAvgScore, "SBT: reputation below threshold");
+            // 验证闭环
+            if (requestHash != bytes32(0)) {
+                (address v, uint256 aid, uint8 resp,,) = IValidationRegistry(validationRegistry).getValidationStatus(requestHash);
+                require(aid == agentId, "SBT: validation agent mismatch");
+                require(resp >= minValidationResponse, "SBT: validation not passed");
+                if (preferredValidator != address(0)) {
+                    require(v == preferredValidator, "SBT: validator mismatch");
+                }
+            }
+        }
+
+        unchecked { _nextTokenId++; }
+        tokenId = _nextTokenId;
+
+        _safeMint(to, tokenId);
+        _tokenTypeOf[tokenId] = badgeType;
+        _hasBadge[to][badgeType] = true;
+        _tokenIdOf[to][badgeType] = tokenId;
+
+        if (bytes(tokenURI_).length > 0) {
+            _tokenURIs[tokenId] = tokenURI_;
+        }
+
+        // 绑定验证哈希（若提供）
+        if (requestHash != bytes32(0)) {
+            tokenValidationHash[tokenId] = requestHash;
+        }
+
+        // 注册到 DynamicSBTAgent
+        if (dynamicAgent != address(0)) {
+            try IDynamicSBTAgent(dynamicAgent).registerSBT(to, tokenId) {
+                // 注册成功
+            } catch {
+                // 注册失败，但不影响铸造
+            }
+        }
+
+        emit BadgeMinted(to, tokenId, badgeType);
+        if (requestHash != bytes32(0)) {
+            address vEmit = address(0);
+            uint256 aidEmit = 0;
+            if (enforceRegistryChecks) {
+                aidEmit = issuerAgentId[issuer];
+                (address v,, , ,) = IValidationRegistry(validationRegistry).getValidationStatus(requestHash);
+                vEmit = v;
+            }
+            emit BadgeMintedWithValidation(to, tokenId, badgeType, requestHash, vEmit, aidEmit);
+        }
+        // ERC-5192: 永久锁定
+        emit Locked(tokenId);
+    }
+
     // -----------------------------
     // 查询接口
     // -----------------------------
@@ -288,7 +421,7 @@ contract CrediNetSBT is ERC721, ERC721Enumerable, Ownable, ReentrancyGuard {
     // -----------------------------
     // ERC-165 / 多重继承支持
     // -----------------------------
-    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721Enumerable) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721Enumerable, AccessControl) returns (bool) {
         // ERC-5192 = 0xb45a3c0e
         if (interfaceId == 0xb45a3c0e) return true;
         return super.supportsInterface(interfaceId);

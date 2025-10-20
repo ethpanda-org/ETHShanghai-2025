@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 axum = "0.7"
+tower-http = { version = "0.5", features = ["cors"] }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -27,6 +28,7 @@ reqwest = { version = "0.11", features = ["json"] }
 oauth2 = "4.4"
 secp256k1 = { version = "0.28", features = ["recovery"] }
 ethereum-types = "0.14"
+ethers-core = "2.0"
 # 邮件/短信发送
 lettre = "0.11"
 async-trait = "0.1"

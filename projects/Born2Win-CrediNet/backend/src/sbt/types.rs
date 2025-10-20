@@ -185,3 +185,26 @@ impl ContractConfig {
     }
 }
 
+// ========== EIP-712 签名相关 ==========
+
+#[derive(Deserialize, Debug)]
+pub struct MintPermitRequest {
+    pub to: String,           // 接收者地址
+    pub badge_type: u8,       // 徽章类型
+    pub token_uri: String,    // 元数据 URI
+    pub request_hash: String, // 验证请求哈希
+}
+
+#[derive(Serialize)]
+pub struct MintPermitResponse {
+    pub success: bool,
+    pub issuer: String,       // 签名者地址
+    pub to: String,           // 接收者地址
+    pub badge_type: u8,       // 徽章类型
+    pub token_uri: String,    // 元数据 URI
+    pub request_hash: String, // 验证请求哈希
+    pub deadline: String,     // 签名过期时间戳（字符串格式，便于前端转 BigInt）
+    pub signature: String,    // EIP-712 签名
+    pub message: String,
+}
+

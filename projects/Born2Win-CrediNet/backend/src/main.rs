@@ -1,8 +1,10 @@
 use axum::Router;
+use axum::http::Method;
 use dotenvy::dotenv;
 use sqlx::SqlitePool;
 use std::env;
 use tokio::net::TcpListener;
+use tower_http::cors::CorsLayer;
 
 mod api;
 mod auth;
@@ -60,6 +62,28 @@ async fn main() -> anyhow::Result<()> {
         rate_limiter: Arc::new(Mutex::new(HashMap::new())),
     };
 
+    // 配置 CORS - 允许前端跨域访问
+    let cors = CorsLayer::new()
+        .allow_origin([
+            "http://localhost:3001".parse().unwrap(),
+            "http://127.0.0.1:3001".parse().unwrap(),
+            "http://localhost:3000".parse().unwrap(),
+            "http://127.0.0.1:3000".parse().unwrap(),
+        ])
+        .allow_methods([
+            Method::GET,
+            Method::POST,
+            Method::PUT,
+            Method::DELETE,
+            Method::OPTIONS,
+        ])
+        .allow_headers([
+            "content-type".parse().unwrap(),
+            "authorization".parse().unwrap(),
+            "accept".parse().unwrap(),
+        ])
+        .allow_credentials(true);
+
     let app = Router::new()
         // 兼容原有路由（无前缀，便于脚本与旧前端测试）
         .merge(auth::routes::create_auth_routes())
@@ -80,6 +104,7 @@ async fn main() -> anyhow::Result<()> {
                 // 同时保留 api 模块的开放接口与文档
                 .merge(api::routes::create_api_routes()),
         )
+        .layer(cors)
         .with_state(state);
 
     eprintln!("🚀 正在启动 CrediNet 服务...");

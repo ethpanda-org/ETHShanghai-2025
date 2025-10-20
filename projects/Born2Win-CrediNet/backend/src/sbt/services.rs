@@ -411,7 +411,7 @@ impl SbtService {
 
     async fn get_primary_wallet(&self, user_id: &str) -> Result<Option<String>, AppError> {
         let result = sqlx::query(
-            "SELECT address FROM wallet_addresses 
+            "SELECT address FROM wallet_addresses
              WHERE user_id = ? AND is_primary = 1"
         )
         .bind(user_id)
@@ -423,6 +423,235 @@ impl SbtService {
         } else {
             Ok(None)
         }
+    }
+}
+
+// ========== EIP-712 签名器 ==========
+
+use ethers_core::{
+    types::{H160, H256, U256},
+    utils::keccak256,
+};
+use secp256k1::{Message, Secp256k1, SecretKey};
+
+/// EIP-712 签名器
+pub struct Eip712Signer {
+    private_key: SecretKey,
+    issuer_address: String,
+    contract_address: String,
+    contract_name: String,
+    chain_id: u64,
+}
+
+impl Eip712Signer {
+    pub fn from_env() -> Result<Self, AppError> {
+        let private_key_hex = std::env::var("SIGNER_PRIVATE_KEY")
+            .map_err(|_| AppError::BlockchainError("SIGNER_PRIVATE_KEY 环境变量未设置".to_string()))?;
+
+        // 移除 0x 前缀（如果有）
+        let key_hex = private_key_hex.trim_start_matches("0x");
+        let key_bytes = hex::decode(key_hex)
+            .map_err(|e| AppError::BlockchainError(format!("私钥格式错误: {}", e)))?;
+
+        let private_key = SecretKey::from_slice(&key_bytes)
+            .map_err(|e| AppError::BlockchainError(format!("私钥无效: {}", e)))?;
+
+        // 从私钥计算公钥地址
+        let secp = Secp256k1::new();
+        let public_key = secp256k1::PublicKey::from_secret_key(&secp, &private_key);
+        let public_key_bytes = &public_key.serialize_uncompressed()[1..]; // 移除 0x04 前缀
+        let hash = keccak256(public_key_bytes);
+        let issuer_address = format!("0x{}", hex::encode(&hash[12..]));
+
+        let contract_address = std::env::var("SBT_CONTRACT_ADDRESS")
+            .map_err(|_| AppError::BlockchainError("SBT_CONTRACT_ADDRESS 环境变量未设置".to_string()))?;
+
+        let contract_name = std::env::var("SBT_CONTRACT_NAME")
+            .unwrap_or_else(|_| "CrediNetSBT".to_string());
+
+        let chain_id = std::env::var("CHAIN_ID")
+            .unwrap_or_else(|_| "11155111".to_string()) // 默认 Sepolia
+            .parse()
+            .map_err(|e| AppError::BlockchainError(format!("CHAIN_ID 格式错误: {}", e)))?;
+
+        Ok(Self {
+            private_key,
+            issuer_address,
+            contract_address,
+            contract_name,
+            chain_id,
+        })
+    }
+
+    pub async fn sign_mint_permit(
+        &self,
+        to: &str,
+        badge_type: u8,
+        token_uri: &str,
+        request_hash: &str,
+    ) -> Result<MintPermitResponse, AppError> {
+        // 设置过期时间为 1 小时后
+        let deadline = (Utc::now().timestamp() + 3600) as u64;
+
+        // 构建 EIP-712 域分隔符
+        let domain = eip712::EIP712Domain {
+            name: Some(self.contract_name.clone()),
+            version: Some("1".to_string()),
+            chain_id: Some(self.chain_id.into()),
+            verifying_contract: Some(self.contract_address.parse()
+                .map_err(|e| AppError::BlockchainError(format!("合约地址格式错误: {}", e)))?),
+            salt: None,
+        };
+
+        // 构建 MintPermit 消息
+        let message = MintPermit {
+            issuer: self.issuer_address.parse()
+                .map_err(|e| AppError::BlockchainError(format!("issuer 地址格式错误: {}", e)))?,
+            to: to.parse()
+                .map_err(|e| AppError::BlockchainError(format!("to 地址格式错误: {}", e)))?,
+            badge_type,
+            token_uri: token_uri.to_string(),
+            request_hash: request_hash.parse()
+                .map_err(|e| AppError::BlockchainError(format!("requestHash 格式错误: {}", e)))?,
+            deadline: deadline.into(),
+        };
+
+        // 计算 EIP-712 哈希
+        let struct_hash = message.struct_hash();
+        let domain_separator = domain.separator();
+        let digest = keccak256(&[
+            &[0x19, 0x01],
+            domain_separator.as_bytes(),
+            struct_hash.as_bytes(),
+        ].concat());
+
+        // 使用 secp256k1 签名
+        let secp = Secp256k1::new();
+        let message = Message::from_digest_slice(&digest)
+            .map_err(|e| AppError::BlockchainError(format!("消息格式错误: {}", e)))?;
+
+        let signature = secp.sign_ecdsa_recoverable(&message, &self.private_key);
+        let (recovery_id, signature_bytes) = signature.serialize_compact();
+
+        // 组合签名: r + s + v
+        let mut full_signature = Vec::with_capacity(65);
+        full_signature.extend_from_slice(&signature_bytes);
+        full_signature.push(recovery_id.to_i32() as u8 + 27); // v = recovery_id + 27
+
+        let signature_hex = format!("0x{}", hex::encode(full_signature));
+
+        Ok(MintPermitResponse {
+            success: true,
+            issuer: self.issuer_address.clone(),
+            to: to.to_string(),
+            badge_type,
+            token_uri: token_uri.to_string(),
+            request_hash: request_hash.to_string(),
+            deadline: deadline.to_string(),
+            signature: signature_hex,
+            message: "签名生成成功".to_string(),
+        })
+    }
+}
+
+// EIP-712 域和消息定义
+mod eip712 {
+    use ethers_core::types::{transaction::eip712::Eip712, H160, H256, U256};
+    use ethers_core::utils::keccak256;
+
+    #[derive(Clone)]
+    pub struct EIP712Domain {
+        pub name: Option<String>,
+        pub version: Option<String>,
+        pub chain_id: Option<U256>,
+        pub verifying_contract: Option<H160>,
+        pub salt: Option<H256>,
+    }
+
+    impl EIP712Domain {
+        pub fn separator(&self) -> H256 {
+            let mut encoded = Vec::new();
+
+            // TYPE_HASH
+            let type_hash = keccak256(b"EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+            encoded.extend_from_slice(&type_hash);
+
+            // name
+            if let Some(ref name) = self.name {
+                encoded.extend_from_slice(keccak256(name.as_bytes()).as_ref());
+            }
+
+            // version
+            if let Some(ref version) = self.version {
+                encoded.extend_from_slice(keccak256(version.as_bytes()).as_ref());
+            }
+
+            // chainId
+            if let Some(chain_id) = self.chain_id {
+                let mut buf = [0u8; 32];
+                chain_id.to_big_endian(&mut buf);
+                encoded.extend_from_slice(&buf);
+            }
+
+            // verifyingContract
+            if let Some(contract) = self.verifying_contract {
+                let mut buf = [0u8; 32];
+                buf[12..].copy_from_slice(contract.as_bytes());
+                encoded.extend_from_slice(&buf);
+            }
+
+            H256::from_slice(&keccak256(&encoded))
+        }
+    }
+}
+
+use eip712::EIP712Domain;
+
+struct MintPermit {
+    issuer: H160,
+    to: H160,
+    badge_type: u8,
+    token_uri: String,
+    request_hash: H256,
+    deadline: U256,
+}
+
+impl MintPermit {
+    fn struct_hash(&self) -> H256 {
+        let type_hash = keccak256(
+            b"MintPermit(address issuer,address to,uint8 badgeType,string tokenURI,bytes32 requestHash,uint256 deadline)"
+        );
+
+        let mut encoded = Vec::new();
+        encoded.extend_from_slice(&type_hash);
+
+        // issuer
+        let mut buf = [0u8; 32];
+        buf[12..].copy_from_slice(self.issuer.as_bytes());
+        encoded.extend_from_slice(&buf);
+
+        // to
+        let mut buf = [0u8; 32];
+        buf[12..].copy_from_slice(self.to.as_bytes());
+        encoded.extend_from_slice(&buf);
+
+        // badgeType
+        let mut buf = [0u8; 32];
+        buf[31] = self.badge_type;
+        encoded.extend_from_slice(&buf);
+
+        // tokenURI (keccak256 hash)
+        encoded.extend_from_slice(&keccak256(self.token_uri.as_bytes()));
+
+        // requestHash
+        encoded.extend_from_slice(self.request_hash.as_bytes());
+
+        // deadline
+        let mut buf = [0u8; 32];
+        self.deadline.to_big_endian(&mut buf);
+        encoded.extend_from_slice(&buf);
+
+        H256::from_slice(&keccak256(&encoded))
     }
 }
 
