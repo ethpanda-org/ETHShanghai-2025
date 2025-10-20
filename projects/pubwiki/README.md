@@ -5,7 +5,7 @@
 ## 一、提交物清单 (Deliverables)
 
 - [x] GitHub 仓库（公开或临时私有）：包含完整代码与本 README
-- [ ] Demo 视频（≤ 3 分钟，中文）：展示核心功能与流程
+- [x] Demo 视频（≤ 3 分钟，中文）：展示核心功能与流程
 - [x] 在线演示链接：https://pub.wiki
 - [ ] 合约部署信息（如有）：网络、地址、验证链接、最小复现脚本
 - [ ] 可选材料：Pitch Deck（不计入评分权重）
@@ -360,7 +360,7 @@ docker compose up
 
 ### 5) Demo 与关键用例 (Demo & Key Flows)
 
-- **视频链接（≤3 分钟，中文）**：[待上传]
+- **视频链接（≤3 分钟，中文）**：https://www.youtube.com/watch?v=BOZ5F4V4k3Y&feature=youtu.be
 
 #### 关键用例演示
 
