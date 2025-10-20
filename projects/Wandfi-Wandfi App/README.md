@@ -1,5 +1,5 @@
-# [Wandfi App] - Wandfi
+# Wandfi App - Wandfi
 
-项目链接
+项目链接: https://app.wandfi.io/
 
-https://github.com/wandfi/wand-apps
+仓库链接: https://github.com/wandfi/wand-apps
