@@ -1,0 +1,388 @@
+/* 全局背景样式 - 放在 @tailwind 之前，确保不被删除 */
+html,
+body {
+  background-color: #fafafa !important;
+}
+
+body {
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 78, 152, 0.5), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(220, 0, 54, 0.4), transparent),
+    radial-gradient(ellipse 60% 40% at 20% 60%, rgba(238, 189, 1, 0.3), transparent),
+    linear-gradient(to right, rgba(0, 78, 152, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 78, 152, 0.15) 1px, transparent 1px) !important;
+  background-size: auto, auto, auto, 40px 40px, 40px 40px !important;
+  background-attachment: fixed !important;
+  min-height: 100vh !important;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+  巴萨队徽配色系统 - ZKredential
+  参考：FC Barcelona Official Colors
+*/
+
+:root {
+  /* 巴萨主色 - Barca Primary Colors */
+  --barca-blue: #004e98;          /* 主体蓝 - Barca Blue */
+  --barca-garnet: #a40142;        /* 主体红 - Barca Garnet */
+  --barca-red: #dc0036;           /* 鲜艳红 - Vivid Red */
+  --barca-gold: #eebd01;          /* 金黄 - Gold */
+  --barca-yellow: #ebba19;        /* 足球黄 - Ball Yellow */
+  --barca-bright-yellow: #fff007; /* 明黄 - Bright Yellow */
+  
+  /* 中性色 */
+  --barca-black: #090505;
+  --barca-white: #ffffff;
+  --barca-gray-50: #f9fafb;
+  --barca-gray-100: #f3f4f6;
+  --barca-gray-200: #e5e7eb;
+  --barca-gray-300: #d1d5db;
+  --barca-gray-700: #374151;
+  --barca-gray-800: #1f2937;
+  --barca-gray-900: #111827;
+  
+  /* Semantic Colors - 浅色背景 */
+  --background: #fafafa;
+  --foreground: var(--barca-gray-900);
+  
+  --card: var(--barca-white);
+  --card-foreground: var(--barca-gray-900);
+  
+  --popover: var(--barca-white);
+  --popover-foreground: var(--barca-gray-900);
+  
+  --primary: var(--barca-blue);
+  --primary-foreground: var(--barca-white);
+  
+  --secondary: var(--barca-garnet);
+  --secondary-foreground: var(--barca-white);
+  
+  --accent: var(--barca-gold);
+  --accent-foreground: var(--barca-gray-900);
+  
+  --muted: var(--barca-gray-100);
+  --muted-foreground: var(--barca-gray-700);
+  
+  --destructive: var(--barca-red);
+  --destructive-foreground: var(--barca-white);
+  
+  --border: var(--barca-gray-200);
+  --input: var(--barca-gray-200);
+  --ring: var(--barca-blue);
+  
+  --radius: 0.5rem;
+}
+
+.dark {
+  /* 深色模式 - 巴萨配色 */
+  --background: #0f1419;
+  --foreground: var(--barca-white);
+  
+  --card: #121828;
+  --card-foreground: var(--barca-white);
+  
+  --popover: #0f1520;
+  --popover-foreground: var(--barca-white);
+  
+  --primary: var(--barca-blue);
+  --primary-foreground: var(--barca-white);
+  
+  --secondary: var(--barca-garnet);
+  --secondary-foreground: var(--barca-white);
+  
+  --accent: var(--barca-gold);
+  --accent-foreground: var(--barca-gray-900);
+  
+  --muted: #1a2333;
+  --muted-foreground: var(--barca-gray-300);
+  
+  --destructive: var(--barca-red);
+  --destructive-foreground: var(--barca-white);
+  
+  --border: #1e2a3f;
+  --input: #1e2a3f;
+  --ring: var(--barca-blue);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    min-height: 100vh;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+}
+
+@layer components {
+  /* 巴萨风格渐变背景 */
+  .barca-gradient-bg {
+    background: linear-gradient(135deg, 
+      var(--barca-blue) 0%, 
+      var(--barca-garnet) 50%, 
+      var(--barca-red) 100%
+    );
+  }
+  
+  .barca-gradient-text {
+    @apply bg-gradient-to-r from-[#dc0036] via-[#a40142] to-[#004e98] bg-clip-text text-transparent;
+  }
+  
+  .barca-gradient-gold {
+    @apply bg-gradient-to-r from-[#eebd01] to-[#ebba19] bg-clip-text text-transparent;
+  }
+  
+  /* 巴萨风格卡片 - 增强版 */
+  .barca-card {
+    @apply bg-card/80 backdrop-blur-sm border border-border rounded-xl shadow-lg;
+    @apply hover:shadow-2xl hover:border-[#004e98]/60 transition-all duration-300;
+    @apply hover:-translate-y-1;
+    background-image: 
+      linear-gradient(to bottom, rgba(255,255,255,0.02), rgba(255,255,255,0));
+  }
+  
+  .barca-card-featured {
+    @apply bg-card/90 backdrop-blur-md rounded-xl shadow-2xl;
+    @apply hover:shadow-2xl transition-all duration-300;
+    @apply hover:-translate-y-1;
+    border: 2px solid transparent;
+    background-image: 
+      linear-gradient(var(--background), var(--background)),
+      linear-gradient(135deg, var(--barca-blue), var(--barca-garnet), var(--barca-gold));
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+  
+  /* 卡片内容区域光泽效果 */
+  .barca-card-glow {
+    @apply relative overflow-hidden;
+  }
+  
+  .barca-card-glow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s;
+  }
+  
+  .barca-card-glow:hover::before {
+    left: 100%;
+  }
+  
+  /* 巴萨风格按钮 - 增强版 */
+  .btn-barca-primary {
+    @apply bg-[#004e98] hover:bg-[#003d7a] text-white;
+    @apply shadow-xl shadow-[#004e98]/30 hover:shadow-2xl hover:shadow-[#004e98]/40;
+    @apply transition-all duration-300;
+    @apply font-bold text-base;
+    @apply border-2 border-[#004e98] hover:border-[#003d7a];
+    @apply transform hover:scale-105 active:scale-95;
+  }
+  
+  .btn-barca-secondary {
+    @apply bg-[#a40142] hover:bg-[#8a0137] text-white;
+    @apply shadow-xl shadow-[#a40142]/30 hover:shadow-2xl hover:shadow-[#a40142]/40;
+    @apply transition-all duration-300;
+    @apply font-bold text-base;
+    @apply border-2 border-[#a40142] hover:border-[#8a0137];
+    @apply transform hover:scale-105 active:scale-95;
+  }
+  
+  .btn-barca-gold {
+    @apply bg-gradient-to-r from-[#eebd01] to-[#ebba19] hover:from-[#d4a800] hover:to-[#c9a200];
+    @apply text-gray-900;
+    @apply shadow-xl shadow-[#eebd01]/30 hover:shadow-2xl hover:shadow-[#eebd01]/40;
+    @apply transition-all duration-300 font-bold text-base;
+    @apply border-2 border-[#eebd01] hover:border-[#d4a800];
+    @apply transform hover:scale-105 active:scale-95;
+  }
+  
+  /* 巴萨风格 Header - 增强版 */
+  .barca-header {
+    @apply fixed top-0 left-0 right-0 z-50;
+    @apply bg-background/90 backdrop-blur-xl;
+    @apply border-b-2 border-[#004e98]/30;
+    box-shadow: 0 4px 24px rgba(0, 78, 152, 0.15);
+    background-image: 
+      linear-gradient(to bottom, rgba(0, 78, 152, 0.03), transparent);
+  }
+  
+  /* 巴萨风格输入框 */
+  .barca-input {
+    @apply border-border focus:border-[#004e98] focus:ring-2 focus:ring-[#004e98]/20;
+    @apply transition-all duration-300;
+  }
+  
+  /* 巴萨风格徽章 */
+  .barca-badge-blue {
+    @apply bg-[#004e98]/10 text-[#004e98] border border-[#004e98]/20;
+    @apply px-3 py-1 rounded-full text-sm font-medium;
+  }
+  
+  .barca-badge-red {
+    @apply bg-[#dc0036]/10 text-[#dc0036] border border-[#dc0036]/20;
+    @apply px-3 py-1 rounded-full text-sm font-medium;
+  }
+  
+  .barca-badge-gold {
+    @apply bg-[#eebd01]/10 text-[#b89500] border border-[#eebd01]/20;
+    @apply px-3 py-1 rounded-full text-sm font-medium;
+  }
+  
+  /* 状态指示器 */
+  .status-verified {
+    @apply flex items-center gap-2 px-4 py-2 rounded-lg;
+    @apply bg-green-50 dark:bg-green-900/20;
+    @apply text-green-700 dark:text-green-400;
+    @apply border border-green-200 dark:border-green-800;
+  }
+  
+  .status-pending {
+    @apply flex items-center gap-2 px-4 py-2 rounded-lg;
+    @apply bg-[#eebd01]/10 dark:bg-[#eebd01]/5;
+    @apply text-[#b89500] dark:text-[#eebd01];
+    @apply border border-[#eebd01]/20;
+  }
+  
+  .status-error {
+    @apply flex items-center gap-2 px-4 py-2 rounded-lg;
+    @apply bg-[#dc0036]/10 dark:bg-[#dc0036]/5;
+    @apply text-[#dc0036];
+    @apply border border-[#dc0036]/20;
+  }
+}
+
+@layer utilities {
+  /* 巴萨风格阴影 - 增强版 */
+  .shadow-barca-blue {
+    box-shadow: 
+      0 10px 40px rgba(0, 78, 152, 0.25),
+      0 0 60px rgba(0, 78, 152, 0.1);
+  }
+  
+  .shadow-barca-red {
+    box-shadow: 
+      0 10px 40px rgba(220, 0, 54, 0.25),
+      0 0 60px rgba(220, 0, 54, 0.1);
+  }
+  
+  .shadow-barca-gold {
+    box-shadow: 
+      0 10px 40px rgba(238, 189, 1, 0.3),
+      0 0 60px rgba(238, 189, 1, 0.15);
+  }
+  
+  /* 背景网格效果 */
+  .barca-grid-bg {
+    background-image: 
+      linear-gradient(to right, rgba(0, 78, 152, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 78, 152, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  
+  /* 背景光晕效果 */
+  .barca-glow-bg {
+    position: relative;
+  }
+  
+  .barca-glow-bg::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 78, 152, 0.1) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+    pointer-events: none;
+  }
+  
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* 渐变边框 */
+  .border-gradient-barca {
+    border: 2px solid transparent;
+    background-image: 
+      linear-gradient(var(--background), var(--background)),
+      linear-gradient(135deg, #004e98, #a40142, #eebd01);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+  
+  /* 动画 */
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 3s ease infinite;
+  }
+  
+  @keyframes gradient {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+}
+
+/* 平滑滚动 */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 自定义滚动条 - 巴萨风格 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--barca-gray-100);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0a0f1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--barca-blue), var(--barca-garnet));
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--barca-garnet), var(--barca-red));
+}
+
+/* Selection */
+::selection {
+  background-color: var(--barca-blue);
+  color: var(--barca-white);
+}
+
+/* Focus visible */
+:focus-visible {
+  outline: 2px solid var(--barca-blue);
+  outline-offset: 2px;
+}
+
