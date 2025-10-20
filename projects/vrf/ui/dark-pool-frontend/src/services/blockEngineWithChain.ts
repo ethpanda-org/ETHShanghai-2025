@@ -9,15 +9,18 @@ import type {
 } from '../types/block';
 import { ObfuscationUtils } from '../utils/obfuscation';
 import { DelayUtils } from '../utils/delay';
+import { web3Service, type Web3Order } from './web3';
 
-export class BlockEngine {
+export class BlockEngineWithChain {
   private state: MatchingEngineState;
   private config: BlockMatchingConfig;
   private subscribers: Set<(state: MatchingEngineState) => void> = new Set();
   private blockTimer?: NodeJS.Timeout;
   private epochTimer?: NodeJS.Timeout;
+  private syncTimer?: NodeJS.Timeout;
+  private isBlockchainEnabled: boolean;
 
-  constructor(config?: Partial<BlockMatchingConfig>) {
+  constructor(config?: Partial<BlockMatchingConfig>, blockchainEnabled: boolean = true) {
     this.config = {
       BLOCKS_PER_EPOCH: 5,
       BLOCK_DURATION: 30000, // 30 seconds per block
@@ -28,6 +31,8 @@ export class BlockEngine {
       },
       ...config
     };
+
+    this.isBlockchainEnabled = blockchainEnabled;
 
     this.state = {
       currentEpoch: null,
@@ -41,6 +46,10 @@ export class BlockEngine {
     };
 
     this.startEngine();
+
+    if (blockchainEnabled) {
+      this.startBlockchainSync();
+    }
   }
 
   // Subscribe to state changes
@@ -61,6 +70,58 @@ export class BlockEngine {
     this.blockTimer = setInterval(() => {
       this.createNewBlock();
     }, this.config.BLOCK_DURATION);
+  }
+
+  // Start blockchain synchronization
+  private startBlockchainSync() {
+    // Sync with blockchain every 5 seconds
+    this.syncTimer = setInterval(() => {
+      this.syncWithBlockchain();
+    }, 5000);
+
+    // Initial sync
+    this.syncWithBlockchain();
+  }
+
+  // Sync orders with blockchain
+  private async syncWithBlockchain() {
+    if (!this.isBlockchainEnabled) return;
+
+    try {
+      const blockchainOrders = await web3Service.getAllOrders();
+
+      // Convert blockchain orders to our Order format
+      blockchainOrders.forEach((web3Order: Web3Order) => {
+        const order: Order = {
+          id: web3Order.id,
+          symbol: 'ETH-USD',
+          side: web3Order.isBuy ? 'buy' : 'sell',
+          amount: parseFloat(web3Order.amount),
+          price: parseFloat(web3Order.price),
+          priceRange: {
+            min: parseFloat(web3Order.price) * 0.99,
+            max: parseFloat(web3Order.price) * 1.01
+          },
+          status: web3Order.executed ? 'executed' : 'pending',
+          createdAt: new Date(web3Order.timestamp * 1000),
+          blockId: '',
+          epochId: '',
+          counterparties: [],
+          executedAt: web3Order.executed ? new Date(web3Order.timestamp * 1000) : undefined,
+          executedPrice: web3Order.executed ? parseFloat(web3Order.price) : undefined
+        };
+
+        // Add to state if not already present
+        if (!this.state.orders.has(order.id)) {
+          this.state.orders.set(order.id, order);
+          console.log('Synced order from blockchain:', order.id);
+        }
+      });
+
+      this.notifySubscribers();
+    } catch (error) {
+      console.error('Failed to sync with blockchain:', error);
+    }
   }
 
   // Create a new epoch
@@ -111,23 +172,14 @@ export class BlockEngine {
 
     const blockId = ObfuscationUtils.generateId('block');
 
-    // Demo order generation disabled - no fabricated trading data
-    // Blocks will only contain real user orders
-    const demoOrders: Order[] = [];
-
     const block: Block = {
       id: blockId,
       epochId: epoch.id,
       index: epoch.blocks.length,
-      orders: demoOrders, // Empty until real orders are added
+      orders: [],
       status: 'pending',
       createdAt: new Date()
     };
-
-    // Add real orders to the state (none for now - will be added by users)
-    demoOrders.forEach(order => {
-      this.state.orders.set(order.id, order);
-    });
 
     epoch.blocks.push(block);
     this.state.blocks.set(blockId, block);
@@ -258,8 +310,8 @@ export class BlockEngine {
     this.state.orders.set(sellOrder.id, sellOrder);
   }
 
-  // Add a new order to the current block
-  public addOrder(orderData: Omit<Order, 'id' | 'status' | 'createdAt' | 'blockId' | 'epochId'>): Order {
+  // Add a new order to the current block (with blockchain support)
+  public async addOrder(orderData: Omit<Order, 'id' | 'status' | 'createdAt' | 'blockId' | 'epochId'>): Promise<Order> {
     const order: Order = {
       ...orderData,
       id: ObfuscationUtils.generateId('order'),
@@ -268,8 +320,34 @@ export class BlockEngine {
     };
 
     console.log('Adding order:', order.id);
-    console.log('Current epoch:', this.state.currentEpoch?.id);
-    console.log('Current epoch blocks:', this.state.currentEpoch?.blocks.length);
+
+    // If blockchain is enabled, submit to blockchain first
+    if (this.isBlockchainEnabled) {
+      console.log('🔗 Blockchain enabled, attempting to submit order to blockchain...');
+      console.log('Order data:', {
+        side: order.side,
+        amount: order.amount.toString(),
+        price: order.price?.toString() || '0'
+      });
+
+      try {
+        const blockchainOrderId = await web3Service.placeOrder(
+          order.side === 'buy',
+          order.amount.toString(),
+          order.price?.toString() || '0'
+        );
+
+        // Use blockchain order ID
+        order.id = blockchainOrderId;
+        console.log('✅ Order submitted to blockchain successfully:', blockchainOrderId);
+      } catch (error) {
+        console.error('❌ Failed to submit order to blockchain:', error);
+        console.error('Error details:', error);
+        throw error;
+      }
+    } else {
+      console.log('📍 Local mode - skipping blockchain submission');
+    }
 
     // Add to current block
     if (this.state.currentEpoch && this.state.currentEpoch.blocks.length > 0) {
@@ -278,21 +356,47 @@ export class BlockEngine {
       order.epochId = this.state.currentEpoch.id;
       order.status = 'in-block';
 
-      console.log('Adding to block:', currentBlock.id, 'Current orders in block:', currentBlock.orders.length);
-
       currentBlock.orders.push(order);
       currentBlock.status = 'matching';
 
-      console.log('Order added to block, new count:', currentBlock.orders.length);
-
       // Update epoch order count
       this.state.currentEpoch.totalOrders++;
-    } else {
-      console.log('No current epoch or blocks available!');
     }
 
     this.state.orders.set(order.id, order);
     this.notifySubscribers();
+
+    // If blockchain is enabled, try to match orders after placing
+    if (this.isBlockchainEnabled) {
+      setTimeout(async () => {
+        try {
+          console.log('🔄 Attempting to match orders on blockchain...');
+          const matchResult = await web3Service.matchOrders();
+          console.log('✅ Orders matched on blockchain:', matchResult);
+
+          // Update local state with matched orders
+          const buyOrder = this.state.orders.get(matchResult.buyOrderId);
+          const sellOrder = this.state.orders.get(matchResult.sellOrderId);
+
+          if (buyOrder && sellOrder) {
+            buyOrder.status = 'executed';
+            buyOrder.executedAt = new Date();
+            buyOrder.executedPrice = parseFloat(matchResult.price);
+
+            sellOrder.status = 'executed';
+            sellOrder.executedAt = new Date();
+            sellOrder.executedPrice = parseFloat(matchResult.price);
+
+            this.state.orders.set(buyOrder.id, buyOrder);
+            this.state.orders.set(sellOrder.id, sellOrder);
+
+            this.notifySubscribers();
+          }
+        } catch (error) {
+          console.log('ℹ️ No matching orders available on blockchain:', error);
+        }
+      }, 2000); // Wait 2 seconds after placing order to try matching
+    }
 
     return order;
   }
@@ -301,13 +405,10 @@ export class BlockEngine {
   public getVisualizationData(): EpochVisualization[] {
     const visualizations: EpochVisualization[] = [];
 
-    console.log('Getting visualization data, total epochs:', this.state.epochs.size);
-
     this.state.epochs.forEach(epoch => {
       let totalOrders = 0;
       const blocks: BlockVisualization[] = epoch.blocks.map(block => {
         totalOrders += block.orders.length;
-        console.log(`Epoch ${epoch.id}, Block ${block.id}, orders: ${block.orders.length}`);
         return {
           block,
           isVisible: true,
@@ -315,8 +416,6 @@ export class BlockEngine {
           matchProgress: block.status === 'completed' ? 100 : 0
         };
       });
-
-      console.log(`Epoch ${epoch.id} total orders: ${totalOrders}`);
 
       visualizations.push({
         epoch,
@@ -357,6 +456,10 @@ export class BlockEngine {
     if (!this.state.currentEpoch) {
       this.createNewEpoch();
     }
+
+    if (this.isBlockchainEnabled && !this.syncTimer) {
+      this.startBlockchainSync();
+    }
   }
 
   // Stop the engine
@@ -370,17 +473,39 @@ export class BlockEngine {
       clearTimeout(this.epochTimer);
       this.epochTimer = undefined;
     }
+    if (this.syncTimer) {
+      clearInterval(this.syncTimer);
+      this.syncTimer = undefined;
+    }
   }
 
-  // Demo order generation function removed to prevent fabricated trading data
-  // Blocks will now only contain real user orders
+  // Enable/disable blockchain integration
+  public setBlockchainEnabled(enabled: boolean) {
+    console.log('🔧 setBlockchainEnabled called with:', enabled);
+    this.isBlockchainEnabled = enabled;
+    console.log('🔧 this.isBlockchainEnabled is now:', this.isBlockchainEnabled);
+
+    if (enabled && !this.syncTimer) {
+      console.log('🔧 Starting blockchain sync...');
+      this.startBlockchainSync();
+    } else if (!enabled && this.syncTimer) {
+      clearInterval(this.syncTimer);
+      this.syncTimer = undefined;
+    }
+  }
+
+  // Check if blockchain is enabled
+  public isBlockchainIntegrationEnabled(): boolean {
+    return this.isBlockchainEnabled;
+  }
 
   // Cleanup
   public destroy() {
     this.stop();
     this.subscribers.clear();
+    web3Service.removeAllListeners();
   }
 }
 
 // Singleton instance
-export const blockEngine = new BlockEngine();
+export const blockEngineWithChain = new BlockEngineWithChain();

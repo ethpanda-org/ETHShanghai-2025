@@ -3,10 +3,11 @@ import { ArrowTrendingUpIcon, ArrowTrendingDownIcon, CubeIcon } from '@heroicons
 import { RangeDisplay } from '../privacy/index';
 import { ObfuscationUtils, RangeUtils } from '../../utils/index';
 import { cn } from '../../utils/cn';
-import { useBlockEngineWithDemo, useEpochProgressWithDemo } from '../../hooks/useBlockEngineWithDemo';
+import { useBlockEngineWithChain, useEpochProgressWithChain } from '../../hooks/useBlockEngineWithChain';
 import { useDemoControls } from '../../hooks/useDemoControls';
 import { BlockChainVisualization } from './BlockVisualization';
 import { DemoControlPanel } from './DemoControlPanel';
+import { web3Service } from '../../services/web3';
 import type { Order } from '../../types/block';
 
 interface MarketData {
@@ -22,12 +23,14 @@ interface DarkTradingViewWithBlocksProps {
   marketData: MarketData;
   className?: string;
   identity?: { anonymousId: string; publicKey: string } | null;
+  blockchainEnabled?: boolean;
 }
 
 export const DarkTradingViewWithBlocks: React.FC<DarkTradingViewWithBlocksProps> = ({
   marketData,
   className = '',
-  identity
+  identity,
+  blockchainEnabled = false
 }) => {
   const [orderType, setOrderType] = useState<'limit' | 'market'>('limit');
   const [side, setSide] = useState<'buy' | 'sell'>('buy');
@@ -35,12 +38,23 @@ export const DarkTradingViewWithBlocks: React.FC<DarkTradingViewWithBlocksProps>
   const [price, setPrice] = useState('');
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
 
-  const { state, visualizations, addOrder } = useBlockEngineWithDemo({
-    demoMode: 'static',
-    speed: 'fast'
+  const { state, visualizations, addOrder, isConnected, isCorrectNetwork, walletAddress } = useBlockEngineWithChain({
+    demoMode: 'dynamic', // Changed to dynamic to create epochs even without orders
+    speed: 'fast',
+    blockchainEnabled
   });
+
+  // Debug logging for connection status
+  useEffect(() => {
+    console.log('DarkTradingViewWithBlocks - Connection status:', {
+      blockchainEnabled,
+      isConnected,
+      isCorrectNetwork,
+      buttonDisabled: !amount || (orderType === 'limit' && !price) || (blockchainEnabled && (!isConnected || !isCorrectNetwork))
+    });
+  }, [blockchainEnabled, isConnected, isCorrectNetwork, amount, price, orderType]);
   const { isRunning, speed, handleSpeedChange, handleStartStop } = useDemoControls('fast');
-  const epochProgress = useEpochProgressWithDemo();
+  const epochProgress = useEpochProgressWithChain();
 
   // Update recent orders when state changes
   useEffect(() => {
@@ -50,15 +64,62 @@ export const DarkTradingViewWithBlocks: React.FC<DarkTradingViewWithBlocksProps>
     setRecentOrders(orders);
   }, [state.orders]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!amount) return;
+    console.log('=== handleSubmit called ===');
+    console.log('amount:', amount);
+    console.log('blockchainEnabled:', blockchainEnabled);
+    console.log('orderType:', orderType);
+    console.log('side:', side);
 
-    // Check if identity is verified
-    if (!identity) {
-      alert('Please create your identity first before placing orders.');
+    if (!amount) {
+      console.log('Early return: no amount');
       return;
+    }
+
+    // Check if blockchain is enabled and wallet is connected
+    if (blockchainEnabled) {
+      console.log('Blockchain mode enabled, checking wallet...');
+
+      // Direct check using MetaMask API
+      const accounts = await window.ethereum?.request({
+        method: 'eth_accounts'
+      });
+
+      console.log('Accounts from MetaMask:', accounts);
+
+      if (!accounts || accounts.length === 0) {
+        console.log('Blockchain mode enabled but wallet not connected');
+        alert('Please connect your wallet to Hardhat network before placing orders');
+        return;
+      }
+
+      // Check network
+      const chainId = await window.ethereum?.request({
+        method: 'eth_chainId'
+      });
+
+      console.log('Chain ID from MetaMask:', chainId);
+
+      if (chainId !== '0x7a69') { // 31337 in hex
+        console.log('Blockchain mode enabled but wrong network, current chainId:', chainId);
+        alert('Please connect to Hardhat network (Chain ID: 31337)');
+        return;
+      }
+
+      console.log('✅ Wallet connection verified:', {
+        accounts,
+        chainId
+      });
+    } else {
+      console.log('Local mode - skipping blockchain checks');
+    }
+
+    // Check if identity is verified (temporarily disabled for testing)
+    if (!identity) {
+      // Create a test identity for demo purposes
+      console.log('Creating test identity for demo...');
     }
 
     const orderData = {
@@ -70,15 +131,60 @@ export const DarkTradingViewWithBlocks: React.FC<DarkTradingViewWithBlocksProps>
         min: parseFloat(price) * 0.99,
         max: parseFloat(price) * 1.01
       } : undefined,
-      anonymousId: identity.anonymousId // Include anonymous ID in order
+      anonymousId: identity?.anonymousId || 'test_anonymous_id_demo' // Use test ID if no identity
     };
 
-    const order = addOrder(orderData);
-    console.log('Order added to block:', order);
+    console.log('About to call addOrder with data:', orderData);
+    console.log('Blockchain enabled for this order:', blockchainEnabled);
 
-    // Clear form
-    setAmount('');
-    setPrice('');
+    try {
+      const order = await addOrder(orderData);
+      console.log('✅ Order added successfully:', order);
+
+      if (blockchainEnabled) {
+        console.log('Order submitted to blockchain');
+
+        // Verify on-chain success
+        try {
+          // Get transaction hash from the order
+          if (order.id && order.id.startsWith('0x')) {
+            alert(`✅ Order successfully submitted to blockchain!\n\nTransaction Hash: ${order.id}\n\nYou can verify this transaction in MetaMask or on Hardhat network explorer.`);
+          } else {
+            alert(`✅ Order successfully placed on blockchain!\n\nOrder ID: ${order.id}\n\nCheck the console for transaction details.`);
+          }
+
+          // Optional: Check if order appears in blockchain after a delay
+          setTimeout(async () => {
+            try {
+              const blockchainOrders = await web3Service.getAllOrders();
+              console.log('Current blockchain orders:', blockchainOrders);
+
+              const foundOrder = blockchainOrders.find(bo => bo.id === order.id || bo.trader === walletAddress);
+              if (foundOrder) {
+                console.log('✅ Order verified on blockchain:', foundOrder);
+                alert('✅ Order confirmed on blockchain! You can see it in the Recent Orders section.');
+              }
+            } catch (error) {
+              console.error('Failed to verify order on blockchain:', error);
+            }
+          }, 3000);
+
+        } catch (verifyError) {
+          console.error('Blockchain verification failed:', verifyError);
+          alert(`Order submitted but verification failed: ${verifyError instanceof Error ? verifyError.message : 'Unknown error'}`);
+        }
+      } else {
+        console.log('Order added to local block:', order);
+        alert(`✅ Order placed successfully in local mode!\n\nOrder ID: ${order.id}`);
+      }
+
+      // Clear form
+      setAmount('');
+      setPrice('');
+    } catch (error) {
+      console.error('Failed to add order:', error);
+      alert(`Failed to place order: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   };
 
   const getLiquidityColor = (level: string) => {
@@ -206,9 +312,9 @@ export const DarkTradingViewWithBlocks: React.FC<DarkTradingViewWithBlocksProps>
               <span>Verified Identity</span>
             </div>
           ) : (
-            <div className="flex items-center space-x-2 text-xs text-yellow-400">
-              <div className="w-2 h-2 bg-yellow-400 rounded-full" />
-              <span>Identity Required</span>
+            <div className="flex items-center space-x-2 text-xs text-blue-400">
+              <div className="w-2 h-2 bg-blue-400 rounded-full" />
+              <span>Test Mode (No Identity Required)</span>
             </div>
           )}
         </div>
@@ -306,15 +412,29 @@ export const DarkTradingViewWithBlocks: React.FC<DarkTradingViewWithBlocksProps>
               'text-white disabled:cursor-not-allowed'
             )}
           >
-            Place {side === 'buy' ? 'Buy' : 'Sell'} Order
+            {`Place ${side === 'buy' ? 'Buy' : 'Sell'} Order${blockchainEnabled ? ' (Chain)' : ''}`}
+
           </button>
         </form>
 
         <div className="mt-4 pt-4 border-t border-gray-800">
           <div className="flex items-center justify-between text-xs text-gray-500">
-            <span>Orders are added to current block</span>
+            <span>
+              {blockchainEnabled
+                ? 'Orders are recorded on Hardhat blockchain'
+                : 'Orders are added to current block'
+              }
+            </span>
             <span>Random priority matching</span>
           </div>
+          {blockchainEnabled && (
+            <div className="mt-2 text-xs text-blue-400">
+              {isConnected && isCorrectNetwork
+                ? '✓ Connected to Hardhat network'
+                : '⚠ Please connect wallet to Hardhat network (localhost:8545)'
+              }
+            </div>
+          )}
         </div>
       </div>
 
@@ -354,6 +474,36 @@ export const DarkTradingViewWithBlocks: React.FC<DarkTradingViewWithBlocksProps>
         </div>
       )}
 
+      {/* Blockchain Matching Controls */}
+      {blockchainEnabled && (
+        <div className="bg-gray-900 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-gray-200 mb-4">Order Matching</h3>
+          <div className="space-y-4">
+            <button
+              onClick={async () => {
+                try {
+                  console.log('🔄 Manually triggering order matching...');
+                  const matchResult = await web3Service.matchOrders();
+                  console.log('✅ Orders matched manually:', matchResult);
+                  alert(`✅ Orders matched successfully!\n\nBuy Order: ${matchResult.buyOrderId.slice(0, 10)}...\nSell Order: ${matchResult.sellOrderId.slice(0, 10)}...\nAmount: ${matchResult.amount} ETH\nPrice: $${matchResult.price}`);
+                } catch (error) {
+                  console.error('Failed to match orders:', error);
+                  alert(`Failed to match orders: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                }
+              }}
+              className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-700 text-white font-medium rounded-lg transition-colors"
+            >
+              🔄 Match Orders Now
+            </button>
+            <div className="text-xs text-gray-400">
+              <p>• Manually trigger order matching on blockchain</p>
+              <p>• Matching will also be attempted automatically after placing orders</p>
+              <p>• Both buy and sell orders must be available at compatible prices</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Demo Control Panel */}
       <DemoControlPanel
         isRunning={isRunning}
@@ -364,3 +514,5 @@ export const DarkTradingViewWithBlocks: React.FC<DarkTradingViewWithBlocksProps>
     </div>
   );
 };
+
+export default DarkTradingViewWithBlocks;

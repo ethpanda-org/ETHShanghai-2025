@@ -42,6 +42,11 @@ export function useBlockEngineWithDemo(config?: {
       // Start the engine for real-time data only
       if (demoMode === 'dynamic') {
         blockEngine.start();
+
+        // Ensure there's at least one epoch for immediate interaction
+        setTimeout(() => {
+          blockEngine.getState();
+        }, 100);
       }
 
       setDemoDataLoaded(true);
@@ -55,6 +60,11 @@ export function useBlockEngineWithDemo(config?: {
 
     // Initial visualization data
     setVisualizations(blockEngine.getVisualizationData());
+
+    // Force another update after a short delay to ensure epochs are visible
+    setTimeout(() => {
+      setVisualizations(blockEngine.getVisualizationData());
+    }, 100);
 
     return unsubscribe;
   }, [demoDataLoaded]);
@@ -110,8 +120,8 @@ export function useBlockOrdersWithDemo(symbol?: string) {
 
     // Add historical orders
     const historicalEpochs = getHistoricalEpochs();
-    historicalEpochs.forEach(epoch => {
-      epoch.blocks.forEach(block => {
+    historicalEpochs.forEach((epoch: any) => {
+      epoch.blocks.forEach((block: any) => {
         allOrders.push(...block.orders);
       });
     });

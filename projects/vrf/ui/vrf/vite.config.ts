@@ -12,7 +12,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@vrf': fileURLToPath(new URL('./src/utils/vrf.ts', import.meta.url))
     },
   },
   optimizeDeps: {

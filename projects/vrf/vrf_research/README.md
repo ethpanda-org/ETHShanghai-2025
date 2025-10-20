@@ -1,107 +1,187 @@
-## Dark Pool Evolved: VRF using EIP 2537 (Precompile for BLS12-381)
+# VRF BLS12-381
 
-### 1) 项目概述 (Overview)
+基于 BLS12-381 椭圆曲线的可验证随机函数（VRF）实现。
 
-* **项目名称**：Dark Pool Evolved: VRF using EIP 2537 (Precompile for BLS12-381)
-* **一句话介绍**：基于 EIP-2537 原生 VRF 的去中心化暗池撮合协议，实现链上可验证随机排序，消除 MEV 干扰。
-* **目标用户**：去中心化交易平台开发者、DeFi 基础设施研究者、以及希望构建隐私撮合系统的项目方。
-* **核心问题与动机（Pain Points）**：
+## 特性
 
-  * 传统 DEX 暗池虽能隐藏交易细节，但**交易顺序仍公开、易受 MEV 攻击**；
-  * 当前链上缺乏**无需预言机的随机机制**，导致撮合无法做到真正公平；
-  * 外部 VRF引入信任与延迟问题，不适合高频撮合场景。
-  * 链上模拟**map-to-curve** 实现 VRF 的 gas 消耗非常大，不现实。
-  * SNARK电路中模拟**map-to-curve**的计算，证明约束量大，不适合用户浏览器。
-* **解决方案（Solution）**：
+- ✅ 基于 BLS12-381 曲线的 VRF 实现
+- ✅ 使用 @noble/curves 进行椭圆曲线操作
+- ✅ 使用 ethers v6 的 keccak256 进行哈希
+- ✅ 支持浏览器和 Node.js 环境
+- ✅ 完整的测试覆盖
+- ✅ TypeScript 支持
 
-  * 借助 **EIP-2537（Prague 升级）** 的链上 precompile，利用 **map-to-curve** 实现 VRF；
-  * 引入 **epoch-based 随机排序机制**：
-
-    * 不同 epoch 间按时间优先；
-    * 同一 epoch 内通过 **VRF** 计算随机顺序；
-  * 构建 **无需 Oracle 的链上随机性**，实现可验证、公平的暗池撮合流程。
-
-### 2) 架构与实现 (Architecture & Implementation)
-
-* **总览图（可贴图/链接）**：
-```mermaid
-flowchart LR
-  A[Submit Frontend] --> B[Local Prover]
-  B -->|tx order VRF proof| C[DarkPool Contract]
-  C --> D[OrderBook Storage]
-  F["Matching Engine (Future)"] --> C
-  C --> G[Viewer Frontend]
-```
-
-* **关键模块**：
-
-  * 前端：React + Tailwind + Ethers.js，用于提交/展示订单与 epoch 状态
-  * 合约：Solidity 智能合约（EIP-2537 调用 + VRF 验证 + 排序逻辑）
-
-* **核心逻辑**:
-
-![](./formula.png)
-
-详细查看[vrf.pdf](./vrf_research/docs/vrf.pdf)
-
-参考文献：
-- Burdges, Jeffrey, Oana Ciobotaru, Handan Kılınç Alper, Alistair Stewart, and Sergey Vasilyev. “Ring Verifiable Random Functions and Zero-Knowledge Continuations,” 2023. Cryptology ePrint Archive. https://eprint.iacr.org/2023/002.
-- DeepSafe: A Cryptography Random Verification Layer. https://github.com/deepsafe/whitepaper/blob/main/DeepSafe_A_Cryptography_Random_Verification_Layer.pdf
-
-
-### 3) 合约与部署 (Contracts & Deployment)
-
-* **网络**：Local testnet
-
-### 4) 运行与复现 (Run & Reproduce)
-
-* **前置要求**：Node 22+, npm, Git
-
-* **一键启动（本地示例）**：
+## 安装
 
 ```bash
-cd ui/vrf
-npm install
-npm run dev
-# 打开 http://localhost:5173
+npm install vrf-bls12381
 ```
 
-### 5) Demo 与关键用例 (Demo & Key Flows)
+或使用开发依赖（如果要运行测试）：
 
-* **视频链接（≤3 分钟，中文）**： https://www.editool.cn/vrf.mp4
-* **关键用例步骤**：
+```bash
+npm install
+```
 
-* **Use Case: Order Submission & Verification Display**
+## 使用方法
 
-  * 用户 A 在前端提交订单，并在本地生成 VRF 证明。
-  * 智能合约接收订单与证明，调用 EIP-2537 进行链上验证。
-  * 验证通过后，订单被写入链上 Order Book。
-  * 用户 B 打开前端，可实时看到新订单及其「VRF 已验证」状态。
+### 基本使用
 
-### 6) 可验证边界 (Verifiable Scope)
+```typescript
+import { generateKeyPair, prove, verify } from 'vrf-bls12381';
 
-* **可复现模块**：
+// 1. 生成密钥对
+const { sk, pk } = generateKeyPair();
 
-  * Solidity 合约（VRF 验证）
-  * 前端与后端交互逻辑
+// 2. Prover 生成 VRF 证明
+const input = 'some random input';
+const proof = prove(sk, pk, input);
 
-### 7) 路线图与影响 (Roadmap & Impact)
+// 3. Verifier 验证证明并获取随机输出
+const output = verify(pk, input, proof);
 
-* **长期价值**：
+if (output !== null) {
+  console.log('验证成功！VRF 输出:', output);
+} else {
+  console.log('验证失败');
+}
+```
 
-  * 展示了EIP-2537的潜力，对于广泛应用该EIP，有积极意义。
-  * 推动以太坊上 **原生随机性 DeFi 机制**；
-  * 减少 MEV 干扰，构建更公平的链上市场；
-  * 为隐私交易与 Layer2 DEX 提供基础组件。
+### API 文档
 
-### 8) 团队与联系 (Team & Contacts)
+#### `generateKeyPair()`
 
-* **团队名**：VRF using EIP-2537
-* **成员与分工**：
+生成一个新的密钥对。
 
-  * @wizicer — 架构设计 & 智能合约
-  * @wenjin1997 — 密码学 & 智能合约
-  * @JackLo111 — UI
-  * Yuan — UI & 智能合约
-* **联系方式**：@wizicer
-* **可演示时段**：UTC+8 时区，工作日全天可协调
+**返回值:**
+```typescript
+{
+  sk: bigint;  // 私钥
+  pk: ProjectivePoint;  // 公钥（BLS12-381 G1 上的点）
+}
+```
+
+#### `prove(sk, pk, input, r_1?)`
+
+Prover 生成 VRF 证明。
+
+**参数:**
+- `sk: bigint` - 私钥
+- `pk: ProjectivePoint` - 公钥
+- `input: string | Uint8Array` - 输入数据
+- `r_1?: bigint` - 可选的随机数（仅用于测试，生产环境会自动生成）
+
+**返回值:**
+```typescript
+{
+  c: bigint;           // 挑战值
+  s_1: bigint;         // 响应值
+  preout: Uint8Array;  // 中间输出
+}
+```
+
+#### `verify(pk, input, proof)`
+
+Verifier 验证 VRF 证明并输出随机值。
+
+**参数:**
+- `pk: ProjectivePoint` - 公钥
+- `input: string | Uint8Array` - 输入数据
+- `proof: VRFProof` - VRF 证明
+
+**返回值:**
+- `Uint8Array | null` - 验证成功返回 32 字节的随机输出，失败返回 `null`
+
+#### `H_p(...inputs)`
+
+哈希函数，将输入哈希后 mod BLS12-381 曲线的阶 p。
+
+**参数:**
+- `inputs: (string | Uint8Array | bigint)[]` - 可变数量的输入
+
+**返回值:**
+- `bigint` - 哈希结果 mod p
+
+#### `H_G(input)`
+
+Hash to Curve 函数，将输入映射到 BLS12-381 G1 曲线上的点。
+
+**参数:**
+- `input: string | Uint8Array` - 输入数据
+
+**返回值:**
+- `ProjectivePoint` - BLS12-381 G1 曲线上的点
+
+## 开发
+
+### 安装依赖
+
+```bash
+npm install
+```
+
+### 运行测试
+
+```bash
+# 运行测试（watch 模式）
+npm test
+
+# 运行测试（单次）
+npm run test:run
+
+# 运行测试 UI
+npm run test:ui
+```
+
+### 构建
+
+```bash
+npm run build
+```
+
+构建后的文件将输出到 `dist/` 目录：
+- `dist/index.js` - ES 模块
+- `dist/index.cjs` - CommonJS 模块
+- `dist/index.d.ts` - TypeScript 类型定义
+
+## 协议说明
+
+本实现基于以下 VRF 协议：
+
+### Prover 计算
+
+**输入:** `sk`（私钥）, `pk`（公钥）, `in`（输入）
+
+**步骤:**
+1. 计算 `preout = sk · H_G(in)`，其中 `H_G` 是 hash to curve 操作
+2. 在 `𝔽_p` 中选取随机数 `r_1`
+3. 计算 `R = r_1 · G` 和 `R_m = r_1 · H_G(in)`
+4. 计算 `c = H_p(in, pk, preout, R, R_m)`，其中 `H_p` 先哈希再 mod p
+5. 计算 `s_1 = r_1 + c · sk`
+
+**输出:** `c`, `s_1`, `preout`
+
+### Verifier 验证计算
+
+**输入:** `pk`（公钥）, `in`（输入）, `c`, `s_1`, `preout`
+
+**步骤:**
+1. 计算 `R = s_1 · G - c · pk` 和 `R_m = s_1 · H_G(in) - c · preout`
+2. 判断 `c = H_p(in, pk, preout, R, R_m)`
+3. 如果相等，计算 `out = H(preout, in)` 并输出 `out`，否则输出 `false`
+
+## 技术细节
+
+- **椭圆曲线:** BLS12-381
+- **哈希函数:** Keccak256 (ethers v6)
+- **Hash to Curve:** BLS12-381 G1 标准 hash to curve
+- **曲线操作库:** @noble/curves
+
+## License
+
+MIT
+
+## 作者
+
+Jade Xie
+

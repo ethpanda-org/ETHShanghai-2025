@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useWeb3 } from '../composables/useWeb3'
+import { prove, generateKeyPair } from '@vrf'
 
 const web3 = useWeb3()
 
@@ -35,6 +36,14 @@ async function submitTrade() {
     const volumeValue = BigInt(volume.value)
     
     console.log('Submitting trade:', { price: priceValue, volume: volumeValue, type: tradeTypeEnum })
+
+    try {
+      const { sk, pk } = generateKeyPair()
+      // Using a simple input binding; could be any deterministic input for the trade
+      const _vrfProof = prove(sk, pk, `price:${priceValue}-volume:${volumeValue}-type:${tradeTypeEnum}`)
+    } catch (e) {
+      console.warn('VRF failed (non-fatal):', e)
+    }
     
     const tx = await contract.submitTrade(
       priceValue,

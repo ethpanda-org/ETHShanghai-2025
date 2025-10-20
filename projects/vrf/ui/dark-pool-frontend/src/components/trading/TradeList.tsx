@@ -13,29 +13,34 @@ export const TradeList: React.FC<TradeListProps> = ({
   visualizations,
   className = ''
 }) => {
-  // Auto-expand the most recent epoch by default
-  const [selectedEpoch, setSelectedEpoch] = useState<string | null>(null);
+  // Track which epochs are expanded - start with all collapsed
+  const [expandedEpochs, setExpandedEpochs] = useState<Set<string>>(new Set());
 
-  // Update selected epoch when new epochs arrive
-  useEffect(() => {
-    if (visualizations.length > 0) {
-      const mostRecentEpochId = visualizations[visualizations.length - 1].epoch.id;
-      // Only auto-select if no epoch is currently selected or if a newer epoch appears
-      if (!selectedEpoch || mostRecentEpochId !== selectedEpoch) {
-        setSelectedEpoch(mostRecentEpochId);
+  // Toggle epoch expansion
+  const toggleEpoch = (epochId: string) => {
+    setExpandedEpochs(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(epochId)) {
+        newSet.delete(epochId);
+      } else {
+        newSet.add(epochId);
       }
-    }
-  }, [visualizations, selectedEpoch]);
+      return newSet;
+    });
+  };
 
-  // Get recent epochs (last 5) and group orders by epoch
-  const recentEpochs = visualizations.slice(-5).reverse();
+  // Get all epochs and group orders by epoch (show all, not just last 5)
+  const recentEpochs = visualizations.slice().reverse();
 
-  // Group orders by epoch with their details
+  // Group epochs with their details - show all epochs now, not just ones with orders
   const epochsWithOrders = recentEpochs.map(viz => {
     const allOrders: (Order & { blockIndex: number })[] = [];
 
-    viz.epoch.blocks.forEach((block, blockIndex) => {
-      block.orders.forEach(order => {
+    console.log(`Processing epoch ${viz.epoch.id}, blocks count: ${viz.epoch.blocks.length}`);
+
+    viz.epoch.blocks.forEach((block: any, blockIndex: number) => {
+      console.log(`Block ${block.id}, orders count: ${block.orders.length}`);
+      block.orders.forEach((order: any) => {
         allOrders.push({
           ...order,
           blockIndex
@@ -44,10 +49,14 @@ export const TradeList: React.FC<TradeListProps> = ({
     });
 
     // Sort orders within each epoch by creation time (newest first)
-    allOrders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    allOrders.sort((a, b) => {
+      const aTime = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt).getTime();
+      const bTime = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt).getTime();
+      return bTime - aTime;
+    });
 
     // Group orders by status within this epoch
-    const pending = allOrders.filter(o => o.status === 'pending');
+    const pending = allOrders.filter(o => o.status === 'pending' || o.status === 'in-block');
     const matching = allOrders.filter(o => o.status === 'matching');
     const executed = allOrders.filter(o => o.status === 'executed');
 
@@ -60,18 +69,19 @@ export const TradeList: React.FC<TradeListProps> = ({
       totalOrders: allOrders.length,
       hasOrders: allOrders.length > 0
     };
-  }).filter(epochGroup => epochGroup.hasOrders); // Only show epochs with orders
+  }); // Show all epochs now, even empty ones
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'text-yellow-400 bg-yellow-900/20 border-yellow-500/30';
+      case 'pending':
+      case 'in-block': return 'text-yellow-400 bg-yellow-900/20 border-yellow-500/30';
       case 'matching': return 'text-purple-400 bg-purple-900/20 border-purple-500/30';
       case 'executed': return 'text-green-400 bg-green-900/20 border-green-500/30';
       default: return 'text-gray-400 bg-gray-800 border-gray-700';
     }
   };
 
-  const renderOrder = (order: Order & { blockIndex: number }, epochIndex: number) => {
+  const renderOrder = (order: Order & { blockIndex: number }, _epochIndex: number) => {
     const isBuy = order.side === 'buy';
 
     return (
@@ -120,9 +130,9 @@ export const TradeList: React.FC<TradeListProps> = ({
           </div>
         </div>
 
-        {order.anonymousId && (
+        {(order as any).anonymousId && (
           <div className="text-xs text-gray-500">
-            {ObfuscationUtils.shortenId(order.anonymousId)}
+            {ObfuscationUtils.shortenId((order as any).anonymousId)}
           </div>
         )}
       </div>
@@ -138,14 +148,17 @@ export const TradeList: React.FC<TradeListProps> = ({
     totalOrders: number;
   }) => {
     const { epoch, orders, pending, matching, executed } = epochGroup;
-    const isExpanded = selectedEpoch === epoch.id;
+    const isExpanded = expandedEpochs.has(epoch.id);
 
     return (
       <div key={epoch.id} className="bg-gray-900 rounded-lg border border-gray-700 overflow-hidden">
         {/* Epoch Header */}
         <div
-          className="p-3 bg-gray-800/50 border-b border-gray-700 cursor-pointer hover:bg-gray-800/70 transition-colors"
-          onClick={() => setSelectedEpoch(isExpanded ? null : epoch.id)}
+          className="p-4 bg-gray-800/50 border-b border-gray-700 cursor-pointer hover:bg-gray-800/70 transition-colors select-none hover:border-blue-500/50"
+          onClick={() => {
+            toggleEpoch(epoch.id);
+          }}
+          style={{ minHeight: '60px' }} // Ensure minimum clickable area
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -190,10 +203,10 @@ export const TradeList: React.FC<TradeListProps> = ({
 
               {/* Expand/Collapse indicator */}
               <div className={cn(
-                'transition-transform',
+                'transition-transform duration-200',
                 isExpanded ? 'rotate-90' : ''
               )}>
-                <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
@@ -204,32 +217,41 @@ export const TradeList: React.FC<TradeListProps> = ({
         {/* Orders within this epoch */}
         {isExpanded && (
           <div className="p-3 space-y-2 max-h-[400px] overflow-y-auto">
-            {/* Group by status for clarity */}
-            {pending.length > 0 && (
-              <div>
-                <div className="text-xs text-yellow-400 font-medium mb-1">Pending Orders</div>
-                <div className="space-y-1">
-                  {pending.map(order => renderOrder(order, epoch.index))}
-                </div>
+            {/* Show message if no orders */}
+            {orders.length === 0 ? (
+              <div className="text-center py-4 text-gray-500 text-sm">
+                No orders in this epoch yet
               </div>
-            )}
+            ) : (
+              <>
+                {/* Group by status for clarity */}
+                {pending.length > 0 && (
+                  <div>
+                    <div className="text-xs text-yellow-400 font-medium mb-1">Pending Orders</div>
+                    <div className="space-y-1">
+                      {pending.map(order => renderOrder(order, epoch.index))}
+                    </div>
+                  </div>
+                )}
 
-            {matching.length > 0 && (
-              <div>
-                <div className="text-xs text-purple-400 font-medium mb-1">Matching Orders</div>
-                <div className="space-y-1">
-                  {matching.map(order => renderOrder(order, epoch.index))}
-                </div>
-              </div>
-            )}
+                {matching.length > 0 && (
+                  <div>
+                    <div className="text-xs text-purple-400 font-medium mb-1">Matching Orders</div>
+                    <div className="space-y-1">
+                      {matching.map(order => renderOrder(order, epoch.index))}
+                    </div>
+                  </div>
+                )}
 
-            {executed.length > 0 && (
-              <div>
-                <div className="text-xs text-green-400 font-medium mb-1">Executed Orders</div>
-                <div className="space-y-1">
-                  {executed.map(order => renderOrder(order, epoch.index))}
-                </div>
-              </div>
+                {executed.length > 0 && (
+                  <div>
+                    <div className="text-xs text-green-400 font-medium mb-1">Executed Orders</div>
+                    <div className="space-y-1">
+                      {executed.map(order => renderOrder(order, epoch.index))}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
@@ -242,9 +264,9 @@ export const TradeList: React.FC<TradeListProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-gray-200">Trading Activity by Epoch</h3>
-        <div className="flex items-center space-x-1 text-xs text-gray-400">
+        <div className="flex items-center space-x-1 text-xs text-blue-400">
           <ClockIcon className="h-3 w-3" />
-          <span>Recent epochs with orders</span>
+          <span>Click any epoch to expand</span>
         </div>
       </div>
 
@@ -287,3 +309,5 @@ export const TradeList: React.FC<TradeListProps> = ({
     </div>
   );
 };
+
+export default TradeList;

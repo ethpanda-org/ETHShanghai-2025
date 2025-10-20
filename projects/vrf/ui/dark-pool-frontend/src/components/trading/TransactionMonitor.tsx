@@ -52,20 +52,48 @@ export const TransactionMonitor: React.FC = () => {
         setTransactions(prev => [newTx, ...prev.slice(0, 9)]); // Keep last 10
       });
 
-      // Poll for order count updates
+      // Initial load of all existing orders
+      const loadExistingOrders = async () => {
+        try {
+          const allOrders = await darkPoolService.getAllOrders();
+          console.log('Loading existing orders from blockchain:', allOrders);
+
+          const existingTransactions: Transaction[] = allOrders.map(order => ({
+            hash: order.id,
+            from: order.trader,
+            to: darkPoolService.getContractAddress(),
+            timestamp: new Date(order.timestamp * 1000), // Convert from timestamp
+            type: order.isBuy ? 'buy' : 'sell',
+            amount: order.amount,
+            price: order.price,
+            status: order.executed ? 'confirmed' : 'pending'
+          }));
+
+          // Sort by timestamp (newest first) and take last 10
+          existingTransactions.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+          setTransactions(existingTransactions.slice(0, 10));
+
+        } catch (error) {
+          console.error('Failed to load existing orders:', error);
+        }
+      };
+
+      // Load existing orders immediately
+      await loadExistingOrders();
+
+      // Poll for order count updates and refresh all orders
       const interval = setInterval(async () => {
         try {
           const newCount = await darkPoolService.getOrderCount();
           if (newCount !== orderCount) {
             setOrderCount(newCount);
-            // Refresh all orders
-            const allOrders = await darkPoolService.getAllOrders();
-            console.log('All orders:', allOrders);
+            // Refresh all orders when count changes
+            await loadExistingOrders();
           }
         } catch (err) {
           console.error('Error polling orders:', err);
         }
-      }, 2000);
+      }, 3000); // Poll every 3 seconds
 
       return () => {
         clearInterval(interval);
@@ -106,8 +134,8 @@ export const TransactionMonitor: React.FC = () => {
         <div className="space-y-3">
           {transactions.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              <p>No transactions yet</p>
-              <p className="text-sm mt-2">Place orders in other windows to see them here</p>
+              <p>No transactions found on blockchain</p>
+              <p className="text-sm mt-2">Place orders to see them here</p>
             </div>
           ) : (
             transactions.map((tx, index) => (
@@ -165,13 +193,16 @@ export const TransactionMonitor: React.FC = () => {
 
       {/* Instructions */}
       <div className="mt-6 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
-        <h3 className="text-sm font-medium text-blue-400 mb-2">Multi-Window Testing</h3>
+        <h3 className="text-sm font-medium text-blue-400 mb-2">Blockchain Transaction Monitor</h3>
         <ul className="text-xs text-gray-300 space-y-1">
-          <li>• Open this page in multiple browser windows</li>
-          <li>• Use different MetaMask accounts in each window</li>
-          <li>• Place orders to see real-time updates</li>
-          <li>• All transactions will appear here</li>
+          <li>• Shows all orders from the smart contract</li>
+          <li>• Updates automatically when new orders are placed</li>
+          <li>• Displays both your orders and orders from other users</li>
+          <li>• Data is fetched directly from Hardhat blockchain</li>
         </ul>
+        <div className="mt-2 pt-2 border-t border-blue-500/30">
+          <p className="text-xs text-blue-300">Total Orders on Contract: {orderCount}</p>
+        </div>
       </div>
     </div>
   );
