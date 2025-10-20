@@ -1,0 +1,36 @@
+<svg width="120" height="40" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .bouncing-ball {
+        fill: #22c55e;
+        animation: bounce 0.8s ease-in-out infinite both;
+      }
+      
+      .ball-1 {
+        animation-delay: 0s;
+      }
+      
+      .ball-2 {
+        animation-delay: 0.2s;
+      }
+      
+      .ball-3 {
+        animation-delay: 0.4s;
+      }
+      
+      @keyframes bounce {
+        0%, 80%, 100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-10px);
+        }
+      }
+    </style>
+  </defs>
+  
+  <!-- 三个跳动的小球 -->
+  <circle cx="25" cy="20" r="6" class="bouncing-ball ball-1"/>
+  <circle cx="60" cy="20" r="6" class="bouncing-ball ball-2"/>
+  <circle cx="95" cy="20" r="6" class="bouncing-ball ball-3"/>
+</svg>
