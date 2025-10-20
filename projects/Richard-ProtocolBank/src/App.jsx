@@ -24,6 +24,7 @@ import PaymentsPage from './pages/PaymentsPage.jsx'
 import DeFiPage from './pages/DeFiPage.jsx'
 import BusinessPage from './pages/BusinessPage.jsx'
 import GlobalNetworkPage from './pages/GlobalNetworkPage.jsx'
+import PaymentVisualizationPage from './pages/PaymentVisualizationPage.jsx'
 import LoginModal from './components/LoginModal.jsx'
 import ThemeToggle from './components/ThemeToggle.jsx'
 import { Waves } from 'lucide-react'
@@ -129,6 +130,12 @@ function App() {
                   className={`text-sm ${activeTab === 'business' ? 'text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}`}
                 >
                   Business
+                </button>
+                <button 
+                  onClick={() => setActiveTab('visualization')}
+                  className={`text-sm ${activeTab === 'visualization' ? 'text-gray-900 dark:text-gray-100 font-medium' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}`}
+                >
+                  Visualization
                 </button>
 
               </nav>
@@ -284,6 +291,7 @@ function App() {
         {activeTab === 'defi' && <DeFiPage />}
         {activeTab === 'business' && <BusinessPage />}
         {activeTab === 'network' && <GlobalNetworkPage />}
+        {activeTab === 'visualization' && <PaymentVisualizationPage />}
         
         {activeTab === 'dashboard' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
