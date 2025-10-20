@@ -93,9 +93,9 @@ MIT © AquaFlux contributors
 
 ### Appendix: Directory Cheat‑Sheet
 
-* `contracts/` — Solidity sources, `hardhat.config.ts`, test suite
-* `frontend/` — Next.js app, wagmi/viem hooks, ABI loaders from `deployments/`
-* `backend/` — Express/Nest app, simple cache, oracle stubs
+* `contracts/` — Solidity sources, `hardhat.config.ts`, test suite → [详细文档](./contracts/README.md)
+* `frontend/` — React app, wagmi/viem hooks, ABI loaders from `deployments/`
+* `backend/` — Express app, APIs, database → [详细文档](./backend/README.md)
 * `deployments/` — ABIs + addresses by network
 * `scripts/` — Deploy & demo flows
-* `docs/` — README assets, diagrams, and pitch deck
+* `docs/` — **📚 [完整文档中心](./docs/README.md)** (架构、快速开始、FAQ)
