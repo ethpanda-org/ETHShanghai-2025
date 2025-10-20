@@ -1,0 +1,77 @@
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 800px;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.antd-title {
+  font-weight: normal !important;
+}
+
+.section {
+  background: #f0f7ff;
+  border-radius: 8px;
+  width: 100%;
+
+}
+
+.space-section {
+  width: 100%;
+  padding: 0rem 0rem 0.8rem 0rem;
+}
+
+.small-btn {
+  border: none;
+  font-size: 1rem;
+  padding: 0.35em 0.75em;
+  line-height: 1;
+  height: auto;
+}
+
+.small-btn:hover {
+  opacity: 0.8;
+}
+
+.small-btn:disabled {
+  background-color: #f0f0f0;
+}
+
+.error-message {
+  color: #ff4d4f;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+.pwa-install-button-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.pwa-install-button {
+  padding: 10px 20px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.pwa-install-button:hover {
+  background-color: #1976d2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.pwa-install-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

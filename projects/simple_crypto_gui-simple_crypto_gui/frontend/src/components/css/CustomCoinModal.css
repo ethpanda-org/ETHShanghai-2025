@@ -1,0 +1,9 @@
+/* Styles for CustomCoinModal component */
+/* Basic style settings */
+.custom-coin-modal .ant-form-item {
+  margin-bottom: 16px;
+}
+
+.custom-coin-modal .ant-input {
+  width: 100%;
+}

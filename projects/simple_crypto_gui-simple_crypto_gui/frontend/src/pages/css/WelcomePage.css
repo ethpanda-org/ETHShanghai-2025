@@ -1,0 +1,47 @@
+/* Styles specific to Welcome page */
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  /* color: rgba(255, 255, 255, 0.87); */
+  color: #213547;
+  line-height: 20px;
+}
+
+/* Alignment styles for internal elements of Ant Design Radio component */
+.ant-radio-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.ant-radio {
+  margin-right: 8px;
+}
+
+.ant-radio-inner {
+  vertical-align: middle;
+}
+
+/* Warning tip text style */
+.warning-tip,
+.security-tip {
+  color: #ff4d4f;
+  /* Ant Design red color */
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  border: 1px solid #333;
+}

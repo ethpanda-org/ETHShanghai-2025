@@ -1,0 +1,157 @@
+[
+  {
+    "countryCode": "US",
+    "countryName": "United States",
+    "currencyCode": "USD"
+  },
+  {
+    "countryCode": "AU",
+    "countryName": "Australia",
+    "currencyCode": "AUD"
+  },
+  {
+    "countryCode": "BG",
+    "countryName": "Bulgaria",
+    "currencyCode": "BGN"
+  },
+  {
+    "countryCode": "BR",
+    "countryName": "Brazil",
+    "currencyCode": "BRL"
+  },
+  {
+    "countryCode": "CA",
+    "countryName": "Canada",
+    "currencyCode": "CAD"
+  },
+  {
+    "countryCode": "CH",
+    "countryName": "Switzerland",
+    "currencyCode": "CHF"
+  },
+  {
+    "countryCode": "CN",
+    "countryName": "China",
+    "currencyCode": "CNY"
+  },
+  {
+    "countryCode": "CZ",
+    "countryName": "Czechia",
+    "currencyCode": "CZK"
+  },
+  {
+    "countryCode": "DK",
+    "countryName": "Denmark",
+    "currencyCode": "DKK"
+  },
+  {
+    "countryCode": "EU",
+    "countryName": "European Union",
+    "currencyCode": "EUR"
+  },
+  {
+    "countryCode": "GB",
+    "countryName": "United Kingdom",
+    "currencyCode": "GBP"
+  },
+  {
+    "countryCode": "HK",
+    "countryName": "Hong Kong",
+    "currencyCode": "HKD"
+  },
+  {
+    "countryCode": "HU",
+    "countryName": "Hungary",
+    "currencyCode": "HUF"
+  },
+  {
+    "countryCode": "ID",
+    "countryName": "Indonesia",
+    "currencyCode": "IDR"
+  },
+  {
+    "countryCode": "IL",
+    "countryName": "Israel",
+    "currencyCode": "ILS"
+  },
+  {
+    "countryCode": "IN",
+    "countryName": "India",
+    "currencyCode": "INR"
+  },
+  {
+    "countryCode": "IS",
+    "countryName": "Iceland",
+    "currencyCode": "ISK"
+  },
+  {
+    "countryCode": "JP",
+    "countryName": "Japan",
+    "currencyCode": "JPY"
+  },
+  {
+    "countryCode": "KR",
+    "countryName": "South Korea",
+    "currencyCode": "KRW"
+  },
+  {
+    "countryCode": "MX",
+    "countryName": "Mexico",
+    "currencyCode": "MXN"
+  },
+  {
+    "countryCode": "MY",
+    "countryName": "Malaysia",
+    "currencyCode": "MYR"
+  },
+  {
+    "countryCode": "BV",
+    "countryName": "Bouvet Island",
+    "currencyCode": "NOK"
+  },
+  {
+    "countryCode": "CK",
+    "countryName": "Cook Islands",
+    "currencyCode": "NZD"
+  },
+  {
+    "countryCode": "PH",
+    "countryName": "Philippines",
+    "currencyCode": "PHP"
+  },
+  {
+    "countryCode": "PL",
+    "countryName": "Poland",
+    "currencyCode": "PLN"
+  },
+  {
+    "countryCode": "RO",
+    "countryName": "Romania",
+    "currencyCode": "RON"
+  },
+  {
+    "countryCode": "SE",
+    "countryName": "Sweden",
+    "currencyCode": "SEK"
+  },
+  {
+    "countryCode": "SG",
+    "countryName": "Singapore",
+    "currencyCode": "SGD"
+  },
+  {
+    "countryCode": "TH",
+    "countryName": "Thailand",
+    "currencyCode": "THB"
+  },
+  {
+    "countryCode": "TR",
+    "countryName": "Turkey",
+    "currencyCode": "TRY"
+  },
+  {
+    "countryCode": "ZA",
+    "countryName": "South Africa",
+    "currencyCode": "ZAR"
+  }
+]

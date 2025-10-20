@@ -1,0 +1,33 @@
+/* Styles for DeleteCustomCoinModal component */
+
+.delete-coin-instruction {
+  margin-bottom: 12px;
+  display: block;
+}
+
+.delete-coin-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 4px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.delete-coin-item.current-coin {
+  border: 1px solid #ff4d4f;
+}
+
+.delete-coin-checkbox {
+  margin-right: 8px;
+}
+
+.delete-coin-name {
+  color: green;
+}
+
+.delete-coin-current-tag {
+  color: #ff4d4f;
+  margin-left: 8px;
+  font-size: 12px;
+}

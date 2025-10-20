@@ -1,0 +1,28 @@
+.browser-not-supported-container {
+  text-align: center;
+  padding: 20px;
+}
+
+.browser-not-supported-card {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.browser-not-supported-message {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.browser-not-supported-button-container {
+  margin-top: 20px;
+}
+
+.browser-not-supported-button {
+  width: 200px;
+}
+
+.browser-not-supported-hint {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #888;
+}

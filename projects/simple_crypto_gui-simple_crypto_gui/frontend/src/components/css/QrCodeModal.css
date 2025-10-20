@@ -1,0 +1,14 @@
+/* Styles for QrCodeModal component */
+
+.qr-code-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.wallet-address-text {
+  margin-top: 16px;
+  font-size: 14px;
+  word-break: break-all;
+}

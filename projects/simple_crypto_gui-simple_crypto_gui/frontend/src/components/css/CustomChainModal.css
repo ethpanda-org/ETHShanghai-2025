@@ -1,0 +1,9 @@
+/* Styles for CustomChainModal component */
+/* Basic style settings */
+.custom-chain-modal .ant-form-item {
+  margin-bottom: 16px;
+}
+
+.custom-chain-modal .ant-input {
+  width: 100%;
+}

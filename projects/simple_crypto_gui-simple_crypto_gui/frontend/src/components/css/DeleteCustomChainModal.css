@@ -1,0 +1,33 @@
+/* Styles for DeleteCustomChainModal component */
+
+.delete-chain-instruction {
+  margin-bottom: 12px;
+  display: block;
+}
+
+.delete-chain-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 4px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.delete-chain-item.current-chain {
+  border: 1px solid #ff4d4f;
+}
+
+.delete-chain-checkbox {
+  margin-right: 8px;
+}
+
+.delete-chain-name {
+  color: green;
+}
+
+.delete-chain-current-tag {
+  color: #ff4d4f;
+  margin-left: 8px;
+  font-size: 12px;
+}

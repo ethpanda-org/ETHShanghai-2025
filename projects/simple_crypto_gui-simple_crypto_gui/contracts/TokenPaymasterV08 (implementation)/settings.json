@@ -1,0 +1,35 @@
+{
+	"remappings": [
+		"@account-abstraction-v7/=lib/account-abstraction-v7/",
+		"@account-abstraction-v8/=lib/account-abstraction-v8/",
+		"@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+		"@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+		"ds-test/=lib/forge-std/lib/ds-test/src/",
+		"forge-std/=lib/forge-std/",
+		"@uniswap/swap-router-contracts/=lib/swap-router-contracts/"
+	],
+	"optimizer": {
+		"enabled": true,
+		"runs": 100000
+	},
+	"metadata": {
+		"useLiteralContent": false,
+		"bytecodeHash": "ipfs",
+		"appendCBOR": true
+	},
+	"outputSelection": {
+		"*": {
+			"*": [
+				"evm.bytecode",
+				"evm.deployedBytecode",
+				"devdoc",
+				"userdoc",
+				"metadata",
+				"abi"
+			]
+		}
+	},
+	"evmVersion": "cancun",
+	"viaIR": true,
+	"libraries": {}
+}

@@ -1,0 +1,11 @@
+/* Styles specific to Settings page */
+
+.address {
+  color: #27ae60;
+  word-break: break-all;
+  padding: 0.5rem;
+  background: #f0f9f0;
+  border-radius: 4px;
+  word-wrap: break-word;
+  font-family: monospace;
+}

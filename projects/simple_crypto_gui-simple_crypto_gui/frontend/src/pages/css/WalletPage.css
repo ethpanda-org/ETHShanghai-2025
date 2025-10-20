@@ -1,0 +1,59 @@
+/* Styles specific to Wallet page */
+
+/* Balance display style */
+.balance-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #eafaf1;
+  border-radius: 4px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+/* Balance and refresh button container style */
+.balance-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.balance-result h4 {
+  margin: 0;
+  display: inline-block;
+  color: #27ae60;
+}
+
+/* Input field style */
+.input-field {
+  /* width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box; */
+}
+
+/* Success message style */
+.success-message {
+  color: #27ae60;
+  background-color: #eafaf1;
+  padding: 0.8rem;
+  border-radius: 4px;
+}
+
+/* QR code scan frame style */
+.qr-scan-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 2px solid #1890ff;
+  border-radius: 4px;
+  pointer-events: none;
+}

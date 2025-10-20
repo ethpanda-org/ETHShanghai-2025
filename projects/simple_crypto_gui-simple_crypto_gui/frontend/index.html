@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2196f3" />
+    <meta name="description" content="A portable wallet for managing your cryptocurrency assets" />
+    <link rel="manifest" href="/manifest.json" id="manifest-link" />
+    <!-- iOS Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Wallet" id="apple-title"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.svg" />
+    <!-- General Icons -->
+    <link rel="icon" type="image/svg+xml" sizes="32x32" href="/icons/icon-192x192.svg" />
+    <link rel="icon" type="image/svg+xml" sizes="16x16" href="/icons/icon-192x192.svg" />
+    <link rel="mask-icon" href="/icons/icon-192x192.svg" color="#2196f3" />
+    <title id="title">Wallet</title>
+    <script>
+      // Switch manifest based on browser language
+      const isZh = navigator.language.includes('zh');
+      const manifest = isZh ? 'manifest-zh' : 'manifest';
+      const titleStr = isZh ? '钱包' : 'Wallet';
+
+      document.getElementById('manifest-link').href = `/${manifest}.json`;
+
+      const appleTitle = document.getElementById('apple-title');
+      const title = document.getElementById('title');
+  
+      appleTitle.setAttribute('content', titleStr);
+      title.textContent = titleStr;
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

@@ -1,0 +1,8 @@
+/* Styles for SavingModal component */
+
+.saving-content-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+}

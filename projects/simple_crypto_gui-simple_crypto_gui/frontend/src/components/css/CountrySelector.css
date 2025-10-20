@@ -1,0 +1,119 @@
+.country-selector-container {
+  position: relative;
+}
+
+.country-select-button {
+  width: auto;
+  padding: 0rem 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+}
+
+.flag-large,
+.flag-medium,
+.flag-small {
+  object-fit: contain;
+  background-color: transparent;
+}
+
+.flag-large {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+.flag-medium {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.flag-small {
+  width: 1.25rem;
+  height: 1.5rem;
+  margin-right: 0.75rem;
+}
+
+.country-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.country-item {
+  padding: 0.75rem;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.modal-title {
+  margin-bottom: 1rem;
+}
+
+.close-button {
+  margin-top: 0.5rem;
+}
+
+/* Add wider Modal styles for CountrySelector */
+.country-selector-container .modal-overlay .modal-content {
+  max-width: 550px !important;
+  width: 100%;
+}
+
+.country-selector-container .ant-modal {
+  max-width: 550px !important;
+}
+
+.country-selector-container .ant-modal-content {
+  max-width: 550px !important;
+}
+
+.ant-modal {
+  width: auto !important;
+  top: 0;
+  bottom: 0;
+}
+
+.ant-modal-wrap .ant-modal .ant-modal-content {
+  /* height: 100vh; */
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .ant-modal-wrap .ant-modal .ant-modal-content {
+    min-width: 320px;
+  }
+}
+
+.ant-modal-body {
+  flex: 1;
+  overflow: auto;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
