@@ -1,0 +1,161 @@
+query GetDisputes(
+  $first: Int!
+  $skip: Int!
+  $where: Dispute_filter
+  $orderBy: Dispute_orderBy
+  $orderDirection: OrderDirection
+) {
+  disputes(first: $first, skip: $skip, where: $where, orderBy: $orderBy, orderDirection: $orderDirection) {
+    id
+    disputeId
+    taskId
+    taskContract
+    worker {
+      id
+      address
+    }
+    taskCreator {
+      id
+      address
+    }
+    rewardAmount
+    workerShare
+    status
+    proofOfWork
+    workerApproved
+    creatorApproved
+    votes {
+      id
+      admin {
+        id
+        address
+        stakeAmount
+        isActive
+      }
+      workerShare
+      createdAt
+    }
+    createdAt
+    resolvedAt
+    distributedAt
+  }
+}
+
+query GetDisputesForList(
+  $first: Int!
+  $skip: Int!
+  $where: Dispute_filter
+  $orderBy: Dispute_orderBy
+  $orderDirection: OrderDirection
+) {
+  disputes(first: $first, skip: $skip, where: $where, orderBy: $orderBy, orderDirection: $orderDirection) {
+    id
+    disputeId
+    taskId
+    worker {
+      id
+      address
+    }
+    taskCreator {
+      id
+      address
+    }
+    rewardAmount
+    status
+    createdAt
+  }
+}
+
+query GetDispute($id: ID!) {
+  dispute(id: $id) {
+    id
+    disputeId
+    taskId
+    taskContract
+    worker {
+      id
+      address
+    }
+    taskCreator {
+      id
+      address
+    }
+    rewardAmount
+    workerShare
+    status
+    proofOfWork
+    workerApproved
+    creatorApproved
+    votes {
+      id
+      admin {
+        id
+        address
+        stakeAmount
+        isActive
+      }
+      workerShare
+      createdAt
+    }
+    createdAt
+    resolvedAt
+    distributedAt
+  }
+}
+
+query GetAdmins(
+  $first: Int!
+  $skip: Int!
+  $where: Admin_filter
+  $orderBy: Admin_orderBy
+  $orderDirection: OrderDirection
+) {
+  admins(first: $first, skip: $skip, where: $where, orderBy: $orderBy, orderDirection: $orderDirection) {
+    id
+    address
+    stakeAmount
+    isActive
+    votes {
+      id
+      dispute {
+        id
+        disputeId
+      }
+      workerShare
+      createdAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+query GetAdmin($id: ID!) {
+  admin(id: $id) {
+    id
+    address
+    stakeAmount
+    isActive
+    votes {
+      id
+      dispute {
+        id
+        disputeId
+      }
+      workerShare
+      createdAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+
+query GetAdminStakeInfo($id: ID!) {
+  admin(id: $id) {
+    id
+    address
+    stakeAmount
+    isActive
+    createdAt
+    updatedAt
+  }
+}

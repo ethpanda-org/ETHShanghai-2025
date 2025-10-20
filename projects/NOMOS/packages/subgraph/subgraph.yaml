@@ -1,0 +1,294 @@
+specVersion: 0.0.4
+description: Crowdsourcing Platform Subgraph
+repository: https://github.com/scaffold-eth/se-2/packages/subgraph/
+schema:
+  file: ./src/schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: TaskToken
+    network: localhost
+    source:
+      abi: TaskToken
+      address: "0x700b6a60ce7eaaea56f065753d8dcb9653dbad35"
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - TokenTransfer
+      abis:
+        - name: TaskToken
+          file: ./abis/localhost_TaskToken.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTokenTransfer
+      file: ./src/task-token-mapping.ts
+  - kind: ethereum/contract
+    name: SoulboundUserNFT
+    network: localhost
+    source:
+      abi: SoulboundUserNFT
+      address: "0xa15bb66138824a1c7167f5e85b957d04dd34e468"
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - User
+        - UserNFT
+      abis:
+        - name: SoulboundUserNFT
+          file: ./abis/localhost_SoulboundUserNFT.json
+      eventHandlers:
+        - event: SoulboundNFTMinted(indexed address,indexed
+            uint256,string,string,string,string,string[],uint8)
+          handler: handleSoulboundNFTMinted
+        - event: UserProfileUpdated(indexed address,indexed
+            uint256,string,string,string[])
+          handler: handleUserProfileUpdated
+        - event: UserGradeUpdated(indexed address,indexed uint256,uint8)
+          handler: handleUserGradeUpdated
+      file: ./src/user-nft-mapping.ts
+  - kind: ethereum/contract
+    name: ContentShare
+    network: localhost
+    source:
+      abi: ContentShare
+      address: "0xb19b36b1456e65e3a6d514d3f715f204bd59f431"
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - User
+        - Content
+        - ContentPurchase
+      abis:
+        - name: ContentShare
+          file: ./abis/localhost_ContentShare.json
+      eventHandlers:
+        - event: ContentCreated(indexed uint256,indexed address,uint256)
+          handler: handleContentCreated
+        - event: ContentUpdated(indexed uint256,uint256)
+          handler: handleContentUpdated
+        - event: ContentPurchased(indexed uint256,indexed address,indexed
+            address,uint256,uint8,uint256)
+          handler: handleContentPurchased
+        - event: RevenueDistributed(indexed uint256,indexed address,uint256,uint256)
+          handler: handleRevenueDistributed
+        - event: RevenueWithdrawn(indexed address,uint256,string)
+          handler: handleRevenueWithdrawn
+      file: ./src/content-share-mapping.ts
+  - kind: ethereum/contract
+    name: CollectiveRental
+    network: localhost
+    source:
+      abi: CollectiveRental
+      address: "0x8ce361602b935680e8dec218b820ff5056beb7af"
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - User
+        - RentalProject
+        - RentalProjectParticipant
+      abis:
+        - name: CollectiveRental
+          file: ./abis/localhost_CollectiveRental.json
+      eventHandlers:
+        - event: ProjectCreated(indexed uint256,indexed
+            address,string,uint256,uint256,uint256)
+          handler: handleProjectCreated
+        - event: ParticipantJoined(indexed uint256,indexed address,uint256,uint256)
+          handler: handleParticipantJoined
+        - event: ProjectCompleted(indexed uint256,bool)
+          handler: handleProjectCompleted
+        - event: FundsWithdrawn(indexed uint256,indexed address,uint256)
+          handler: handleFundsWithdrawn
+        - event: AllowenceIncreased(indexed uint256,uint256)
+          handler: handleAllowenceIncreased
+        - event: ProjectFailed(indexed uint256)
+          handler: handleProjectFailed
+      file: ./src/collective-rental-mapping.ts
+  - kind: ethereum/contract
+    name: ProposalGovernance
+    network: localhost
+    source:
+      abi: ProposalGovernance
+      address: "0xe1aa25618fa0c7a1cfdab5d6b456af611873b629"
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - User
+        - RentalProject
+        - Proposal
+        - Vote
+      abis:
+        - name: ProposalGovernance
+          file: ./abis/localhost_ProposalGovernance.json
+      eventHandlers:
+        - event: ProposalCreated(indexed uint256,indexed uint256,string,uint256,uint256)
+          handler: handleProposalCreated
+        - event: Voted(indexed uint256,indexed uint256,indexed address,bool,uint256)
+          handler: handleVoted
+        - event: ProposalExecuted(indexed uint256,indexed uint256,bool)
+          handler: handleProposalExecuted
+      file: ./src/proposal-governance-mapping.ts
+  - kind: ethereum/contract
+    name: DisputeResolver
+    network: localhost
+    source:
+      abi: DisputeResolver
+      address: "0x0c8e79f3534b00d9a3d4a856b665bf4ebc22f2ba"
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - User
+        - Task
+        - Dispute
+        - EliteVote
+      abis:
+        - name: DisputeResolver
+          file: ./abis/localhost_DisputeResolver.json
+      eventHandlers:
+        - event: DisputeResolver_DisputeFiled(indexed uint256,indexed uint256,indexed
+            address,address,address,uint256,string)
+          handler: handleDisputeFiled
+        - event: DisputeResolver_DisputeResolved(indexed uint256,uint256)
+          handler: handleDisputeResolved
+        - event: DisputeResolver_ProposalApprovedByWorker(indexed uint256,address)
+          handler: handleProposalApprovedByWorker
+        - event: DisputeResolver_ProposalApprovedByCreator(indexed uint256,address)
+          handler: handleProposalApprovedByCreator
+        - event: DisputeResolver_FundsDistributed(indexed uint256)
+          handler: handleFundsDistributed
+        - event: DisputeResolver_ProposalRejected(indexed uint256)
+          handler: handleProposalRejected
+        - event: DisputeResolver_EliteVoted(indexed uint256,indexed address,uint256)
+          handler: handleEliteVoted
+      file: ./src/dispute-mapping.ts
+  - kind: ethereum/contract
+    name: FixedPaymentTask
+    network: localhost
+    source:
+      abi: FixedPaymentTask
+      address: "0xed1db453c3156ff3155a97ad217b3087d5dc5f6e"
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - User
+        - Task
+        - ProofOfWork
+      abis:
+        - name: FixedPaymentTask
+          file: ./abis/localhost_FixedPaymentTask.json
+      eventHandlers:
+        - event: FixedPaymentTaskCreated(indexed uint256,indexed
+            address,string,string,uint256)
+          handler: handleFixedPaymentTaskCreated
+        - event: FixedPaymentTask_TaskWorkerAdded(indexed uint256,indexed address,uint256)
+          handler: handleFixedPaymentTaskWorkerAdded
+        - event: FixedPaymentTask_TaskCancelled(indexed uint256)
+          handler: handleFixedPaymentTaskCancelled
+        - event: FixedPaymentTask_TaskPaid(indexed uint256,uint256)
+          handler: handleFixedPaymentTaskPaid
+        - event: FixedPaymentTask_ProofOfWorkSubmitted(indexed uint256,string)
+          handler: handleFixedPaymentTaskProofOfWorkSubmitted
+        - event: FixedPaymentTask_ProofOfWorkApproved(indexed uint256)
+          handler: handleFixedPaymentTaskProofOfWorkApproved
+        - event: RewardIncreased(uint256,uint256)
+          handler: handleRewardIncreased
+        - event: TaskDeadlineChanged(uint256,uint256)
+          handler: handleTaskDeadlineChanged
+      file: ./src/fixed-payment-mapping.ts
+  - kind: ethereum/contract
+    name: BiddingTask
+    network: localhost
+    source:
+      abi: BiddingTask
+      address: "0xf7cd8fa9b94db2aa972023b379c7f72c65e4de9d"
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - User
+        - Task
+        - ProofOfWork
+        - Bid
+      abis:
+        - name: BiddingTask
+          file: ./abis/localhost_BiddingTask.json
+      eventHandlers:
+        - event: BiddingTaskCreated(indexed uint256,indexed address,string,string,uint256)
+          handler: handleBiddingTaskCreated
+        - event: BiddingTask_BidSubmitted(indexed uint256,indexed
+            address,uint256,uint256,string)
+          handler: handleBiddingTaskBidSubmitted
+        - event: BiddingTask_TaskWorkerAdded(indexed uint256,indexed address,uint256)
+          handler: handleBiddingTaskWorkerAdded
+        - event: BiddingTask_TaskCancelled(indexed uint256)
+          handler: handleBiddingTaskCancelled
+        - event: BiddingTask_TaskPaid(indexed uint256,uint256)
+          handler: handleBiddingTaskPaid
+        - event: BiddingTask_ProofOfWorkSubmitted(indexed uint256,string)
+          handler: handleBiddingTaskProofOfWorkSubmitted
+        - event: BiddingTask_ProofOfWorkApproved(indexed uint256)
+          handler: handleBiddingTaskProofOfWorkApproved
+        - event: RewardIncreased(uint256,uint256)
+          handler: handleRewardIncreased
+        - event: TaskDeadlineChanged(uint256,uint256)
+          handler: handleTaskDeadlineChanged
+      file: ./src/bidding-mapping.ts
+  - kind: ethereum/contract
+    name: MilestonePaymentTask
+    network: localhost
+    source:
+      abi: MilestonePaymentTask
+      address: "0x12975173b87f7595ee45dffb2ab812ece596bf84"
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - User
+        - Task
+        - Milestone
+        - ProofOfWork
+      abis:
+        - name: MilestonePaymentTask
+          file: ./abis/localhost_MilestonePaymentTask.json
+      eventHandlers:
+        - event: MilestonePaymentTaskCreated(indexed uint256,indexed
+            address,string,string,uint256)
+          handler: handleMilestonePaymentTaskCreated
+        - event: MilestonePaymentTask_MilestoneAdded(indexed
+            uint256,uint256,string,uint256)
+          handler: handleMilestonePaymentTaskMilestoneAdded
+        - event: MilestonePaymentTask_TaskWorkerAdded(indexed uint256,indexed address)
+          handler: handleMilestonePaymentTaskWorkerAdded
+        - event: MilestonePaymentTask_TaskCancelled(indexed uint256)
+          handler: handleMilestonePaymentTaskCancelled
+        - event: MilestonePaymentTask_TaskCompleted(indexed uint256)
+          handler: handleMilestonePaymentTaskCompleted
+        - event: MilestonePaymentTask_MilestoneApproved(indexed uint256,uint256)
+          handler: handleMilestonePaymentTaskMilestoneApproved
+        - event: MilestonePaymentTask_MilestonePaid(indexed uint256,uint256,uint256)
+          handler: handleMilestonePaymentTaskMilestonePaid
+        - event: MilestonePaymentTask_ProofOfWorkSubmitted(indexed uint256,uint256,string)
+          handler: handleMilestonePaymentTaskProofOfWorkSubmitted
+        - event: MilestonePaymentTask_DisputeFiledByWorker(indexed uint256,uint256)
+          handler: handleMilestonePaymentTaskDisputeFiledByWorker
+        - event: MilestonePaymentTask_MilestoneRewardIncreased(indexed
+            uint256,uint256,uint256)
+          handler: handleMilestonePaymentTaskMilestoneRewardIncreased
+        - event: TaskDeadlineChanged(uint256,uint256)
+          handler: handleTaskDeadlineChanged
+      file: ./src/milestone-mapping.ts

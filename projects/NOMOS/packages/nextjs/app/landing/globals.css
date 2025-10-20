@@ -1,0 +1,496 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========= 背景层（网格 + 绿色光柱 + 噪点） ========= */
+:root {
+  --grid-size: 28px;
+  --grid-color: rgba(255, 255, 255, 0.06); /* 网格线微弱 */
+  --bg: #000000;
+  --green: #00ff6a;
+  --cyan: #00e5ff;
+  --pink: #ff3eb5;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  background:
+    /* 绿色竖向光柱（左中右三条淡淡的发光） */
+    radial-gradient(40% 80% at 8% 50%, rgba(0, 255, 106, 0.1), transparent 60%),
+    radial-gradient(40% 80% at 70% 50%, rgba(0, 255, 106, 0.09), transparent 60%),
+    radial-gradient(30% 70% at 95% 70%, rgba(0, 255, 106, 0.08), transparent 65%),
+    /* 垂直渐隐（上下更暗） */ linear-gradient(to bottom, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+    /* 网格 */
+      repeating-linear-gradient(
+        0deg,
+        var(--base-grid, #0b0b0c) 0,
+        var(--base-grid, #0b0b0c) var(--grid-size),
+        rgba(255, 255, 255, 0.06) var(--grid-size),
+        rgba(255, 255, 255, 0.06) calc(var(--grid-size) + 1px)
+      ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent var(--grid-size),
+      rgba(255, 255, 255, 0.06) var(--grid-size),
+      rgba(255, 255, 255, 0.06) calc(var(--grid-size) + 1px)
+    );
+  background-color: var(--bg);
+  color: white;
+}
+
+/* 轻噪点（可选） */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='table' tableValues='0 0 0 .08 0'/></feComponentTransfer></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  mix-blend-mode: soft-light;
+  opacity: 0.35;
+}
+
+/* ========= 通用容器/按钮/卡片 ========= */
+.container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 72rem; /* 1152px, equivalent to max-w-[72rem] */
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem; /* px-4 */
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem; /* gap-2 */
+  border-radius: 0.75rem; /* rounded-xl */
+  padding-left: 1.25rem; /* px-5 */
+  padding-right: 1.25rem; /* px-5 */
+  padding-top: 0.625rem; /* py-2.5 */
+  padding-bottom: 0.625rem; /* py-2.5 */
+  font-weight: 500; /* font-medium */
+}
+.btn-acid {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+  font-weight: 500;
+  background: var(--green);
+  color: #000;
+  box-shadow: 0 0 18px rgba(0, 255, 106, 0.35);
+}
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  background: transparent;
+}
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.card {
+  border-radius: 1rem; /* rounded-2xl */
+  padding: 1.5rem; /* p-6 */
+  background: rgba(0, 0, 0, 0.4); /* bg-black/40 */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* border border-white/10 */
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px); /* backdrop-blur */
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 24px rgba(0, 255, 106, 0.08);
+}
+
+.display {
+  font-family: var(--font-pixel), ui-monospace, monospace;
+  line-height: 0.95;
+  letter-spacing: 0.06em;
+}
+
+/* ========= 像素风边角/按钮（右下角那种味道） ========= */
+/* 1) “像素卡片”效果：用直角 + 阶梯投影模拟像素边 */
+.pixel {
+  position: relative;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--green);
+  box-shadow:
+    0 0 0 2px rgba(0, 255, 106, 0.25) inset,
+    0 0 18px rgba(0, 255, 106, 0.35);
+  border-radius: 6px; /* 保留轻圆角 */
+}
+/* 右下角像素台阶标签 */
+.pixel::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  bottom: -8px;
+  width: 80px;
+  height: 10px;
+  background: var(--green);
+  box-shadow:
+    -4px -4px 0 0 #000 inset,
+    0 0 16px rgba(0, 255, 106, 0.45);
+}
+
+/* 2) 像素按钮 */
+.pixel-btn {
+  position: relative;
+  padding: 12px 18px;
+  color: #000;
+  background: var(--green);
+  border: 2px solid #000;
+  box-shadow:
+    0 0 0 2px var(--green),
+    0 0 18px rgba(0, 255, 106, 0.35);
+}
+.pixel-btn:hover {
+  filter: brightness(0.95);
+}
+
+/* 3) 像素角标（小标签） */
+.badge-pixel {
+  font-size: 0.75rem; /* text-xs */
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* font-mono */
+  background: #00ff6a;
+  color: #000;
+  padding: 4px 8px;
+  border: 2px solid #000;
+  box-shadow:
+    0 0 0 2px #00ff6a,
+    0 0 16px rgba(0, 255, 106, 0.35);
+}
+
+/* 4) 青/粉 辅助高光 */
+.accent-cyan {
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.35);
+  border-color: #00e5ff !important;
+}
+.accent-pink {
+  box-shadow: 0 0 16px rgba(255, 62, 181, 0.35);
+  border-color: #ff3eb5 !important;
+}
+/* === 像素卡片台阶效果 === */
+.pixel {
+  position: relative;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--green);
+  box-shadow:
+    0 0 0 2px rgba(0, 255, 106, 0.25) inset,
+    0 0 18px rgba(0, 255, 106, 0.35);
+  border-radius: 6px;
+}
+
+/* 第一层台阶（靠近卡片） */
+.pixel::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  bottom: -8px;
+  width: 88px;
+  height: 10px;
+  background: var(--green);
+  box-shadow:
+    -4px -4px 0 0 #000 inset,
+    0 0 16px rgba(0, 255, 106, 0.45);
+}
+
+/* 第二层台阶（更外层） */
+.pixel::before {
+  content: "";
+  position: absolute;
+  right: 16px;
+  bottom: -16px;
+  width: 64px;
+  height: 10px;
+  background: var(--green);
+  opacity: 0.9;
+  box-shadow:
+    -4px -4px 0 0 #000 inset,
+    0 0 12px rgba(0, 255, 106, 0.35);
+}
+
+/* 青/粉色高光效果 */
+.accent-cyan {
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.35);
+  border-color: #00e5ff !important;
+}
+.accent-pink {
+  box-shadow: 0 0 16px rgba(255, 62, 181, 0.35);
+  border-color: #ff3eb5 !important;
+}
+
+/* 像素按钮 */
+.pixel-btn {
+  position: relative;
+  padding: 12px 18px;
+  color: #000;
+  background: var(--green);
+  border: 2px solid #000;
+  box-shadow:
+    0 0 0 2px var(--green),
+    0 0 18px rgba(0, 255, 106, 0.35);
+}
+.pixel-btn:hover {
+  filter: brightness(0.95);
+}
+
+/* 像素徽章 */
+.badge-pixel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  background: #00ff6a;
+  color: #000;
+  padding: 4px 8px;
+  border: 2px solid #000;
+  box-shadow:
+    0 0 0 2px #00ff6a,
+    0 0 16px rgba(0, 255, 106, 0.35);
+}
+:root {
+  --green: #00ff6a;
+  --cyan: #00e5ff;
+  --pink: #ff3eb5;
+  --grid: rgba(0, 255, 106, 0.06);
+}
+
+/* 背景网格（可选） */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(transparent 31px, var(--grid) 32px), linear-gradient(90deg, transparent 31px, var(--grid) 32px),
+    radial-gradient(1200px 800px at 70% 20%, rgba(0, 255, 106, 0.05), transparent 60%);
+  background-size:
+    32px 32px,
+    32px 32px,
+    auto;
+}
+
+/* 像素卡片：厚边框 + 角块（Minecraft/像素风） */
+.pixel-card {
+  position: relative;
+  background: rgba(0, 0, 0, 0.55);
+  border: 4px solid var(--green);
+  box-shadow:
+    0 0 0 1px rgba(0, 255, 106, 0.35) inset,
+    0 0 24px rgba(0, 255, 106, 0.25);
+  padding: 18px;
+  border-radius: 0; /* 直角 */
+  overflow: hidden; /* 裁掉子元素溢出 */
+}
+.pixel-card.cyan {
+  border-color: var(--cyan);
+  box-shadow:
+    0 0 0 1px rgba(0, 229, 255, 0.35) inset,
+    0 0 24px rgba(0, 229, 255, 0.25);
+}
+.pixel-card.pink {
+  border-color: var(--pink);
+  box-shadow:
+    0 0 0 1px rgba(255, 62, 181, 0.35) inset,
+    0 0 24px rgba(255, 62, 181, 0.25);
+}
+
+/* 角落像素“台阶” */
+.pixel-card::after,
+.pixel-card::before {
+  content: "";
+  position: absolute;
+  background: currentColor;
+}
+.pixel-card::after {
+  /* 右下台阶 */
+  right: 18px;
+  bottom: 10px;
+  width: 68px;
+  height: 8px;
+  background: var(--green);
+}
+.pixel-card.cyan::after {
+  background: var(--cyan);
+}
+.pixel-card.pink::after {
+  background: var(--pink);
+}
+.pixel-card::before {
+  /* 左上小块 */
+  left: 12px;
+  top: 12px;
+  width: 10px;
+  height: 10px;
+  background: var(--green);
+}
+.pixel-card.cyan::before {
+  background: var(--cyan);
+}
+.pixel-card.pink::before {
+  background: var(--pink);
+}
+
+/* 像素按钮 */
+.pixel-btn {
+  font-family: var(--font-pixel), ui-monospace, monospace;
+  letter-spacing: 0.02em;
+  background: var(--green);
+  color: #001b0a;
+  border: 4px solid #003a1a;
+  padding: 10px 14px;
+  text-transform: uppercase;
+  box-shadow:
+    0 2px 0 #003a1a,
+    0 0 12px rgba(0, 255, 106, 0.35);
+}
+.pixel-btn:hover {
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  font-family: var(--font-pixel), ui-monospace, monospace;
+  border: 4px solid rgba(255, 255, 255, 0.15);
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* 像素徽章 */
+.badge-pixel {
+  font-family: var(--font-pixel), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 6px 8px;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* 文本溢出处理 */
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* 单行尾省略 */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 多行可滚（用于调试区） */
+.scrollbox {
+  max-height: 140px;
+  overflow: auto;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px;
+}
+
+/* 地址“中间省略”——用 JS 先短地址显示；这里保证盒子不被挤爆 */
+.addr {
+  font-family: ui-monospace, monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* —— 对比增强：像素卡变亮、正文更清晰 —— */
+:root {
+  --green: #00ff6a;
+  --cyan: #00e5ff;
+  --pink: #ff3eb5;
+  --surface: #0c1115; /* 背景基底 */
+  --surface-strong: #111820; /* 更亮一点的卡片内底色 */
+  --text-strong: #f4fff8; /* 正文高对比 */
+  --text-muted: #c7e7d6; /* 次级文字 */
+}
+
+/* 亮底的像素卡（覆盖原 pixel-card 的底色） */
+.pixel-card {
+  background:
+    linear-gradient(180deg, rgba(17, 24, 32, 0.88), rgba(17, 24, 32, 0.88)),
+    radial-gradient(800px 480px at 70% 0%, rgba(0, 255, 106, 0.08), transparent 60%);
+  color: var(--text-strong);
+}
+.pixel-card.cyan {
+  background:
+    linear-gradient(180deg, rgba(17, 24, 32, 0.9), rgba(17, 24, 32, 0.9)),
+    radial-gradient(900px 520px at 80% 10%, rgba(0, 229, 255, 0.1), transparent 60%);
+}
+.pixel-card.pink {
+  background:
+    linear-gradient(180deg, rgba(17, 24, 32, 0.9), rgba(17, 24, 32, 0.9)),
+    radial-gradient(900px 520px at 80% 10%, rgba(255, 62, 181, 0.1), transparent 60%);
+}
+
+/* 卡内的“内容面板”——用更浅的内层底色承载正文 */
+.pixel-surface {
+  background: var(--surface-strong);
+  border: 2px solid rgba(255, 255, 255, 0.07);
+  padding: 14px;
+}
+
+/* 标题发光，提升层级 */
+.pixel-title {
+  font-family: var(--font-pixel), ui-monospace, monospace;
+  letter-spacing: 0.02em;
+  text-shadow:
+    0 0 10px rgba(0, 255, 106, 0.35),
+    0 0 2px rgba(255, 255, 255, 0.6);
+}
+.pixel-title.cyan {
+  text-shadow:
+    0 0 10px rgba(0, 229, 255, 0.5),
+    0 0 2px rgba(255, 255, 255, 0.6);
+}
+.pixel-title.pink {
+  text-shadow:
+    0 0 10px rgba(255, 62, 181, 0.5),
+    0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+/* 次级文字更亮一些 */
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* 让“btn-ghost”在深色底上也清晰 */
+.btn-ghost {
+  color: var(--text-strong);
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+}
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* 调整像素按钮文字大小，避免太粗糙 */
+.pixel-btn {
+  font-size: 12px;
+}
+.input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 3px solid rgba(255, 255, 255, 0.18);
+  padding: 10px 12px;
+  font-size: 14px;
+  outline: none;
+  color: var(--text-strong);
+}
+.input:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.2);
+}

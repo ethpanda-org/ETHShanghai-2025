@@ -1,0 +1,98 @@
+query GetFixedPaymentTasks(
+  $first: Int!
+  $skip: Int!
+  $where: FixedPaymentTask_filter
+  $orderBy: FixedPaymentTask_orderBy
+  $orderDirection: OrderDirection
+) {
+  fixedPaymentTasks(first: $first, skip: $skip, where: $where, orderBy: $orderBy, orderDirection: $orderDirection) {
+    id
+    taskId
+    creator {
+      id
+      address
+    }
+    worker {
+      id
+      address
+    }
+    title
+    description
+    reward
+    deadline
+    proofOfWork
+    status
+    createdAt
+    updatedAt
+  }
+}
+
+query GetFixedPaymentTask($id: ID!) {
+  fixedPaymentTask(id: $id) {
+    id
+    taskId
+    creator {
+      id
+      address
+    }
+    worker {
+      id
+      address
+    }
+    title
+    description
+    reward
+    deadline
+    proofOfWork
+    status
+    createdAt
+    updatedAt
+  }
+}
+
+query GetFixedPaymentTaskByTaskId($taskId: BigInt!) {
+  fixedPaymentTasks(where: { taskId: $taskId }) {
+    id
+    taskId
+    creator {
+      id
+      address
+    }
+    worker {
+      id
+      address
+    }
+    title
+    description
+    reward
+    deadline
+    proofOfWork
+    status
+    createdAt
+    updatedAt
+  }
+}
+
+query GetFixedPaymentTasksForCard(
+  $first: Int!
+  $skip: Int!
+  $where: FixedPaymentTask_filter
+  $orderBy: FixedPaymentTask_orderBy
+  $orderDirection: OrderDirection
+) {
+  fixedPaymentTasks(first: $first, skip: $skip, where: $where, orderBy: $orderBy, orderDirection: $orderDirection) {
+    taskId
+    title
+    description
+    reward
+    deadline
+    status
+    creator {
+      address
+    }
+    worker {
+      address
+    }
+    createdAt
+  }
+}

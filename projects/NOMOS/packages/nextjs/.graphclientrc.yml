@@ -1,0 +1,28 @@
+# .graphclientrc.yml
+sources:
+  - name: UserInfo
+    handler:
+      graphql:
+        endpoint: https://api.studio.thegraph.com/query/119408/crowdsourcing/v0.0.1
+  - name: DisputeResolver
+    handler:
+      graphql:
+        endpoint: https://api.studio.thegraph.com/query/119408/crowdsourcing/v0.0.1
+  - name: FixedPaymentTaskResolver
+    handler:
+      graphql:
+        endpoint: https://api.studio.thegraph.com/query/119408/crowdsourcing/v0.0.1
+  - name: BiddingTaskResolver
+    handler:
+      graphql:
+        endpoint: https://api.studio.thegraph.com/query/119408/crowdsourcing/v0.0.1
+  - name: MilestonePaymentTaskResolver
+    handler:
+      graphql:
+        endpoint: https://api.studio.thegraph.com/query/119408/crowdsourcing/v0.0.1
+documents:
+  - ./graphql/GetUser.gql
+  - ./graphql/DisputeQueries.gql
+  - ./graphql/FixedPaymentTaskQueries.gql
+  - ./graphql/BiddingTaskQueries.gql
+  - ./graphql/MilestonePaymentTaskQueries.gql

@@ -1,0 +1,124 @@
+query GetUser($id: ID!) {
+  user(id: $id) {
+    id
+    address
+    profile {
+      name
+      email
+      bio
+      website
+      createdAt
+      updatedAt
+    }
+    skills {
+      skills
+      createdAt
+      updatedAt
+    }
+  }
+}
+
+query GetUserWorkSummary($id: ID!) {
+  user(id: $id) {
+    id
+    # 用户作为工作者参与的固定薪酬任务（仅基本信息）
+    assignedTasks {
+      id
+      taskId
+      title
+      reward
+      deadline
+      status
+    }
+    # 用户作为工作者参与的竞标任务（仅基本信息）
+    biddingTaskAssigned {
+      id
+      taskId
+      title
+      reward
+      deadline
+      status
+    }
+    # 用户作为工作者参与的里程碑任务（仅基本信息）
+    milestonePaymentTaskAssigned {
+      id
+      taskId
+      title
+      reward
+      deadline
+      status
+    }
+    # 用户创建的固定薪酬任务（仅基本信息）
+    createdTasks {
+      id
+      taskId
+      title
+      reward
+      deadline
+      status
+    }
+    # 用户创建的竞标任务（仅基本信息）
+    biddingTaskCreated {
+      id
+      taskId
+      title
+      reward
+      deadline
+      status
+    }
+    # 用户创建的里程碑任务（仅基本信息）
+    milestonePaymentTaskCreated {
+      id
+      taskId
+      title
+      reward
+      deadline
+      status
+    }
+    # 用户作为工作者参与的纠纷
+    workerDisputes {
+      id
+      disputeId
+      taskId
+      rewardAmount
+      workerShare
+      status
+      createdAt
+    }
+    # 用户作为任务创建者参与的纠纷
+    creatorDisputes {
+      id
+      disputeId
+      taskId
+      rewardAmount
+      workerShare
+      status
+      createdAt
+    }
+    # 用户的竞标记录
+    bids {
+      id
+      taskId
+      amount
+      estimatedTime
+      description
+      createdAt
+    }
+  }
+}
+
+query GetUsers($first: Int!, $skip: Int!) {
+  users(first: $first, skip: $skip) {
+    id
+    address
+    profile {
+      name
+      email
+      bio
+      website
+    }
+    skills {
+      skills
+    }
+  }
+}

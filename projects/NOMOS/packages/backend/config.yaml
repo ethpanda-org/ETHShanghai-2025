@@ -1,0 +1,40 @@
+environment: development
+port: 8080
+log_level: info
+
+database:
+  host: localhost
+  port: 5433
+  user: postgres
+  password: 123456
+  dbname: guild_score
+  sslmode: disable
+
+redis:
+  host: redis
+  port: 6379
+  password: ""
+  db: 0
+
+subgraph_url: "http://localhost:8000/subgraphs/name/scaffold-eth/your-contract"
+
+blockchain:
+  rpc_url: "http://localhost:8545"
+  chain_id: 31337  # localhost
+  private_key: ""  # 用于签名交易的私钥
+  reputation_contract: ""  # 声誉合约地址
+jwt_secret: "your-secret-key-change-in-production"
+
+scheduler:
+  weekly_update_enabled: true
+  weekly_update_day: "sunday"  # 每周日执行
+  weekly_update_hour: 2        # 凌晨2点
+  
+  monthly_update_enabled: true
+  monthly_update_day: 1        # 每月1号
+  monthly_update_hour: 3       # 凌晨3点
+  
+  # 开发模式下的快速测试间隔
+  dev_mode: true
+  dev_weekly_interval_minutes: 10   # 开发模式: 10分钟
+  dev_monthly_interval_minutes: 30  # 开发模式: 30分钟

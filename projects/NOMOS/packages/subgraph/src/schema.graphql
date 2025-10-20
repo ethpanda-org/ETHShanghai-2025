@@ -1,0 +1,294 @@
+# User entities
+type User @entity(immutable: false) {
+  id: ID!
+  address: Bytes!
+  nft: UserNFT
+  profile: UserProfile
+  skills: UserSkills
+  createdContent: [Content!]! @derivedFrom(field: "creator")
+  contentPurchases: [ContentPurchase!]! @derivedFrom(field: "buyer")
+  createdRentalProjects: [RentalProject!]! @derivedFrom(field: "creator")
+  rentalProjectParticipants: [RentalProjectParticipant!]! @derivedFrom(field: "participant")
+  proposals: [Proposal!]! @derivedFrom(field: "creator")
+  votes: [Vote!]! @derivedFrom(field: "voter")
+  workerDisputes: [Dispute!]! @derivedFrom(field: "worker")
+  creatorDisputes: [Dispute!]! @derivedFrom(field: "taskCreator")
+  createdTasks: [FixedPaymentTask!]! @derivedFrom(field: "creator")
+  assignedTasks: [FixedPaymentTask!]! @derivedFrom(field: "worker")
+  biddingTaskCreated: [BiddingTask!]! @derivedFrom(field: "creator")
+  biddingTaskAssigned: [BiddingTask!]! @derivedFrom(field: "worker")
+  bids: [Bid!]! @derivedFrom(field: "bidder")
+}
+
+# User NFT entities
+type UserNFT @entity(immutable: false) {
+  id: ID!
+  user: User!
+  tokenId: BigInt!
+  username: String!
+  email: String!
+  grade: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type UserProfile @entity(immutable: false) {
+  id: ID!
+  user: User!
+  name: String!
+  email: String
+  bio: String
+  website: String
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type UserSkills @entity(immutable: false) {
+  id: ID!
+  user: User!
+  skills: [String!]!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+enum UserGrade {
+  Poor
+  Good
+  Excellent
+}
+
+# TaskToken entities
+type TokenTransfer @entity(immutable: true) {
+  id: ID!
+  from: Bytes!
+  to: Bytes!
+  value: BigInt!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  transactionHash: Bytes!
+}
+
+# ContentShare entities
+type Content @entity(immutable: false) {
+  id: ID!
+  contentId: BigInt!
+  creator: User!
+  title: String!
+  price: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  purchases: [ContentPurchase!]! @derivedFrom(field: "content")
+}
+
+type ContentPurchase @entity(immutable: true) {
+  id: ID!
+  content: Content!
+  buyer: User!
+  pricePaid: BigInt!
+  userGrade: String!
+  discountApplied: BigInt!
+  timestamp: BigInt!
+}
+
+# CollectiveRental entities
+type RentalProject @entity(immutable: false) {
+  id: ID!
+  projectId: BigInt!
+  creator: User!
+  description: String!
+  depositPerPerson: BigInt!
+  participantGoal: BigInt!
+  currentParticipants: BigInt!
+  deadline: BigInt!
+  currentDeposits: BigInt!
+  allowance: BigInt!
+  alreadyWithdrawAmount: BigInt!
+  completed: Boolean!
+  isSuccessful: Boolean!
+  participants: [RentalProjectParticipant!]! @derivedFrom(field: "project")
+  proposals: [Proposal!]! @derivedFrom(field: "project")
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type RentalProjectParticipant @entity(immutable: true) {
+  id: ID!
+  project: RentalProject!
+  participant: User!
+  depositAmount: BigInt!
+  joinedAt: BigInt!
+}
+
+# ProposalGovernance entities
+type Proposal @entity(immutable: false) {
+  id: ID!
+  project: RentalProject!
+  proposalId: BigInt!
+  creator: User!
+  description: String!
+  amount: BigInt!
+  voteDeadline: BigInt!
+  executed: Boolean!
+  passed: Boolean!
+  yesVotesAmount: BigInt!
+  noVotesAmount: BigInt!
+  votes: [Vote!]! @derivedFrom(field: "proposal")
+  createdAt: BigInt!
+  executedAt: BigInt
+}
+
+type Vote @entity(immutable: true) {
+  id: ID!
+  proposal: Proposal!
+  voter: User!
+  support: Boolean!
+  amount: BigInt!
+  timestamp: BigInt!
+}
+
+# Task entities
+type FixedPaymentTask @entity(immutable: false) {
+  id: ID!
+  taskId: BigInt!
+  creator: User!
+  worker: User!
+  title: String!
+  description: String!
+  reward: BigInt!
+  deadline: BigInt!
+  proofOfWork: String!
+  status: FixedPaymentTaskStatus!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+enum FixedPaymentTaskStatus {
+  Open
+  InProgress
+  Completed
+  Paid
+  Cancelled
+}
+
+type BiddingTask @entity(immutable: false) {
+  id: ID!
+  taskId: BigInt!
+  creator: User!
+  worker: User!
+  title: String!
+  description: String!
+  reward: BigInt!
+  deadline: BigInt!
+  proofOfWork: String!
+  status: BiddingTaskStatus!
+  bids: [Bid!]! @derivedFrom(field: "task")
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type Bid @entity(immutable: false) {
+  id: ID!
+  task: BiddingTask!
+  taskId: BigInt!
+  bidder: User!
+  bidderUser: User
+  amount: BigInt!
+  estimatedTime: BigInt!
+  description: String!
+  createdAt: BigInt!
+}
+
+enum BiddingTaskStatus {
+  Open
+  InProgress
+  Completed
+  Paid
+  Cancelled
+}
+
+type MilestonePaymentTask @entity(immutable: false) {
+  id: ID!
+  taskId: BigInt!
+  creator: User!
+  worker: User!
+  title: String!
+  description: String!
+  totalReward: BigInt!
+  deadline: BigInt!
+  status: MilestonePaymentTaskStatus!
+  milestones: [Milestone!]! @derivedFrom(field: "task")
+  completedMilestonesCount: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type Milestone @entity(immutable: false) {
+  id: ID!
+  task: MilestonePaymentTask!
+  taskId: BigInt!
+  milestoneIndex: BigInt!
+  description: String!
+  reward: BigInt!
+  paid: Boolean!
+  workProof: WorkProof
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type WorkProof @entity(immutable: false) {
+  id: ID!
+  submitted: Boolean!
+  approved: Boolean!
+  submittedAt: BigInt!
+  proof: String!
+}
+
+enum MilestonePaymentTaskStatus {
+  Open
+  InProgress
+  Paid
+  Cancelled
+}
+
+type Dispute @entity(immutable: false) {
+  id: ID!
+  disputeId: BigInt!
+  taskId: BigInt!
+  taskContract: Bytes!
+  worker: User!
+  taskCreator: User!
+  rewardAmount: BigInt!
+  workerShare: BigInt!
+  status: DisputeStatus!
+  proofOfWork: String!
+  workerApproved: Boolean!
+  creatorApproved: Boolean!
+  votes: [AdminVote!]! @derivedFrom(field: "dispute")
+  createdAt: BigInt!
+  resolvedAt: BigInt
+  distributedAt: BigInt
+}
+
+type Admin @entity(immutable: false) {
+  id: ID!
+  address: Bytes!
+  stakeAmount: BigInt!
+  isActive: Boolean!
+  votes: [AdminVote!]! @derivedFrom(field: "admin")
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type AdminVote @entity(immutable: false) {
+  id: ID!
+  dispute: Dispute!
+  admin: Admin!
+  workerShare: BigInt!
+  createdAt: BigInt!
+}
+
+enum DisputeStatus {
+  Filed
+  Resolved
+  Distributed
+}

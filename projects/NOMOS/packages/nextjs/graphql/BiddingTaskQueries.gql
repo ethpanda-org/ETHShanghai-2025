@@ -1,0 +1,98 @@
+query GetBiddingTaskForDetail($id: ID!) {
+  biddingTask(id: $id) {
+    id
+    taskId
+    creator {
+      id
+      address
+    }
+    worker {
+      id
+      address
+    }
+    title
+    description
+    reward
+    deadline
+    proofOfWork
+    status
+    createdAt
+    updatedAt
+  }
+}
+
+query GetBiddingTaskForBidPage($id: ID!) {
+  biddingTask(id: $id) {
+    id
+    taskId
+    creator {
+      id
+      address
+    }
+    status
+    bids {
+      id
+      bidder {
+        id
+        address
+      }
+      amount
+      estimatedTime
+      description
+      createdAt
+    }
+  }
+}
+
+query GetBiddingTasks(
+  $first: Int!
+  $skip: Int!
+  $where: BiddingTask_filter
+  $orderBy: BiddingTask_orderBy
+  $orderDirection: OrderDirection
+) {
+  biddingTasks(first: $first, skip: $skip, where: $where, orderBy: $orderBy, orderDirection: $orderDirection) {
+    id
+    taskId
+    creator {
+      id
+      address
+    }
+    worker {
+      id
+      address
+    }
+    title
+    description
+    reward
+    deadline
+    proofOfWork
+    status
+    createdAt
+    updatedAt
+  }
+}
+
+query GetBiddingTasksForCard(
+  $first: Int!
+  $skip: Int!
+  $where: BiddingTask_filter
+  $orderBy: BiddingTask_orderBy
+  $orderDirection: OrderDirection
+) {
+  biddingTasks(first: $first, skip: $skip, where: $where, orderBy: $orderBy, orderDirection: $orderDirection) {
+    taskId
+    title
+    description
+    reward
+    deadline
+    status
+    creator {
+      address
+    }
+    worker {
+      address
+    }
+    createdAt
+  }
+}
