@@ -1,0 +1,24 @@
+# FastAPI核心依赖
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# LangChain和LangGraph依赖
+langchain>=0.1.0
+langchain-core>=0.1.8
+langchain-openai>=0.0.2
+langgraph>=0.0.20
+
+# 数据验证和序列化
+pydantic==2.5.0
+
+# 异步支持
+aiofiles==23.2.1
+
+# HTTP客户端
+httpx==0.25.2
+
+# 日志和监控
+python-multipart==0.0.6
+
+# 开发工具（可选）
+python-dotenv==1.0.0
