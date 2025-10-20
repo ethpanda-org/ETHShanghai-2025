@@ -5,10 +5,10 @@
 ## 一、提交物清单 (Deliverables)
 
 - [x] GitHub 仓库（公开或临时私有）：包含完整代码与本 README
-- [ ] Demo 视频（≤ 3 分钟，中文）：展示核心功能与流程
+- [x] Demo 视频（≤ 3 分钟，中文）：展示核心功能与流程
 - [ ] 在线演示链接（如有）：前端 Demo 或后端 API 文档
-- [ ] 合约部署信息（如有）：网络、地址、验证链接、最小复现脚本
-- [ ] 可选材料：Pitch Deck（不计入评分权重）
+- [x] 合约部署信息（如有）：网络、地址、验证链接、最小复现脚本
+- [x] 可选材料：Pitch Deck（不计入评分权重）
 
 ## 二、参赛队伍填写区 (Fill-in Template)
 
@@ -45,7 +45,7 @@
 SubscriptionService: [待部署后填写合约地址]
 ```
 
-- **验证链接（Etherscan/BlockScout）**：[部署后提供验证链接]
+- **验证链接（Etherscan/BlockScout）**：[验证链接](https://sepolia.etherscan.io/address/0xb7505213f87f4ee854a29a7b39fed51792f027e7)
 - **最小复现脚本**：
 
 ```bash
@@ -121,6 +121,7 @@ cd backend && uv run celery -A apps.worker.celery_app worker --loglevel=info
 ### 5) Demo 与关键用例 (Demo & Key Flows)
 
 - **视频链接（≤3 分钟，中文）**：[视频链接](https://drive.google.com/drive/folders/1M2k3LYHLBZYLSG2K4bg9fTkknhB1ruxc?usp=sharing)
+- **Pitch Deck**：[Pitch Deck](https://drive.google.com/drive/folders/1M2k3LYHLBZYLSG2K4bg9fTkknhB1ruxc?usp=sharing)
 - **关键用例步骤（2-4 个要点）**：
   - **AI策略生成**：用户描述交易意图（如"在BTC 40k-50k区间做网格交易"），AI助手自动生成完整的策略参数并提供技术分析依据
   - **智能风险管理**：系统实时监控持仓风险，自动触发止损或减仓，结合11种风控规则保护用户资金安全
@@ -151,22 +152,11 @@ cd backend && uv run celery -A apps.worker.celery_app worker --loglevel=info
 - **团队名**：Dynator Team
 - **成员与分工**：
   - Ricky - 全栈工程师 - AI开发、系统架构、项目协调
-  - [其他团队成员] - [角色] - [负责模块]
+  - Yeyu - 前端 - 前端开发、UI设计、用户体验优化
+  - YaCo - 合约 - 合约开发、部署、测试
 - **联系方式（Email/TG/X）**：
   - Email: veithly@live.com
   - Telegram: rickyeacc
   - GitHub: <https://github.com/veithly>
 - **可演示时段（时区）**：UTC+8 (北京时间)，工作日 14:00-18:00
 
-## 三、快速自检清单 (Submission Checklist)
-
-- [ ] README 按模板填写完整（概述、架构、复现、Demo、边界）
-- [ ] 本地可一键运行，关键用例可复现
-- [ ] （如有）测试网合约地址与验证链接已提供
-- [ ] Demo 视频（≤3 分钟，中文）链接可访问
-- [ ] 如未完全开源，已在"可验证边界"清晰说明
-- [ ] 联系方式与可演示时段已填写
-
----
-
-**注意**：请删除此模板说明，只保留你填写的内容。
