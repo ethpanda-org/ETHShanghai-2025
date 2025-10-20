@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Connection Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        button { padding: 10px 20px; margin: 10px 0; font-size: 16px; }
+        .info { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>钱包连接测试</h1>
+        
+        <button onclick="connectWallet()">连接 MetaMask</button>
+        <button onclick="checkBalance()">检查余额</button>
+        <button onclick="checkNetwork()">检查网络</button>
+        
+        <div id="status" class="info">
+            <h3>状态:</h3>
+            <p id="statusText">未连接</p>
+        </div>
+        
+        <div id="walletInfo" class="info" style="display: none;">
+            <h3>钱包信息:</h3>
+            <p><strong>地址:</strong> <span id="address"></span></p>
+            <p><strong>网络:</strong> <span id="network"></span></p>
+            <p><strong>ETH余额:</strong> <span id="ethBalance"></span></p>
+        </div>
+        
+        <div id="contractInfo" class="info">
+            <h3>合约地址:</h3>
+            <p><strong>FocusBond:</strong> 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0</p>
+            <p><strong>MockUSDC:</strong> 0x5FbDB2315678afecb367f032d93F642f64180aa3</p>
+            <p><strong>FocusCredit:</strong> 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512</p>
+        </div>
+    </div>
+
+    <script>
+        let currentAccount = null;
+        
+        async function connectWallet() {
+            try {
+                if (typeof window.ethereum !== 'undefined') {
+                    const accounts = await window.ethereum.request({
+                        method: 'eth_requestAccounts'
+                    });
+                    
+                    if (accounts.length > 0) {
+                        currentAccount = accounts[0];
+                        document.getElementById('statusText').textContent = '已连接';
+                        document.getElementById('address').textContent = currentAccount;
+                        document.getElementById('walletInfo').style.display = 'block';
+                        
+                        await checkNetwork();
+                        await checkBalance();
+                    }
+                } else {
+                    alert('请安装 MetaMask!');
+                }
+            } catch (error) {
+                console.error('连接失败:', error);
+                document.getElementById('statusText').textContent = '连接失败: ' + error.message;
+            }
+        }
+        
+        async function checkNetwork() {
+            try {
+                const chainId = await window.ethereum.request({
+                    method: 'eth_chainId'
+                });
+                
+                const networkName = chainId === '0x7a69' ? 'Anvil Local (31337)' : `Unknown (${chainId})`;
+                document.getElementById('network').textContent = networkName;
+                
+                if (chainId !== '0x7a69') {
+                    // 尝试切换到Anvil网络
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0x7a69' }]
+                        });
+                    } catch (switchError) {
+                        // 如果网络不存在，添加它
+                        if (switchError.code === 4902) {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [{
+                                    chainId: '0x7a69',
+                                    chainName: 'Anvil Local',
+                                    nativeCurrency: {
+                                        name: 'Ethereum',
+                                        symbol: 'ETH',
+                                        decimals: 18
+                                    },
+                                    rpcUrls: ['http://127.0.0.1:8545'],
+                                    blockExplorerUrls: null
+                                }]
+                            });
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('网络检查失败:', error);
+            }
+        }
+        
+        async function checkBalance() {
+            try {
+                if (currentAccount) {
+                    const balance = await window.ethereum.request({
+                        method: 'eth_getBalance',
+                        params: [currentAccount, 'latest']
+                    });
+                    
+                    const ethBalance = parseInt(balance, 16) / Math.pow(10, 18);
+                    document.getElementById('ethBalance').textContent = ethBalance.toFixed(4) + ' ETH';
+                }
+            } catch (error) {
+                console.error('余额检查失败:', error);
+            }
+        }
+        
+        // 监听账户变化
+        if (typeof window.ethereum !== 'undefined') {
+            window.ethereum.on('accountsChanged', (accounts) => {
+                if (accounts.length === 0) {
+                    currentAccount = null;
+                    document.getElementById('statusText').textContent = '未连接';
+                    document.getElementById('walletInfo').style.display = 'none';
+                } else {
+                    currentAccount = accounts[0];
+                    document.getElementById('address').textContent = currentAccount;
+                    checkBalance();
+                }
+            });
+            
+            window.ethereum.on('chainChanged', (chainId) => {
+                checkNetwork();
+            });
+        }
+    </script>
+</body>
+</html>

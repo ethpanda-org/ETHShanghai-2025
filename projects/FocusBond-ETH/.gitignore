@@ -1,0 +1,50 @@
+node_modules
+.next/
+out/
+dist/
+*.log
+.DS_Store
+
+# Rust/Cargo build artifacts
+target/
+Cargo.lock
+
+apps/web/node_modules   
+packages/sdk/node_modules
+# Solana/Anchor artifacts
+.anchor/
+test-ledger/
+validator.out
+*.keypair
+*-keypair.json
+
+# IDL and type generation
+target/idl/
+target/types/
+target/deploy/
+
+# Solana program artifacts
+*.so
+*.d
+
+# Environment and config files
+.env
+.env.local
+.env.production
+.env.staging
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.cache

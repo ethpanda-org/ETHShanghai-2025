@@ -1,0 +1,4 @@
+packages:
+  - "packages/sdk-evm"
+  - "apps/web"
+  - "apps-stage1/web-evm"

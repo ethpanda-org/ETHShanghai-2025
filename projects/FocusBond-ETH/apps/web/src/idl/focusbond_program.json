@@ -1,0 +1,486 @@
+{
+  "address": "FocuB1nd11111111111111111111111111111111111",
+  "metadata": {
+    "name": "focusbond_program",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Time-Bonded Attention Protocol"
+  },
+  "instructions": [
+    {
+      "name": "break_session",
+      "discriminator": [
+        219,
+        148,
+        236,
+        179,
+        112,
+        52,
+        97,
+        68
+      ],
+      "accounts": [
+        {
+          "name": "session",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  101,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user_wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "reward_pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  119,
+                  97,
+                  114,
+                  100,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_wallet",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "complete_session",
+      "discriminator": [
+        3,
+        8,
+        154,
+        166,
+        198,
+        135,
+        76,
+        131
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user_wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "session",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  101,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user_wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_wallet",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "start_session",
+      "discriminator": [
+        23,
+        227,
+        111,
+        142,
+        212,
+        230,
+        3,
+        175
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user_wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "session",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  101,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user_wallet"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_wallet",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "target_minutes",
+          "type": "u16"
+        },
+        {
+          "name": "deposit_lamports",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Session",
+      "discriminator": [
+        243,
+        81,
+        72,
+        115,
+        214,
+        188,
+        72,
+        144
+      ]
+    },
+    {
+      "name": "User",
+      "discriminator": [
+        159,
+        117,
+        95,
+        227,
+        239,
+        151,
+        58,
+        236
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "SessionBroken",
+      "discriminator": [
+        173,
+        78,
+        20,
+        43,
+        143,
+        210,
+        180,
+        19
+      ]
+    },
+    {
+      "name": "SessionCompleted",
+      "discriminator": [
+        191,
+        190,
+        106,
+        122,
+        152,
+        219,
+        165,
+        90
+      ]
+    },
+    {
+      "name": "SessionStarted",
+      "discriminator": [
+        97,
+        241,
+        44,
+        75,
+        210,
+        66,
+        122,
+        96
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidDepositAmount",
+      "msg": "Invalid deposit amount"
+    },
+    {
+      "code": 6001,
+      "name": "SessionNotActive",
+      "msg": "Session is not active"
+    },
+    {
+      "code": 6002,
+      "name": "SlotCalculationError",
+      "msg": "Error calculating slots"
+    },
+    {
+      "code": 6003,
+      "name": "TimeCalculationError",
+      "msg": "Error calculating time"
+    },
+    {
+      "code": 6004,
+      "name": "FeeCalculationError",
+      "msg": "Error calculating fee"
+    },
+    {
+      "code": 6005,
+      "name": "SessionTooShort",
+      "msg": "Session duration too short"
+    }
+  ],
+  "types": [
+    {
+      "name": "Session",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "start_slot",
+            "type": "u64"
+          },
+          {
+            "name": "target_minutes",
+            "type": "u16"
+          },
+          {
+            "name": "deposit_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "is_active",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SessionBroken",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "fee",
+            "type": "u64"
+          },
+          {
+            "name": "returned",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SessionCompleted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "deposit_returned",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SessionStarted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "session",
+            "type": "pubkey"
+          },
+          {
+            "name": "deposit",
+            "type": "u64"
+          },
+          {
+            "name": "target_minutes",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "User",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "completed_count",
+            "type": "u32"
+          },
+          {
+            "name": "reputation",
+            "type": "u32"
+          }
+        ]
+      }
+    }
+  ]
+}

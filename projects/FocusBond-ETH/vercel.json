@@ -1,0 +1,26 @@
+{
+  "buildCommand": "pnpm build",
+  "outputDirectory": "apps/web-evm/.next",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "functions": {
+    "apps/web-evm/src/app/api/cron/watchdog/route.ts": {
+      "maxDuration": 300
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/watchdog",
+      "schedule": "*/5 * * * *"
+    }
+  ],
+  "env": {
+    "PNPM_FLAGS": "--shamefully-hoist"
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/apps/web-evm/src/app/api/$1"
+    }
+  ]
+}
