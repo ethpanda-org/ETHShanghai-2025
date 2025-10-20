@@ -4,9 +4,10 @@
 
 Your AI Copilot for Smarter Crypto Trading
 
-> 一句话说明：CoTrading 通过理解你的交易偏好结合CEX、DEX 与链上数据，通过多智能体协作，带来交易工作流新范式，提供实时、可分析、可解释的策略与风控建议
+# 一句话说明
+> CoTrading 通过理解你的交易偏好结合链上数据、舆情数据、技术分析，通过多智能体协作，带来交易工作流新范式，提供实时、可分析、可解释的交易建议。
 
-目标
+## 目标
 - 个性化投研与策略共创，提升决策速度与质量
 - 多源数据融合与可解释洞见，强化市场把握
 - 策略实时协同与自动化执行接口，缩短从想法到落地
@@ -41,6 +42,9 @@ Your AI Copilot for Smarter Crypto Trading
 - CEX（计划支持）：Binance、OKX、Bybit（REST/WebSocket 用于行情/订单/执行）
 - 市场与情绪（计划支持）：CoinGecko 等价格聚合；社媒/新闻流（需网关与清洗策略）
 - 执行接口（计划）：CEX API Key 适配器；DEX 路由与执行（如 Uniswap 生态，钱包签名）
+
+
+![项目预览](./pic.jpg)
 
 ## 系统架构（草图）
 ```
