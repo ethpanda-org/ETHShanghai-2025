@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 220 220">
+  <defs>
+    <linearGradient id="gold-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="220" y2="220">
+      <stop offset="0%" stop-color="#DAB974" />
+      <stop offset="100%" stop-color="#B88B4A" />
+    </linearGradient>
+  </defs>
+  <!-- 外框（金色渐变） -->
+  <rect x="0" y="0" width="220" height="220" rx="5" ry="5" fill="url(#gold-gradient)" />
+  <!-- 内框（深色） -->
+  <rect x="10" y="10" width="200" height="200" rx="5" ry="5" fill="#3c4858" />
+  <!-- 钥匙孔形状（按原始坐标平移至 220 视口） -->
+  <path d="M 167.5 270 L 232.5 270 L 215.5 190 A 30 30 0 1 0 184.5 190 Z" fill="#FFFFFF" transform="translate(-90,-90)" />
+</svg>

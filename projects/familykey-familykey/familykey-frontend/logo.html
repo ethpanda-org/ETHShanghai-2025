@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Key Logo</title>
+    <!-- 引入 Tailwind CSS 用于快速布局 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Inter 字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* 自定义字体 */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+
+    <div class="text-center">
+        <!-- SVG Logo 开始 -->
+        <svg width="300" height="350" viewBox="0 0 400 450" xmlns="http://www.w3.org/2000/svg">
+            <!-- 
+                定义设计中使用的颜色，方便重用
+                - main-bg: 方块的背景色和 "Family" 文字的颜色
+                - accent: 方块的边框和 "Key" 文字的颜色
+                - keyhole-fill: 钥匙孔的颜色
+            -->
+            <defs>
+                <linearGradient id="gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#DAB974;" />
+                    <stop offset="100%" style="stop-color:#B88B4A;" />
+                </linearGradient>
+            </defs>
+            
+            <!-- 方块背景和边框 -->
+            <rect 
+                x="90" 
+                y="90" 
+                width="220" 
+                height="220" 
+                rx="5" 
+                ry="5" 
+                fill="url(#gold-gradient)"
+            />
+            <rect 
+                x="100" 
+                y="100" 
+                width="200" 
+                height="200" 
+                rx="5" 
+                ry="5" 
+                fill="#3c4858" 
+            />
+
+            <!-- 钥匙孔形状 -->
+            <!-- 这是一个由一个半圆弧和梯形组成的复合路径 -->
+            <path 
+                d="M 167.5 270 L 232.5 270 L 215.5 190 A 30 30 0 1 0 184.5 190 Z" 
+                fill="#FFFFFF"
+            />
+
+            <!-- 下方的文字 -->
+            <text 
+                x="200" 
+                y="380" 
+                font-size="60" 
+                text-anchor="middle" 
+                font-weight="400"
+            >
+                <tspan fill="#3c4858">Family</tspan>
+                <tspan fill="#c5a35a" font-weight="500"> Key</tspan>
+            </text>
+        </svg>
+        <!-- SVG Logo 结束 -->
+    </div>
+
+</body>
+</html>
+

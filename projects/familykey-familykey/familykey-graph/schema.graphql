@@ -1,0 +1,54 @@
+type DeadManSwitch @entity {
+  id: ID! # Contract address
+  safe: Bytes!
+  beneficiary: Bytes!
+  heartbeatInterval: BigInt!
+  challengePeriod: BigInt!
+  lastCheckIn: BigInt!
+  claimReadyAt: BigInt!
+  currentOwner: Bytes
+  isClaimActive: Boolean!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+
+  # Relations
+  checkIns: [CheckInEvent!]! @derivedFrom(field: "deadManSwitch")
+  claimStartedEvents: [ClaimStartedEvent!]! @derivedFrom(field: "deadManSwitch")
+  claimCancelledEvents: [ClaimCancelledEvent!]! @derivedFrom(field: "deadManSwitch")
+  claimFinalizedEvents: [ClaimFinalizedEvent!]! @derivedFrom(field: "deadManSwitch")
+}
+
+type CheckInEvent @entity {
+  id: ID! # transaction hash + log index
+  deadManSwitch: DeadManSwitch!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  txHash: Bytes!
+}
+
+type ClaimStartedEvent @entity {
+  id: ID! # transaction hash + log index
+  deadManSwitch: DeadManSwitch!
+  claimReadyAt: BigInt!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  txHash: Bytes!
+}
+
+type ClaimCancelledEvent @entity {
+  id: ID! # transaction hash + log index
+  deadManSwitch: DeadManSwitch!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  txHash: Bytes!
+}
+
+type ClaimFinalizedEvent @entity {
+  id: ID! # transaction hash + log index
+  deadManSwitch: DeadManSwitch!
+  oldOwner: Bytes!
+  newOwner: Bytes!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  txHash: Bytes!
+}

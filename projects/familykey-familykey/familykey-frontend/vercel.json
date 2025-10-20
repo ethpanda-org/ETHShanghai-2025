@@ -1,0 +1,17 @@
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "has": [
+        { "type": "host", "value": "shanghai.familykey.xyz" }
+      ],
+      "destination": "/shanghai.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+
+
