@@ -1,0 +1,85 @@
+{
+  "hardhat": {
+    "AqToken": {
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deployedAt": "2025-10-20T06:38:48.886Z",
+      "txHash": "0x12956a5351a58e9d5a710225a2c1d881661331eb53105b45b5adfb16a4fbdcb9"
+    },
+    "PToken": {
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deployedAt": "2025-10-20T06:38:52.423Z",
+      "txHash": "0x8007bb0e48fc0ba156882342fcfe2b7177d8803ed4148076c24c5ad808c025b5"
+    },
+    "CToken": {
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deployedAt": "2025-10-20T06:38:56.434Z",
+      "txHash": "0x817aa326a91368b020d976078cdee69703dbe9a6b4b5b3f89004c31e06a383ce"
+    },
+    "SToken": {
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deployedAt": "2025-10-20T06:39:00.236Z",
+      "txHash": "0xa6da39789f50ed7b4e8a0f4104367f9441c000cad9e78a20d6262e145e76ba95"
+    },
+    "TokenFactory": {
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deployedAt": "2025-10-20T06:39:03.907Z",
+      "txHash": "0x9ba36bdd96db12f58cae65a8843c6f212d15b16c935c2fdf43ae1c94396c3186"
+    },
+    "AquaFluxTimelock": {
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deployedAt": "2025-10-20T06:39:07.376Z",
+      "txHash": "0x3d1a868a47b55b068170a3e78fdfb683d66a5a1c43f9621634c6e2e8a25192a2"
+    },
+    "AquaFluxCore": {
+      "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      "deployedAt": "2025-10-20T06:39:11.094Z",
+      "txHash": "0x0c2578f7e6192d5352e7adf3019a071f942edd866abf87fb986f80bf11fef62e"
+    },
+    "AquaFluxCore_Implementation": {
+      "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "deployedAt": "2025-10-20T06:39:11.094Z"
+    }
+  },
+  "sepolia": {
+    "AqToken": {
+      "address": "0xbFBD977ce5f4b27A4CFC7867eeF676c99D65C05A",
+      "deployedAt": "2025-10-20T06:42:37.445Z",
+      "txHash": "0x0b1aa7922fce7afbb36ac237ddfdc11a40f9f50cc273ebb501fe1b3f5be36958"
+    },
+    "PToken": {
+      "address": "0xD1D053A1E1D8463CFE8e35b31d157236b03316c0",
+      "deployedAt": "2025-10-20T06:42:49.478Z",
+      "txHash": "0xa98adea06b33a1a25a81540c839d858e940603b6676b3cd797272a738c8f37ef"
+    },
+    "CToken": {
+      "address": "0x2A97De6D57c0DD529dD56eE4E75D3A7DfefcDBF9",
+      "deployedAt": "2025-10-20T06:43:14.274Z",
+      "txHash": "0x548f4b40c047462154066ea9b7aa5df76b691fbd1a6c8ba0198795584adea5b5"
+    },
+    "SToken": {
+      "address": "0xee816e0Bf4e4e03e8b4D73BF06f2e10b9551d2c7",
+      "deployedAt": "2025-10-20T06:43:25.809Z",
+      "txHash": "0x8b28ae2e98a1de1a9c4bd875b80ce357b719825a17d80fb2e70098f8caf45dc9"
+    },
+    "TokenFactory": {
+      "address": "0x3c2efAE52D159a8871931CAC4754f235788c49af",
+      "deployedAt": "2025-10-20T06:43:37.062Z",
+      "txHash": "0x9a0a4df6f2bcb6421b0af57c645936d279475a2778fd9537661e6c83c175158b"
+    },
+    "AquaFluxTimelock": {
+      "address": "0x1c77122bD2635367792B06592d540e1BCd14F7e2",
+      "deployedAt": "2025-10-20T06:44:14.165Z",
+      "txHash": "0xacca9aea14b72f35e1528ce94fcf79bcffd8113a68704bc14f726828f61fb2ae"
+    },
+    "AquaFluxCore": {
+      "address": "0x84b5dCcE1b204153E05bA8DBEe3a340E78C5bC79",
+      "deployedAt": "2025-10-20T06:45:02.582Z",
+      "txHash": "0xc985f434f7888f00f0678930fd1a275825fbff135e04ef215b61d6698c05d9ca"
+    },
+    "AquaFluxCore_Implementation": {
+      "address": "0x69ea30AB859ff2a51e41a85426e4C0Ea10c2D9f5",
+      "deployedAt": "2025-10-20T06:45:02.583Z"
+    }
+  },
+  "mainnet": {}
+}
