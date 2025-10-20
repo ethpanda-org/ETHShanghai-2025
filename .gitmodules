@@ -1,0 +1,9 @@
+[submodule "projects/Thyra/ThyraAccountV1"]
+	path = projects/Thyra/ThyraAccountV1
+	url = https://github.com/Thyra-Protocol/ThyraAccountV1.git
+[submodule "projects/Thyra/Thyra-Demo"]
+	path = projects/Thyra/Thyra-Demo
+	url = https://github.com/Thyra-Protocol/Thyra-Demo.git
+[submodule "projects/Thyra/ThyraCore"]
+	path = projects/Thyra/ThyraCore
+	url = https://github.com/Thyra-Protocol/ThyraCore.git
