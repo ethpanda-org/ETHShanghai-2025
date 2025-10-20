@@ -1,0 +1,22 @@
+{
+  "name": "picker-nodejs-project",
+  "version": "0.1.0",
+  "description": "Picker startup template for nodejs project.",
+  "main": "entry.js",
+  "scripts": {
+    "start": "node entry.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "picker",
+    "nodejs",
+    "project"
+  ],
+  "author": "openpick",
+  "email": "openpicklabs@hotmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "@iarna/toml": "^2.2.5",
+    "winston": "^3.11.0"
+  }
+}

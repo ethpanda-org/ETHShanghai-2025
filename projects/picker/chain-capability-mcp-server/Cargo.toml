@@ -1,0 +1,23 @@
+[package]
+name = "chain-capability-mcp-server"
+version = "0.1.0"
+edition = "2024"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+alloy = { version = "1.0.30", features = ["full"] }
+rust-agent = { path = "../rust-agent-crate", version = "0.0.4" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+config = "0.15.18"
+anyhow = "1.0"
+log = "0.4"
+env_logger = "0.11"
+async-trait = "0.1"
+hex = "0.4"
+tracing = "0.1"
+reqwest = { version = "0.12", features = ["json"] }
+dirs = "6.0.0"
+thiserror = "1.0"

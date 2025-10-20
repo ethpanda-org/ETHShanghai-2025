@@ -1,0 +1,36 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "enables the default permissions",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-close",
+    "core:window:allow-destroy",
+    "dialog:default",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "opener:allow-reveal-item-in-dir",
+    "opener:allow-open-url",
+    "opener:allow-default-urls",
+    {
+      "identifier": "opener:allow-open-path",
+      "allow": [
+        {
+          "path": "$HOME",
+          "windows": ["main"]
+        },
+        {
+          "path": "$DOWNLOADS",
+          "windows": ["main"]
+        },
+        {
+          "path": "$DOCUMENTS",
+          "windows": ["main"]
+        }
+      ]
+    }
+  ]
+}

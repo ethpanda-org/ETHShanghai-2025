@@ -1,0 +1,22 @@
+[environment]
+node_js_first_parameter = "node_js_first_parameter"
+node_js_second_parameter = 2
+
+  [environment.settings]
+  node_js_sub_parameter = [ "sub_parameter_index1", "sub_parameter_index2" ]
+
+[project]
+name = "picker-nodejs-project"
+version = "0.1.0"
+description = "Picker startup template for nodejs project."
+author = "openpick"
+email = "openpicklabs@hotmail.com"
+license = "MIT"
+
+[task]
+id = "b7e3a5d1-2c4f-41a7-b9d5-6a3c2b8d1e4f"
+name = "Picker Node.js task"
+status = "Idle"
+installed = "240128"
+runs = 128
+last_run = "240301"

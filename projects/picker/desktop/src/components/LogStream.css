@@ -1,0 +1,419 @@
+/* 定义CSS变量 */
+:root {
+  --border: #333;
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-tertiary: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --text-muted: #808080;
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+  --accent-primary: #6366f1;
+}
+
+/* 日志流主容器 */
+.log-stream {
+  height: 200px;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition: height 0.3s ease;
+  position: relative;
+  z-index: 100;
+}
+
+/* 展开全屏状态 */
+.log-stream-expanded {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100vh !important;
+  z-index: 1000;
+  border-radius: 0;
+}
+
+/* 最小化状态 - 底部栏 */
+.log-stream-minimized {
+  height: 30px;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.log-stream-minimized:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.log-stream-label {
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* 日志头部 */
+/* 更新log-header样式 */
+.log-header {
+  display: flex;
+  align-items: center;
+  position: relative; /* 确保绝对定位的元素基于此容器 */
+  padding: 8px 12px;
+  background-color: #2d2d2d;
+  border-bottom: 1px solid #444;
+  min-height: 40px; /* 确保有足够的高度 */
+}
+
+/* 添加绝对居中的标题样式 */
+.log-header-title.absolute-centered {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 右侧控件容器 */
+.log-controls-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 确保log-filters不会占用过多空间 */
+.log-filters {
+  margin: 0;
+}
+
+.log-header-left {
+  flex: 1;
+}
+
+.log-header-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 筛选器样式 */
+.log-filters {
+  display: flex;
+  align-items: center;
+}
+
+.filter-dropdown {
+  position: relative;
+}
+
+.filter-button {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.filter-button:hover {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.filter-icon {
+  font-size: 12px;
+}
+
+.filter-dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 0;
+  min-width: 160px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+}
+
+.filter-dropdown:hover .filter-dropdown-content {
+  display: block;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  color: var(--text-primary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.filter-option:hover {
+  background-color: var(--bg-secondary);
+}
+
+.filter-option input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+/* 操作按钮样式 */
+.log-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.log-action-button {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.log-action-button:hover {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.action-icon {
+  font-size: 12px;
+}
+
+.copy-button:hover {
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.expand-button:hover {
+  background: var(--info);
+  border-color: var(--info);
+}
+
+.close-button:hover {
+  background: var(--error);
+  border-color: var(--error);
+}
+
+/* 拖拽手柄 */
+.resize-handle {
+  height: 6px;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  cursor: ns-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resize-indicator {
+  width: 40px;
+  height: 2px;
+  background-color: var(--text-muted);
+  border-radius: 1px;
+}
+
+/* 日志内容区域 */
+.log-content {
+  flex: 1;
+  padding: 12px 16px;
+  overflow-y: auto;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  background-color: #0f0f0f;
+}
+
+/* 空日志提示 */
+.log-empty {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+}
+
+/* 日志条目 */
+.log-entry {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+  color: var(--text-secondary);
+  position: relative;
+  animation: fadeIn 0.2s ease;
+}
+
+.log-entry.success {
+  color: var(--success);
+}
+
+.log-entry.error {
+  color: var(--error);
+}
+
+.log-entry.warning {
+  color: var(--warning);
+}
+
+.log-entry.info {
+  color: var(--info);
+}
+
+/* 日志时间戳 */
+.log-time {
+  color: var(--text-muted);
+  font-size: 10px;
+  flex-shrink: 0;
+  font-family: 'Consolas', 'Monaco', monospace;
+  min-width: 70px;
+  text-align: right;
+}
+
+/* 日志级别 */
+.log-level {
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 10px;
+  flex-shrink: 0;
+  min-width: 10px;
+  text-align: center;
+  border-radius: 2px;
+  padding: 0 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.log-level.success {
+  color: var(--success);
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.log-level.error {
+  color: var(--error);
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.log-level.warning {
+  color: var(--warning);
+  background-color: rgba(245, 158, 11, 0.1);
+}
+
+.log-level.info {
+  color: var(--info);
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* 任务ID */
+.log-task-id {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-style: italic;
+  flex-shrink: 0;
+  min-width: 50px;
+}
+
+.log-prefix {
+  color: var(--accent-primary);
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.log-message {
+  flex: 1;
+  word-break: break-word;
+  font-family: 'Consolas', 'Monaco', monospace;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+/* 滚动条样式 */
+.log-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.log-content::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.log-content::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.log-content::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .log-header {
+    padding: 6px 12px;
+  }
+  
+  .log-action-button span {
+    display: none;
+  }
+  
+  .filter-button span:not(.filter-icon) {
+    display: none;
+  }
+  
+  .log-actions {
+    gap: 4px;
+  }
+  
+  .log-action-button, .filter-button {
+    padding: 6px 8px;
+  }
+}
+
+/* 确保展开状态下的正确显示 */
+.log-stream-expanded .log-header {
+  border-radius: 0;
+}
+
+.log-stream-expanded .log-content {
+  border-radius: 0;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.log-stream {
+  animation: fadeIn 0.3s ease;
+}

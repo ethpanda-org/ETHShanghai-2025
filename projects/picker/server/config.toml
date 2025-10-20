@@ -1,0 +1,31 @@
+# JWT配置
+[jwt]
+secret = "your-secret-key"
+
+# 密码配置
+[password]
+salt = "openpick"
+master_key = "openpickopenpickopenpickopenpick" #32字节
+nonce = "openpickopen" # 12字节
+
+# 待注册信息清理配置（分钟）
+[pending_registration]
+cleanup_minutes = 10
+
+# 区块链配置
+[blockchain]
+name = "ETH"
+rpc_url = "https://sepolia.infura.io/v3/7cb673f9a1324974899fc4cd4429b450"
+explorer_url = "https://sepolia.etherscan.io"
+token_usdt_url = "https://www.okx.com/api/v5/market/ticker?instId=ETH-USDT"
+authorized_contract_address = "0x1B0b2ef32Eba0Aa15B123633e2145D708eD2C5E9"
+retry_times = 5
+retry_interval_seconds = 10 
+
+# Premium 积分设置
+[premium]
+payment_rate = 5   # 5%
+to_usd = 1         # 当前 1 premium 等于 1 u
+free = 30          # 免费积分数
+period = 30        # 免费周期
+start = true       # 是否循环启动

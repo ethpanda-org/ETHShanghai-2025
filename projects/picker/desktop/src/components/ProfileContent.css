@@ -1,0 +1,793 @@
+/* ProfileContent.css - 深色主题的个人资料页面样式 */
+
+.profile-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 24px;
+  color: #e2e8f0;
+  overflow-y: auto;
+  max-height: calc(100vh - 120px);
+  scrollbar-width: thin;
+  scrollbar-color: #475569 #1e293b;
+}
+
+/* 自定义滚动条样式 */
+.profile-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.profile-content::-webkit-scrollbar-track {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+.profile-content::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+.profile-content::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* 个人信息卡片 */
+.profile-card {
+  background-color: #1e293b;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  grid-row: span 2;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  background-color: #7c3aed;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.profile-name {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 0 8px 0;
+  color: #f8fafc;
+}
+
+.profile-role {
+  background-color: #059669;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+.profile-bio {
+  text-align: center;
+  color: #94a3b8;
+  margin-bottom: 24px;
+}
+
+/* 个人信息项 */
+.personal-info {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.info-icon {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+.info-text {
+  color: #94a3b8;
+}
+
+/* 技能部分 */
+.skills-section {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.section-subtitle {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #f8fafc;
+}
+
+.skills-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-tag {
+  background-color: #334155;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  color: #cbd5e1;
+}
+
+/* 个人资料操作按钮 */
+.profile-actions {
+  width: 100%;
+  display: flex;
+  gap: 12px;
+}
+
+.generate-profile-btn {
+  flex: 1;
+  background-color: #7c3aed;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.generate-profile-btn:hover {
+  background-color: #6d28d9;
+}
+
+.settings-btn {
+  background-color: #334155;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.settings-btn:hover {
+  background-color: #475569;
+}
+
+/* 右侧内容区域 */
+.profile-right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* 通用区域样式 */
+.recent-activity,
+.installed-tools,
+.account-manager {
+  background-color: #1e293b;
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  color: #f8fafc;
+}
+
+.section-menu {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.section-menu:hover {
+  color: #cbd5e1;
+}
+
+/* 最近活动列表 */
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #334155;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.activity-icon {
+  font-size: 16px;
+  width: 24px;
+  text-align: center;
+  margin-top: 2px;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-title {
+  font-weight: 500;
+  color: #f8fafc;
+  margin-bottom: 4px;
+}
+
+.activity-description {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.activity-time {
+  font-size: 12px;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+/* 已安装工具列表 */
+.tools-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tool-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #334155;
+}
+
+.tool-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.tool-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.tool-info {
+  flex: 1;
+}
+
+.tool-name {
+  font-weight: 500;
+  color: #f8fafc;
+  margin-bottom: 4px;
+}
+
+.tool-date {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.tool-remove {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.tool-remove:hover {
+  color: #ef4444;
+}
+
+/* 账户管理 */
+.manage-wallet {
+  margin-bottom: 20px;
+}
+
+.wallet-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 12px;
+  background-color: #334155;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wallet-item:hover {
+  background-color: #475569;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.wallet-label {
+  color: #94a3b8;
+}
+
+.wallet-value {
+  font-weight: bold;
+  color: #f8fafc;
+}
+
+.storage-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: #334155;
+  border-radius: 8px;
+}
+
+.storage-label {
+  color: #94a3b8;
+  width: 100px;
+}
+
+.storage-bar {
+  flex: 1;
+  height: 8px;
+  background-color: #475569;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.storage-fill {
+  height: 100%;
+  background-color: #7c3aed;
+  border-radius: 4px;
+}
+
+.storage-value {
+  font-size: 12px;
+  color: #94a3b8;
+  width: 80px;
+  text-align: right;
+}
+
+/* 统计网格 */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.stat-card {
+  background-color: #334155;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  font-size: 24px;
+  font-weight: bold;
+  color: #f8fafc;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .profile-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-card {
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-actions {
+    flex-direction: column;
+  }
+}
+
+/* 编辑模态框样式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #1e293b;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #334155;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 20px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.close-btn:hover {
+  background-color: #334155;
+  color: #f8fafc;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #f8fafc;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: #334155;
+  border: 1px solid #475569;
+  border-radius: 6px;
+  color: #f8fafc;
+  font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #7c3aed;
+}
+
+.form-group input:disabled {
+  background-color: #2d3748;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.skills-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.existing-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-edit-tag {
+  background-color: #334155;
+  padding: 6px 12px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.skill-edit-tag span {
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.remove-skill-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.remove-skill-btn:hover {
+  background-color: #475569;
+  color: #ef4444;
+}
+
+.add-skill input {
+  background-color: #334155;
+  border: 1px dashed #475569;
+}
+
+.add-skill input::placeholder {
+  color: #64748b;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid #334155;
+}
+
+.cancel-btn {
+  background-color: #334155;
+  color: #f8fafc;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background-color: #475569;
+}
+
+.save-btn {
+  background-color: #7c3aed;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.save-btn:hover {
+  background-color: #6d28d9;
+}
+
+/* 模态框滚动条样式 */
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: #2d3748;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* 自定义对话框样式 */
+.custom-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+  /* 确保遮罩层能够捕获所有点击事件 */
+  pointer-events: all;
+  /* 防止内容滚动 */
+  overflow: hidden;
+}
+
+/* 对话框容器 */
+.custom-dialog {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 0;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.2s ease;
+}
+
+/* 对话框头部 */
+.custom-dialog-header {
+  padding: 20px 20px 0 20px;
+  border-bottom: 1px solid #334155;
+}
+
+/* 对话框标题 */
+.custom-dialog-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f8fafc;
+  margin: 0 0 10px 0;
+}
+
+/* 对话框内容区域 */
+.custom-dialog-body {
+  padding: 20px;
+}
+
+/* 对话框消息文本 */
+.custom-dialog-message {
+  font-size: 14px;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0 0 15px 0;
+}
+
+/* 对话框底部按钮区域 */
+.custom-dialog-footer {
+  padding: 0 20px 20px 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 对话框按钮 */
+.custom-dialog-button {
+  padding: 10px 20px;
+  background-color: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  text-align: center;
+}
+
+/* 对话框按钮悬停效果 */
+.custom-dialog-button:hover {
+  background-color: #6d28d9;
+  transform: translateY(-1px);
+}
+
+/* 对话框按钮点击效果 */
+.custom-dialog-button:active {
+  transform: translateY(0);
+}
+
+/* 淡入动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 上滑动画 */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 600px) {
+  .custom-dialog {
+    width: 95%;
+    margin: 10px;
+  }
+}
+
+/* 智能合约权限管理样式 */
+.contract-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.contract-action-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.contract-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 12px;
+  background-color: #334155;
+  border: 1px solid #475569;
+  border-radius: 6px;
+  color: #f8fafc;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+}
+
+.contract-input:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.contract-input::placeholder {
+  color: #94a3b8;
+}

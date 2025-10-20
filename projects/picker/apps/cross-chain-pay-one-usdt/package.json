@@ -1,0 +1,24 @@
+{
+  "name": "cross-chain-pay-one-usdt",
+  "version": "1.0.0",
+  "description": "Meson API Cross Chain Pay One USDT",
+  "main": "entry.js",
+  "scripts": {
+    "start": "node entry.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "meson",
+    "cross-chain",
+    "blockchain",
+    "defi",
+    "usdt"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "ethers": "^6.9.0",
+    "@iarna/toml": "^2.2.5"
+  }
+}

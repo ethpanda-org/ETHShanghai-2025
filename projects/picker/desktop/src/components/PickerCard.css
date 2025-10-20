@@ -1,0 +1,226 @@
+/* 引入基础对话框样式 */
+@import './BaseDialog.css';
+
+/* Picker Card Styles */
+.picker-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  height: 350px;
+}
+
+/* Picker Info Container with Image */
+.picker-info-container {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  margin-bottom: 16px;
+}
+
+.picker-info {
+  flex: 1;
+  margin-right: 16px;
+  min-width: 0; /* 确保文本内容不会溢出 */
+}
+
+.picker-image-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.picker-image {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+/* 响应式调整 */
+@media (max-width: 600px) {
+  .picker-image {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+.picker-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.picker-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px var(--shadow);
+  border-color: var(--accent-primary);
+}
+
+/* Card Header */
+.picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.picker-category {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent-primary);
+  background-color: rgba(139, 92, 246, 0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.picker-menu {
+  padding: 4px;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.picker-menu:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* Picker Info */
+.picker-info {
+  flex: 1;
+  margin-bottom: 16px;
+}
+
+.picker-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.picker-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 8px 0;
+  line-height: 1.5;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.picker-developer {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Picker Details */
+.picker-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.picker-price {
+  display: flex;
+  align-items: center;
+}
+
+.wallet-badge {
+  background-color: var(--success);
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.premium-badge {
+  background-color: var(--accent-primary);
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.picker-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.star {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.star.filled {
+  color: var(--warning);
+}
+
+.rating-count {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Download Info */
+.picker-downloads {
+  margin-bottom: 16px;
+}
+
+.downloads-text {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Action Button */
+.action-button {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-button:hover {
+  background-color: var(--accent-secondary);
+  transform: translateY(-1px);
+}
+
+.action-button:active {
+  transform: translateY(0);
+}
+
+/* Inactive Button Styles */
+.action-button.inactive {
+  background-color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.action-button.inactive:hover {
+  background-color: var(--text-muted);
+  transform: none;
+}
+
+.action-button.inactive:active {
+  transform: none;
+}

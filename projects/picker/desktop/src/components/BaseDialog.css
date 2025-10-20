@@ -1,0 +1,159 @@
+/* 基础对话框样式 - 可在项目中复用 */
+
+/* 对话框遮罩层 */
+.custom-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+  /* 确保遮罩层能够捕获所有点击事件 */
+  pointer-events: all;
+  /* 防止内容滚动 */
+  overflow: hidden;
+}
+
+/* 其他样式保持不变 */
+/* 对话框容器 */
+.custom-dialog {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 25px var(--shadow);
+  animation: slideUp 0.2s ease;
+}
+
+/* 以下样式保持不变 */
+/* 对话框头部 */
+.custom-dialog-header {
+  padding: 20px 20px 0 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* 对话框标题 */
+.custom-dialog-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 10px 0;
+}
+
+/* 对话框内容区域 */
+.custom-dialog-body {
+  padding: 20px;
+}
+
+/* 对话框消息文本 */
+.custom-dialog-message {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 15px 0;
+  word-break: break-all;
+}
+
+/* 进度条容器 */
+.progress-container {
+  position: relative;
+  width: 100%;
+  height: 24px;
+  background-color: var(--bg-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 15px;
+}
+
+/* 进度条 */
+.progress-bar {
+  height: 100%;
+  min-height: 100%; /* 确保完全填充 */
+  width: 0; /* 初始宽度为0 */
+  background-color: var(--success);
+  transition: width 0.3s ease;
+  border-radius: 12px;
+  box-sizing: border-box; /* 确保padding和border不影响尺寸 */
+  margin: 0;
+  padding: 0;
+}
+
+/* 进度文本 */
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* 对话框底部按钮区域 */
+.custom-dialog-footer {
+  padding: 0 20px 20px 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 对话框按钮 */
+.custom-dialog-button {
+  padding: 10px 20px;
+  background-color: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 00;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* 对话框按钮悬停效果 */
+.custom-dialog-button:hover {
+  background-color: var(--accent-secondary);
+  transform: translateY(-1px);
+}
+
+/* 对话框按钮点击效果 */
+.custom-dialog-button:active {
+  transform: translateY(0);
+}
+
+/* 淡入动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 上滑动画 */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 600px) {
+  .custom-dialog {
+    width: 95%;
+    margin: 10px;
+  }
+}

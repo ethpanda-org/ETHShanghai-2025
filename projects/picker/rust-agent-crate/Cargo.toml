@@ -1,0 +1,25 @@
+[package]
+name = "rust-agent"
+version = "0.0.4"
+edition = "2021"
+description = "Next Generation AI Agent Framework for Web3."
+license = "GPL-3.0"
+homepage = "https://www.openpick.org"
+repository = "https://github.com/aiqubits/rust-agent"
+rust-version = "1.89.0"
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+futures = "0.3"
+tokio-stream = { version = "0.1", features = ["sync"] }
+anyhow = "1.0"
+reqwest = { version = "0.11", features = ["json"] }
+chrono = "0.4"
+log = "0.4"
+env_logger = "0.11"
+async-trait = "0.1"
+axum = { version = "0.7", features = ["macros"] }
+tower-http = { version = "0.5", features = ["cors"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }

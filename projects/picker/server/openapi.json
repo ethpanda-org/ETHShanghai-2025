@@ -1,0 +1,1220 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Picker Server API",
+    "description": "Picker 服务器 API 文档",
+    "contact": {
+      "name": "API Support",
+      "email": "openpicklabs@hotmail.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "本地开发服务器"
+    },
+    {
+      "url": "https://api.openpick.org",
+      "description": "生产服务器"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "健康检查",
+        "description": "检查服务器是否正常运行",
+        "operationId": "health_check",
+        "responses": {
+          "200": {
+            "description": "服务器正常运行",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Pickers Server is running!"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "获取用户订单列表",
+        "description": "获取当前用户的所有订单，支持分页和状态筛选",
+        "operationId": "get_user_orders",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码，默认为1",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页数量，默认为10",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "订单状态筛选",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/OrderStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "创建订单",
+        "description": "为指定的Picker创建订单，支持Premium和钱包支付两种方式",
+        "operationId": "create_order",
+        "requestBody": {
+          "description": "创建订单请求参数",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "订单创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateOrderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "用户或Picker不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/orders/{order_id}": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "获取订单详情",
+        "description": "根据订单ID获取订单的详细信息",
+        "operationId": "get_order_detail",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "description": "订单的唯一标识符",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderInfo"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "订单不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/pickers": {
+      "get": {
+        "tags": [
+          "pickers"
+        ],
+        "summary": "获取Picker市场列表",
+        "description": "获取可用的Picker列表，支持分页和搜索",
+        "operationId": "get_market",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码，默认为1",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页数量，默认为10",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "搜索关键词",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "pickers"
+        ],
+        "summary": "上传新的Picker",
+        "description": "开发者上传新的Picker到市场",
+        "operationId": "upload_picker",
+        "requestBody": {
+          "description": "Picker文件和信息",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPickerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "上传成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadPickerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误或非开发者用户",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/pickers/{picker_id}": {
+      "get": {
+        "tags": [
+          "pickers"
+        ],
+        "summary": "获取Picker详情",
+        "description": "根据ID获取特定Picker的详细信息",
+        "operationId": "get_picker_detail",
+        "parameters": [
+          {
+            "name": "picker_id",
+            "in": "path",
+            "description": "Picker的唯一标识符",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PickerInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Picker不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/login": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "用户登录",
+        "description": "用户登录获取访问令牌",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "登录成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "邮箱或密码错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "用户不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/profile": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "获取用户资料",
+        "description": "获取当前登录用户的详细信息",
+        "operationId": "get_profile",
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInfo"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "用户不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ]
+      }
+    },
+    "/api/users/register": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "用户注册",
+        "description": "注册新用户账户",
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "注册成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "邮箱已被注册",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/verify": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "验证邮箱",
+        "description": "使用验证码验证邮箱地址",
+        "operationId": "verify",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "验证成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "验证码错误或已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/download": {
+      "get": {
+        "tags": [
+          "download"
+        ],
+        "summary": "下载Picker文件",
+        "description": "使用下载令牌下载已购买的Picker文件",
+        "operationId": "download",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "下载令牌",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "文件下载成功",
+            "content": {
+              "application/octet-stream": {
+
+              }
+            }
+          },
+          "401": {
+            "description": "令牌无效或已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "订单、Picker或文件不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateOrderRequest": {
+        "type": "object",
+        "required": [
+          "picker_id",
+          "pay_type"
+        ],
+        "properties": {
+          "pay_type": {
+            "$ref": "#/components/schemas/PayType"
+          },
+          "picker_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "CreateOrderResponse": {
+        "type": "object",
+        "required": [
+          "order_id",
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "order_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "DownloadQuery": {
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": [
+          "error",
+          "message"
+        ],
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Bad Request"
+          },
+          "message": {
+            "type": "string",
+            "example": "Invalid input parameters"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "user_password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "user_password": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "required": [
+          "token",
+          "user"
+        ],
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserInfo"
+          }
+        }
+      },
+      "MarketQuery": {
+        "type": "object",
+        "properties": {
+          "keyword": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "page": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 0
+          },
+          "size": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 0
+          }
+        }
+      },
+      "MarketResponse": {
+        "type": "object",
+        "required": [
+          "pickers",
+          "total"
+        ],
+        "properties": {
+          "pickers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PickerInfo"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        }
+      },
+      "OrderInfo": {
+        "type": "object",
+        "required": [
+          "order_id",
+          "user_id",
+          "picker_id",
+          "picker_alias",
+          "amount",
+          "pay_type",
+          "status",
+          "created_at"
+        ],
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "order_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "pay_type": {
+            "$ref": "#/components/schemas/PayType"
+          },
+          "picker_alias": {
+            "type": "string"
+          },
+          "picker_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "OrderListResponse": {
+        "type": "object",
+        "required": [
+          "orders",
+          "total",
+          "page",
+          "size",
+          "has_next"
+        ],
+        "properties": {
+          "has_next": {
+            "type": "boolean"
+          },
+          "orders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderInfo"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "total": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        }
+      },
+      "OrderQuery": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 0
+          },
+          "size": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 0
+          },
+          "status": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OrderStatus"
+              }
+            ]
+          }
+        }
+      },
+      "OrderStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "success",
+          "expired"
+        ]
+      },
+      "PayType": {
+        "type": "string",
+        "enum": [
+          "wallet",
+          "premium"
+        ]
+      },
+      "PickerInfo": {
+        "type": "object",
+        "required": [
+          "picker_id",
+          "alias",
+          "description",
+          "price",
+          "image_path",
+          "version",
+          "download_count",
+          "created_at"
+        ],
+        "properties": {
+          "alias": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": {
+            "type": "string"
+          },
+          "download_count": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "image_path": {
+            "type": "string"
+          },
+          "picker_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "price": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "version": {
+            "type": "string"
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "user_name",
+          "user_password",
+          "user_type"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "user_name": {
+            "type": "string"
+          },
+          "user_password": {
+            "type": "string"
+          },
+          "user_type": {
+            "$ref": "#/components/schemas/UserType"
+          }
+        }
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "required": [
+          "user_id",
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "UploadPickerRequest": {
+        "type": "object",
+        "required": [
+          "alias",
+          "description",
+          "price",
+          "version",
+          "image",
+          "file"
+        ],
+        "properties": {
+          "alias": {
+            "type": "string",
+            "description": "Picker别名"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述信息"
+          },
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "Picker文件"
+          },
+          "image": {
+            "type": "string",
+            "format": "binary",
+            "description": "图片文件"
+          },
+          "price": {
+            "type": "integer",
+            "format": "int64",
+            "description": "价格（分为单位）"
+          },
+          "version": {
+            "type": "string",
+            "description": "版本号"
+          }
+        }
+      },
+      "UploadPickerResponse": {
+        "type": "object",
+        "required": [
+          "picker_id",
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "picker_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "UserInfo": {
+        "type": "object",
+        "required": [
+          "user_id",
+          "email",
+          "user_name",
+          "user_type",
+          "wallet_address",
+          "premium_balance",
+          "created_at"
+        ],
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "email": {
+            "type": "string"
+          },
+          "premium_balance": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_name": {
+            "type": "string"
+          },
+          "user_type": {
+            "$ref": "#/components/schemas/UserType"
+          },
+          "wallet_address": {
+            "type": "string"
+          }
+        }
+      },
+      "UserType": {
+        "type": "string",
+        "enum": [
+          "gen",
+          "dev"
+        ]
+      },
+      "VerifyRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "code"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "VerifyResponse": {
+        "type": "object",
+        "required": [
+          "token",
+          "user"
+        ],
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserInfo"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearer_auth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "请输入 Bearer Token，格式：Bearer \u003Cyour-token\u003E"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearer_auth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "health",
+      "description": "健康检查接口"
+    },
+    {
+      "name": "users",
+      "description": "用户管理接口"
+    },
+    {
+      "name": "pickers",
+      "description": "Picker管理接口"
+    },
+    {
+      "name": "orders",
+      "description": "订单管理接口"
+    },
+    {
+      "name": "download",
+      "description": "文件下载接口"
+    }
+  ]
+}

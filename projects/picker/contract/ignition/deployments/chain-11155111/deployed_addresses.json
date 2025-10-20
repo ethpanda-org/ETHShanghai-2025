@@ -1,0 +1,5 @@
+{
+  "PickerPaymentModule#PickerPayment": "0x1B0b2ef32Eba0Aa15B123633e2145D708eD2C5E9",
+  "ERC20FactoryModule#ERC20Factory": "0x9712C7792fF62373f4ddBeE53DBf9BeCB63D80dB",
+  "ERC721FactoryModule#ERC721Factory": "0xDc49Fe683D54Ee2E37459b4615DebA8dbee3cB9A"
+}

@@ -1,0 +1,23 @@
+[environment]
+from = "cfx:usdt"
+to = "avax:usdt"
+fromAddress = "0x83498FCa79e0bc0548B4FC0744f467208c54132B"
+recipient = "0x83498FCa79e0bc0548B4FC0744f467208c54132B"
+amount = 0.7
+privateKey = ""
+
+[project]
+name = "cross-chain-pay-one-usdt"
+version = "0.1.0"
+description = "Picker startup template for nodejs project."
+author = "openpick"
+email = "openpicklabs@hotmail.com"
+license = "MIT"
+
+[task]
+id = "b7e3a5d1-2c4f-41a7-b9d5-6a3c2b8d1e4f"
+name = "Picker Nodejs task"
+status = "Idle"
+installed = "240128"
+runs = 128
+last_run = "240301"

@@ -1,0 +1,57 @@
+[package]
+name = "app"
+version = "0.1.0"
+description = "A Tauri App"
+authors = ["OpenPick"]
+license = ""
+repository = ""
+edition = "2021"
+rust-version = "1.88.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.4.0", features = ["config-json5"] }
+
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+log = "0.4"
+tauri = { version = "2.8.4", features = [ "devtools", "config-json5"] }
+tauri-plugin-log = "2"
+reqwest = { version = "0.12", features = ["json", "rustls-tls", "multipart"] }
+thiserror = "1.0"
+tokio = { version = "1.0", features = ["rt-multi-thread", "io-util", "process"] }
+tauri-plugin-store = "2"
+anyhow = "1.0"
+base64 = "0.21.0"
+dirs = "5.0.1"
+tauri-plugin-devtools = "2.0.0"
+tauri-plugin-opener = "2.5.0"
+tauri-plugin-dialog = "2.4.0"
+alloy = "1.0.30"
+chrono = { version = "0.4.42" }
+config = "0.15"
+uuid = { version = "1.0", features = ["serde", "v4"] }
+toml = "0.8"
+sysinfo = "0.30"
+zip = "5.1.1"
+lazy_static = "1.5.0"
+notify = "8.2.0"
+rust-agent = { path = "../../rust-agent-crate" }
+
+# Windows特定依赖，用于在所有平台上编译Windows特定代码
+[target.'cfg(windows)'.dependencies]
+windows-sys = "0.52"
+
+[dev-dependencies]
+mockito = "1.0"
+tokio = { version = "1.0", features = ["rt-multi-thread", "io-util", "macros"] }
+serial_test = "2.0"
+mockall = "0.11"
+tempfile = "3.0"
+ctor = "0.2"
