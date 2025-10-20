@@ -1,0 +1,16 @@
+# Realtime CA Detector Dependencies
+
+# Core dependencies (required)
+websocket-client>=1.9.0
+requests>=2.32.0
+
+# BERT analysis dependencies (optional, for better token extraction)
+# Uncomment if you want to use BERT model
+# transformers>=4.30.0
+# torch>=2.0.0
+
+# Alternative: CPU-only PyTorch (smaller, faster installation)
+# --extra-index-url https://download.pytorch.org/whl/cpu
+# torch>=2.0.0+cpu
+
+

@@ -186,6 +186,7 @@ class RealtimeAuditor:
         self.rate_limit = rate_limit
         self.last_request_time = 0
         self.enable_json_log = enable_json_log
+        self.current_tweet_event_id = None  # 当前处理的推文事件ID
         
         if enable_json_log:
             self.json_logger = JSONLogger()
@@ -211,6 +212,10 @@ class RealtimeAuditor:
                 "timestamp": datetime.now().isoformat(),
                 **data
             }
+            # 如果有推文事件ID，添加到日志中
+            if self.current_tweet_event_id:
+                log_entry["tweet_event_id"] = self.current_tweet_event_id
+            
             self.json_logger.save_log(log_entry)
     
     def _rate_limit_wait(self):
@@ -220,6 +225,49 @@ class RealtimeAuditor:
         if time_since_last < self.rate_limit:
             time.sleep(self.rate_limit - time_since_last)
         self.last_request_time = time.time()
+    
+    def _fetch_and_log_token_info(self, token_address: str):
+        """
+        查询代币详细信息并记录到日志
+        
+        Args:
+            token_address: 代币地址
+        """
+        try:
+            print(f"\n[TokenInfo] Fetching detailed info for token: {token_address}")
+            self._rate_limit_wait()
+            
+            url = f"{self.dexscreener_api}/tokens/{token_address}"
+            response = self.session.get(url, timeout=10)
+            
+            if response.status_code == 200:
+                result = response.json()
+                
+                # 记录完整的代币信息
+                self._log_json("token_info", {
+                    "token_address": token_address,
+                    "status": "success",
+                    "data": result
+                })
+                
+                print(f"[TokenInfo] Successfully fetched token info for {token_address}")
+                print(f"[TokenInfo] Found {len(result.get('pairs', []))} pairs")
+                
+            else:
+                self._log_json("token_info", {
+                    "token_address": token_address,
+                    "status": "error",
+                    "error": f"HTTP {response.status_code}"
+                })
+                print(f"[TokenInfo] Error fetching token info: HTTP {response.status_code}")
+                
+        except Exception as e:
+            self._log_json("token_info", {
+                "token_address": token_address,
+                "status": "error",
+                "error": str(e)
+            })
+            print(f"[TokenInfo] Exception while fetching token info: {e}")
     
     def search_token(self, token_symbol: str) -> Dict:
         """
@@ -581,6 +629,9 @@ Other contracts ({len(contracts)-1}):
             "ranking": ranking_info
         })
         
+        # 查询 rank 1 代币的详细信息
+        self._fetch_and_log_token_info(best_contract['address'])
+        
         return {
             "status": "analyzed",
             "message": analysis_text.strip(),
@@ -735,18 +786,24 @@ Other contracts ({len(contracts)-1}):
             "analysis_type": "ai"
         }
     
-    def audit_token(self, token_symbol: str, token_info: Dict = None) -> Dict:
+    def audit_token(self, token_symbol: str, token_info: Dict = None, tweet_event_id: str = None) -> Dict:
         """
         审计单个代币
         
         Args:
             token_symbol: 代币符号
             token_info: 代币额外信息(可选)
+            tweet_event_id: 推文事件ID(可选)
             
         Returns:
             审计结果字典
         """
+        # 设置当前推文事件ID
+        self.current_tweet_event_id = tweet_event_id
+        
         print(f"\n[Auditor] Auditing token: ${token_symbol}")
+        if tweet_event_id:
+            print(f"[Auditor] Tweet Event ID: {tweet_event_id}")
         
         # 搜索代币
         search_result = self.search_token(token_symbol)

@@ -1,0 +1,18 @@
+# 基础依赖（所有提取器都需要）
+# 已包含在主项目中：requests
+
+# 方法1-4: 正则、TF-IDF、规则、RAKE - 仅需Python标准库
+
+# 方法5: spaCy NER提取器
+spacy>=3.7.0
+# 下载模型: python -m spacy download en_core_web_sm
+
+# 方法6: BERT提取器
+transformers>=4.35.0
+torch>=2.0.0
+# 对于Mac M1/M2用户，使用: pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+# 可选：加速
+# sentencepiece>=0.1.99  # 某些transformers模型需要
+# accelerate>=0.24.0  # 加速transformers
+

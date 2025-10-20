@@ -1,37 +1,44 @@
-# Foxhole (ETHShanghai 2025）
+# Foxhole AI (ETHShanghai 2025）
 
-Foxhole 是一个端到端的开源原型，面向交易者与研究员，聚合链下情报与行情监测，提供关键词/实体抽取与基础风险审计，并通过 WebSocket 实时推送结果，帮助用户更快识别潜在热点与风险。
+Foxhole AI 是一个端到端的开源原型，面向交易者与研究员，实时监控影响力社交账号，提供关键词检测、合约地址验证与基础风险审计，并实时推送结果，帮助用户更快识别潜在交易机会与风险。
 
 ## 一、提交物清单 (Deliverables)
 
 - [x] GitHub 仓库：包含完整代码与本 README（当前目录）
-- [ ] Demo 视频（≤ 3 分钟，中文）
-- [ ] 在线演示链接（如有）
+- [x] Demo 视频（≤ 3 分钟，中文）
+- [x] 在线演示链接（如有）
 - [ ] 合约部署信息（如有）（本项目当前不含链上合约）
-- [ ] 可选材料：Pitch Deck（不计分）
+- [x] 可选材料：Pitch Deck（不计分）
 
 ## 二、参赛队伍填写区 (Fill-in Template)
 
 ### 1) 项目概述 (Overview)
 
-- **项目名称**：Foxhole
-- **一句话介绍**：统一采集 Dex Screener 与社媒数据，做实时关键词/实体抽取与基础审计，并通过 WS 推送可操作情报。
-- **目标用户**：量化/手动交易者、加密研究员、风控与审计团队、信息流机器人开发者。
+- **项目名称**：Foxhole AI
+- **一句话介绍**：实时监控影响力 Twitter 账号（CZ、Heyi、Elon Musk 等）的加密关键词，即时推送经过 AI 验证的合约地址，让交易者无需手动搜索，实现一键代币购买。
+- **目标用户**：加密货币交易者（量化/手动）、链上狙击手、加密研究员、信息流机器人开发者。
 - **核心问题与动机（Pain Points）**：
-  - 实时信息分散：行情与舆情来源多、信噪比高，难以统一聚合与去重。
-  - 情报不可操作：原始数据缺少结构化抽取与风控信号，难以直接用于策略。
-  - 实时分发困难：缺少统一的低延迟消息通道供前端/机器人消费。
+  - **通知延迟问题**：交易者错过关键意见领袖（KOL）的重要关键词提及，失去早期入场机会。
+  - **手动猎寻合约地址**：耗时的合约地址查找过程导致错失交易，甚至遭遇诈骗项目与 Rug Pull。
+  - **信息过载**：人工同时监控多个高影响力社交账号在规模化运作中根本不可能。
+  - **速度劣势**：手动流程无法与毫秒级执行交易的自动化系统竞争。在加密货币世界，几秒钟就可能意味着盈利与亏损的差别。
 - **解决方案（Solution）**：
+
+  - **实时情报引擎**：先进的关键词检测算法 7×24 小时监控高影响力账号（CZ、Heyi、Elon Musk 等），零延迟响应。
   - Monitor 子系统持续抓取 Dex Screener token 数据（高频、去重、CSV 持久化）。
-  - Twitter Listener 与 WS 监听器收集推文/消息流。
+
   - Extractor 子系统（BERT/TF-IDF/规则/正则/NER）对文本做关键词与实体抽取。
-  - Audit 子系统做基础风险审计与可疑信号聚合。
-  - WebSocket 服务器向客户端实时推送处理结果。
+
+  - **验证合约地址**：AI 驱动的验证机制确保用户获得合法 CA，防范 Rug Pull 与诈骗项目。
+  - **即时通知推送**：关键词检测的瞬间，交易机会直接通过 WebSocket 推送到用户设备。
+  - **自动化优势**：采用与专业狙击机器人相同的高频交易技术，毫秒级响应。
+  - **风险缓释**：内置安全功能在推荐前分析代币合法性与市场状况。
 
 ### 2) 架构与实现 (Architecture & Implementation)
 
 - **总览图（可贴图/链接）**：暂缺（如需可在 `docs/` 或 Issue 补充）
 - **关键模块**：
+  - 前端（Frontend）：https://github.com/yidongw/foxhole-bot-frontend
   - 监控（Monitor）：`monitor/token_monitor.py`、`monitor/config.py`、`monitor/start.sh`
   - 社媒监听：`monitor/twitter_listener.py`、`twitter_ws_monitor.py`
   - 抽取（Extractor）：`extractor/bert_extractor.py`、`spacy_ner_extractor.py`、`tfidf_extractor.py`、`rule_based_extractor.py`、`regex_extractor.py`
@@ -53,6 +60,7 @@ Foxhole 是一个端到端的开源原型，面向交易者与研究员，聚合
 ### 4) 运行与复现 (Run & Reproduce)
 
 - **前置要求**：
+
   - Python 3.10+ 与 `pip`
   - 可选：Docker / docker-compose
   - 稳定的网络连接
@@ -124,6 +132,7 @@ bash run_docker.sh
 ```
 
 - **数据与样例**：
+
   - 数据目录：`projects/foxhole/data/`
     - 示例推文：`user_tweets_*.json`
     - 示例数据库：`meme_coins.db`
@@ -134,45 +143,47 @@ bash run_docker.sh
 
 ### 5) Demo 与关键用例 (Demo & Key Flows)
 
-- **视频链接（≤3 分钟，中文）**：待补充
+- **视频链接（≤3 分钟，中文）**：https://drive.google.com/drive/folders/1F8KGB4kgC0MV6KLvVgxTB3NARpgsb1IL?usp=sharing
 - **关键用例步骤**：
-  - 用例 1：启动 Monitor，高频抓取 Dex Screener token，CSV 持久化与实时统计。
-  - 用例 2：运行 Extractor，对推文/消息做关键词与实体抽取，输出结构化文本。
-  - 用例 3：运行 Audit，聚合潜在风险信号并通过 WS 推送到客户端。
+  - 用例 1：启动 Monitor，实时监控影响力 Twitter 账号（CZ、Heyi、Elon Musk 等），检测加密关键词提及。
+  - 用例 2：运行 Extractor 与 CA Detector，对推文/消息做关键词抽取与合约地址验证，过滤诈骗项目与 Rug Pull 风险。
+  - 用例 3：运行 Audit，聚合潜在交易机会与风险信号，通过 WebSocket 即时推送到客户端，支持一键查看与购买。
 
 ### 6) 可验证边界 (Verifiable Scope)
 
 - 本仓库包含用于复现的核心代码与脚本：
-  - 可验证：Monitor 抓取与去重、Extractor 多策略抽取、WS 服务端与客户端、基础审计示例。
-  - 需自备：第三方 API Key（如 Twitter）。未提供的密钥相关功能需用户本地配置后使用。
+  - 可验证：Monitor 抓取与去重、Extractor 多策略抽取（关键词检测、合约地址提取）、WS 服务端与客户端、基础审计示例、合约地址验证。
+  - 需自备：第三方 API Key（如 Twitter Bearer Token）。未提供的密钥相关功能需用户本地配置后使用。
   - 暂不公开：无。
 
 ### 7) 路线图与影响 (Roadmap & Impact)
 
 - **1-3 周**：
-  - 增加多源行情（如 Gecko/CMC）与跨链数据采集。
-  - 增强审计规则库与告警策略（黑名单/流动性/合约模式）。
+  - 优化关键词检测算法，增加更多影响力账号监控。
+  - 增强合约地址验证机制（流动性检查、持有者分析、蜜罐检测）。
+  - 完善实时推送与告警策略，支持多渠道分发（TG/Discord）。
 - **1-3 个月**：
-  - 接入向量数据库与长期记忆，支持相似度检索与画像。
-  - 推出前端仪表盘与告警机器人（TG/Discord/X）。
-  - 评估链上审计与溯源能力，必要时补充合约模块。
+  - 接入链上数据源（Etherscan/DexScreener API），实现全面的代币安全评分系统。
+  - 推出前端仪表盘与移动端告警机器人（TG/Discord/微信）。
+  - 开发一键交易集成（DEX 聚合器对接，如 1inch/Uniswap）。
+  - 引入向量数据库与长期记忆，支持历史模式识别与智能推荐。
 - **对以太坊生态的价值**：
-  - 提升信息发现与风控效率，辅助更稳健的交易与研究活动。
-  - 为开源社区提供可复用的实时数据/抽取/分发骨架。
+  - 降低普通交易者的信息不对称，提供机构级的实时监控与狙击能力。
+  - 提升链上交易安全性，减少诈骗项目与 Rug Pull 造成的资金损失。
+  - 为开源社区提供可复用的社交情报采集、实时分发与风控基础设施。
 
 ### 8) 团队与联系 (Team & Contacts)
 
-- **团队名**：待补充
-- **成员与分工**：待补充
-- **联系方式（Email/TG/X）**：待补充
-- **可演示时段（时区）**：待补充
+- **团队名**：foxhole ai
+- **成员与分工**：Alan 负责推特监控前端跟交易，Neo 负责 ai 关键词提取
+- **联系方式（Email/TG/X）**：alan_ywang
+- **可演示时段（时区）**：北京时间
 
 ## 三、快速自检清单 (Submission Checklist)
 
 - [x] README 按模板填写完整（概述、架构、复现、Demo、边界）
 - [x] 本地可一键运行（Monitor 子系统），关键用例可复现（基础示例）
 - [ ] （如有）测试网合约地址与验证链接（当前无合约）
-- [ ] Demo 视频（≤ 3 分钟，中文）链接可访问
+- [x] Demo 视频（≤ 3 分钟，中文）链接可访问
 - [x] 如未完全开源，已在"可验证边界"清晰说明
 - [ ] 联系方式与可演示时段已填写
-
