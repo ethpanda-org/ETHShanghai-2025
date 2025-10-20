@@ -1,174 +1,295 @@
-# ETHShanghai 2025 参赛选手操作流程指南
+# AI预测套利基金项目 - 使用指南
 
-## 📋 总体流程概览
+## 项目简介
 
-```mermaid
-graph TD
-    A[了解比赛规则] --> B[Fork 官方仓库]
-    B --> C[创建项目分支]
-    C --> D[开发项目]
-    D --> E[填写项目模板]
-    E --> F[录制 Demo 视频]
-    F --> G[部署测试]
-    G --> H[最终检查]
-    H --> I[提交 PR]
-    I --> J[等待评审]
+这是一个结合AI预测和区块链套利的DeFi基金系统，包含：
+- 🤖 AI预测模块（Python）
+- 🔗 智能合约（Solidity）
+- 🎨 前端界面（React + Vite）
+
+## 系统架构
+
+```
+AI预测 → 智能合约 → 套利执行 → 收益分配 → 用户界面
 ```
 
-## 🚀 详细操作步骤
+## 快速开始
 
-### 第一阶段：准备阶段（比赛开始前）
+### 1. 环境要求
 
-#### 1. 了解比赛规则
-- [ ] 访问 [ETHShanghai 2025 官网](https://ethshanghai.org)
-- [ ] 阅读赛道说明：AI × ETH、DeFi × Infra、公共物品 × 开源建设
-- [ ] 了解评审标准：技术执行 35%、创新 30%、实用影响 15%、用户体验 10%、进展 10%
-- [ ] 确认关键日期：最终提交截止 2025-10-20 24:00（北京时间）
+- **Node.js**: v18+ 
+- **Python**: 3.8+
+- **Git**: 最新版本
 
+### 2. 项目结构
 
-#### 2. 奖金与奖励（Prizes）
-    
-    总奖金池：$15,500
+```
+DL-pricing-modular/
+├── eth_sh/                          # 前端和智能合约
+│   ├── src/                         # React前端源码
+│   ├── smart contract/              # 智能合约
+│   │   ├── token.sol               # 主合约文件
+│   │   ├── deply.js                # 部署脚本
+│   │   ├── demo.js                 # 演示脚本
+│   │   └── hardhat.config.js       # Hardhat配置
+│   └── package.json                # 前端依赖
+├── main.py                         # AI预测主程序
+├── demo_interactive.py             # 交互式演示
+└── requirements.txt               # Python依赖
+```
 
-    🥇 一等奖：$2,000
-    🥈 二等奖：$1,500 *2 
-    🥉 三等奖：$1,000 *2
+## 详细使用指南
 
-    💰 特别奖项：
-    Chain for Good 专项奖一等奖：$300 
-    Chain for Good 专项奖二等奖：$150
-    Chain for Good 专项奖三等奖：$50 
+### 🚀 启动前端应用
 
-    峰会展示机会：一等奖获奖团队将登上 ETHShanghai 2025 峰会主舞台
+1. **进入前端目录**
+   ```bash
+   cd eth_sh
+   ```
 
-    🚢 ETHPanda 远航计划：
-    为助力更多青年开发者参与 ETHShanghai Hackathon，ETHPanda 特别推出「远航计划」，预计资助 30+ 青年开发者，每人最高可获得 $200 交通补助。
-    👉 如果你是渴望远航的青年 Builder，这将是你进入ETHShanghai Hackathon 舞台的绝佳机会！
+2. **安装依赖**
+   ```bash
+   npm install
+   ```
 
+3. **启动开发服务器**
+   ```bash
+   npm run dev
+   ```
 
-#### 3. Fork 官方仓库
+4. **访问应用**
+   - 打开浏览器访问显示的地址（通常是 http://localhost:3000）
+   - 如果端口被占用，会自动使用下一个可用端口
+
+### 🔗 智能合约操作
+
+#### 部署合约
+
+1. **进入智能合约目录**
+   ```bash
+   cd eth_sh/smart\ contract
+   ```
+
+2. **安装Hardhat依赖**
+   ```bash
+   npm install --save-dev @nomicfoundation/hardhat-toolbox
+   ```
+
+3. **编译合约**
+   ```bash
+   npx hardhat compile
+   ```
+
+4. **部署到本地网络**
+   ```bash
+   npx hardhat run deply.js --network hardhat
+   ```
+
+   输出示例：
+   ```
+   部署合约...
+   部署者地址: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+   AIDefiFund deployed at: 0x5FbDB2315678afecb367f032d93F642f64180aa3
+   合约所有者: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+   套利阈值: 5%
+   ```
+
+#### 运行合约演示
+
+1. **运行完整演示**
+   ```bash
+   npx hardhat run demo.js --network hardhat
+   ```
+
+   演示流程：
+   - 1️⃣ 设置AI预测价格（2000 ETH）
+   - 2️⃣ 用户存入ETH（0.5 ETH）
+   - 3️⃣ 执行套利（市场价格2200 ETH，偏差10%）
+   - 4️⃣ 查看收益分配
+
+2. **运行简单测试**
+   ```bash
+   npx hardhat run test-direct.js --network hardhat
+   ```
+
+#### 合约功能说明
+
+**AIDefiFund合约主要功能：**
+
+- `updatePredictedPrice(uint256 _price)` - 更新AI预测价格
+- `deposit()` - 用户存入ETH获得基金代币
+- `executeArbitrage(uint256 marketPrice)` - 执行套利交易
+- `withdraw(uint256 amount)` - 提取本金和收益
+- `balanceOf(address)` - 查询用户代币余额
+- `totalSupply()` - 查询总供应量
+- `pnl()` - 查询当前收益
+
+### 🤖 AI预测模块
+
+1. **安装Python依赖**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **运行交互式演示**
+   ```bash
+   python demo_interactive.py
+   ```
+
+3. **运行主程序**
+   ```bash
+   python main.py --interactive
+   ```
+
+## 使用场景示例
+
+### 场景1：完整的套利流程
+
+1. **启动前端**（终端1）
+   ```bash
+   cd eth_sh && npm run dev
+   ```
+
+2. **部署合约**（终端2）
+   ```bash
+   cd eth_sh/smart\ contract
+   npx hardhat run deply.js --network hardhat
+   ```
+
+3. **运行演示**（终端2）
+   ```bash
+   npx hardhat run demo.js --network hardhat
+   ```
+
+4. **查看前端界面**（浏览器）
+   - 访问 http://localhost:3000
+   - 查看AI预测结果和市场模拟
+
+### 场景2：开发调试
+
+1. **编译合约**
+   ```bash
+   cd eth_sh/smart\ contract
+   npx hardhat compile
+   ```
+
+2. **运行测试**
+   ```bash
+   npx hardhat run test-direct.js --network hardhat
+   ```
+
+3. **查看合约状态**
+   ```bash
+   npx hardhat run debug.js --network hardhat
+   ```
+
+## 常见问题解决
+
+### 1. 端口被占用
 ```bash
-# 访问官方仓库
-https://github.com/ethpanda-org/ETHShanghai-2025
+# 查看端口使用情况
+lsof -i :3000
 
-# 点击 Fork 按钮创建自己的副本
-# 或使用命令行
-git clone https://github.com/ethpanda-org/ETHShanghai-2025.git
-cd ETHShanghai-2025
+# 杀死占用进程
+kill -9 <PID>
 ```
 
-### 第二阶段：项目开发阶段（比赛期间）
-
-#### 4. 创建项目目录
+### 2. 合约编译失败
 ```bash
-# 在你的 Fork 仓库中创建项目目录
-mkdir projects/[你的团队名]-[项目名]
-cd projects/[你的团队名]-[项目名]
-
-# 创建推荐目录结构
-mkdir contracts frontend backend deployments scripts docs
-touch README.md
+# 清理缓存重新编译
+npx hardhat clean
+npx hardhat compile
 ```
 
-#### 5. 初始化项目
+### 3. 依赖安装失败
 ```bash
-# 复制官方 README 模板到你的项目目录
-cp ../../README.md ./README.md
+# 清理npm缓存
+npm cache clean --force
 
-# 开始填写项目信息
+# 删除node_modules重新安装
+rm -rf node_modules
+npm install
 ```
 
-#### 6. 开发与实现
-- [ ] 按照你的技术栈实现核心功能
-- [ ] 编写智能合约（如需要）
-- [ ] 开发前端界面（如需要）
-- [ ] 实现后端服务（如需要）
-- [ ] 编写测试用例
-
-### 第三阶段：提交准备阶段（截止前 1-2 天）
-
-#### 7. 完善项目文档
-按照 README.md 模板填写以下内容：
-- [ ] 项目概述（名称、介绍、目标用户、问题与解决方案）
-- [ ] 架构与实现（总览图、关键模块、技术栈）
-- [ ] 合约与部署信息（网络、地址、验证链接）
-- [ ] 运行与复现说明（环境要求、启动命令）
-- [ ] 团队与联系信息
-
-#### 8. 录制 Demo 视频
-- [ ] 视频时长：≤ 3分钟
-- [ ] 语言：中文
-- [ ] 内容：展示核心功能与完整流程
-- [ ] 格式：MP4 或 WebM
-- [ ] 上传到：YouTube、Bilibili 或其他视频平台
-- [ ] 获取分享链接
-
-#### 9. 部署与测试
-- [ ] 部署智能合约到测试网（如需要）
-- [ ] 获取合约地址和验证链接
-- [ ] 准备在线演示环境
-- [ ] 测试一键启动脚本
-- [ ] 验证所有功能正常工作
-
-### 第四阶段：最终提交阶段（截止日前）
-
-#### 10. 最终检查清单
-- [ ] README 按模板填写完整
-- [ ] 本地可一键运行，关键用例可复现
-- [ ] 测试网合约地址与验证链接已提供
-- [ ] Demo 视频链接可访问
-- [ ] 如未完全开源，已在"可验证边界"清晰说明
-- [ ] 联系方式与可演示时段已填写
-
-#### 11. 提交到官方仓库
-
+### 4. Python模块导入错误
 ```bash
-# 在你的 Fork 仓库中提交更改
-git add .
-git commit -m "Add project: [项目名称]"
-git push origin main
+# 检查Python环境
+python --version
+pip list
 
-# 在 GitHub 上创建 Pull Request 到官方仓库
+# 重新安装依赖
+pip install -r requirements.txt --force-reinstall
 ```
 
+## 开发命令速查
 
-#### 12. 提交登记
-- [ ] 在官方人员提供的 form 表单中完成项目登记
-- [ ] 填写项目链接和 Demo 视频链接
-- [ ] 确认提交状态
+### 前端开发
+```bash
+npm run dev          # 启动开发服务器
+npm run build        # 构建生产版本
+npm run preview      # 预览构建结果
+```
 
+### 智能合约
+```bash
+npx hardhat compile              # 编译合约
+npx hardhat test                 # 运行测试
+npx hardhat run deply.js         # 部署合约
+npx hardhat run demo.js          # 运行演示
+npx hardhat console              # 进入控制台
+```
 
-## 📝 提交材料清单
+### Python AI模块
+```bash
+python main.py --interactive     # 交互式模式
+python demo_interactive.py       # 演示模式
+python quick_start.py            # 快速开始
+```
 
-### 必需材料
-- [ ] 完整的项目代码
-- [ ] 填写完整的 README.md
-- [ ] Demo 视频（≤3 分钟，中文）
-<!-- - [ ] 项目 GitHub 链接 -->
+## 项目配置
 
-### 可选材料
-- [ ] 在线演示链接
-- [ ] 合约部署信息和验证链接
-- [ ] Pitch Deck（不计入评分）
-- [ ] 技术架构图
+### 环境变量（可选）
+创建 `.env` 文件：
+```env
+# 网络配置
+ALCHEMY_RPC=https://eth-sepolia.g.alchemy.com/v2/YOUR_API_KEY
+PRIVATE_KEY=your_private_key_here
 
-## ⚠️ 注意事项
+# AI配置
+MODEL_TYPE=mlp
+GENERATOR_TYPE=gbm
+```
 
-1. **原创性**： 禁止抄袭或拼接他人项目
-2. **合规性**： 不得涉及赌博、ICO 或违法违规内容
-3. **开源性**： 如因商业原因无法完全开源，需在"可验证边界"中明确说明
-4. **时间**： 严格按时提交，逾期不候
-5. **质量**： 确保代码质量和文档完整性
+### Hardhat网络配置
+```javascript
+// hardhat.config.js
+networks: {
+  hardhat: {
+    chainId: 1337
+  },
+  sepolia: {
+    url: process.env.ALCHEMY_RPC,
+    accounts: [process.env.PRIVATE_KEY]
+  }
+}
+```
 
+## 贡献指南
 
-## 🎯 评分标准提醒
+1. Fork项目
+2. 创建功能分支
+3. 提交更改
+4. 推送到分支
+5. 创建Pull Request
 
-- **技术执行** (35%)： 代码质量、架构设计、测试覆盖
-- **创新性** (30%)： 技术创新、解决方案新颖性
-- **实用影响** (15%)： 解决实际问题的能力
-- **用户体验** (10%)： 界面友好性、操作便捷性
-- **进展** (10%)： 项目完成度、功能实现度
+## 许可证
+
+MIT License
+
+## 联系方式
+
+如有问题，请提交Issue或联系开发团队。
 
 ---
 
-**祝各位参赛选手在 ETHShanghai 2025 中取得优异成绩！** 🏆
+**祝您使用愉快！** 🚀

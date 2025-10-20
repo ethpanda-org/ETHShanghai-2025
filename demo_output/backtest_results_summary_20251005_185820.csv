@@ -1,0 +1,2 @@
+total_paths,mean_final_pnl,std_final_pnl,median_final_pnl,min_final_pnl,max_final_pnl,mean_max_drawdown,std_max_drawdown,mean_sharpe_ratio,std_sharpe_ratio,win_rate,profit_factor,calmar_ratio
+20,-65.67198670557646,16.879222191754327,-73.30503586002214,-82.99626696211999,-26.261393773993404,-96.1738917515786,10.970598769371845,,,0.0,[0.],[-138.3894762]
