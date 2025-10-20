@@ -1,0 +1,31 @@
+{
+  "name": "vaultcraft-hardhat",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "hardhat compile",
+    "test": "hardhat test",
+    "clean": "hardhat clean",
+    "deploy:baseSepolia": "hardhat run scripts/deploy.ts --network baseSepolia",
+    "deploy:arbitrumSepolia": "hardhat run scripts/deploy.ts --network arbitrumSepolia",
+    "deploy:hyperTestnet": "hardhat run scripts/deploy.ts --network hyperTestnet",
+    "seed": "hardhat run scripts/seed.ts --network baseSepolia",
+    "ping:hyper": "hardhat run scripts/ping.ts --network hyperTestnet"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.11.30",
+    "chai": "^4.4.1",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.10",
+    "mocha": "^10.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "ethers": "^6.13.2",
+    "solidity-coverage": "^0.8.16"
+  }
+}

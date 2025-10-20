@@ -1,0 +1,253 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.23;
+
+interface IERC20 {
+    function totalSupply() external view returns (uint256);
+    function balanceOf(address account) external view returns (uint256);
+    function allowance(address owner, address spender) external view returns (uint256);
+    function approve(address spender, uint256 amount) external returns (bool);
+    function transfer(address to, uint256 amount) external returns (bool);
+    function transferFrom(address from, address to, uint256 amount) external returns (bool);
+    function decimals() external view returns (uint8);
+}
+
+interface IAdapter {
+    function canHandle(address token) external view returns (bool);
+    function execute(bytes calldata data)
+        external
+        returns (int256 pnl, uint256 spent, uint256 received);
+    function valuation(address vault) external view returns (uint256 assetsInUnderlying);
+}
+
+contract Vault {
+    // ===== ERC20 Shares (minimal) =====
+    string public name;
+    string public symbol;
+    uint8 public constant decimals = 18;
+
+    uint256 public totalSupply;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+
+    function _transfer(address from, address to, uint256 value) internal {
+        require(to != address(0), "to=0");
+        uint256 b = balanceOf[from];
+        require(b >= value, "insufficient");
+        unchecked {
+            balanceOf[from] = b - value;
+            balanceOf[to] += value;
+        }
+        emit Transfer(from, to, value);
+    }
+
+    function transfer(address to, uint256 value) external returns (bool) {
+        _transfer(msg.sender, to, value);
+        return true;
+    }
+
+    function approve(address spender, uint256 value) external returns (bool) {
+        allowance[msg.sender][spender] = value;
+        emit Approval(msg.sender, spender, value);
+        return true;
+    }
+
+    function transferFrom(address from, address to, uint256 value) external returns (bool) {
+        uint256 a = allowance[from][msg.sender];
+        require(a >= value, "allowance");
+        if (a != type(uint256).max) {
+            allowance[from][msg.sender] = a - value;
+        }
+        _transfer(from, to, value);
+        return true;
+    }
+
+    function _mint(address to, uint256 value) internal {
+        require(to != address(0), "to=0");
+        totalSupply += value;
+        balanceOf[to] += value;
+        emit Transfer(address(0), to, value);
+    }
+
+    function _burn(address from, uint256 value) internal {
+        uint256 b = balanceOf[from];
+        require(b >= value, "burn");
+        unchecked {
+            balanceOf[from] = b - value;
+            totalSupply -= value;
+        }
+        emit Transfer(from, address(0), value);
+    }
+
+    // ===== Roles & Pausing =====
+    address public admin;     // 平台
+    address public manager;   // 调仓/执行
+    address public guardian;  // 暂停
+    bool    public paused;
+
+    modifier onlyAdmin() { require(msg.sender == admin, "admin"); _; }
+    modifier onlyManager() { require(msg.sender == manager, "manager"); _; }
+    modifier onlyGuardianOrAdmin() { require(msg.sender == guardian || msg.sender == admin, "guardian"); _; }
+    modifier whenNotPaused() { require(!paused, "paused"); _; }
+
+    event Paused();
+    event Unpaused();
+    function pause() external onlyGuardianOrAdmin { paused = true; emit Paused(); }
+    function unpause() external onlyGuardianOrAdmin { paused = false; emit Unpaused(); }
+
+    function setManager(address m) external onlyAdmin { require(m!=address(0),"0"); manager = m; }
+    function setGuardian(address g) external onlyAdmin { require(g!=address(0),"0"); guardian = g; }
+
+    // ===== Config =====
+    IERC20 public immutable asset; // 底层资产（稳定币）
+    bool   public immutable isPrivate; // 是否私募金库
+    address public feeRecipient; // 绩效费接收方（v0 简化：等于 manager，或可设置）
+    uint256 public performanceFeeP; // 例如 10% => 1000 (基点)
+    uint256 public lockMinSeconds; // 最短锁定秒
+
+    // 私募白名单
+    mapping(address => bool) public whitelist;
+    event WhitelistSet(address indexed user, bool allowed);
+    function setWhitelist(address u, bool allowed) external onlyAdmin {
+        whitelist[u] = allowed; emit WhitelistSet(u, allowed);
+    }
+
+    // 适配器（v0 仅白名单，不做风控）
+    mapping(address => bool) public adapterAllowed;
+    event AdapterSet(address indexed adapter, bool allowed);
+    function setAdapter(address a, bool allowed) external onlyAdmin {
+        adapterAllowed[a] = allowed; emit AdapterSet(a, allowed);
+    }
+
+    // 锁定
+    mapping(address => uint256) public nextRedeemAllowed;
+    event LockUpdated(uint256 daysMin);
+    function setLockMinDays(uint256 daysMin) external onlyAdmin {
+        lockMinSeconds = daysMin * 1 days; emit LockUpdated(daysMin);
+    }
+
+    // 绩效费
+    event PerformanceFeeMinted(uint256 pBps, uint256 perfShares, uint256 newHWM);
+    function setPerformanceFee(uint256 pBps) external onlyAdmin {
+        require(pBps <= 3000, "p too high"); // 上限 30%
+        performanceFeeP = pBps;
+    }
+
+    // NAV / HWM
+    uint256 public hwmPS; // 1e18 精度
+    event NavSnapshot(uint256 assets, uint256 liabilities, uint256 shares, uint256 ps, uint256 ts);
+
+    // 适配器执行
+    event Executed(address indexed adapter, int256 pnl, uint256 spent, uint256 received);
+
+    // ===== Constructor =====
+    constructor(
+        address _asset,
+        string memory _name,
+        string memory _symbol,
+        address _admin,
+        address _manager,
+        address _guardian,
+        bool    _isPrivate,
+        uint256 _pBps,
+        uint256 _lockMinDays
+    ) {
+        require(_asset != address(0) && _admin!=address(0) && _manager!=address(0) && _guardian!=address(0), "bad");
+        asset = IERC20(_asset);
+        name = _name;
+        symbol = _symbol;
+        admin = _admin;
+        manager = _manager;
+        guardian = _guardian;
+        isPrivate = _isPrivate;
+        performanceFeeP = _pBps;
+        feeRecipient = _manager;
+        lockMinSeconds = _lockMinDays * 1 days;
+        hwmPS = 1e18; // 初始单位净值 1
+        emit Initialized(_asset, _manager, _isPrivate);
+    }
+
+    event Initialized(address indexed asset, address indexed manager, bool isPrivate);
+
+    // ===== View helpers =====
+    function totalAssets() public view returns (uint256) {
+        return asset.balanceOf(address(this));
+    }
+
+    function ps() public view returns (uint256) {
+        if (totalSupply == 0) return 1e18;
+        uint256 A = totalAssets();
+        return (A * 1e18) / totalSupply;
+    }
+
+    // ===== Core flows =====
+    function deposit(uint256 assets, address receiver) external whenNotPaused returns (uint256 shares) {
+        require(assets > 0, "zero");
+        if (isPrivate) { require(whitelist[receiver], "not wl"); }
+        uint256 A = totalAssets();
+        uint256 S = totalSupply;
+        if (S == 0) {
+            shares = assets; // PS=1e18 约定
+        } else {
+            shares = (assets * S) / A;
+        }
+        require(asset.transferFrom(msg.sender, address(this), assets), "transferFrom");
+        _mint(receiver, shares);
+        // 锁定
+        uint256 unlockAt = block.timestamp + lockMinSeconds;
+        if (nextRedeemAllowed[receiver] < unlockAt) {
+            nextRedeemAllowed[receiver] = unlockAt;
+        }
+        _maybeMintPerfFee();
+    }
+
+    function redeem(uint256 shares, address receiver, address owner) external whenNotPaused returns (uint256 assetsOut) {
+        require(shares > 0, "zero");
+        if (owner != msg.sender) {
+            uint256 a = allowance[owner][msg.sender];
+            require(a >= shares, "allow");
+            if (a != type(uint256).max) allowance[owner][msg.sender] = a - shares;
+        }
+        require(block.timestamp >= nextRedeemAllowed[owner], "locked");
+        uint256 A = totalAssets();
+        uint256 S = totalSupply;
+        assetsOut = (shares * A) / S;
+        _burn(owner, shares);
+        require(asset.transfer(receiver, assetsOut), "transfer");
+        _maybeMintPerfFee();
+    }
+
+    function snapshot() external {
+        emit NavSnapshot(totalAssets(), 0, totalSupply, ps(), block.timestamp);
+    }
+
+    function checkpoint() external {
+        _maybeMintPerfFee();
+    }
+
+    function _maybeMintPerfFee() internal {
+        uint256 PS = ps();
+        if (PS > hwmPS && performanceFeeP > 0 && totalSupply > 0) {
+            // perfAssets = (PS − HWM) * S * p ; scaled by 1e18
+            // perfShares = perfAssets / PS
+            uint256 S = totalSupply;
+            uint256 perfAssets = ((PS - hwmPS) * S * performanceFeeP) / 1e18 / 10000; // divide 1e18 then bps
+            uint256 perfShares = (perfAssets * 1e18) / PS;
+            if (perfShares > 0) {
+                _mint(feeRecipient, perfShares);
+                hwmPS = PS;
+                emit PerformanceFeeMinted(performanceFeeP, perfShares, hwmPS);
+            }
+        }
+    }
+
+    // ===== Adapter execution (v0 minimal) =====
+    function execute(address adapter, bytes calldata data) external onlyManager whenNotPaused returns (int256 pnl, uint256 spent, uint256 received) {
+        require(adapterAllowed[adapter], "adapter");
+        (pnl, spent, received) = IAdapter(adapter).execute(data);
+        emit Executed(adapter, pnl, spent, received);
+    }
+}
+
