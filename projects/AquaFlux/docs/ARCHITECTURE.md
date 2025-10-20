@@ -287,9 +287,7 @@ claimMaturityReward(assetId)
 
 ---
 
-## 代币经济学
-
-### 代币流转模型
+## 代币流转示例
 
 ```
 阶段1: 发行期 (Before operationDeadline)
@@ -566,9 +564,6 @@ const amountOut = await quoter.quoteExactInputSingle(
 - [EIP-1822](https://eips.ethereum.org/EIPS/eip-1822): UUPS 可升级标准
 - [EIP-4626](https://eips.ethereum.org/EIPS/eip-4626): 代币化金库标准 (参考)
 
-### 学术论文
-- [Structured Products in DeFi](https://example.com) (示例链接)
-- [On-Chain Fixed Income Instruments](https://example.com) (示例链接)
 
 ### 开源项目参考
 - OpenZeppelin Contracts (安全基础库)
