@@ -4,7 +4,6 @@ import { Logger } from 'pino';
 import { AssetService } from './asset.service';
 import {
   GetAssetsQueryInput,
-  PriceHistoryQueryInput,
   AssetIdInput
 } from './asset.schema';
 
