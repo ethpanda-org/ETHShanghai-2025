@@ -251,11 +251,8 @@ export default function MyPage() {
       formData.append('file', file)
 
       // 使用公共IPFS网关进行上传 (实际项目中可能需要使用私有IPFS节点)
-      const response = await fetch('https://moccasin-adverse-takin-944.mypinata.cloud', {
+      const response = await fetch('stt/fileUpload', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT || NEXT_PUBLIC_PINATA_JWT}`,
-        },
         body: formData
       })
 
@@ -266,7 +263,7 @@ export default function MyPage() {
       }
 
       const result = await response.json()
-      return `ipfs://${result.IpfsHash}`
+      return `ipfs://${result.ipfsHash}`
     } catch (error) {
       console.error('IPFS upload error:', error)
       // 生成模拟的IPFS哈希
@@ -525,7 +522,7 @@ export default function MyPage() {
   if (!currentUser) {
     return (
       <Box className="container" py={8} textAlign="center">
-        <Alert status="warning" maxW="500px" mx="auto">
+        <Alert status="warning" maxW="500px" mx="auto" bg="rgba(255, 193, 7, 0.1)" borderColor="#ffc107" border="1px solid">
           <AlertIcon />
           请先连接钱包才能查看此页面
         </Alert>
