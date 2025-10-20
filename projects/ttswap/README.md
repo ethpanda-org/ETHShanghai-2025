@@ -9,11 +9,11 @@ TTSWAP(token-token swap)是建立在支持EVM的区块链上的自动做市协�
 $$
 \begin{align}
 \text{根据输入数量计算价值:}  \\
-\Delta V &= \frac{2*V_A \cdot \Delta a}{2*Q_A + \Delta a}  \\
+\Delta V &= \frac{2 \cdot V_A \cdot \Delta a}{2 \cdot Q_A + \Delta a}  \\
 \text{根据价值计算输出数量:}  \\
-\Delta b &= \frac{2*Q_B \cdot \Delta V}{2*V_B + \Delta V}  \\
+\Delta b &= \frac{2 \cdot Q_B \cdot \Delta V}{2 \cdot V_B + \Delta V}  \\
 \text{代币恒定价值:}  \\
-\text{交易前价值V}&=\text{交易后价值V}
+\text{交易前价值 } V &= \text{交易后价值 } V
 \end{align}
 $$
 
