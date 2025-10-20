@@ -320,30 +320,32 @@ python main.py full --network testnet
 # 注意：需要连接 MetaMask 钱包，并切换到 Sepolia 测试网络
 ```
 
-- **在线 Demo（如有）**：[Demo 链接]
+- **在线 Demo（如有）**：https://m.bilibili.com/video/BV1kfsMzGE78?buvid=Z94C6F9C49CD0EBD424F92A0E2C66C20C8B5&from_spmid=dt.dt.0.0&is_story_h5=false&mid=oapIlgh%2BGmxtvrh6ERlXcw%3D%3D&plat_id=504&share_from=ugc&share_medium=iphone&share_plat=ios&share_session_id=6382C2FA-A209-4E43-9805-D8289EE3C93A&share_source=WEIXIN&share_tag=s_i&spmid=dt.dt.0.0&timestamp=1760934903&unique_k=F1vxBzf&up_id=689626801
+
 - **账号与测试说明（如需要）**：
   - 本地开发：使用 Ganache 默认账户
   - 测试网：连接 MetaMask 钱包, 需要测试网 ETH 用于交易费用
 
 ### 5) Demo 与关键用例 (Demo & Key Flows)
 
-- **视频链接（≤3 分钟，中文）**：[视频链接]
-- **关键用例步骤（2-4 个要点）**：
-  - **用例 1：AI Agent自动工作**：
-    - 用户启动AI Agent工作模式
-    - Agent自动扫描区块链任务市场
-    - 智能选择最佳任务并自动执行
-    - 完成任务后自动提交结果获得报酬
-  - **用例 2：任务发布与管理**：
-    - DAO成员发布任务到区块链
-    - 设置任务描述、奖励和截止时间
-    - AI Agent认领任务并开始工作
-    - 发布者查看执行结果并选择获胜者
-  - **用例 3：去中心化治理**：
-    - 社区成员参与平台治理投票
-    - 基于区块链的透明决策过程
-    - 自动化的规则执行和奖励分配
-    - 实时监控平台运行状态和收入统计
+- **视频链接（≤3 分钟，中文）**：https://m.bilibili.com/video/BV1kfsMzGE78?buvid=Z94C6F9C49CD0EBD424F92A0E2C66C20C8B5&from_spmid=dt.dt.0.0&is_story_h5=false&mid=oapIlgh%2BGmxtvrh6ERlXcw%3D%3D&plat_id=504&share_from=ugc&share_medium=iphone&share_plat=ios&share_session_id=6382C2FA-A209-4E43-9805-D8289EE3C93A&share_source=WEIXIN&share_tag=s_i&spmid=dt.dt.0.0&timestamp=1760934903&unique_k=F1vxBzf&up_id=689626801
+
+  - **关键用例步骤（2-4 个要点）**：
+    - **用例 1：AI Agent自动工作**：
+      - 用户启动AI Agent工作模式
+      - Agent自动扫描区块链任务市场
+      - 智能选择最佳任务并自动执行
+      - 完成任务后自动提交结果获得报酬
+    - **用例 2：任务发布与管理**：
+      - DAO成员发布任务到区块链
+      - 设置任务描述、奖励和截止时间
+      - AI Agent认领任务并开始工作
+      - 发布者查看执行结果并选择获胜者
+    - **用例 3：支付奖励和连接钱包**：
+      - 用户连接MetaMask钱包到平台
+      - 发布者选择获胜者并确认支付信息
+      - 系统进行AI公平性审核确保支付合理性
+      - 通过智能合约自动执行奖励支付到获胜者钱包
 
 
 ### 7) 路线图与影响 (Roadmap & Impact)
