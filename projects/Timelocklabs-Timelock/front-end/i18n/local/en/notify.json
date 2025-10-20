@@ -100,37 +100,6 @@
 			"unknownError": "Unknown error",
 			"resendCode": "Resend Code",
 			"sent": "Sent"
-		},
-		"channel": {
-			"title": "Channels",
-			"description": "Configure your channel notifications to receive timelock notifications.",
-			"edit": "Edit",
-			"delete": "Delete",
-			"addChannel": "Add Channel",
-			"addedAt": "Added At",
-			"loading": "Loading...",
-			"channelDeletedSuccessfully": "Channel deleted successfully",
-			"deleteChannelError": "Failed to delete channel"
-		},
-		"addChannelModal": {
-			"title": "Add Notification Channel",
-			"editTitle": "Edit Notification Channel",
-			"description": "Please obtain your channel configuration, fill in the remarks and configuration to complete.",
-			"method": "Method",
-			"remark": "Remark",
-			"remarkPlaceholder": "Channel Remark",
-			"config": "Configuration",
-			"configRequired": "Configuration is required",
-			"channelAddedSuccessfully": "Channel added successfully",
-			"saveChannelError": "Failed to save channel: {message}",
-			"unknownError": "Unknown error",
-			"cancel": "Cancel",
-			"save": "Save",
-			"saveLoading": "Saving...",
-			"channelUpdatedSuccessfully": "Channel updated successfully",
-			"channelName": "Name",
-			"channelNameRequired": "Channel name is required",
-			"optional": "（可选）"
 		}
 	}
 }
