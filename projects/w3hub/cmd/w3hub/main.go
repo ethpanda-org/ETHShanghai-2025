@@ -8,10 +8,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"/Users/liu/2025/web3/eth2025hackathon/ETHShanghai-2025/pkg/alert"
-	"/Users/liu/2025/web3/eth2025hackathon/ETHShanghai-2025/pkg/asset"
-	"/Users/liu/2025/web3/eth2025hackathon/ETHShanghai-2025/pkg/blockchain"
-	"/Users/liu/2025/web3/eth2025hackathon/ETHShanghai-2025/pkg/blockchain/ethereum"
+	"github.com/q23818/ETHShanghai-2025/projects/w3hub/pkg/alert"
+	"github.com/q23818/ETHShanghai-2025/projects/w3hub/pkg/asset"
+	"github.com/q23818/ETHShanghai-2025/projects/w3hub/pkg/blockchain"
+	"github.com/q23818/ETHShanghai-2025/projects/w3hub/pkg/blockchain/ethereum"
 )
 
 func main() {

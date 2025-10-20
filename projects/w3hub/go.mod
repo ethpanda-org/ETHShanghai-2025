@@ -1,4 +1,4 @@
-module github.com/w3hub/core
+module github.com/q23818/ETHShanghai-2025/projects/w3hub
 
 go 1.25
 
