@@ -15,16 +15,7 @@
 
 ---
 
-## 🚀 快速开始脚本（规划中）
-
-以下是建议添加的项目级脚本：
-
-### `quick-start.sh` - 一键启动
-```bash
-#!/bin/bash
-# 一键启动所有服务（合约部署 + 后端 + 前端）
-
-echo "🚀 Starting AquaFlux Full Stack..."
+## 🚀 快速开始脚本
 
 # 1. 启动本地 Hardhat 网络
 cd contracts
@@ -109,12 +100,6 @@ echo "✅ All tests passed!"
 
 **对于评委/新开发者**:
 - 推荐使用 [deployments/QUICK_START.md](../deployments/QUICK_START.md) 获取详细的分步指南
-
-**对于团队成员**:
-- 可以根据需要在本目录添加自动化脚本
-- 脚本命名建议: `动词-名词.sh` (如 `deploy-all.sh`)
-- 添加脚本后请更新本 README
-
 ---
 
 **最后更新**: 2025-10-20  
