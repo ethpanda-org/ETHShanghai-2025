@@ -12,7 +12,7 @@
 
 **目标用户**:
 - DeFi 投资者（寻求不同风险收益配置）
-- RWA 发行方（债券、票据、应收账款代币化）
+- RWA 发行方（债券、票据、应收账款代币化等）
 - 机构投资者（需要风险分层的固定收益产品）
 
 **核心问题与动机**:
@@ -84,7 +84,7 @@
 
 ---
 
-## 3) 合约与部署 (Contracts & Deployment)
+## 3) 合约与最终部署 (Contracts & Deployment)
 
 **网络**: Sepolia 测试网
 
@@ -171,30 +171,22 @@ cd ../frontend
 npm install
 npm run dev                   # 前端运行在 :5173
 
-# 4. 访问应用
-# 前端: http://localhost:5173
-# 后端: http://localhost:3001/api/v1/health
 ```
 
 **在线 Demo**: 
-- 前端: [https://aquaflux-demo.vercel.app](https://aquaflux-demo.vercel.app) (部署中)
-- 使用 MetaMask 连接 Sepolia 测试网
-
-**测试账号**: 
-- 任意 Sepolia 钱包地址
-- 需要 Sepolia ETH: [水龙头](https://sepoliafaucet.com/)
-- 获取测试 USDC: 前端 "Faucet" 页面领取
+- 前端: [https://hackthon.aquaflux.pro/](https://hackthon.aquaflux.pro/)
+- 使用钱包连接 Sepolia 测试网
 
 ---
 
 ## 5) Demo 与关键用例 (Demo & Key Flows)
 
-**演示视频**: [观看 3 分钟演示](https://youtu.be/xxx) (录制中)
+**演示视频**: [观看 3 分钟演示](https://meeting.tencent.com/cw/NgkwR7PXb6)
 
 **关键用例步骤**:
 
 **用例 1: 资产拆分 (Split)**
-1. 用户授权 100 USDC 给 AquaFluxCore
+1. 用户授权 RWA 给 AquaFluxCore
 2. 调用 `wrap()` 获得 100 AqToken
 3. 调用 `split()` 将 AqToken 拆分为 100 P + 100 C + 100 S
 4. 三类代币可在 DEX 独立交易
@@ -232,7 +224,7 @@ npm run dev                   # 前端运行在 :5173
 - 后端 API (可本地 Docker 启动)
 
 **暂不公开的部分**: 
-- 无，本项目 100% 开源
+- 无
 
 **验证方式**:
 1. 克隆仓库并按照 [运行与复现](#4-运行与复现-run--reproduce) 本地启动
