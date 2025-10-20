@@ -65,6 +65,7 @@ logs/
 config/private_keys.txt
 config/api_keys.json
 config/secrets.json
+brightdata_proxy_ca/**/*.crt
 
 # Analysis results
 *.json

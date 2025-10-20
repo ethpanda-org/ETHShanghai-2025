@@ -2,19 +2,12 @@ Please use the *new* SSL certificate for all new projects and avoid using the pr
 
 IMPORTANT: to use the *new* certificate, you must use port 33335 when connecting to Bright Data's proxy network, even if documentation and sample codes provided mention port 22225. Documentation will gradually be updated to port 33335 as the old certificate is being phased out.
 
-You have a few options to use this certificate:
+The actual certificate binaries have been removed from this repository to avoid leaking vendor secrets. Retrieve the current Bright Data CA bundle through their official portal and store it securely (for example in a secret manager or encrypted storage volume). At deploy time mount the certificate path into the container or point `BRIGHTDATA_PROXY_CA_PATH` to the decrypted file.
 
-- If you write code, you can simply load it into your existing code.
-- If you are using Windows and third-party tools that allow you to configure proxy settings (like AdsPower, Proxifier, Multilogin, Undetectable etc.) you can install the certificate on your computer using the installer.
+Operational reminders:
 
-Again, remember: when using the new certificate you *MUST use port 33335* when connecting to Bright Data's proxy network, even if documentation and sample codes provided mention port 22225. 
+- When you supply the **new** certificate you **must** connect on port `33335` (`brd.superproxy.io:33335`).
+- Existing automation should load the certificate from the injected path—do not commit the blob into version control.
+- Full instructions for obtaining and installing the certificate remain on https://docs.brightdata.com/general/account/ssl-certificate.
 
-Full information regarding how to use the SSL certificate is available on https://docs.brightdata.com/general/account/ssl-certificate
-
---------------------------------------------------------------------------
-
-The old SSL certificate will expire in 2026 and is being phased out. 
-
-**Please DO NOT use the old certificate for new projects**
-
-Again, Keep in mind that the new certificate requires you to use port 33335, meaning your proxy host will be from now on: brd.superproxy.io:33335
+The legacy certificate (port `22225`) is deprecated and must not be reintroduced into this repository. Manage all historical artifacts in a private secret storage instead of source control.

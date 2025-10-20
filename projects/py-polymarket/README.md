@@ -2,6 +2,33 @@
 
 A Python-based trading bot and analysis toolkit for Polymarket’s Central Limit Order Book (CLOB).
 
+## Project Overview & Objectives
+
+- Automate end-to-end trading on Polymarket’s CLOB: sampling, signal generation, risk controls, execution, and telemetry.
+- Default to offline-first research workflows (simulations/backtests) with the option to enable authenticated trading once credentials are injected.
+- Provide auditable monitoring (fills, slippage, fees) and deterministic risk guardrails that align with Polymarket venue constraints (fees, min tick/lot sizes).
+
+## Tech Stack & Dependencies
+
+- Python 3.8+ with `aiohttp`, `web3`, `pandas`, `numpy`, `pydantic`, and `PyYAML` for data ingestion, signing, and configuration.
+- Optional extras for monitoring and packaging: `prometheus-client`, `grafana-api`, Docker Compose manifests, and Kubernetes descriptors.
+- Scripts rely on `py_clob_client` (official Polymarket helper) for deriving API credentials; installable via `pip install py-clob-client` when live trading is required.
+- Full dependency lists live in `requirements/` (split by base, dev, monitoring) and `pyproject.toml`.
+
+## Deployment & Usage Guide
+
+1. Copy `env.template` to `.env` and populate runtime secrets (API key triplet, Polygon private key, proxy credentials). Leave `POLY_OFFLINE_MODE=true` to run in simulation mode by default.
+2. Install dependencies with `pip install -r requirements/base.txt` (add `requirements/dev.txt` if linting/tests are needed). For containerized runs use `docker-compose.yml` and inject secrets through environment variables or mounted files.
+3. Launch offline tooling via `polymarket-backtest`, `polymarket-demo`, or the scripts in `scripts/` to validate strategies before enabling signed execution.
+4. For production trading flip `POLY_OFFLINE_MODE=false`, provide live credentials through a vault, and (optionally) enable WebSocket streaming with `SERVICE_USE_WS=true` for low-latency order book updates.
+5. Monitoring endpoints default to `http://localhost:8888` with JSON telemetry at `/api/data`; metrics and pipeline state persist under `reports/` for replay.
+
+## Limited Release Scope
+
+- All hard secrets (API keys, private keys, JWT seeds) are excluded; load them via environment variables or secret managers at runtime.
+- Vendor-issued Bright Data certificates have been removed—drop the decrypted file into `brightdata_proxy_ca/New SSL certifcate - MUST BE USED WITH PORT 33335/` during deployment or mount it via `BRIGHTDATA_PROXY_CA_PATH`.
+- Certain proprietary strategy weights and market allowlists are redacted to respect pending launch constraints; sample configurations in `config/runtime.yaml` illustrate the expected schema without revealing production parameters.
+
 ## Features
 
 - Real-time market data ingestion (REST sampling + optional order-book enrichment).
