@@ -1,0 +1,17 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 紫色地球星球 - 基石维度 -->
+  <circle cx="60" cy="60" r="50" fill="url(#purple-gradient)" />
+  <ellipse cx="60" cy="60" rx="50" ry="15" fill="#8B5CF6" opacity="0.3" />
+  <ellipse cx="60" cy="60" rx="15" ry="50" fill="#6D28D9" opacity="0.2" />
+  <path d="M 20 40 Q 40 35 60 40 T 100 40" stroke="white" stroke-width="1.5" fill="none" opacity="0.4" />
+  <path d="M 20 80 Q 40 75 60 80 T 100 80" stroke="white" stroke-width="1.5" fill="none" opacity="0.4" />
+  <circle cx="35" cy="45" r="8" fill="#A78BFA" opacity="0.5" />
+  <circle cx="75" cy="70" r="12" fill="#7C3AED" opacity="0.4" />
+  <defs>
+    <radialGradient id="purple-gradient">
+      <stop offset="0%" stop-color="#A78BFA" />
+      <stop offset="100%" stop-color="#6D28D9" />
+    </radialGradient>
+  </defs>
+</svg>
+

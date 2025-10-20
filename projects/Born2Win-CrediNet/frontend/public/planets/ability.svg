@@ -1,0 +1,15 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 绿色土星 - 能力维度 -->
+  <ellipse cx="60" cy="60" rx="60" ry="15" fill="#10B981" opacity="0.3" />
+  <circle cx="60" cy="60" r="35" fill="url(#green-gradient)" />
+  <ellipse cx="60" cy="55" rx="30" ry="10" fill="#34D399" opacity="0.4" />
+  <ellipse cx="60" cy="65" rx="28" ry="8" fill="#059669" opacity="0.3" />
+  <path d="M 25 60 Q 35 50 45 60 T 65 60 T 85 60 T 95 60" stroke="#6EE7B7" stroke-width="2" fill="none" opacity="0.5" />
+  <defs>
+    <radialGradient id="green-gradient">
+      <stop offset="0%" stop-color="#6EE7B7" />
+      <stop offset="100%" stop-color="#059669" />
+    </radialGradient>
+  </defs>
+</svg>
+

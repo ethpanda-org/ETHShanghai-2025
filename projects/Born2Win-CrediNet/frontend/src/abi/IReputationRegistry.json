@@ -1,0 +1,50 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IReputationRegistry",
+  "sourceName": "contracts/CrediNetSBT.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "agentId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address[]",
+          "name": "clients",
+          "type": "address[]"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "tag1",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "tag2",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getSummary",
+      "outputs": [
+        {
+          "internalType": "uint64",
+          "name": "count",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint8",
+          "name": "averageScore",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

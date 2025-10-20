@@ -1,0 +1,17 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 青绿色星球 - 健康维度 -->
+  <circle cx="60" cy="60" r="42" fill="url(#teal-gradient)" />
+  <ellipse cx="60" cy="45" rx="35" ry="12" fill="#5EEAD4" opacity="0.4" />
+  <ellipse cx="60" cy="75" rx="30" ry="10" fill="#0D9488" opacity="0.3" />
+  <circle cx="45" cy="50" r="6" fill="#FFFFFF" opacity="0.8" />
+  <circle cx="70" cy="55" r="8" fill="#FFFFFF" opacity="0.7" />
+  <circle cx="55" cy="70" r="5" fill="#FFFFFF" opacity="0.6" />
+  <path d="M 35 60 Q 45 55 55 60 Q 65 65 75 60" stroke="#2DD4BF" stroke-width="1.5" fill="none" opacity="0.5" />
+  <defs>
+    <radialGradient id="teal-gradient">
+      <stop offset="0%" stop-color="#5EEAD4" />
+      <stop offset="100%" stop-color="#0F766E" />
+    </radialGradient>
+  </defs>
+</svg>
+
