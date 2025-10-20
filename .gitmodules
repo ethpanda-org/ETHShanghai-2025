@@ -7,3 +7,12 @@
 [submodule "projects/Thyra/ThyraCore"]
 	path = projects/Thyra/ThyraCore
 	url = https://github.com/Thyra-Protocol/ThyraCore.git
+[submodule "projects/pubwiki/mediawiki-mcp"]
+	path = projects/pubwiki/mediawiki-mcp
+	url = git@github.com:pubwiki/mediawiki-mcp.git
+[submodule "projects/pubwiki/wikihelper-chat"]
+	path = projects/pubwiki/wikihelper-chat
+	url = git@github.com:pubwiki/wikihelper-chat.git
+[submodule "projects/pubwiki/pubwiki"]
+	path = projects/pubwiki/pubwiki
+	url = git@github.com:pubwiki/pubwiki.git
