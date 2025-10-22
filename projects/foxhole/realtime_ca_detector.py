@@ -59,7 +59,9 @@ class RealtimeCADetector:
         print("\n[Detector] Initializing components...")
         self.analyzer = RealtimeBERTAnalyzer(use_gpu=False, use_bert=use_bert)
         self.auditor = RealtimeAuditor(use_ai=use_ai, rate_limit=1.5)
-        self.listener = TwitterListener(ws_url, on_tweet_callback=self.on_tweet_received,
+        self.listener = TwitterListener(ws_url, 
+                                       on_tweet_callback=self.on_tweet_received,
+                                       on_raw_message_callback=self.on_raw_message_received,
                                        auto_reconnect=auto_reconnect,
                                        max_reconnect_attempts=max_reconnect_attempts,
                                        ping_interval=ping_interval,
@@ -85,7 +87,71 @@ class RealtimeCADetector:
         self.results = []
         self.output_file = None
         
+        # JSON日志文件
+        self.json_log_file = "data/ws.json"
+        self._ensure_data_dir()
+        
         print("[Detector] Initialization complete")
+    
+    def _ensure_data_dir(self):
+        """确保 data 目录存在"""
+        import os
+        dir_path = os.path.dirname(self.json_log_file)
+        if dir_path and not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+    
+    def _save_to_json_log(self, log_data: Dict):
+        """保存日志到 ws.json"""
+        try:
+            import json
+            from datetime import datetime
+            # 添加时间戳
+            log_data["logged_at"] = datetime.now().isoformat()
+            
+            # 追加到文件
+            with open(self.json_log_file, 'a', encoding='utf-8') as f:
+                json.dump(log_data, f, ensure_ascii=False)
+                f.write('\n')
+        except Exception as e:
+            print(f"[Detector] Error saving to JSON log: {e}")
+    
+    def on_raw_message_received(self, raw_data: Dict):
+        """
+        收到原始 WebSocket 消息时的回调函数
+        
+        Args:
+            raw_data: 原始消息数据字典
+        """
+        try:
+            # 过滤掉 status 为 null 的消息（user-update 事件中没有新推文）
+            if raw_data.get('type') == 'user-update':
+                data = raw_data.get('data', {})
+                status = data.get('status')
+                if status is None:
+                    # 跳过没有新推文的用户更新事件
+                    return
+            
+            # 保存原始消息到 ws.json
+            log_entry = {
+                "log_type": "raw_twitter_message",
+                "timestamp": datetime.now().isoformat(),
+                "message": raw_data
+            }
+            # 提取 tweet_event_id 并添加
+            tweet_event_id = None
+            msg_type = raw_data.get('type')
+            if msg_type == 'tweet':
+                # 直接 tweet 事件
+                tweet_event_id = raw_data.get('id') or raw_data.get('data', {}).get('id')
+            elif msg_type == 'user-update':
+                status = raw_data.get('data', {}).get('status') or {}
+                tweet_event_id = status.get('id')
+            if tweet_event_id:
+                log_entry["tweet_event_id"] = tweet_event_id
+            self._save_to_json_log(log_entry)
+            
+        except Exception as e:
+            print(f"[Detector] Error processing raw message: {e}")
     
     def on_tweet_received(self, tweet_data: Dict):
         """
@@ -97,9 +163,20 @@ class RealtimeCADetector:
         self.stats['tweets_received'] += 1
         
         try:
+            # 从推文数据中提取真实的推文ID
+            tweet_id = tweet_data.get('id') or tweet_data.get('id_str') or str(tweet_data.get('tweet_id', ''))
+            if not tweet_id:
+                # 如果还是找不到ID，尝试从嵌套的 status 字段中提取
+                tweet_id = tweet_data.get('status', {}).get('id') or tweet_data.get('status', {}).get('id_str')
+            
+            # 如果仍然没有ID，使用时间戳作为备用
+            if not tweet_id:
+                tweet_id = datetime.now().isoformat()
+            
             # DEBUG: 打印完整的推文数据
             print("\n" + "="*70)
             print(f"[Detector] Processing tweet #{self.stats['tweets_received']}")
+            print(f"[Detector] Tweet ID: {tweet_id}")
             print("="*70)
             print("[DEBUG] Complete Tweet Data:")
             print(json.dumps(tweet_data, indent=2, ensure_ascii=False))
@@ -130,18 +207,18 @@ class RealtimeCADetector:
                           f"confidence={token_info['confidence']:.2f}, context={token_info['context_score']:.2f})")
                     continue
                 
-                # 检查是否已处理
-                if token_info['symbol'] in self.processed_tokens:
-                    print(f"[Detector] Skipping ${token_info['symbol']} (already processed)")
-                    continue
+                # 不再检查是否已处理，每次都处理
+                # if token_info['symbol'] in self.processed_tokens:
+                #     print(f"[Detector] Skipping ${token_info['symbol']} (already processed)")
+                #     continue
                 
                 # 加入审计队列
-                self.processed_tokens.add(token_info['symbol'])
                 self.stats['tokens_extracted'] += 1
                 
                 audit_task = {
                     'token': token_info['symbol'],
                     'token_info': token_info,
+                    'tweet_event_id': tweet_id,  # 添加推文事件ID
                     'tweet_data': {
                         'tweet_id': analysis_result['tweet_id'],
                         'username': analysis_result['username'],
@@ -175,11 +252,13 @@ class RealtimeCADetector:
                 token_symbol = task['token']
                 token_info = task['token_info']
                 tweet_data = task['tweet_data']
+                tweet_event_id = task.get('tweet_event_id', '')
                 
                 print(f"\n[Detector] Auditing token: ${token_symbol}")
+                print(f"[Detector] Tweet Event ID: {tweet_event_id}")
                 
-                # 调用审计器
-                audit_result = self.auditor.audit_token(token_symbol, token_info)
+                # 调用审计器（传递 tweet_event_id）
+                audit_result = self.auditor.audit_token(token_symbol, token_info, tweet_event_id=tweet_event_id)
                 
                 # 添加推文信息
                 audit_result['tweet'] = tweet_data

@@ -17,6 +17,7 @@ class TwitterListener:
     """Twitter WebSocket监听器 - 支持自动重连"""
     
     def __init__(self, ws_url: str, on_tweet_callback: Optional[Callable] = None,
+                 on_raw_message_callback: Optional[Callable] = None,
                  auto_reconnect: bool = True, max_reconnect_attempts: int = 10,
                  reconnect_delay: float = 5.0, ping_interval: float = 30.0, 
                  ping_timeout: float = 10.0):
@@ -26,6 +27,7 @@ class TwitterListener:
         Args:
             ws_url: WebSocket URL
             on_tweet_callback: 收到推文时的回调函数，接收推文数据字典作为参数
+            on_raw_message_callback: 收到原始消息时的回调函数，接收原始消息字典作为参数
             auto_reconnect: 是否自动重连
             max_reconnect_attempts: 最大重连次数(0表示无限重连)
             reconnect_delay: 初始重连延迟(秒)，使用指数退避
@@ -37,6 +39,7 @@ class TwitterListener:
         self.subscribed_users = set()
         self.running = False
         self.on_tweet_callback = on_tweet_callback
+        self.on_raw_message_callback = on_raw_message_callback
         self.user_id_to_username = {}
         self.user_ids = set()
         self.connection_lost = False
@@ -69,6 +72,13 @@ class TwitterListener:
             print("="*70)
             print(json.dumps(data, indent=2, ensure_ascii=False))
             print("="*70 + "\n")
+            
+            # 调用原始消息回调函数
+            if self.on_raw_message_callback:
+                try:
+                    self.on_raw_message_callback(data)
+                except Exception as e:
+                    print(f"[Listener] Error in raw message callback: {e}")
             
             # 根据消息类型处理
             msg_type = data.get('type', 'unknown')
