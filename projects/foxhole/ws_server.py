@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 WebSocket 服务器
-实时推送审计数据到客户端
+实时推送审计数据到客户端，并监听 ws.json 文件变化
 """
 
 import asyncio
@@ -12,6 +12,8 @@ import os
 from datetime import datetime
 from typing import Set
 import sys
+import threading
+import time
 
 # 添加项目路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
@@ -22,19 +24,24 @@ from audit.realtime_auditor import RealtimeAuditor
 class AuditWebSocketServer:
     """审计数据 WebSocket 服务器"""
     
-    def __init__(self, host: str = "0.0.0.0", port: int = 8765):
+    def __init__(self, host: str = "0.0.0.0", port: int = 8765, watch_file: str = "data/ws.json"):
         """
         初始化 WebSocket 服务器
         
         Args:
             host: 监听地址
             port: 监听端口
+            watch_file: 要监听的 JSON 日志文件
         """
         self.host = host
         self.port = port
         self.clients: Set[websockets.WebSocketServerProtocol] = set()
         self.auditor = None
         self.loop = None
+        self.watch_file = watch_file
+        self.file_position = 0
+        self.watch_thread = None
+        self.watching = False
         
     async def register(self, websocket):
         """注册新客户端"""
@@ -76,13 +83,12 @@ class AuditWebSocketServer:
             )
             print(f"[WebSocket] 已广播消息到 {len(self.clients)} 个客户端: {message.get('log_type', 'unknown')}")
     
-    async def handle_client(self, websocket, path):
+    async def handle_client(self, websocket):
         """
         处理客户端连接
         
         Args:
             websocket: WebSocket 连接
-            path: 请求路径
         """
         await self.register(websocket)
         try:
@@ -220,6 +226,53 @@ class AuditWebSocketServer:
         except Exception as e:
             print(f"[WebSocket] 广播失败: {e}")
     
+    def watch_file_worker(self):
+        """监听 ws.json 文件的工作线程"""
+        print(f"[FileWatcher] 开始监听文件: {self.watch_file}")
+        
+        # 如果文件存在，先定位到文件末尾
+        if os.path.exists(self.watch_file):
+            with open(self.watch_file, 'r', encoding='utf-8') as f:
+                f.seek(0, 2)  # 移动到文件末尾
+                self.file_position = f.tell()
+            print(f"[FileWatcher] 文件当前位置: {self.file_position}")
+        
+        while self.watching:
+            try:
+                if os.path.exists(self.watch_file):
+                    with open(self.watch_file, 'r', encoding='utf-8') as f:
+                        # 移动到上次读取的位置
+                        f.seek(self.file_position)
+                        
+                        # 读取新增的行
+                        for line in f:
+                            line = line.strip()
+                            if line:
+                                try:
+                                    # 解析 JSON 并广播
+                                    data = json.loads(line)
+                                    log_type = data.get("log_type")
+                                    # 仅转发以下事件
+                                    if log_type in {"raw_twitter_message", "token_info", "ai_analysis"}:
+                                        self.broadcast_sync(data)
+                                    else:
+                                        # 非白名单事件不转发
+                                        pass
+                                except json.JSONDecodeError as e:
+                                    print(f"[FileWatcher] JSON 解析错误: {e}")
+                        
+                        # 更新文件位置
+                        self.file_position = f.tell()
+                
+                # 短暂休眠，避免过度占用 CPU
+                time.sleep(0.1)
+                
+            except Exception as e:
+                print(f"[FileWatcher] 错误: {e}")
+                time.sleep(1)
+        
+        print("[FileWatcher] 文件监听已停止")
+    
     async def start(self):
         """启动 WebSocket 服务器"""
         # 保存事件循环引用
@@ -230,11 +283,27 @@ class AuditWebSocketServer:
         print("=" * 70)
         print(f"监听地址: {self.host}:{self.port}")
         print(f"WebSocket URL: ws://{self.host if self.host != '0.0.0.0' else 'localhost'}:{self.port}")
+        print(f"监听文件: {self.watch_file}")
         print("=" * 70)
         print("\n等待客户端连接...\n")
         
+        # 启动文件监听线程
+        self.watching = True
+        self.watch_thread = threading.Thread(target=self.watch_file_worker)
+        self.watch_thread.daemon = True
+        self.watch_thread.start()
+        
+        # websockets 15 期望 handler 只接收一个参数 (websocket)
         async with websockets.serve(self.handle_client, self.host, self.port):
             await asyncio.Future()  # 运行直到中断
+    
+    def stop(self):
+        """停止服务器"""
+        print("\n[Server] 正在停止服务器...")
+        self.watching = False
+        if self.watch_thread:
+            self.watch_thread.join(timeout=2)
+        print("[Server] 服务器已停止")
 
 
 class WebSocketAuditor(RealtimeAuditor):
@@ -279,15 +348,17 @@ def main():
     parser = argparse.ArgumentParser(description="审计数据 WebSocket 服务器")
     parser.add_argument("--host", default="0.0.0.0", help="监听地址 (默认: 0.0.0.0)")
     parser.add_argument("--port", type=int, default=8765, help="监听端口 (默认: 8765)")
+    parser.add_argument("--watch-file", default="data/ws.json", help="监听的日志文件 (默认: data/ws.json)")
     
     args = parser.parse_args()
     
-    server = AuditWebSocketServer(host=args.host, port=args.port)
+    server = AuditWebSocketServer(host=args.host, port=args.port, watch_file=args.watch_file)
     
     try:
         asyncio.run(server.start())
     except KeyboardInterrupt:
         print("\n\n[Server] 服务器已停止")
+        server.stop()
 
 
 if __name__ == "__main__":
